@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class Conf {
-    String filename = "conf.txt";
+    String filename = "config/conf.txt";
     //String temp = FitFile.checkFile(filename);
     //String filename = "C:/Users/peter/Downloads/conf.txt";
 	int hoursToAdd = 0;
