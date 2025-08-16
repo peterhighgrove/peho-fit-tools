@@ -16,7 +16,7 @@ public class Main {
 
     public static void main(String[] args) {
         SimpleDateFormat sweDateTime = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-        System.out.println(" ========================= START OF PROGRAM ===========================" + sweDateTime.format(Calendar.getInstance().getTime()));
+        System.out.println(" ========================= START OF PROGRAM fit-fix-gps-activities / gpsfix ===========================" + sweDateTime.format(Calendar.getInstance().getTime()));
         
         
         //int conf.Integer.parseInt( = 1; // 1 = winter time in swe, used for string conv to filename
