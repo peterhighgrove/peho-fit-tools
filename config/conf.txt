@@ -5,16 +5,17 @@ filePathPrefix C:\Users\peter\Downloads\
 //filePathPrefix C:\\Users\\peter\\OneDrive\\Dokument Peter OneDrive\\Träning\\ActivityFiles\\Peter activities\\2025q1\\
 //filePathPrefix /storage/emulated/0/download/
 
+inputFilePath 20079263528.zip
 //inputFilePath 2025-07-08-test-extend-start.zip
 //inputFilePath 2025-07-28-test-extend-pause-cykel.zip
-inputFilePath 2025-07-30-test-shorten-pause-ånnaboda.zip
+//inputFilePath 2025-07-30-test-shorten-pause-ånnaboda.zip
 //----> pause 75, to 30 sec, gap 1, 63.401987,13.087493, gap 2, 63.402130,13.086809, fill
 //inputFilePath 2024-12-30-10-52-13-Elliptical warmup 6.4km gym Vancouver-watch.fit
 //inputFilePath RunningTrailTrail_Run_f6x_240602.fit
 
 //profileNameSuffix Friskis Orminge
 //profileNameSuffix gym jobbet
-profileNameSuffix test
+profileNameSuffix Himlaberget-5stenaröset 10.3km
 
 //--- Assign in MINUTES here
 timeOffsetSec 3
