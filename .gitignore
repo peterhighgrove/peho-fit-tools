@@ -2,7 +2,15 @@
 # Maven
 # ---------------------------
 target/
+
+# ---------------------------
+# Maven Wrapper
+# ---------------------------
+# Keep the wrapper scripts and .mvn folder
+!mvnw
+!mvnw.cmd
 !.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
 
 # ---------------------------
 # VS Code
