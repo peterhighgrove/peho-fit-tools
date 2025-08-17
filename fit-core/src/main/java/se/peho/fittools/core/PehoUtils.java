@@ -2,6 +2,10 @@
 
 package se.peho.fittools.core;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.util.Optional;
+
 public class PehoUtils {
 /*
     private static double EARTH_RADIUS_KM = 6371.0;
@@ -36,6 +40,25 @@ public class PehoUtils {
         return semicircles * (180.0 / Math.pow(2, 31));
     }
 */
+    private static final String[] SEARCH_LOCATIONS = {
+        "./conf.txt",                          // current directory
+        System.getProperty("user.home") + "/conf.txt", // home dir
+        System.getProperty("user.home") + "/Documents/conf.txt", // home dir
+        System.getProperty("user.home") + "/Documents/Dev/conf.txt", // home dir
+        "/etc/myapp/conf.txt"                  // system-wide (Linux/Mac)
+        // On Windows you might add System.getenv("APPDATA") + "\\MyApp\\conf.txt"
+    };
+
+    public static Optional<Path> findConfigFile() {
+        for (String location : SEARCH_LOCATIONS) {
+            File f = new File(location);
+            if (f.exists() && f.isFile()) {
+                return Optional.of(f.toPath());
+            }
+        }
+        return Optional.empty();
+    }
+    
     public static Integer safeParseInt(String str) {
     try {
         return Integer.parseInt(str);
