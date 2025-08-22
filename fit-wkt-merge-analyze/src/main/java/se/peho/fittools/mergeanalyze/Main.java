@@ -26,7 +26,7 @@ public class Main {
         String outputFilePath = "";
         
         // Reading CONF FILE
-        Conf conf = new Conf();
+        Conf conf = new Conf(args);
         
         System.out.println("ArgsLen: " + args.length);
 
@@ -104,7 +104,7 @@ public class Main {
 
         // Use getters/setters instead of direct field access:
         conf.setInputFilePath(conf.getFilePathPrefix() + conf.getInputFilePath());
-        conf.setInputFilePath(FitFile.checkFile(conf.getInputFilePath()));
+        conf.setInputFilePath(PehoUtils.checkFile(conf.getInputFilePath()));
 
         if (conf.getCommand().toLowerCase().equals("sportprofile")) {
             SportProfileFitFile sportsFile = new SportProfileFitFile();
@@ -470,7 +470,7 @@ public class Main {
                     conf.setExtraFilename("c2.fit");
                 }
                 conf.setExtraFilename(conf.getFilePathPrefix() + conf.getExtraFilename());
-                conf.setExtraFilename(FitFile.checkFile(conf.getExtraFilename()));
+                conf.setExtraFilename(PehoUtils.checkFile(conf.getExtraFilename()));
                 hasC2Fit = watchFitFile.hasC2FitFile(conf.getExtraFilename());
                 if (hasC2Fit) {
                     watchFitFile.initLapExtraRecords();
@@ -558,14 +558,14 @@ public class Main {
         
         watchFitFile.encodeNewFit(outputFilePath, encodeWorkoutRecords);
         
-        FitFile.renameFile(conf.getInputFilePath(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-watch.fit");
+        PehoUtils.renameFile(conf.getInputFilePath(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-watch.fit");
         
         if (hasC2Fit) {
-            FitFile.renameFile(conf.getExtraFilename(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-c2.fit");
+            PehoUtils.renameFile(conf.getExtraFilename(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-c2.fit");
         }
 
         if (hasManualLapsTxt) {
-            FitFile.renameFile(conf.getExtraFilename(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-manualLaps.txt");
+            PehoUtils.renameFile(conf.getExtraFilename(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-manualLaps.txt");
         }
 
         watchFitFile.createFileSummary();

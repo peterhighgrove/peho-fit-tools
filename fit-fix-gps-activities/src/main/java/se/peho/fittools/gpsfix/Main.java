@@ -26,90 +26,19 @@ public class Main {
         String outputFilePath = "";
         
         // Reading CONF FILE
-        Conf conf = new Conf();
         
         System.out.println("ArgsLen: " + args.length);
 
-        if (args.length < 4) {
-            System.out.println("============= NO ARGS =============");
-            System.out.println("------------- USES ONLY CONF FILE ------");
-        }
-        if (args.length == 4) {
-            System.out.println("============= 1 ARGS ============= ");
-            conf.setInputFilePath(args[0]);
-            conf.setProfileNameSuffix("");
-            conf.setTimeOffsetSec(3); // 3 seconds (if you mean minutes, use 3 * 60)        }
-        }
-        if (args.length == 5) {
-            System.out.println("============= 2 ARGS ============= ");
-            conf.setInputFilePath(args[0]);
-            conf.setProfileNameSuffix(args[1]);
-            conf.setTimeOffsetSec(3); // 3 minutes in seconds (should be 3 * 60 if minutes)
-        }
-
-        if (args.length == 6) {
-            System.out.println("============= 3 ARGS ============= ");
-            conf.setInputFilePath(args[0]);
-            conf.setProfileNameSuffix(args[1]);
-            conf.setTimeOffsetSec(Integer.parseInt(args[2]) * 60); // 3 minutes in seconds
-        }
-
-        if (args.length == 7) {
-            System.out.println("============= 4 ARGS ============= ");
-            conf.setInputFilePath(args[0]);
-            conf.setProfileNameSuffix(args[1]);
-            conf.setTimeOffsetSec(Integer.parseInt(args[2]) * 60);
-            conf.setExtraFilename(args[3]);
-        }
-
-        if (args.length == 9 || args.length == 10) {
-            System.out.println("============= 6-7 ARGS ============= ");
-            conf.setInputFilePath(args[0]);
-            conf.setProfileNameSuffix(args[1]);
-            conf.setTimeOffsetSec(Integer.parseInt(args[2]) * 60);
-            conf.setExtraFilename(args[3]);
-
-            conf.setCommand(args[4]);
-            System.out.println("============= " + conf.getCommand() + " " + args[5]);
-
-            if (conf.getCommand().toLowerCase().equals("corr")) {
-                conf.setC2FitFileDistanceStartCorrection(Integer.valueOf(args[5]));
-
-            } else if (conf.getCommand().toLowerCase().equals("wkt")) {
-                conf.setStartWithWktStep(args[5]);
-                conf.setNewWktName(args[6]);
-            }
-        }
-
-        System.out.println("+++++++++++++++++++++++++++++++++++");
-        System.out.println("filePathPrefix: " + conf.getFilePathPrefix());
-        System.out.println("profileNameSuffix: " + conf.getProfileNameSuffix());
-        System.out.println("inputFilePath: " + conf.getInputFilePath());
-        System.out.println("extraFilename: " + conf.getExtraFilename());
-        System.out.println("timeOffsetSec: " + conf.getTimeOffsetSec());
-        System.out.println("command: " + conf.getCommand());
-        System.out.println("startWithWktStep: " + conf.getStartWithWktStep());
-        System.out.println("newWktName: " + conf.getNewWktName());
-        System.out.println("C2FitFileDistanceStartCorrection: " + conf.getC2FitFileDistanceStartCorrection());
-        System.out.println("useManualC2SyncSeconds: " + conf.getUseManualC2SyncSeconds());
-        System.out.println("c2SyncSecondsC2File: " + conf.getC2SyncSecondsC2File());
-        System.out.println("c2SyncSecondsLapDistCalc: " + conf.getC2SyncSecondsLapDistCalc());
-        System.out.println("+++++++++++++++++++++++++++++++++++");
-
-        System.out.println("Input file path: " + conf.getInputFilePath());
+        Conf conf = new Conf(args);
+        
 
         // ================================
         // START
         // ================================
 
-        // Use getters/setters instead of direct field access:
-        conf.setInputFilePath(conf.getFilePathPrefix() + conf.getInputFilePath());
-        conf.setInputFilePath(FitFile.checkFile(conf.getInputFilePath()));
-
         if (conf.getCommand().toLowerCase().equals("sportprofile")) {
             SportProfileFitFile sportsFile = new SportProfileFitFile();
 
-            // Use getter for filePathPrefix and extraFilename
             sportsFile.readFitFileExtra(conf.getFilePathPrefix() + conf.getExtraFilename());
 
             sportsFile.mesgSave();
@@ -470,7 +399,7 @@ public class Main {
                     conf.setExtraFilename("c2.fit");
                 }
                 conf.setExtraFilename(conf.getFilePathPrefix() + conf.getExtraFilename());
-                conf.setExtraFilename(FitFile.checkFile(conf.getExtraFilename()));
+                conf.setExtraFilename(PehoUtils.checkFile(conf.getExtraFilename()));
                 hasC2Fit = watchFitFile.hasC2FitFile(conf.getExtraFilename());
                 if (hasC2Fit) {
                     watchFitFile.initLapExtraRecords();
@@ -558,14 +487,14 @@ public class Main {
         
         watchFitFile.encodeNewFit(outputFilePath, encodeWorkoutRecords);
         
-        FitFile.renameFile(conf.getInputFilePath(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-watch.fit");
+        PehoUtils.renameFile(conf.getInputFilePath(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-watch.fit");
         
         if (hasC2Fit) {
-            FitFile.renameFile(conf.getExtraFilename(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-c2.fit");
+            PehoUtils.renameFile(conf.getExtraFilename(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-c2.fit");
         }
 
         if (hasManualLapsTxt) {
-            FitFile.renameFile(conf.getExtraFilename(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-manualLaps.txt");
+            PehoUtils.renameFile(conf.getExtraFilename(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-manualLaps.txt");
         }
 
         watchFitFile.createFileSummary();
