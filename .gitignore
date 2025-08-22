@@ -1,8 +1,8 @@
 # ---------------------------
 # My project files
 # ---------------------------
-conf.txt
-1conf.txt
+*conf.txt
+*gitignore
 
 # ---------------------------
 # Maven
