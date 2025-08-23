@@ -41,8 +41,8 @@ public class Main {
         watchFitFile.changeStartTime(conf.getTimeOffsetSec());
         
         watchFitFile.createFileSummary();
-        watchFitFile.printFileIdInfo();
-        watchFitFile.printDeviceInfo();
+        watchFitFile.printFileIdInfo2();
+        watchFitFile.printDeviceInfo2();
         //watchFitFile.printWktInfo();
         //watchFitFile.printWktSessionInfo();
         //watchFitFile.printWktStepInfo();
@@ -346,7 +346,7 @@ public class Main {
         //watchFitFile.printLapRecords0();
         //watchFitFile.printLapAllSummery();
         //watchFitFile.printLapLongSummery();
-        watchFitFile.printWriteLapSummery(conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (int)(conf.getTimeOffsetSec()/60) + "min-laps.txt");
+        //watchFitFile.printWriteLapSummery(conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (int)(conf.getTimeOffsetSec()/60) + "min-laps.txt");
         //watchFitFile.printCourse();
         //watchFitFile.printDevFieldDescr();
         //watchFitFile.printDevDataId();

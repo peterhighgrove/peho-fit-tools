@@ -101,14 +101,6 @@ public class FitFileAllMesg {
     List <Integer> devFieldsToRemove = Arrays.asList(10, 11, 12, 23, 1, 2, 6, 7);
     List <String> devFieldNamesToUpdate = Arrays.asList("Training_session", "MaxHRevenLaps");
 
-    //Boolean isEllipticalFile = false;
-    //Boolean hasManualLapsFile = false;
-
-    //Boolean isSkiErgFile = false;
-    //Boolean hasC2File = false;
-    //Boolean hasDevAppData = false;
-    //Boolean isC2File = false;
-    
     int i;
     FileInputStream in;
     Decode decode;
@@ -1411,6 +1403,17 @@ public class FitFileAllMesg {
         if (allMesgFlag) {
             if (suffix.equals("")){
                 newProfileName = sportProfile;
+                newProfileName = newProfileName.replace(" (bike)","");
+                newProfileName = newProfileName.replace("spinbike","SBike");
+                newProfileName = newProfileName.replace("SpinBike","SBike");
+                newProfileName = newProfileName.replace("Spin","SpinBike");
+                newProfileName = newProfileName.replace("SBike","SpinBike");
+                newProfileName = newProfileName.replace("Cykel inne","SpinBike");
+
+                newProfileName = newProfileName.replace("Elliptical","CT");
+                newProfileName = newProfileName.replace("Ellipt","Elliptical");
+                newProfileName = newProfileName.replace("CT","Elliptical");
+                newProfileName = newProfileName.replace("ct","Elliptical");
             } else {
                 newProfileName = suffix;
             }
@@ -1425,17 +1428,6 @@ public class FitFileAllMesg {
         } else {
             newProfileName = sportProfile;
 
-            newProfileName = newProfileName.replace(" (bike)","");
-            newProfileName = newProfileName.replace("spinbike","SBike");
-            newProfileName = newProfileName.replace("SpinBike","SBike");
-            newProfileName = newProfileName.replace("Spin","SpinBike");
-            newProfileName = newProfileName.replace("SBike","SpinBike");
-            newProfileName = newProfileName.replace("Cykel inne","SpinBike");
-
-            newProfileName = newProfileName.replace("Elliptical","CT");
-            newProfileName = newProfileName.replace("Ellipt","Elliptical");
-            newProfileName = newProfileName.replace("CT","Elliptical");
-            newProfileName = newProfileName.replace("ct","Elliptical");
 
             if (wktRecords.isEmpty()) {
                 System.out.println("========> NO wkt RECORDS");
@@ -1653,53 +1645,47 @@ public class FitFileAllMesg {
             System.out.println("-- START new MesgBroadcaster(decode)." + sweDateTime.format(Calendar.getInstance().getTime()));
             
             // Create a MesgBroadcaster for decoding
-
             System.out.println("-- END MesgBroadcaster(decode)." + sweDateTime.format(Calendar.getInstance().getTime()));
 
-            if (allMesgFlag) {
-                decode.read(in, new MesgListener() {
-                    public void onMesg(Mesg mesg) {
-                        allMesg.add(mesg);
+            decode.read(in, new MesgListener() {
+                public void onMesg(Mesg mesg) {
+                    allMesg.add(mesg);
 
-                        switch (mesg.getNum()) {
-                            case MesgNum.FILE_ID:
-                                fileIdMesg.add(mesg);
-                                break;
-                            case MesgNum.DEVICE_INFO:
-                                deviceInfoMesg.add(mesg);
-                                break;
-                            case MesgNum.ACTIVITY:
-                                activityMesg.add(mesg);
-                                break;
-                            case MesgNum.WORKOUT_SESSION:
-                                wktSessionMesg.add(mesg);
-                                break;
-                            case MesgNum.WORKOUT_STEP:
-                                wktStepMesg.add(mesg);
-                                break;
-                            case MesgNum.WORKOUT:
-                                wktRecordMesg.add(mesg);
-                                break;
-                            case MesgNum.SESSION:
-                                sessionMesg.add(mesg);
-                                break;
-                            case MesgNum.LAP:
-                                lapMesg.add(mesg);
-                                break;
-                            case MesgNum.EVENT:
-                                eventMesg.add(mesg);
-                                break;
-                            case MesgNum.RECORD:
-                                recordMesg.add(mesg);
-                                break;
+                    switch (mesg.getNum()) {
+                        case MesgNum.FILE_ID:
+                            fileIdMesg.add(mesg);
+                            break;
+                        case MesgNum.DEVICE_INFO:
+                            deviceInfoMesg.add(mesg);
+                            break;
+                        case MesgNum.ACTIVITY:
+                            activityMesg.add(mesg);
+                            break;
+                        case MesgNum.WORKOUT_SESSION:
+                            wktSessionMesg.add(mesg);
+                            break;
+                        case MesgNum.WORKOUT_STEP:
+                            wktStepMesg.add(mesg);
+                            break;
+                        case MesgNum.WORKOUT:
+                            wktRecordMesg.add(mesg);
+                            break;
+                        case MesgNum.SESSION:
+                            sessionMesg.add(mesg);
+                            break;
+                        case MesgNum.LAP:
+                            lapMesg.add(mesg);
+                            break;
+                        case MesgNum.EVENT:
+                            eventMesg.add(mesg);
+                            break;
+                        case MesgNum.RECORD:
+                            recordMesg.add(mesg);
+                            break;
                         }
                     }
-                });
-            } else {
-                broadcaster = new MesgBroadcaster(decode);
-                addListeners();
-                decode.read(in, broadcaster);
-            }
+                }
+            );
 
             // Decode the FIT file
 
@@ -1709,127 +1695,67 @@ public class FitFileAllMesg {
                 System.out.println("============== Closing Exception: " + e);
             }
 
-            if (allMesgFlag) {
-                // allMESG FLAG
-                //-----------------
-                if (fileIdMesg.get(0).getFieldIntegerValue(FID_MANU) != null) {
-                    manufacturer = Manufacturer.getStringFromValue(fileIdMesg.get(0).getFieldIntegerValue(FID_MANU));
-                    if (manufacturer == "GARMIN") {
-                        if (fileIdMesg.get(0).getFieldIntegerValue(FID_MANU) != null) {
-                            productNo = fileIdMesg.get(0).getFieldIntegerValue(FID_PROD);
-                            product = GarminProduct.getStringFromValue(fileIdMesg.get(0).getFieldIntegerValue(FID_PROD));
-                        }
+            if (fileIdMesg.get(0).getFieldIntegerValue(FID_MANU) != null) {
+                manufacturer = Manufacturer.getStringFromValue(fileIdMesg.get(0).getFieldIntegerValue(FID_MANU));
+                if (manufacturer == "GARMIN") {
+                    if (fileIdMesg.get(0).getFieldIntegerValue(FID_MANU) != null) {
+                        productNo = fileIdMesg.get(0).getFieldIntegerValue(FID_PROD);
+                        product = GarminProduct.getStringFromValue(fileIdMesg.get(0).getFieldIntegerValue(FID_PROD));
                     }
-                }
-
-                swVer = deviceInfoMesg.get(0).getFieldFloatValue(DINFO_SWVER);
-                timeFirstRecord = new DateTime (recordMesg.get(0).getFieldLongValue(REC_TIME));
-
-                if (activityMesg.get(0).getFieldLongValue(ACT_TIME) == null) {
-                    activityMesg.get(0).setFieldValue(ACT_TIME, timeFirstRecord.getTimestamp());
-                }
-                activityDateTimeUTC = new DateTime (activityMesg.get(0).getFieldLongValue(ACT_TIME));
-                if (activityMesg.get(0).getFieldLongValue(ACT_LOCTIME) == null) {
-                    activityMesg.get(0).setFieldValue(ACT_LOCTIME, timeFirstRecord.getTimestamp());
-                }
-                activityDateTimeLocal = new DateTime(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME));
-                diffMinutesLocalUTC = (activityDateTimeLocal.getTimestamp() - activityDateTimeUTC.getTimestamp()) / 60;
-                activityDateTimeLocalOrg = activityDateTimeLocal;
-
-                if (!wktRecordMesg.isEmpty()) {
-                    if (wktRecordMesg.get(0).getFieldStringValue(WKT_NAME) != null) {
-                        wktName = wktRecordMesg.get(0).getFieldStringValue(WKT_NAME);
-                    }
-                }
-
-                if (sessionMesg.get(0).getFieldValue(SES_SPORT) != null) {
-                    sport = Sport.getByValue(sessionMesg.get(0).getFieldShortValue(SES_SPORT));
-                }
-                if (sessionMesg.get(0).getFieldValue(SES_SUBSPORT) != null) {
-                    subsport = SubSport.getByValue(sessionMesg.get(0).getFieldShortValue(SES_SUBSPORT));
-                }
-                if (sessionMesg.get(0).getFieldStringValue(SES_PROFILE) == null) {
-                    sessionMesg.get(0).setFieldValue(SES_PROFILE, "noProfile");
-                } else {
-                    sportProfile = sessionMesg.get(0).getFieldStringValue(SES_PROFILE);
-                }
-                if (sessionMesg.get(0).getFieldFloatValue(SES_TIMER) != null) {
-                    totalTimerTime = sessionMesg.get(0).getFieldFloatValue(SES_TIMER);
-                }
-                if (sessionMesg.get(0).getFieldFloatValue(SES_DIST) != null) {
-                    totalDistance = sessionMesg.get(0).getFieldFloatValue(SES_DIST);
-                    totalDistanceOrg = totalDistance;
-                }
-                if (sessionMesg.get(0).getFieldFloatValue(SES_SPEED) != null) {
-                    avgSpeed = sessionMesg.get(0).getFieldFloatValue(SES_SPEED);
-                }
-                if (sessionMesg.get(0).getFieldFloatValue(SES_ESPEED) != null) {
-                    avgSpeed = sessionMesg.get(0).getFieldFloatValue(SES_ESPEED);
-                }
-
-                numberOfLaps = lapMesg.size();
-                
-                timeFirstRecordOrg = timeFirstRecord;
-                timeLastRecord = new DateTime (recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
-                numberOfRecords = recordMesg.size();
-
-            } else {
-                // NOT allMESG FLAG
-                //-----------------
-                try {
-                    
-                    if (sessionRecords.get(0).getSportProfileName() == null) {
-                        sessionRecords.get(0).setSportProfileName("noProfile");
-                    } 
-
-                    numberOfLaps = lapRecords.size();
-                    timeFirstRecord = secRecords.get(0).getTimestamp();
-                    timeFirstRecordOrg = timeFirstRecord;
-                    timeLastRecord = secRecords.get(secRecords.size() - 1).getTimestamp();
-
-                    if (activityRecords.get(0).getLocalTimestamp() == null) {
-                        activityRecords.get(0).setLocalTimestamp(secRecords.get(0).getTimestamp().getTimestamp());
-                    }
-                    if (activityRecords.get(0).getTimestamp() == null) {
-                        activityRecords.get(0).setTimestamp(secRecords.get(0).getTimestamp());
-                    }
-                    diffMinutesLocalUTC = (activityRecords.get(0).getLocalTimestamp() - activityRecords.get(0).getTimestamp().getTimestamp()) / 60;
-                    activityDateTimeUTC = activityRecords.get(0).getTimestamp();
-                    activityDateTimeLocal = new DateTime(activityRecords.get(0).getLocalTimestamp());
-                    activityDateTimeLocalOrg = activityDateTimeLocal;
-                    
-                    totalTimerTime = sessionRecords.get(0).getTotalTimerTime();
-                    totalDistance = sessionRecords.get(0).getTotalDistance();
-                    if (sessionRecords.get(0).getAvgSpeed() != null) {
-                        avgSpeed = sessionRecords.get(0).getAvgSpeed();
-                    }
-                    if (sessionRecords.get(0).getEnhancedAvgSpeed() != null) {
-                        avgSpeed = sessionRecords.get(0).getEnhancedAvgSpeed();
-                    }
-                    manufacturer = Manufacturer.getStringFromValue(fileIdRecords.get(0).getManufacturer());
-                    if (manufacturer == "GARMIN") {
-                        product = GarminProduct.getStringFromValue(fileIdRecords.get(0).getProduct());
-                    }
-                    swVer = deviceInfoRecords.get(0).getSoftwareVersion();
-                    sport = sessionRecords.get(0).getSport();
-                    if (sessionRecords.get(0).getSubSport() != null) {
-                        subsport = sessionRecords.get(0).getSubSport();
-                    }
-                    if (sessionRecords.get(0).getSportProfileName() != null) {
-                        sportProfile = sessionRecords.get(0).getSportProfileName();
-                    }
-                    if (!wktRecords.isEmpty()) {
-                        if (wktRecords.get(0).getWktName() != null) {
-                            wktName = wktRecords.get(0).getWktName();
-                        }
-                    }
-                    numberOfRecords = secRecords.size();
-                } catch (Exception e) {
-                    wktName = "";
-                    sportProfile = "";
-                    System.out.println("============== Exception: " + e);
                 }
             }
+
+            swVer = deviceInfoMesg.get(0).getFieldFloatValue(DINFO_SWVER);
+            timeFirstRecord = new DateTime (recordMesg.get(0).getFieldLongValue(REC_TIME));
+
+            if (activityMesg.get(0).getFieldLongValue(ACT_TIME) == null) {
+                activityMesg.get(0).setFieldValue(ACT_TIME, timeFirstRecord.getTimestamp());
+            }
+            activityDateTimeUTC = new DateTime (activityMesg.get(0).getFieldLongValue(ACT_TIME));
+            if (activityMesg.get(0).getFieldLongValue(ACT_LOCTIME) == null) {
+                activityMesg.get(0).setFieldValue(ACT_LOCTIME, timeFirstRecord.getTimestamp());
+            }
+            activityDateTimeLocal = new DateTime(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME));
+            diffMinutesLocalUTC = (activityDateTimeLocal.getTimestamp() - activityDateTimeUTC.getTimestamp()) / 60;
+            activityDateTimeLocalOrg = activityDateTimeLocal;
+
+            if (!wktRecordMesg.isEmpty()) {
+                if (wktRecordMesg.get(0).getFieldStringValue(WKT_NAME) != null) {
+                    wktName = wktRecordMesg.get(0).getFieldStringValue(WKT_NAME);
+                }
+            }
+
+            if (sessionMesg.get(0).getFieldValue(SES_SPORT) != null) {
+                sport = Sport.getByValue(sessionMesg.get(0).getFieldShortValue(SES_SPORT));
+            }
+            if (sessionMesg.get(0).getFieldValue(SES_SUBSPORT) != null) {
+                subsport = SubSport.getByValue(sessionMesg.get(0).getFieldShortValue(SES_SUBSPORT));
+            }
+            if (sessionMesg.get(0).getFieldStringValue(SES_PROFILE) == null) {
+                sessionMesg.get(0).setFieldValue(SES_PROFILE, "noProfile");
+            } else {
+                sportProfile = sessionMesg.get(0).getFieldStringValue(SES_PROFILE);
+            }
+            if (sessionMesg.get(0).getFieldFloatValue(SES_TIMER) != null) {
+                totalTimerTime = sessionMesg.get(0).getFieldFloatValue(SES_TIMER);
+            }
+            if (sessionMesg.get(0).getFieldFloatValue(SES_DIST) != null) {
+                totalDistance = sessionMesg.get(0).getFieldFloatValue(SES_DIST);
+                totalDistanceOrg = totalDistance;
+            }
+            if (sessionMesg.get(0).getFieldFloatValue(SES_SPEED) != null) {
+                avgSpeed = sessionMesg.get(0).getFieldFloatValue(SES_SPEED);
+            }
+            if (sessionMesg.get(0).getFieldFloatValue(SES_ESPEED) != null) {
+                avgSpeed = sessionMesg.get(0).getFieldFloatValue(SES_ESPEED);
+            }
+
+            numberOfLaps = lapMesg.size();
+            
+            timeFirstRecordOrg = timeFirstRecord;
+            timeLastRecord = new DateTime (recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
+            numberOfRecords = recordMesg.size();
+
             System.out.println("FIT file successfully read. Total records: " + numberOfRecords + " -- " + FitDateTime.toString(timeLastRecord,0));
 
         } catch (FitRuntimeException e) {
@@ -1837,7 +1763,7 @@ public class FitFileAllMesg {
         }
     }
 
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void encodeNewFit (String outputFilePath, boolean encodeWorkoutRecords) {
 
         System.out.println("Encode Activity FIT File");
@@ -1847,482 +1773,98 @@ public class FitFileAllMesg {
 
             encode = new FileEncoder(new java.io.File(outputFilePath), Fit.ProtocolVersion.V2_0);
 
-            if (allMesgFlag) {
-
-                for (Mesg record : allMesg) {
-                    encode.write(record);
-                }
-
-            } else {
-
-                for (FileIdMesg record : fileIdRecords) {
-                    encode.write(record);
-                }
-                for (FileCreatorMesg record : fileCreatorRecords) {
-                    encode.write(record);
-                }
-                for (ActivityMesg record : activityRecords) {
-                    encode.write(record);
-                }
-                for (DeviceInfoMesg record : deviceInfoRecords) {
-                    encode.write(record);
-                }
-                for (UserProfileMesg record : userProfileRecords) {
-                    encode.write(record);
-                }
-                for (MaxMetDataMesg record : maxMetDataRecords) {
-                    encode.write(record);
-                }
-                for (MetZoneMesg record : metZoneRecords) {
-                    encode.write(record);
-                }
-                for (SpeedZoneMesg record : speedZoneRecords) {
-                    encode.write(record);
-                }
-                for (CadenceZoneMesg record : cadZoneRecords) {
-                    encode.write(record);
-                }
-                for (TimeInZoneMesg record : timeInZoneRecords) {
-                    encode.write(record);
-                }
-                for (HrZoneMesg record : hrZoneRecords) {
-                    encode.write(record);
-                }
-                for (PowerZoneMesg record : powerZoneRecords) {
-                    encode.write(record);
-                }
-                for (GoalMesg record : goalRecords) {
-                    encode.write(record);
-                }
-                if (encodeWorkoutRecords) {
-                    for (WorkoutMesg record : wktRecords) {
-                        encode.write(record);
-                    }
-                    for (WorkoutSessionMesg record : wktSessionRecords) {
-                        encode.write(record);
-                    }
-                    for (ZonesTargetMesg record : zonesTargetRecords) {
-                        encode.write(record);
-                    }
-                    for (WorkoutStepMesg record : wktStepRecords) {
-                        encode.write(record);
-                    }
-                }
-                for (EventMesg record : eventRecords) {
-                    encode.write(record);
-                }
-                for (CourseMesg record : courseRecords) {
-                    encode.write(record);
-                }
-                for (DeveloperDataIdMesg record : devDataIdRecords) {
-                    encode.write(record);
-                }
-    /*             for (DeveloperFieldDescription record : devFieldDescrRecords) {
-                    encode.write(record);
-                }
-    */            
-                for (FieldDescriptionMesg record : fieldDescrRecords) {
-                    encode.write(record);
-                }
-                for (SessionMesg record : sessionRecords) {
-                    encode.write(record);
-                }
-                for (LapMesg record : lapRecords) {
-                    encode.write(record);
-                }
-                for (SplitSummaryMesg record : splitSumRecords) {
-                    encode.write(record);
-                }
-                for (SplitMesg record : splitRecords) {
-                    encode.write(record);
-                }
-                for (RecordMesg record : secRecords) {
-                    encode.write(record);
-                }
+            for (Mesg record : allMesg) {
+                encode.write(record);
             }
+
             // Close the encoder to finalize the file
             encode.close();
+
         } catch (FitRuntimeException e) {
             System.err.println("Error opening file ......fit");
             return;
         }
     }
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void addListeners() {
-
-        broadcaster.addListener(new MesgListener() {
-            @Override
-            public void onMesg(Mesg mesg) {
-                allMesg.add(mesg);
-
-                switch (mesg.getNum()) {
-                    case MesgNum.SESSION:
-                        sessionMesg.add(mesg);
-                        break;
-                    case MesgNum.LAP:
-                        lapMesg.add(mesg);
-                        break;
-                    case MesgNum.EVENT:
-                        eventMesg.add(mesg);  // Just save original reference
-                        break;
-                    case MesgNum.RECORD:
-                        recordMesg.add(mesg);  // Just save original reference
-                        break;
-                }
-            }
-        });
-        broadcaster.addListener(new FileIdMesgListener() {
-            @Override
-            public void onMesg(FileIdMesg mesg) {
-                fileIdRecords.add(mesg);
-            }
-        });
-
-        broadcaster.addListener(new FileCreatorMesgListener() {
-            @Override
-            public void onMesg(FileCreatorMesg mesg) {
-                fileCreatorRecords.add(mesg);
-            }
-        });
-
-        // Add a listener to collect FileIdMesg objects
-        broadcaster.addListener(new ActivityMesgListener() {
-            @Override
-            public void onMesg(ActivityMesg mesg) {
-                activityRecords.add(mesg);
-            }
-        });
-
-        broadcaster.addListener(new DeviceInfoMesgListener() {
-            @Override
-            public void onMesg(DeviceInfoMesg mesg) {
-                deviceInfoRecords.add(mesg);
-            }
-        });
-
-        broadcaster.addListener(new UserProfileMesgListener() {
-            @Override
-            public void onMesg(UserProfileMesg mesg) {
-                userProfileRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new MaxMetDataMesgListener() {
-            @Override
-            public void onMesg(MaxMetDataMesg mesg) {
-                maxMetDataRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new MetZoneMesgListener() {
-            @Override
-            public void onMesg(MetZoneMesg mesg) {
-                metZoneRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new SpeedZoneMesgListener() {
-            @Override
-            public void onMesg(SpeedZoneMesg mesg) {
-                speedZoneRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new CadenceZoneMesgListener() {
-            @Override
-            public void onMesg(CadenceZoneMesg mesg) {
-                cadZoneRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new TimeInZoneMesgListener() {
-            @Override
-            public void onMesg(TimeInZoneMesg mesg) {
-                timeInZoneRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new HrZoneMesgListener() {
-            @Override
-            public void onMesg(HrZoneMesg mesg) {
-                hrZoneRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new PowerZoneMesgListener() {
-            @Override
-            public void onMesg(PowerZoneMesg mesg) {
-                powerZoneRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new GoalMesgListener() {
-            @Override
-            public void onMesg(GoalMesg mesg) {
-                goalRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new WorkoutMesgListener() {
-            @Override
-            public void onMesg(WorkoutMesg mesg) {
-                wktRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new WorkoutSessionMesgListener() {
-            @Override
-            public void onMesg(WorkoutSessionMesg mesg) {
-                wktSessionRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new ZonesTargetMesgListener() {
-            @Override
-            public void onMesg(ZonesTargetMesg mesg) {
-                zonesTargetRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new WorkoutStepMesgListener() {
-            @Override
-            public void onMesg(WorkoutStepMesg mesg) {
-                wktStepRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new CourseMesgListener() {
-            @Override
-            public void onMesg(CourseMesg mesg) {
-                courseRecords.add(mesg);
-            }
-        });
-
-        broadcaster.addListener(new EventMesgListener() {
-            @Override
-            public void onMesg(EventMesg mesg) {
-                eventRecords.add(mesg);
-            }
-        });
-
-        broadcaster.addListener(new DeveloperDataIdMesgListener() {
-            @Override
-            public void onMesg(DeveloperDataIdMesg mesg) {
-                devDataIdRecords.add(mesg);
-            }
-        });
-
-        decode.addListener(new DeveloperFieldDescriptionListener() {
-            @Override
-            public void onDescription(DeveloperFieldDescription desc) {
-                devFieldDescrRecords.add(desc);
-            }
-        });
-
-        broadcaster.addListener(new FieldDescriptionMesgListener() {
-            @Override
-            public void onMesg(FieldDescriptionMesg mesg) {
-                fieldDescrRecords.add(mesg);
-            }
-        });
-
-        broadcaster.addListener(new SessionMesgListener() {
-            @Override
-            public void onMesg(SessionMesg mesg) {
-                sessionRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new LapMesgListener() {
-            @Override
-            public void onMesg(LapMesg mesg) {
-                lapRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new SplitMesgListener() {
-            @Override
-            public void onMesg(SplitMesg mesg) {
-                splitRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new SplitSummaryMesgListener() {
-            @Override
-            public void onMesg(SplitSummaryMesg mesg) {
-                splitSumRecords.add(mesg);
-            }
-        });
-        
-        broadcaster.addListener(new RecordMesgListener() {
-            @Override
-            public void onMesg(RecordMesg mesg) {
-                secRecords.add(mesg);
-            }
-        });
-    }
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void changeStartTime (int changeSeconds) {
-        if (allMesgFlag) {
-            Long timeToChange;
-            for (Mesg mesg : allMesg) {
-                switch (mesg.getNum()) {
-                    case MesgNum.FILE_ID:
-                        timeToChange = mesg.getFieldLongValue(FID_TIME);
-                        if (timeToChange != null) {
-                            mesg.setFieldValue(FID_TIME, timeToChange + changeSeconds);
-                        }
-                        break;
-                    case MesgNum.ACTIVITY:
-                        timeToChange = mesg.getFieldLongValue(ACT_TIME);
-                        if (timeToChange != null) {
-                            mesg.setFieldValue(ACT_TIME, timeToChange + changeSeconds);
-                        }
-                        timeToChange = mesg.getFieldLongValue(ACT_LOCTIME);
-                        if (timeToChange != null) {
-                            mesg.setFieldValue(ACT_LOCTIME, timeToChange + changeSeconds);
-                        }
-                        break;
-                    case MesgNum.DEVICE_INFO:
-                        timeToChange = mesg.getFieldLongValue(DINFO_TIME);
-                        if (timeToChange != null) {
-                            mesg.setFieldValue(DINFO_TIME, timeToChange + changeSeconds);
-                        }
-                        break;
-                    case MesgNum.EVENT:
-                        timeToChange = mesg.getFieldLongValue(EVE_TIME);
-                        if (timeToChange != null) {
-                            mesg.setFieldValue(EVE_TIME, timeToChange + changeSeconds);
-                        }
-                        timeToChange = mesg.getFieldLongValue(EVE_STIME);
-                        if (timeToChange != null) {
-                            mesg.setFieldValue(EVE_STIME, timeToChange + changeSeconds);
-                        }
-                        break;
-                    case MesgNum.SESSION:
-                        timeToChange = mesg.getFieldLongValue(SES_TIME);
-                        if (timeToChange != null) {
-                            mesg.setFieldValue(SES_TIME, timeToChange + changeSeconds);
-                        }
-                        timeToChange = mesg.getFieldLongValue(SES_STIME);
-                        if (timeToChange != null) {
-                            mesg.setFieldValue(SES_STIME, timeToChange + changeSeconds);
-                        }
-                        break;
-                    case MesgNum.LAP:
-                        timeToChange = mesg.getFieldLongValue(LAP_TIME);
-                        if (timeToChange != null) {
-                            mesg.setFieldValue(LAP_TIME, timeToChange + changeSeconds);
-                        }
-                        timeToChange = mesg.getFieldLongValue(LAP_STIME);
-                        if (timeToChange != null) {
-                            mesg.setFieldValue(LAP_STIME, timeToChange + changeSeconds);
-                        }
-                        break;
-                    case MesgNum.SPLIT:
-                        timeToChange = mesg.getFieldLongValue(SPL_STIME);
-                        if (timeToChange != null) {
-                            mesg.setFieldValue(SPL_STIME, timeToChange + changeSeconds);
-                        }
-                        timeToChange = mesg.getFieldLongValue(SPL_ETIME);
-                        if (timeToChange != null) {
-                            mesg.setFieldValue(SPL_ETIME, timeToChange + changeSeconds);
-                        }
-                        break;
-                    case MesgNum.RECORD:
-                        timeToChange = mesg.getFieldLongValue(REC_TIME);
-                        //System.out.print("RecTime:"+timeToChange+" ");
-                        if (timeToChange != null) {
-                            mesg.setFieldValue(REC_TIME, timeToChange + changeSeconds);
-                            //System.out.print(timeToChange+changeSeconds);
-                        }
-                        break;
-                }
+        Long timeToChange;
+        for (Mesg mesg : allMesg) {
+            switch (mesg.getNum()) {
+                case MesgNum.FILE_ID:
+                    timeToChange = mesg.getFieldLongValue(FID_TIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(FID_TIME, timeToChange + changeSeconds);
+                    }
+                    break;
+                case MesgNum.ACTIVITY:
+                    timeToChange = mesg.getFieldLongValue(ACT_TIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(ACT_TIME, timeToChange + changeSeconds);
+                    }
+                    timeToChange = mesg.getFieldLongValue(ACT_LOCTIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(ACT_LOCTIME, timeToChange + changeSeconds);
+                    }
+                    break;
+                case MesgNum.DEVICE_INFO:
+                    timeToChange = mesg.getFieldLongValue(DINFO_TIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(DINFO_TIME, timeToChange + changeSeconds);
+                    }
+                    break;
+                case MesgNum.EVENT:
+                    timeToChange = mesg.getFieldLongValue(EVE_TIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(EVE_TIME, timeToChange + changeSeconds);
+                    }
+                    timeToChange = mesg.getFieldLongValue(EVE_STIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(EVE_STIME, timeToChange + changeSeconds);
+                    }
+                    break;
+                case MesgNum.SESSION:
+                    timeToChange = mesg.getFieldLongValue(SES_TIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(SES_TIME, timeToChange + changeSeconds);
+                    }
+                    timeToChange = mesg.getFieldLongValue(SES_STIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(SES_STIME, timeToChange + changeSeconds);
+                    }
+                    break;
+                case MesgNum.LAP:
+                    timeToChange = mesg.getFieldLongValue(LAP_TIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(LAP_TIME, timeToChange + changeSeconds);
+                    }
+                    timeToChange = mesg.getFieldLongValue(LAP_STIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(LAP_STIME, timeToChange + changeSeconds);
+                    }
+                    break;
+                case MesgNum.SPLIT:
+                    timeToChange = mesg.getFieldLongValue(SPL_STIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(SPL_STIME, timeToChange + changeSeconds);
+                    }
+                    timeToChange = mesg.getFieldLongValue(SPL_ETIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(SPL_ETIME, timeToChange + changeSeconds);
+                    }
+                    break;
+                case MesgNum.RECORD:
+                    timeToChange = mesg.getFieldLongValue(REC_TIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(REC_TIME, timeToChange + changeSeconds);
+                    }
+                    break;
             }
-            timeFirstRecord = new DateTime (recordMesg.get(0).getFieldLongValue(REC_TIME));
-            timeLastRecord = new DateTime (recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
-            activityDateTimeLocal = new DateTime(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME));
-        } else {
-            for (FileIdMesg record : fileIdRecords) {
-                // Modify the timestamp
-                if (record.getTimeCreated() != null) {
-                    record.setTimeCreated(new DateTime(record.getTimeCreated().getTimestamp() + changeSeconds)); // Add 3 minutes
-                }
-            }
-            for (ActivityMesg record : activityRecords) {
-                // Modify the timestamp
-                if (record.getTimestamp() != null) {
-                    record.setTimestamp(new DateTime(record.getTimestamp().getTimestamp() + changeSeconds)); // Add 3 minutes
-                }
-                //Get local_timestamp field Comment: 
-                //timestamp EPOCH expressed in local time, used to convert activity timestamps to local time
-                if (record.getLocalTimestamp() != null) {
-                    record.setLocalTimestamp(record.getLocalTimestamp() + changeSeconds); // Add 3 minutes
-                }
-            }
-            for (DeviceInfoMesg record : deviceInfoRecords) {
-                // Modify the timestamp
-                if (record.getTimestamp() != null) {
-                    record.setTimestamp(new DateTime(record.getTimestamp().getTimestamp() + changeSeconds)); // Add 3 minutes
-                }
-            }
-            for (EventMesg record : eventRecords) {
-                // Modify the timestamp
-                if (record.getTimestamp() != null) {
-                    DateTime timeStamp2change = record.getTimestamp();
-                    record.setTimestamp(new DateTime(timeStamp2change.getTimestamp() + changeSeconds)); // Add 3 minutes
-                }
-                if (record.getStartTimestamp() != null) {
-                    DateTime timeStamp2change2 = record.getStartTimestamp();
-                    record.setStartTimestamp(new DateTime(timeStamp2change2.getTimestamp() + changeSeconds)); // Add 3 minutes
-                }
-            }
-            for (SessionMesg record : sessionRecords) {
-                // Modify the timestamp
-                if (record.getTimestamp() != null) {
-                    DateTime timeStamp2change = record.getTimestamp();
-                    record.setTimestamp(new DateTime(timeStamp2change.getTimestamp() + changeSeconds)); // Add 3 minutes
-                }
-                if (record.getStartTime() != null) {
-                    DateTime timeStamp2change2 = record.getStartTime();
-                    record.setStartTime(new DateTime(timeStamp2change2.getTimestamp() + changeSeconds)); // Add 3 minutes
-                }
-            }
-            for (LapMesg record : lapRecords) {
-                // Modify the timestamp
-                if (record.getTimestamp() != null) {
-                    DateTime timeStamp2change = record.getTimestamp();
-                    record.setTimestamp(new DateTime(timeStamp2change.getTimestamp() + changeSeconds)); // Add 3 minutes
-                }
-                if (record.getStartTime() != null) {
-                    DateTime timeStamp2change2 = record.getStartTime();
-                    record.setStartTime(new DateTime(timeStamp2change2.getTimestamp() + changeSeconds)); // Add 3 minutes
-                }
-            }
-            for (SplitMesg record : splitRecords) {
-                // Modify the timestamp
-                if (record.getStartTime() != null) {
-                    DateTime timeStamp2change = record.getStartTime();
-                    record.setStartTime(new DateTime(timeStamp2change.getTimestamp() + changeSeconds)); // Add 3 minutes
-                }
-                if (record.getEndTime() != null) {
-                    DateTime timeStamp2change2 = record.getEndTime();
-                    record.setEndTime(new DateTime(timeStamp2change2.getTimestamp() + changeSeconds)); // Add 3 minutes
-                }
-            }
-            for (RecordMesg record : secRecords) {
-                // Modify the timestamp
-                if (record.getTimestamp() != null) {
-                    DateTime timeStamp2change = record.getTimestamp();
-                    record.setTimestamp(new DateTime(timeStamp2change.getTimestamp() + changeSeconds)); // Add 3 minutes
-                }
-            }
-            timeFirstRecord = secRecords.get(0).getTimestamp();
-            timeLastRecord = secRecords.get(secRecords.size() - 1).getTimestamp();
-            activityDateTimeLocal = new DateTime(activityRecords.get(0).getLocalTimestamp());
         }
+        timeFirstRecord = new DateTime (recordMesg.get(0).getFieldLongValue(REC_TIME));
+        timeLastRecord = new DateTime (recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
+        activityDateTimeLocal = new DateTime(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME));
     }
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void createFileSummary() {
         savedStrOrgFileInfo += "--------------------------------------------------" + System.lineSeparator();
         savedStrOrgFileInfo += " --> Manufacturer:" + manufacturer + ", " + product + "(" + productNo + ")" + ", SW: v" + swVer + System.lineSeparator();
@@ -2370,7 +1912,7 @@ public class FitFileAllMesg {
             }*/
 
     }
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printFileIdInfo () {
         int i = 0;
         String manu = "";
@@ -2413,7 +1955,64 @@ public class FitFileAllMesg {
         }
         System.out.println("--------------------------------------------------");
     }
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void printFileIdInfo2() {
+        int i = 0;
+        System.out.println("--------------------------------------------------");
+        for (Mesg mesg : fileIdMesg) {
+            i++;
+            System.out.println("File ID (mesg): " + i);
+
+            Long timeCreated = mesg.getFieldLongValue(FID_TIME);
+            if (timeCreated != null) {
+                System.out.print(" Time: " + FitDateTime.toString(new DateTime(timeCreated)));
+            }
+
+            Integer manuVal = mesg.getFieldIntegerValue(FID_MANU);
+            String manuStr = "";
+            if (manuVal != null) {
+                manuStr = Manufacturer.getStringFromValue(manuVal);
+                System.out.print(" Manufacturer: " + manuStr + "(" + manuVal + ")");
+            }
+
+            Integer prodVal = mesg.getFieldIntegerValue(FID_PROD);
+            if (prodVal != null) {
+                System.out.print(" Product: ");
+                if ("GARMIN".equals(manuStr)) {
+                    System.out.print(GarminProduct.getStringFromValue(prodVal) + "(" + prodVal + ")");
+                } else {
+                    System.out.print(prodVal);
+                }
+            }
+
+            String prodName = mesg.getFieldStringValue(FID_PRODNAME);
+            if (prodName != null) {
+                System.out.print(" ProductName: " + prodName);
+            }
+
+            Long serialNum = mesg.getFieldLongValue(FileIdMesg.SerialNumberFieldNum);
+            if (serialNum != null) {
+                System.out.print(" Serial Number: " + serialNum);
+            }
+
+            Integer number = mesg.getFieldIntegerValue(FileIdMesg.NumberFieldNum);
+            if (number != null) {
+                System.out.print(" Number: " + number);
+            }
+
+            Short type = mesg.getFieldShortValue(FileIdMesg.TypeFieldNum);
+            if (type != null) {
+                System.out.print(" Type: " + type);
+            }
+
+            System.out.println();
+            if (i == 11) {
+                break;
+            }
+        }
+        System.out.println("--------------------------------------------------");
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printDeviceInfo () {
         int i = 0;
         String manu = "";
@@ -2460,7 +2059,60 @@ public class FitFileAllMesg {
         }
         System.out.println("--------------------------------------------------");
     }
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void printDeviceInfo2() {
+        int i = 0;
+        String manu = "";
+        System.out.println("--------------------------------------------------");
+        for (Mesg mesg : deviceInfoMesg) {
+            i++;
+            System.out.print("Device ID (mesg): " + i);
+
+            Integer deviceType = mesg.getFieldIntegerValue(DeviceInfoMesg.DeviceTypeFieldNum);
+            if (deviceType != null) {
+                System.out.print(" -- DeviceType: (" + deviceType + ")");
+            }
+
+            Float sw = mesg.getFieldFloatValue(DINFO_SWVER);
+            if (sw != null) {
+                System.out.print(" SW: v" + sw);
+            }
+
+            Integer manuVal = mesg.getFieldIntegerValue(DeviceInfoMesg.ManufacturerFieldNum);
+            if (manuVal != null) {
+                manu = Manufacturer.getStringFromValue(manuVal);
+                System.out.print(" Manufacturer: " + manu + "(" + manuVal + ")");
+            }
+
+            Integer prodVal = mesg.getFieldIntegerValue(DeviceInfoMesg.ProductFieldNum);
+            if (prodVal != null) {
+                System.out.print(" Product: ");
+                if ("GARMIN".equals(manu)) {
+                    System.out.print(GarminProduct.getStringFromValue(prodVal) + "(" + prodVal + ")");
+                } else {
+                    System.out.print(prodVal);
+                }
+            }
+
+            String prodName = mesg.getFieldStringValue(DeviceInfoMesg.ProductNameFieldNum);
+            if (prodName != null) {
+                System.out.print(" ProductName: " + prodName);
+            }
+
+            Float hw = mesg.getFieldFloatValue(DeviceInfoMesg.HardwareVersionFieldNum);
+            if (hw != null) {
+                System.out.print(" HW: v" + hw);
+            }
+
+            System.out.println();
+            if (i == 11) {
+                break;
+            }
+        }
+        System.out.println("--------------------------------------------------");
+    }
+// ...existing code...
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printWktInfo () {
         int i = 0;
         System.out.println("--------------------------------------------------");
@@ -2494,7 +2146,7 @@ public class FitFileAllMesg {
         }
         System.out.println("--------------------------------------------------");
     }
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printWktSessionInfo () {
         int i = 0;
         System.out.println("--------------------------------------------------");
@@ -2520,7 +2172,7 @@ public class FitFileAllMesg {
         }
         System.out.println("--------------------------------------------------");
     }
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printWktStepInfo () {
         int i = 0;
         int stepType;
