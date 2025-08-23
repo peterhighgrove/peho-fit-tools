@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.text.SimpleDateFormat;
 import java.util.Scanner;
@@ -79,9 +77,9 @@ public class FitFile {
     Float avgSpeed; // m/s
     Float maxSpeed; // m/s
     int avgCadence;
-    int maxCadence;
+    //int maxCadence;
     int avgPower;
-    int maxPower;
+    //int maxPower;
 
     int numberOfLaps;
     DateTime timeFirstRecord;
@@ -90,11 +88,11 @@ public class FitFile {
     int numberOfRecords;
 
     public String savedStrOrgFileInfo = "";
-    String savedStrLapsAllInfo = "";
+    //String savedStrLapsAllInfo = "";
     String savedStrLapsActiveInfoShort = "";
     String savedStrLapsRestInfoShort = "";
-    String savedStrLapsActiveInfoLong = "";
-    String savedStrLapsRestInfoLong = "";
+    //String savedStrLapsActiveInfoLong = "";
+    //String savedStrLapsRestInfoLong = "";
 
 
     int numberOfDevFields;
@@ -164,8 +162,6 @@ public class FitFile {
     public List<PauseMesg> pauseRecords = new ArrayList<>(); //Not Garmin SDK
 
     SimpleDateFormat sweDateTime = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-    DateTimeFormatter sweDateTime2 = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
-    ZoneId defaultZoneId = ZoneId.systemDefault();
 
     int maxIxFixEmptyBeginning = 100;
     int maxCadenceValue = 74;
