@@ -6,11 +6,9 @@ import java.util.Scanner;
 
 import se.peho.fittools.core.Conf;
 import se.peho.fittools.core.FitDateTime;
-import se.peho.fittools.core.FitFile;
+import se.peho.fittools.core.FitFileAllMesg;
 import se.peho.fittools.core.GeoUtils;
 import se.peho.fittools.core.PehoUtils;
-import se.peho.fittools.core.SportProfileFitFile;
-import se.peho.fittools.core.TextLapFile;
  
 public class Main {
 
@@ -20,8 +18,6 @@ public class Main {
         
         
         //int conf.Integer.parseInt( = 1; // 1 = winter time in swe, used for string conv to filename
-        boolean hasC2Fit = false;
-        boolean hasManualLapsTxt = false;
         boolean encodeWorkoutRecords = true;
         String outputFilePath = "";
         
@@ -36,36 +32,13 @@ public class Main {
         // START
         // ================================
 
-        if (conf.getCommand().toLowerCase().equals("sportprofile")) {
-            SportProfileFitFile sportsFile = new SportProfileFitFile();
-
-            sportsFile.readFitFileExtra(conf.getFilePathPrefix() + conf.getExtraFilename());
-
-            sportsFile.mesgSave();
-            sportsFile.readFitFile(conf.getInputFilePath());
-            sportsFile.mesgInsert();
-            sportsFile.mesgPrinter();
-            sportsFile.encodeNewFit(conf.getFilePathPrefix() + "SettingsNew.fit");
-
-            System.exit(0);
-        }
-
-        FitFile watchFitFile = new FitFile(conf.getC2SyncSecondsC2File(), conf.getC2SyncSecondsLapDistCalc());
-
-        if (conf.getCommand().toLowerCase().equals("fixpauses")) {
-            watchFitFile.allMesgFlag = true;
-        }
+        FitFileAllMesg watchFitFile = new FitFileAllMesg();
 
         // READING FIT FILE
         watchFitFile.readFitFile (conf.getInputFilePath());
 
         // Changes STARTTIME
         watchFitFile.changeStartTime(conf.getTimeOffsetSec());
-        
-        // Fix WKT STEPS if WKT COMMAND
-        if (conf.getCommand().toLowerCase().equals("wkt")) {
-            watchFitFile.wktAddSteps(conf.getStartWithWktStep(), conf.getNewWktName());
-        }
         
         watchFitFile.createFileSummary();
         watchFitFile.printFileIdInfo();
@@ -343,134 +316,12 @@ public class Main {
                             } //switch
                         }
                     }
-
-
-                    }
+                }
                 // d used as parameter to print method
                 // f used as parameter to print method
-                            } // listEntryNo > 0
+            } // listEntryNo > 0
             
 
-        // Analyze and Merge WORKOUT FIT Files
-        } else {
-            
-            // ================================
-            // ELLIPTICAL
-            // ================================
-            if (watchFitFile.isEllipticalFile()) {
-                System.out.println("======== isElliptical YES ==========");
-                if (conf.getExtraFilename().equals("")) {
-                    conf.setExtraFilename("laps.txt");
-                }
-                conf.setExtraFilename(conf.getFilePathPrefix() + conf.getExtraFilename());
-
-                hasManualLapsTxt = watchFitFile.hasManualLapsFile(conf.getExtraFilename());
-                if (hasManualLapsTxt) {
-                    System.out.println("======== HAS MANUAL FILE ==========");
-                    TextLapFile manualLapsFile = new TextLapFile ();
-
-                    watchFitFile.initLapExtraRecords();
-                    manualLapsFile.parseTextLapFile(conf.getExtraFilename());
-                    watchFitFile.fixEmptyBeginningElliptical();
-
-                    //manualLapsFile.printToConsole ();
-
-                    if (manualLapsFile.isNotNumberOfLapsEqual(watchFitFile)) {
-                        System.exit(0);
-                    }
-
-                    //manualLapsFile.mergeLapDataInFitFile(watchFitFile);
-                    watchFitFile.mergeLapDataFromTextFile(manualLapsFile);
-                    watchFitFile.calcLapDataFromSecRecordsElliptical();
-                    watchFitFile.setNewSportElliptical();
-                }
-                else {
-                    System.out.println("======== ELLIPTICAL, BUT NO manualLapsFile ==========");
-                    System.exit(0);
-                }
-            }
-
-            // ================================
-            // SKIERG
-            // ================================
-            else if (watchFitFile.isSkiErgFile()) {
-                System.out.println("======== isSkiErgFile YES ==========");
-                if (conf.getExtraFilename().equals("")) {
-                    conf.setExtraFilename("c2.fit");
-                }
-                conf.setExtraFilename(conf.getFilePathPrefix() + conf.getExtraFilename());
-                conf.setExtraFilename(PehoUtils.checkFile(conf.getExtraFilename()));
-                hasC2Fit = watchFitFile.hasC2FitFile(conf.getExtraFilename());
-                if (hasC2Fit) {
-                    watchFitFile.initLapExtraRecords();
-
-                    System.out.println("======== HAS C2 FITFILE ==========");
-                    FitFile c2FitFile = new FitFile ();
-
-                    c2FitFile.readFitFile (conf.getExtraFilename());
-                    //c2FitFile.changeStartTime(conf.timeOffsetSec);
-                    c2FitFile.createFileSummary();
-                    //c2FitFile.printLapRecords0();
-                    //c2FitFile.printSecRecords0();
-
-                    //watchFitFile.addDevFieldDescr();
-
-                    watchFitFile.mergeC2CiqAndFitData(c2FitFile, conf.getC2FitFileDistanceStartCorrection());
-                    //watchFitFile.printSecRecords();
-
-                    if (!conf.getUseManualC2SyncSeconds().toLowerCase().equals("yes")) {
-                        watchFitFile.SyncDataInTimeFromSkiErg(conf.getUseManualC2SyncSeconds());
-                    }
-                    
-                    watchFitFile.calcLapDataFromSecRecordsSkiErg();
-                    watchFitFile.setNewSportSkiErg();
-                    //watchFitFile.changeDeveloper(watchFitFile);
-                    watchFitFile.removeDevFieldDescr();
-                    
-                    //watchFitFile.addDeveloperfieldsSkiErg();;
-                }
-            }
-
-            // ================================
-            // TREADMILL
-            // ================================
-            else if (watchFitFile.isTreadmillFile()) {
-                System.out.println("======== isTreadmillFile YES ==========");
-                if (conf.getExtraFilename().equals("")) {
-                    conf.setExtraFilename("laps.txt");
-                }
-                conf.setExtraFilename(conf.getFilePathPrefix() + conf.getExtraFilename());
-
-                hasManualLapsTxt = watchFitFile.hasManualLapsFile(conf.getExtraFilename());
-                if (hasManualLapsTxt) {
-                    System.out.println("======== HAS MANUAL FILE ==========");
-                    TextLapFile manualLapsFile = new TextLapFile ();
-
-                    watchFitFile.initLapExtraRecords();
-                    manualLapsFile.parseTextLapFile(conf.getExtraFilename());
-                    watchFitFile.fixEmptyBeginningTreadmill();
-
-                    //manualLapsFile.printToConsole ();
-
-                    if (manualLapsFile.isNotNumberOfLapsEqual(watchFitFile)) {
-                        System.exit(0);
-                    }
-
-                    //manualLapsFile.mergeLapDataInFitFile(watchFitFile);
-                    watchFitFile.mergeLapDataFromTextFile(manualLapsFile);
-                    watchFitFile.calcLapDataFromSecRecordsElliptical();
-                    // NO NEW SportProfile watchFitFile.setNewSportElliptical();
-                }
-                else {
-                    System.out.println("======== TREADMILL, BUT NO manualLapsFile ==========");
-                    System.exit(0);
-                }
-            }
-            else {
-                System.out.println("======== NO MATCHING SPORT PROFILE ==========");
-                System.exit(0);
-            }
-            
             // ================================
             // END
             // ================================
@@ -489,14 +340,6 @@ public class Main {
         
         PehoUtils.renameFile(conf.getInputFilePath(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-watch.fit");
         
-        if (hasC2Fit) {
-            PehoUtils.renameFile(conf.getExtraFilename(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-c2.fit");
-        }
-
-        if (hasManualLapsTxt) {
-            PehoUtils.renameFile(conf.getExtraFilename(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-manualLaps.txt");
-        }
-
         watchFitFile.createFileSummary();
         //watchFitFile.printLapRecords();
         //watchFitFile.printSecRecords();

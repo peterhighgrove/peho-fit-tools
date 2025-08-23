@@ -15,6 +15,7 @@ public class PehoUtils {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private static final String[] SEARCH_LOCATIONS = {
         "./conf.txt",                          // current directory
+        System.getProperty("user.home") + "/Downloads/conf.txt", // home dir
         System.getProperty("user.home") + "/.myapp/conf.txt", // home dir
         "/etc/myapp/conf.txt"                  // system-wide (Linux/Mac)
         // On Windows you could also add System.getenv("APPDATA") + "\\MyApp\\conf.txt"
