@@ -41,17 +41,18 @@ public class Main {
         watchFitFile.changeStartTime(conf.getTimeOffsetSec());
         
         watchFitFile.createFileSummary();
-        watchFitFile.printFileIdInfo2();
-        watchFitFile.printDeviceInfo2();
-        //watchFitFile.printWktInfo();
-        //watchFitFile.printWktSessionInfo();
-        //watchFitFile.printWktStepInfo();
-        //watchFitFile.printSessionInfo();
-        //watchFitFile.printDevFieldDescr();
-        //watchFitFile.printDevDataId();
-        //watchFitFile.printFieldDescr();
-        //watchFitFile.printCourse();
-        //watchFitFile.printLapRecords0();
+        watchFitFile.printFileIdInfo();
+        watchFitFile.printDeviceInfo();
+        watchFitFile.printWktInfo();
+        watchFitFile.printWktSessionInfo();
+        watchFitFile.printWktStepInfo();
+        watchFitFile.printSessionInfo();
+        watchFitFile.printDevDataId();
+        watchFitFile.printFieldDescr();
+        watchFitFile.printCourse();
+        watchFitFile.printLapRecords0();
+        watchFitFile.printLapAllSummary();
+        watchFitFile.printLapLongSummary();
         //watchFitFile.printSecRecords0();
 
         // Fix PAUSES MODE
@@ -341,6 +342,8 @@ public class Main {
         PehoUtils.renameFile(conf.getInputFilePath(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-watch.fit");
         
         watchFitFile.createFileSummary();
+        watchFitFile.printSessionInfo();
+
         //watchFitFile.printLapRecords();
         //watchFitFile.printSecRecords();
         //watchFitFile.printLapRecords0();
@@ -348,7 +351,6 @@ public class Main {
         //watchFitFile.printLapLongSummery();
         //watchFitFile.printWriteLapSummery(conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (int)(conf.getTimeOffsetSec()/60) + "min-laps.txt");
         //watchFitFile.printCourse();
-        //watchFitFile.printDevFieldDescr();
         //watchFitFile.printDevDataId();
         //watchFitFile.printFieldDescr();
     }
