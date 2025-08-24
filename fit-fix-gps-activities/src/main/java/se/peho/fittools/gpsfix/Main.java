@@ -58,8 +58,6 @@ public class Main {
         // Fix PAUSES MODE
         if (conf.getCommand().toLowerCase().equals("fixpauses")) {
             //watchFitFile.wktAddSteps(conf.startWithWktStep, conf.newWktName);
-            watchFitFile.initLapExtraRecords();
-
             String listMode = "p"; // p=pause, g=gap, s=stopped -mode
             int listEntryNoToChange = 1;
             Scanner userInputScanner = new Scanner (System.in);

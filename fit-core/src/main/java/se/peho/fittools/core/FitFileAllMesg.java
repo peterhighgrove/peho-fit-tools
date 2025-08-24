@@ -127,37 +127,37 @@ public class FitFileAllMesg {
     List<Mesg> eventMesg = new ArrayList<>();
     List<Mesg> recordMesg = new ArrayList<>();
 
-    List<FileIdMesg> fileIdRecords = new ArrayList<>();
-    List<FileCreatorMesg> fileCreatorRecords = new ArrayList<>();
-    List<ActivityMesg> activityRecords = new ArrayList<>();
-    List<DeviceInfoMesg> deviceInfoRecords = new ArrayList<>();
-    List<UserProfileMesg> userProfileRecords = new ArrayList<>();
-    List<MaxMetDataMesg> maxMetDataRecords = new ArrayList<>();
-    List<MetZoneMesg> metZoneRecords = new ArrayList<>();
-    List<GoalMesg> goalRecords = new ArrayList<>();
-    List<WorkoutMesg> wktRecords = new ArrayList<>();
-    List<WorkoutSessionMesg> wktSessionRecords = new ArrayList<>();
-    List<ZonesTargetMesg> zonesTargetRecords = new ArrayList<>();
-    List<WorkoutStepMesg> wktStepRecords = new ArrayList<>();
-    List<EventMesg> eventRecords = new ArrayList<>();
-    List<CourseMesg> courseRecords = new ArrayList<>();
-    List<DeveloperDataIdMesg> devDataIdRecords = new ArrayList<>();
-    List<DeveloperFieldDescription> devFieldDescrRecords = new ArrayList<>();
-    List<DeveloperFieldDefinition> devFieldDefRecords = new ArrayList<>();
-    List<FieldDescriptionMesg> fieldDescrRecords = new ArrayList<>();
-    List<SessionMesg> sessionRecords = new ArrayList<>();
-    List<LapMesg> lapRecords = new ArrayList<>();
-    List<RecordMesg> secRecords = new ArrayList<>();
-    List<SplitMesg> splitRecords = new ArrayList<>();
-    List<SplitSummaryMesg> splitSumRecords = new ArrayList<>();
-    List<SpeedZoneMesg> speedZoneRecords = new ArrayList<>();
-    List<CadenceZoneMesg> cadZoneRecords = new ArrayList<>();
-    List<TimeInZoneMesg> timeInZoneRecords = new ArrayList<>();
-    List<HrZoneMesg> hrZoneRecords = new ArrayList<>();
-    List<PowerZoneMesg> powerZoneRecords = new ArrayList<>();
+    // List<FileIdMesg> fileIdRecords = new ArrayList<>();
+    // List<FileCreatorMesg> fileCreatorRecords = new ArrayList<>();
+    // List<ActivityMesg> activityRecords = new ArrayList<>();
+    // List<DeviceInfoMesg> deviceInfoRecords = new ArrayList<>();
+    // List<UserProfileMesg> userProfileRecords = new ArrayList<>();
+    // List<MaxMetDataMesg> maxMetDataRecords = new ArrayList<>();
+    // List<MetZoneMesg> metZoneRecords = new ArrayList<>();
+    // List<GoalMesg> goalRecords = new ArrayList<>();
+    // List<WorkoutMesg> wktRecords = new ArrayList<>();
+    // List<WorkoutSessionMesg> wktSessionRecords = new ArrayList<>();
+    // List<ZonesTargetMesg> zonesTargetRecords = new ArrayList<>();
+    // List<WorkoutStepMesg> wktStepRecords = new ArrayList<>();
+    // List<EventMesg> eventRecords = new ArrayList<>();
+    // List<CourseMesg> courseRecords = new ArrayList<>();
+    // List<DeveloperDataIdMesg> devDataIdRecords = new ArrayList<>();
+    // List<DeveloperFieldDescription> devFieldDescrRecords = new ArrayList<>();
+    // List<DeveloperFieldDefinition> devFieldDefRecords = new ArrayList<>();
+    // List<FieldDescriptionMesg> fieldDescrRecords = new ArrayList<>();
+    // List<SessionMesg> sessionRecords = new ArrayList<>();
+    // List<LapMesg> lapRecords = new ArrayList<>();
+    // List<RecordMesg> secRecords = new ArrayList<>();
+    // List<SplitMesg> splitRecords = new ArrayList<>();
+    // List<SplitSummaryMesg> splitSumRecords = new ArrayList<>();
+    // List<SpeedZoneMesg> speedZoneRecords = new ArrayList<>();
+    // List<CadenceZoneMesg> cadZoneRecords = new ArrayList<>();
+    // List<TimeInZoneMesg> timeInZoneRecords = new ArrayList<>();
+    // List<HrZoneMesg> hrZoneRecords = new ArrayList<>();
+    // List<PowerZoneMesg> powerZoneRecords = new ArrayList<>();
 
-    List<LapExtraMesg> lapExtraRecords = new ArrayList<>(); //Not Garmin SDK
-    List<RecordExtraMesg> secExtraRecords = new ArrayList<>(); //Not Garmin SDK
+    // List<LapExtraMesg> lapExtraRecords = new ArrayList<>(); //Not Garmin SDK
+    // List<RecordExtraMesg> secExtraRecords = new ArrayList<>(); //Not Garmin SDK
     public List<GapMesg> gapRecords = new ArrayList<>(); //Not Garmin SDK
     public List<PauseMesg> pauseRecords = new ArrayList<>(); //Not Garmin SDK
 
@@ -1284,7 +1284,7 @@ public class FitFileAllMesg {
         sessionMesg.get(0).setFieldValue(SES_ESPEED, (avgSpeed));
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void initLapExtraRecords() {
+/*     public void initLapExtraRecords() {
 
         int hrStart = 0;
         int hrEnd = 0;
@@ -1304,8 +1304,8 @@ public class FitFileAllMesg {
             lapExtraRecords.add(new LapExtraMesg(hrStart, hrEnd, hrMin, timeEnd, recordIxStart, recordIxEnd, lapNo, stepLen, level, avgStrokeLen, maxStrokeLen, avgDragFactor, maxDragFactor));
         }
     }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void wktAddSteps(String wktSteps, String wktName) {
+ */    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+/*     public void wktAddSteps(String wktSteps, String wktName) {
 
         System.out.println("---------> WKT COMMAND MADE!");
 
@@ -1403,7 +1403,7 @@ public class FitFileAllMesg {
         }
 
     }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ */    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String getFilenameAndSetNewSportProfileName(String suffix, String outputFilenameBase) {
         
         String newProfileName = "";
@@ -1424,12 +1424,12 @@ public class FitFileAllMesg {
         } else {
             newProfileName = suffix;
         }
-        if (!wktRecords.isEmpty()) {
+/*         if (!wktRecords.isEmpty()) {
             if (wktRecords.get(0).getWktName() != null) {
                 newProfileName = wktRecords.get(0).getWktName();
             }
         }
-
+ */
         newProfileName = newProfileName + " " + PehoUtils.m2km1(totalDistance) + "km";
         sessionMesg.get(0).setFieldValue(SES_PROFILE, newProfileName);
 
@@ -1442,134 +1442,6 @@ public class FitFileAllMesg {
         System.out.println("----> New FilenameBase: " + outputFilenameBase);
         return outputFilenameBase;
     }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void addDevFieldDescr() {
-        byte[] appId = new byte[]{
-            0x1, 0x1, 0x2, 0x3,
-            0x5, 0x8, 0xD, 0x15,
-            0x22, 0x37, 0x59, (byte) 0x90,
-            (byte) 0xE9, 0x79, 0x62, (byte) 0xDB
-        };
-
-        DeveloperDataIdMesg developerIdMesg = new DeveloperDataIdMesg();
-        for (int i = 0; i < appId.length; i++) {
-            developerIdMesg.setApplicationId(i, appId[i]);
-        }
-        developerIdMesg.setDeveloperDataIndex((short)2);
-        developerIdMesg.setApplicationVersion((long)100);
-        devDataIdRecords.add(developerIdMesg);
-
-        FieldDescriptionMesg activeTimeFieldDescriptionMesg = new FieldDescriptionMesg();
-        activeTimeFieldDescriptionMesg.setDeveloperDataIndex((short)2);
-        activeTimeFieldDescriptionMesg.setFieldDefinitionNumber((short)0);
-        activeTimeFieldDescriptionMesg.setFitBaseTypeId((short)Fit.BASE_TYPE_UINT8);
-        activeTimeFieldDescriptionMesg.setFieldName(0, "ActiveTime");
-        activeTimeFieldDescriptionMesg.setUnits(0, "min");
-        fieldDescrRecords.add(activeTimeFieldDescriptionMesg);
-
-        DeveloperField activeTimeField = new DeveloperField(activeTimeFieldDescriptionMesg, developerIdMesg);
-
-    }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void renameDevFieldName() {
-        for (FieldDescriptionMesg record : fieldDescrRecords) {
-            if (devFieldNamesToUpdate.contains(record.getFieldName())) {
-                record.setFieldName(0, "ActiveTime");
-            }
-        }
-    }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void removeDevFieldDescr() {
-        System.out.println("-REMOVE DEV FIELDS --------------------------------------");
-        numberOfDevFields = devFieldDescrRecords.size();
-        System.out.println("--- No of Dev Fields: " + numberOfDevFields);
-
-        short newIx = 0;
-        for (int Ix = 0; Ix <= numberOfDevFields-1; Ix++) {
-            //System.out.println("-LOOP1 Ix: "+Ix+" of "+devFieldDescrRecords.get(Ix).getApplicationId().toString());
-            if (devFieldDescrRecords.get(Ix).getApplicationId().toString().equals(devAppToRemove)) {
-                //System.out.println("--LOOP2 Ix: "+Ix+" of "+devFieldDescrRecords.get(Ix).getApplicationId().toString());
-                if (devFieldsToRemove.contains((int) fieldDescrRecords.get(Ix).getFieldDefinitionNumber())) {
-                    //System.out.println("---LOOP3 Ix: "+Ix+" of "+numberOfDevFields);
-                    fieldDescrRecords.remove(Ix);
-                    devFieldDescrRecords.remove(Ix);
-                    Ix--;
-                    numberOfDevFields--;
-                } else {
-                    //fieldDescrRecords.get(Ix).setFieldDefinitionNumber(newIx);
-                    newIx++;
-                }
-            }
-        }
-        numberOfDevFields = devFieldDescrRecords.size();
-        System.out.println("--- No of Dev Fields: " + numberOfDevFields);
-        System.out.println("--------------------------------------------------");
-    }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void addDeveloperfields() {
-
-        // ITS NOT possible to get dev fields to display in GC if not defined with a CIQ APP
-
-        int recordIx = 0;
-        int lapIx = 0;
-        int lapNo = 1;
-        Long currentTimeStamp = 0l;
-        Long nextLapStartTime = 0l;
-        Float currentLapTime = 0f;
-        String currentLapIntensity = "";
-
-
-        byte[] appId = new byte[]{
-            0x2, 0x1, 0x2, 0x3,
-            0x5, 0x8, 0xD, 0x15,
-            0x22, 0x37, 0x59, (byte) 0x90,
-            (byte) 0xE9, 0x79, 0x62, (byte) 0xDB
-        };
-
-        DeveloperDataIdMesg developerIdMesg = new DeveloperDataIdMesg();
-        for (int i = 0; i < appId.length; i++) {
-            developerIdMesg.setApplicationId(i, appId[i]);
-        }
-        developerIdMesg.setDeveloperDataIndex((short)2);
-        developerIdMesg.setApplicationVersion((long)100);
-        devDataIdRecords.add(developerIdMesg);
-
-        FieldDescriptionMesg activeTimeFieldDescriptionMesg = new FieldDescriptionMesg();
-        activeTimeFieldDescriptionMesg.setDeveloperDataIndex((short)2);
-        activeTimeFieldDescriptionMesg.setFieldDefinitionNumber((short)3);
-        activeTimeFieldDescriptionMesg.setFitBaseTypeId((short)136);
-        activeTimeFieldDescriptionMesg.setFieldName(0, "ActiveTime");
-        activeTimeFieldDescriptionMesg.setUnits(0, "min");
-        fieldDescrRecords.add(activeTimeFieldDescriptionMesg);
-        
-        for (RecordMesg record : secRecords) {
-
-            currentLapTime = lapRecords.get(secExtraRecords.get(recordIx).lapNo).getTotalTimerTime(); // in sec
-            currentLapIntensity = Intensity.getStringFromValue(lapRecords.get(secExtraRecords.get(recordIx).lapNo).getIntensity());
-
-
-            // ADD NEW DEV FIELD
-            DeveloperField activeTimeField = new DeveloperField(activeTimeFieldDescriptionMesg, developerIdMesg);
-            record.addDeveloperField(activeTimeField);
-            if (currentLapIntensity.equals("ACTIVE")) {
-                activeTimeField.setValue(currentLapTime/60);
-            } else {
-                activeTimeField.setValue(0f);
-            }
-            recordIx++;
-        }
-    }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void changeDeveloper() {
-        int recordIx = 0;
-        for (FieldDescriptionMesg record : fieldDescrRecords){
-
-            if (record.getDeveloperDataIndex() == 1) {
-                record.setDeveloperDataIndex((short) (0));
-            }
-            recordIx++;
-        }
-        }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public Boolean isSkiErgFile() {
         //System.out.println("======== isSkiErgFile TEST ==========");
@@ -2242,9 +2114,9 @@ public class FitFileAllMesg {
                 System.out.print("Lap:" + lapNo);
 
                 // Level from extra records
-                if (lapExtraRecords.get(i).level != null) {
-                    System.out.print(" lv" + lapExtraRecords.get(i).level);
-                }
+                // if (lapExtraRecords.get(i).level != null) {
+                //     System.out.print(" lv" + lapExtraRecords.get(i).level);
+                // }
 
                 // Start Time
                 Long startTime = mesg.getFieldLongValue(LAP_STIME);
