@@ -20,5 +20,8 @@ public class StartCommand implements Command {
         Integer secs = InputHelper.askForNumber("Enter seconds to add", sc);
         if (secs == null) return;
         watchFitFile.addRecordAtStart(secs.longValue(), coords);
+        
+        watchFitFile.createGapList();
+        watchFitFile.printGapList("",0);
     }
 }

@@ -6,12 +6,12 @@ import se.peho.fittools.core.Command;
 import se.peho.fittools.core.FitFile;
 import se.peho.fittools.core.InputHelper;
 
-public class ModifyGapCommand implements Command {
+public class AddGpsGapCommand implements Command {
     @Override
-    public String getKey() { return "modgap"; }
+    public String getKey() { return "a"; }
 
     @Override
-    public String getDescription() { return "Modify a gap"; }
+    public String getDescription() { return "Add GPS points in gap"; }
 
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
@@ -19,6 +19,10 @@ public class ModifyGapCommand implements Command {
         if (gapNo == null) return;
         double[] coords = InputHelper.askForCoords("Enter GPS point", sc);
         if (coords == null) return;
+        watchFitFile.createGapList();
         watchFitFile.addRecordInGap(gapNo, coords);
+
+        watchFitFile.createGapList();
+        watchFitFile.printGapList("",0);
     }
 }

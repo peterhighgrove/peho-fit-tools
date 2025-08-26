@@ -4,10 +4,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import se.peho.fittools.core.commands.AddGpsGapCommand;
 import se.peho.fittools.core.commands.ChangeStartTimeCommand;
 import se.peho.fittools.core.commands.FillGapsCommand;
 import se.peho.fittools.core.commands.IncreasePauseCommand;
-import se.peho.fittools.core.commands.ModifyGapCommand;
 import se.peho.fittools.core.commands.ShortenPauseCommand;
 import se.peho.fittools.core.commands.ShowDetailedFileInfoCommand;
 import se.peho.fittools.core.commands.ShowGapListCommand;
@@ -37,7 +37,7 @@ public class MenuRunner {
             new ShowGapListFilteredCommand(),
             new ShortenPauseCommand(),
             new IncreasePauseCommand(),
-            new ModifyGapCommand(),
+            new AddGpsGapCommand(),
             new FillGapsCommand(),
             new StartCommand(),
             new ShowDetailedFileInfoCommand(),
@@ -59,7 +59,7 @@ public class MenuRunner {
             if (choice.equals("x")) {
                 System.out.println("Nothing done. Exiting.");
                 break;
-            } else if (choice.equals("s")) {
+            } else if (choice.equals("save")) {
                 String doublecheckCommand = InputHelper.askForString("Have you changed starttime (Enter/anything = YES) or", sc);
                 if (doublecheckCommand != null) {
                     watchFitFile.saveChanges(conf);
@@ -80,7 +80,7 @@ public class MenuRunner {
         for (Command cmd : commands.values()) {
             System.out.println("(" + cmd.getKey() + ") " + cmd.getDescription());
         }
-        System.out.println("(s) Save & exit");
+        System.out.println("(save) Save & exit");
         System.out.println("(x) Stop without saving");
         System.out.print("Choose action: ");
     }

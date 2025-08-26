@@ -8,7 +8,7 @@ import se.peho.fittools.core.InputHelper;
 
 public class ShortenPauseCommand implements Command {
     @Override
-    public String getKey() { return "short"; }
+    public String getKey() { return "s"; }
 
     @Override
     public String getDescription() { return "Shorten a pause"; }
@@ -19,6 +19,11 @@ public class ShortenPauseCommand implements Command {
         if (pauseNo == null) return;
         Integer newPauseLen = InputHelper.askForNumber("Enter new pause length", sc);
         if (newPauseLen == null) return;
+        watchFitFile.createPauseList();
         watchFitFile.shortenPause(pauseNo, newPauseLen.longValue());
+
+        watchFitFile.createPauseList();
+        watchFitFile.createGapList();
+        watchFitFile.printGapList("",0);
     }
 }

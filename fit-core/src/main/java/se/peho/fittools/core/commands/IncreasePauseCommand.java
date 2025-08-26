@@ -8,7 +8,7 @@ import se.peho.fittools.core.InputHelper;
 
 public class IncreasePauseCommand implements Command {
     @Override
-    public String getKey() { return "inc"; }
+    public String getKey() { return "i"; }
 
     @Override
     public String getDescription() { return "Increase a pause"; }
@@ -19,6 +19,10 @@ public class IncreasePauseCommand implements Command {
         if (pauseNo == null) return;
         Integer secs = InputHelper.askForNumber("Enter time (secs) to add", sc);
         if (secs == null) return;
+        watchFitFile.createPauseList();
         watchFitFile.increasePause(pauseNo, secs.longValue());
+
+        watchFitFile.createPauseList();
+        watchFitFile.printPauseList("", 0);
     }
 }
