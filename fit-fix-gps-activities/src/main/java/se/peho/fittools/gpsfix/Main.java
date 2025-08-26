@@ -50,6 +50,7 @@ public class Main {
         watchFitFile.printDevDataId();
         watchFitFile.printFieldDescr();
         watchFitFile.printCourse();
+        watchFitFile.printSplitSummary();
         watchFitFile.printLapRecords0();
         watchFitFile.printLapAllSummary();
         watchFitFile.printLapLongSummary();
