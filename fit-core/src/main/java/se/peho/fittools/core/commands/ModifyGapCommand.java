@@ -8,7 +8,7 @@ import se.peho.fittools.core.InputHelper;
 
 public class ModifyGapCommand implements Command {
     @Override
-    public String getKey() { return "g"; }
+    public String getKey() { return "modgap"; }
 
     @Override
     public String getDescription() { return "Modify a gap"; }

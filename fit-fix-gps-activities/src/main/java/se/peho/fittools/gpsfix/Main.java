@@ -2,13 +2,10 @@ package se.peho.fittools.gpsfix;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Scanner;
 
 import se.peho.fittools.core.Conf;
-import se.peho.fittools.core.FitDateTime;
 import se.peho.fittools.core.FitFile;
 import se.peho.fittools.core.MenuRunner;
-import se.peho.fittools.core.PehoUtils;
  
 public class Main {
 
@@ -18,16 +15,12 @@ public class Main {
         
         
         //int conf.Integer.parseInt( = 1; // 1 = winter time in swe, used for string conv to filename
-        boolean encodeWorkoutRecords = true;
-        String outputFilePath = "";
-        
         // Reading CONF FILE
         
         System.out.println("ArgsLen: " + args.length);
 
         Conf conf = new Conf(args);
         
-
         // ================================
         // START
         // ================================
@@ -37,41 +30,9 @@ public class Main {
         // READING FIT FILE
         watchFitFile.readFitFile (conf.getInputFilePath());
 
-        // Changes STARTTIME
-        watchFitFile.changeStartTime(conf.getTimeOffsetSec());
-        
-        watchFitFile.createFileSummary();
-        watchFitFile.printFileIdInfo();
-        watchFitFile.printDeviceInfo();
-        watchFitFile.printWktInfo();
-        watchFitFile.printWktSessionInfo();
-        watchFitFile.printWktStepInfo();
-        watchFitFile.printSessionInfo();
-        watchFitFile.printDevDataId();
-        watchFitFile.printFieldDescr();
-        watchFitFile.printCourse();
-        watchFitFile.printSplitSummary();
-        watchFitFile.printLapRecords0();
-        watchFitFile.printLapAllSummary();
-        watchFitFile.printLapLongSummary();
-        //watchFitFile.printSecRecords0();
-
-        // Fix PAUSES MODE
-        if (conf.getCommand().toLowerCase().equals("fixpauses")) {
-
-
-
-            //watchFitFile.wktAddSteps(conf.startWithWktStep, conf.newWktName);
-            String listMode = "p"; // p=pause, g=gap, s=stopped -mode
-            int listEntryNoToChange = 1;
-            Scanner userInputScanner = new Scanner (System.in);
-            String listCommandUserInput = null;
-            String userInputString;
-
-            long newPauseLen = 10l;
-
-            MenuRunner menu = new MenuRunner(watchFitFile);
-            menu.run();
+        // INTERACTIVE MENU
+        MenuRunner menu = new MenuRunner(watchFitFile, conf);
+        menu.run();
 
             /* while (listEntryNoToChange > 0) {
                 switch (listMode) {
@@ -331,33 +292,8 @@ public class Main {
             // ================================
             // END
             // ================================
-        }
+        //}
 
-        //watchFitFile.renameDevFieldName();
-        
-        String orgDateTime = FitDateTime.toString(watchFitFile.activityDateTimeLocalOrg);
-        String newDateTime = FitDateTime.toString(watchFitFile.activityDateTimeLocal);
-
-        String outputFilenameBase = "";
-        outputFilenameBase = watchFitFile.getFilenameAndSetNewSportProfileName(conf.getProfileNameSuffix(), outputFilePath);
-        outputFilePath = conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (int)(conf.getTimeOffsetSec()/60) + "min.fit";
-        
-        watchFitFile.encodeNewFit(outputFilePath, encodeWorkoutRecords);
-        
-        PehoUtils.renameFile(conf.getInputFilePath(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-watch.fit");
-        
-        watchFitFile.createFileSummary();
-        watchFitFile.printSessionInfo();
-
-        //watchFitFile.printLapRecords();
-        //watchFitFile.printSecRecords();
-        //watchFitFile.printLapRecords0();
-        //watchFitFile.printLapAllSummery();
-        //watchFitFile.printLapLongSummery();
-        //watchFitFile.printWriteLapSummery(conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (int)(conf.getTimeOffsetSec()/60) + "min-laps.txt");
-        //watchFitFile.printCourse();
-        //watchFitFile.printDevDataId();
-        //watchFitFile.printFieldDescr();
     }
 
 }

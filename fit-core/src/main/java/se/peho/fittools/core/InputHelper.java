@@ -16,6 +16,19 @@ public class InputHelper {
         }
     }
 
+    public static String askForString(String prompt, Scanner sc) {
+        while (true) {
+            System.out.print(prompt + " (b = back): ");
+            String input = sc.nextLine().trim();
+            if (input.equalsIgnoreCase("b")) return null;
+            try {
+                return input;
+            } catch (Exception e) {
+                System.out.println("Invalid string, try again.");
+            }
+        }
+    }
+
     public static double[] askForCoords(String prompt, Scanner sc) {
         while (true) {
             System.out.print(prompt + " (b = back): ");

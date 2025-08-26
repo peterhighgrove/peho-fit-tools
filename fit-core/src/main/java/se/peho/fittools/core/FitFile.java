@@ -559,44 +559,21 @@ public class FitFile {
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printGapList(String gapCommandInput) {
+    public void printGapList(String gapCommandInput, Integer minDistToShow) {
 
         int hrDiff = 0;
         String hrSign = "";
-        String newMinDistToShowUserInput = null;
-        Long newMinDistToShow = 0l;
 
-        if (gapCommandInput != null && gapCommandInput.equals("f")) {
-            int minDistToShow = 10;
-            Scanner userInput = new Scanner (System.in);
-
-            while (newMinDistToShowUserInput == null) {
-                System.out.print("Enter min distance for gaps to show: ");
-                newMinDistToShowUserInput = userInput.nextLine();
-                System.out.println();
-
-                if (PehoUtils.safeParseInt(newMinDistToShowUserInput) == null) {
-                    System.out.println("Not an integer as answer. Redo!");
-                    System.out.println("-------------------------------");
-                    newMinDistToShowUserInput = null;
-                } else {
-                    System.out.println("   -------------------------------");
-                    System.out.println("   FILTERED LIST with dist higher than " + newMinDistToShowUserInput + " m.");
-                    System.out.println("   -------------------------------");
-                    newMinDistToShow = (long) PehoUtils.safeParseInt(newMinDistToShowUserInput);
-                }
-            }
-        }
-
-        System.out.println("--------------------------------------------------");
+        System.out.println("==================================================");
         System.out.println("GAPS IN FILE");
         System.out.println(" File  between " + FitDateTime.toString(timeFirstRecord,diffMinutesLocalUTC) + " >>>> " + FitDateTime.toString(timeLastRecord,diffMinutesLocalUTC));
         System.out.println(String.format(" TotalTime:%1$.0fsec Dist:%2$.0fm", totalTimerTime, totalDistance));
+        System.out.println("--------------------------------------------------");
         //System.out.print(" Event:" + record.getEvent());
         //System.out.print(" No:" + record.getEvent().getValue());
 
         for (GapMesg record : gapRecords) {
-            if (record.distGap >= newMinDistToShow) {
+            if (record.distGap >= minDistToShow) {
                 System.out.print("   Gap (" + record.no + ")");
                 System.out.print(String.format(" %1$dsec %2$.0fm ele%3$.1fm", record.timeGap, record.distGap, record.altGap));
                 hrDiff = recordMesg.get(record.ixStop).getFieldIntegerValue(REC_HR) - recordMesg.get(record.ixStart).getFieldIntegerValue(REC_HR);
@@ -607,7 +584,7 @@ public class FitFile {
 
                 if (gapCommandInput == null) {
                     // Show minimal
-                } else if (gapCommandInput.equals("g")) {
+                } else if (gapCommandInput.equals("d")) {
                     System.out.print(String.format("  @dist:%1$.0fm", record.distStart));
                     System.out.print(" " + FitDateTime.toString(new DateTime(record.timeStart),diffMinutesLocalUTC));
                     System.out.print(" ele:" + (record.altStart) + "m");
@@ -732,39 +709,16 @@ public class FitFile {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printPauseList(String pauseCommandInput) {
+    public void printPauseList(String pauseCommandInput, Integer minDistToShow) {
 
         int hrDiff = 0;
         String hrSign = "";
-        String newMinDistToShowUserInput = null;
-        Long newMinDistToShow = 0l;
 
-        if (pauseCommandInput != null && pauseCommandInput.equals("f")) {
-            int minDistToShow = 10;
-            Scanner userInput = new Scanner (System.in);
-
-            while (newMinDistToShowUserInput == null) {
-                System.out.print("Enter min distance for pauses to show: ");
-                newMinDistToShowUserInput = userInput.nextLine();
-                System.out.println();
-
-                if (PehoUtils.safeParseInt(newMinDistToShowUserInput) == null)  {
-                    System.out.println("Not an integer as answer. Redo!");
-                    System.out.println("-------------------------------");
-                    newMinDistToShowUserInput = null;
-                } else {
-                    System.out.println("   -------------------------------");
-                    System.out.println("   FILTERED LIST with dist higher than " + newMinDistToShowUserInput + " m.");
-                    System.out.println("   -------------------------------");
-                    newMinDistToShow = (long) PehoUtils.safeParseInt(newMinDistToShowUserInput);
-                }
-            }
-        }
-
-        System.out.println("--------------------------------------------------");
+        System.out.println("==================================================");
         System.out.println("PAUSES IN FILE");
         System.out.println(" File  between " + FitDateTime.toString(timeFirstRecord,diffMinutesLocalUTC) + " >>>> " + FitDateTime.toString(timeLastRecord,diffMinutesLocalUTC));
         System.out.println(String.format(" TotalTime:%1$.0fsec Dist:%2$.0fm", totalTimerTime, totalDistance));
+        System.out.println("--------------------------------------------------");
         //System.out.print(" Event:" + record.getEvent());
         //System.out.print(" No:" + record.getEvent().getValue());
 
@@ -772,7 +726,7 @@ public class FitFile {
             if ((record.ixStop - record.ixStart) > 1) {
                 System.out.println("==> WARNING - Data Records in pause! Pause no: " + record.no);
             }
-            if (record.distPause >= newMinDistToShow) {
+            if (record.distPause >= minDistToShow) {
                 System.out.print("   Pause (" + record.no + ")");
                 System.out.print(String.format(" %1$dsec %2$.0fm ele%3$.1fm", record.timePause, record.distPause, record.altPause));
                 hrDiff = recordMesg.get(record.ixStop).getFieldIntegerValue(REC_HR) - recordMesg.get(record.ixStart).getFieldIntegerValue(REC_HR);
@@ -2589,6 +2543,63 @@ public class FitFile {
             lapNo++;
         }
     }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void printDetailedFileInfo() {
+        System.out.println("==================================================");
+        System.out.println("Detailed file info:");
+        createFileSummary();
+        printFileIdInfo();
+        printDeviceInfo();
+        printWktInfo();
+        printWktSessionInfo();
+        printWktStepInfo();
+        printSessionInfo();
+        printDevDataId();
+        printFieldDescr();
+        printCourse();
+        printSplitSummary();
+        printLapRecords0();
+        printLapAllSummary();
+        printLapLongSummary();
+        //printSecRecords0();
+        printSessionInfo();
+
+        //printLapRecords();
+        //printSecRecords();
+        //printLapRecords0();
+        //printLapAllSummery();
+        //printLapLongSummery();
+        //printWriteLapSummery(conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (int)(conf.getTimeOffsetSec()/60) + "min-laps.txt");
+        //printCourse();
+        //printDevDataId();
+        //printFieldDescr();
+
+        System.out.println("==================================================");
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void saveChanges (Conf conf) {
+
+        boolean encodeWorkoutRecords = true;
+        String outputFilePath = "";
+        
+        //renameDevFieldName();
+        
+        String orgDateTime = FitDateTime.toString(activityDateTimeLocalOrg);
+        String newDateTime = FitDateTime.toString(activityDateTimeLocal);
+
+        String outputFilenameBase = "";
+        outputFilenameBase = getFilenameAndSetNewSportProfileName(conf.getProfileNameSuffix(), outputFilePath);
+        outputFilePath = conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (int)(conf.getTimeOffsetSec()/60) + "min.fit";
+        
+        encodeNewFit(outputFilePath, encodeWorkoutRecords);
+        
+        PehoUtils.renameFile(conf.getInputFilePath(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-watch.fit");
+        
+        createFileSummary();
+
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     /*
     public void printWriteLapSummery (String filename) {
