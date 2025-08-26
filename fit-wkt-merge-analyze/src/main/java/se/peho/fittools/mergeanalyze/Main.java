@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 import se.peho.fittools.core.Conf;
 import se.peho.fittools.core.FitDateTime;
-import se.peho.fittools.core.FitFile;
+import se.peho.fittools.core.FitFilePerMesgType;
 import se.peho.fittools.core.GeoUtils;
 import se.peho.fittools.core.PehoUtils;
 import se.peho.fittools.core.SportProfileFitFile;
@@ -121,7 +121,7 @@ public class Main {
             System.exit(0);
         }
 
-        FitFile watchFitFile = new FitFile(conf.getC2SyncSecondsC2File(), conf.getC2SyncSecondsLapDistCalc());
+        FitFilePerMesgType watchFitFile = new FitFilePerMesgType(conf.getC2SyncSecondsC2File(), conf.getC2SyncSecondsLapDistCalc());
 
         if (conf.getCommand().toLowerCase().equals("fixpauses")) {
             watchFitFile.allMesgFlag = true;
@@ -476,7 +476,7 @@ public class Main {
                     watchFitFile.initLapExtraRecords();
 
                     System.out.println("======== HAS C2 FITFILE ==========");
-                    FitFile c2FitFile = new FitFile ();
+                    FitFilePerMesgType c2FitFile = new FitFilePerMesgType ();
 
                     c2FitFile.readFitFile (conf.getExtraFilename());
                     //c2FitFile.changeStartTime(conf.timeOffsetSec);

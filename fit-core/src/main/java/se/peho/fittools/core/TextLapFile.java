@@ -50,7 +50,7 @@ public class TextLapFile {
         }
         System.out.println("--------------------------------------------------");
     }
-    public boolean isNotNumberOfLapsEqual(FitFile fitFile) {
+    public boolean isNotNumberOfLapsEqual(FitFilePerMesgType fitFile) {
         boolean notEqual = false;
         if (fitFile.numberOfLaps != this.numberOfLaps) {
             System.out.println("No of Laps -- FIT:" + fitFile.numberOfLaps + ", TXT:" + this.numberOfLaps);

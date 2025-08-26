@@ -6,8 +6,8 @@ import java.util.Scanner;
 
 import se.peho.fittools.core.Conf;
 import se.peho.fittools.core.FitDateTime;
-import se.peho.fittools.core.FitFileAllMesg;
-import se.peho.fittools.core.GeoUtils;
+import se.peho.fittools.core.FitFile;
+import se.peho.fittools.core.MenuRunner;
 import se.peho.fittools.core.PehoUtils;
  
 public class Main {
@@ -32,7 +32,7 @@ public class Main {
         // START
         // ================================
 
-        FitFileAllMesg watchFitFile = new FitFileAllMesg();
+        FitFile watchFitFile = new FitFile();
 
         // READING FIT FILE
         watchFitFile.readFitFile (conf.getInputFilePath());
@@ -58,6 +58,9 @@ public class Main {
 
         // Fix PAUSES MODE
         if (conf.getCommand().toLowerCase().equals("fixpauses")) {
+
+
+
             //watchFitFile.wktAddSteps(conf.startWithWktStep, conf.newWktName);
             String listMode = "p"; // p=pause, g=gap, s=stopped -mode
             int listEntryNoToChange = 1;
@@ -67,7 +70,10 @@ public class Main {
 
             long newPauseLen = 10l;
 
-            while (listEntryNoToChange > 0) {
+            MenuRunner menu = new MenuRunner(watchFitFile);
+            menu.run();
+
+            /* while (listEntryNoToChange > 0) {
                 switch (listMode) {
                     case "p" : {
                         // p=pause, g=gap, s=stopped -mode
@@ -320,7 +326,7 @@ public class Main {
                 // d used as parameter to print method
                 // f used as parameter to print method
             } // listEntryNo > 0
-            
+             */
 
             // ================================
             // END
