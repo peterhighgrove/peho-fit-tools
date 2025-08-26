@@ -14,7 +14,6 @@ public class FillGapsCommand implements Command {
 
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
-        watchFitFile.createGapList();
         watchFitFile.fillRecordsInGap();
 
         watchFitFile.createGapList();

@@ -20,7 +20,6 @@ public class ShowGapListFilteredCommand implements Command {
         String detailedListCommand = InputHelper.askForString("Enter d for detailed list", sc);
         if (detailedListCommand == null) return;
 
-        watchFitFile.createGapList();
         watchFitFile.printGapList(detailedListCommand, minGapToShow);
     }
 }

@@ -114,6 +114,7 @@ public class FitFile {
     DateTime timeFirstRecordOrg;   // Original file
     DateTime timeLastRecord;
     int numberOfRecords;
+    int changedStartTimeBySec = 0;
 
     public String savedFileInfoBefore = "";
     public String savedFileInfoAfter = "";
@@ -456,24 +457,28 @@ public class FitFile {
         Long lastRecordTime = recordMesg.get(0).getFieldLongValue(REC_TIME) - 1;
 
         for (Mesg record : recordMesg) {
-            
+            // Float dist = record.getFieldFloatValue(REC_DIST);
+            // if (dist > 7400.0){ 
+            //     System.out.println(dist);
+            // }
+
             // if statment to see if this is a PAUSE
-            if (!inPause && pauseRecords.size() > 0 && (record.getFieldLongValue(REC_TIME) >= pauseRecords.get(pauseIx).timeStart)) {
+            if (!inPause && pauseRecords.size() > 0 && (pauseIx <= pauseRecords.size()-1) && (record.getFieldLongValue(REC_TIME) >= pauseRecords.get(pauseIx).timeStart)) {
                 inPause = true;
 
             // if in PAUSE, see if pause ends
-            } else if (inPause && (record.getFieldLongValue(REC_TIME) >= pauseRecords.get(pauseIx).timeStop)) {
-                if (pauseIx < pauseRecords.size()-1) {
+            } else if (inPause && (pauseIx <= pauseRecords.size()-1) && (record.getFieldLongValue(REC_TIME) >= pauseRecords.get(pauseIx).timeStop)) {
+                // if (pauseIx < pauseRecords.size()-1) {
                     pauseIx += 1;
-                }
+                // }
                 inPause = false;
 
             // if in PAUSE and see records
             } else if (inPause) {
                 System.out.println("WARNING - Records in pause");
 
+            // Check if GAP
             } else if ((!inPause && (record.getFieldLongValue(REC_TIME) - lastRecordTime) > gapThreshold)) {
-                // Check if GAP
 
                 gapCounter += 1;
 
@@ -1651,6 +1656,7 @@ public class FitFile {
         timeFirstRecord = new DateTime (recordMesg.get(0).getFieldLongValue(REC_TIME));
         timeLastRecord = new DateTime (recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
         activityDateTimeLocal = new DateTime(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME));
+        changedStartTimeBySec += changeSeconds;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String createFileSummary() {
@@ -2712,7 +2718,7 @@ public class FitFile {
         saveFileInfoAfter();
 
         outputFilenameBase = getFilenameAndSetNewSportProfileName(conf.getProfileNameSuffix(), outputFilePath);
-        outputFilePath = conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (int)(conf.getTimeOffsetSec()/60) + "min.fit";
+        outputFilePath = conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (changedStartTimeBySec/60) + "min.fit";
         
         encodeNewFit(outputFilePath, encodeWorkoutRecords);
         
@@ -2729,11 +2735,11 @@ public class FitFile {
             e.printStackTrace();
         }
         try {
-            FileWriter myWriter = new FileWriter(conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-logg.txt");
+            FileWriter myWriter = new FileWriter(conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-log.txt");
             myWriter.write(savedFileUpdateLogg);
             myWriter.close();
         } catch (IOException e) {
-            System.out.println("An error occurred saving logg file.");
+            System.out.println("An error occurred saving log file.");
             e.printStackTrace();
         }
         try {

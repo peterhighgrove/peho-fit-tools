@@ -19,7 +19,6 @@ public class ShortenPauseCommand implements Command {
         if (pauseNo == null) return;
         Integer newPauseLen = InputHelper.askForNumber("Enter new pause length", sc);
         if (newPauseLen == null) return;
-        watchFitFile.createPauseList();
         watchFitFile.shortenPause(pauseNo, newPauseLen.longValue());
 
         watchFitFile.createPauseList();

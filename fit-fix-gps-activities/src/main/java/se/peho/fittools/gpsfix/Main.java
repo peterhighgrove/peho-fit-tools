@@ -32,6 +32,8 @@ public class Main {
 
         // SAVE INFO ABOUT FILE BEFORE UPDATIING
         watchFitFile.saveFileInfoBefore();
+        watchFitFile.createPauseList();
+        watchFitFile.createGapList();
 
         // INTERACTIVE MENU
         MenuRunner menu = new MenuRunner(watchFitFile, conf);

@@ -14,7 +14,7 @@ public class ShowPauseListCommand implements Command {
 
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
-        watchFitFile.createPauseList();
+
         watchFitFile.printPauseList("", 0);
     }
 }

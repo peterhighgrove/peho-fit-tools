@@ -20,7 +20,6 @@ public class ShowPauseListFilteredCommand implements Command {
         String detailedListCommand = InputHelper.askForString("Enter d for detailed list", sc);
         if (detailedListCommand == null) return;
 
-        watchFitFile.createPauseList();
         watchFitFile.printPauseList(detailedListCommand, minPauseToShow);
     }
 }

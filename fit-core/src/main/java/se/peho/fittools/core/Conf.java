@@ -12,7 +12,7 @@ public class Conf {
 	String inputFilePath = "aaa.zip";
 	String extraFilename = "";
     String profileNameSuffix = "test";
-	int timeOffsetSec = 180;
+	int timeOffsetSec = 0;
 	String command = "fixPauses";
 	String startWithWktStep = "";
 	String newWktName = "";

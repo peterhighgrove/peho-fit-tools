@@ -14,7 +14,7 @@ public class ShowGapListCommand implements Command {
 
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
-        watchFitFile.createGapList();
+
         watchFitFile.printGapList("",0);
     }
 }

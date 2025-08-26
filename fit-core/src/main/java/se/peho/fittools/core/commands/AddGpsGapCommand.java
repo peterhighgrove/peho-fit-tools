@@ -19,7 +19,6 @@ public class AddGpsGapCommand implements Command {
         if (gapNo == null) return;
         double[] coords = InputHelper.askForCoords("Enter GPS point", sc);
         if (coords == null) return;
-        watchFitFile.createGapList();
         watchFitFile.addRecordInGap(gapNo, coords);
 
         watchFitFile.createGapList();
