@@ -145,12 +145,13 @@ public class FitFile {
     List<Mesg> splitMesg = new ArrayList<>();
     List<Mesg> lapMesg = new ArrayList<>();
     List<Mesg> eventMesg = new ArrayList<>();
+    List<Mesg> eventTimerMesg = new ArrayList<>();
     List<Mesg> recordMesg = new ArrayList<>();
 
     // List<LapExtraMesg> lapExtraRecords = new ArrayList<>(); //Not Garmin SDK
-    // List<RecordExtraMesg> secExtraRecords = new ArrayList<>(); //Not Garmin SDK
-    public List<GapMesg> gapRecords = new ArrayList<>(); //Not Garmin SDK
-    public List<PauseMesg> pauseRecords = new ArrayList<>(); //Not Garmin SDK
+    List<RecordExtraMesg> secExtraRecords = new ArrayList<>(); //Not Garmin SDK
+    List<GapMesg> gapRecords = new ArrayList<>(); //Not Garmin SDK
+    List<PauseMesg> pauseRecords = new ArrayList<>(); //Not Garmin SDK
 
     SimpleDateFormat sweDateTime = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 
@@ -208,10 +209,9 @@ public class FitFile {
         Float altGap;
 
         public GapMesg() {
-
         }
 
-        public GapMesg(int pauseNo, Long startDateTime, Long stopDateTime,
+        /* public GapMesg(int pauseNo, Long startDateTime, Long stopDateTime,
          int ixStart, int ixStop, int ixLap,
           Float dist,
            int lat1, int lon1, int lat2, int lon2,
@@ -232,7 +232,8 @@ public class FitFile {
             this.altStart = altStart;
             this.altStop = altStop;
             this.altGap = altStop - altStart;
-        }
+        } */
+
         // Getters and Setters
         public int getNo() { return no; }
         public void setNo(int no) { this.no = no; }
@@ -288,7 +289,6 @@ public class FitFile {
         public Float getAltGap() { return altGap; }
         public void setAltGap(Float altGap) { this.altGap = altGap; }
 
-
         public void calcTimeGap () {
             this.timeGap = this.timeStop - this.timeStart;
         }
@@ -308,10 +308,10 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public class PauseMesg {
-        int no;
-        Long timeStart;
-        Long timeStop;
-        public Long timePause; //seconds
+        private int no;
+        private Long timeStart;
+        private Long timeStop;
+        private Long timePause; //seconds
         int ixStart;
         int ixStop;
         int ixEvStart;
@@ -328,10 +328,9 @@ public class FitFile {
         Float altPause;
 
         public PauseMesg() {
-
         }
 
-        public PauseMesg(int pauseNo, Long startDateTime, Long stopDateTime,
+        /* public PauseMesg(int pauseNo, Long startDateTime, Long stopDateTime,
          int ixStart, int ixStop, int ixEvStart, int ixEvStop, int ixLap,
           Float dist,
            int lat1, int lon1, int lat2, int lon2,
@@ -354,21 +353,98 @@ public class FitFile {
             this.altStart = altStart;
             this.altStop = altStop;
             this.altPause = altStop - altStart;
+        } */
+        
+        public int getNo() { return no; }
+        public void setNo(int no) { this.no = no; }
+
+        public Long getTimeStart() { return timeStart; }
+        public void setTimeStart(Long timeStart) { this.timeStart = timeStart; }
+
+        public Long getTimeStop() { return timeStop; }
+        public void setTimeStop(Long timeStop) { this.timeStop = timeStop; }
+
+        public Long getTimePause() { return timePause; }
+        public void setTimePause(Long timePause) { this.timePause = timePause; }
+
+        public int getIxStart() { return ixStart; }
+        public void setIxStart(int ixStart) { this.ixStart = ixStart; }
+
+        public int getIxStop() { return ixStop; }
+        public void setIxStop(int ixStop) { this.ixStop = ixStop; }
+
+        public int getIxEvStart() { return ixEvStart; }
+        public void setIxEvStart(int ixEvStart) { this.ixEvStart = ixEvStart; }
+
+        public int getIxEvStop() { return ixEvStop; }
+        public void setIxEvStop(int ixEvStop) { this.ixEvStop = ixEvStop; }
+
+        public int getIxLap() { return ixLap; }
+        public void setIxLap(int ixLap) { this.ixLap = ixLap; }
+
+        public Float getDistStart() { return distStart; }
+        public void setDistStart(Float distStart) { this.distStart = distStart; }
+
+        public int getLatStart() { return latStart; }
+        public void setLatStart(int latStart) { this.latStart = latStart; }
+
+        public int getLonStart() { return lonStart; }
+        public void setLonStart(int lonStart) { this.lonStart = lonStart; }
+
+        public int getLatStop() { return latStop; }
+        public void setLatStop(int latStop) { this.latStop = latStop; }
+
+        public int getLonStop() { return lonStop; }
+        public void setLonStop(int lonStop) { this.lonStop = lonStop; }
+
+        public Float getDistPause() { return distPause; }
+        public void setDistPause(Float distPause) { this.distPause = distPause; }
+
+        public Float getAltStart() { return altStart; }
+        public void setAltStart(Float altStart) { this.altStart = altStart; }
+
+        public Float getAltStop() { return altStop; }
+        public void setAltStop(Float altStop) { this.altStop = altStop; }
+
+        public Float getAltPause() { return altPause; }
+        public void setAltPause(Float altPause) { this.altPause = altPause; }
+
+        public void calcDistPause () {
+            this.distPause = (float) GeoUtils.distCalc(this.latStart, this.lonStart, this.latStop, this.lonStop);
+        }
+
+        public void calcTimePause () {
+            this.timePause = this.timeStop - this.timeStart;
+        }
+
+        public void calcDistGap () {
+            this.altPause = this.altStop - this.altStart;
         }
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     class RecordExtraMesg {
+        Long timer;
         int lapNo;
-        DateTime C2DateTime;
 
-        public RecordExtraMesg(int lapNo, DateTime C2DateTime) {
-            this.lapNo = lapNo;
-            this.C2DateTime = C2DateTime;
+        public RecordExtraMesg() {
         }
+        public RecordExtraMesg(Long timer) {
+            this.timer = timer;
+        }
+        public RecordExtraMesg(int lapNo, Long timer) {
+            this.lapNo = lapNo;
+            this.timer = timer;
+        }
+
+        public Long getTimer() { return timer; }
+        public void setTimer(Long timer) { this.timer = timer; }
+
+        public int getLapNo() { return lapNo; }
+        public void setLapNo(int lapNo) { this.lapNo = lapNo; }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    class LapExtraMesg {
+    /* class LapExtraMesg {
         int hrStart;
         int hrEnd;
         int hrMin;
@@ -399,7 +475,7 @@ public class FitFile {
             this.avgDragFactor = avgDragFactor;
             this.maxDragFactor = maxDragFactor;
         }
-    }
+    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void addDistToRecords(int fromRecordIx, Float distToAdd) {
         Float recordDist;
@@ -443,6 +519,40 @@ public class FitFile {
         return ix;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void createTimerList() {
+        Long timerCounter = -1l;
+        Long recordTimerDelta = 0l;
+        Long lastRecordTime = recordMesg.get(0).getFieldLongValue(REC_TIME) - 1;
+
+        for (Mesg record : recordMesg) {
+            recordTimerDelta = record.getFieldLongValue(REC_TIME) - lastRecordTime; 
+            timerCounter += recordTimerDelta;
+            RecordExtraMesg newExtraRecord = new RecordExtraMesg(timerCounter);
+            secExtraRecords.add(newExtraRecord);
+
+            if (eventMesg.size() > 0) {
+
+            }
+
+            lastRecordTime = record.getFieldLongValue(REC_TIME);
+
+
+/*             System.out.println(String.format("   Pause (%d) timer %d %s %dsec Dist:%.0fm ele:%.1fm HR:%d->%d @dist:%.2fm %s lapNo:%d   @ix:%d->%d   @ixEv:%d->%d", pauseCounter,
+                timerCounter, PehoUtils.sec2minSecShort(timerCounter),
+                (timeStop - startPauseTime), (recordMesg.get(ixRecordStop).getFieldFloatValue(REC_DIST) - distStart),
+                (altStop - altStart),
+                recordMesg.get(ixRecordStart).getFieldIntegerValue(REC_HR),
+                recordMesg.get(ixRecordStop).getFieldIntegerValue(REC_HR),
+                distStart,
+                FitDateTime.toString(startPauseTime,diffMinutesLocalUTC),
+                (ixLap+1),
+                ixRecordStart, ixRecordStop,
+                ixEvStart, ixEvStop
+                )); */
+        }
+
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void createGapList() {
         int gapCounter = 0;
         int gapThreshold = 1; //number of seconds to define a gap
@@ -457,10 +567,6 @@ public class FitFile {
         Long lastRecordTime = recordMesg.get(0).getFieldLongValue(REC_TIME) - 1;
 
         for (Mesg record : recordMesg) {
-            // Float dist = record.getFieldFloatValue(REC_DIST);
-            // if (dist > 7400.0){ 
-            //     System.out.println(dist);
-            // }
 
             // if statment to see if this is a PAUSE
             if (!inPause && pauseRecords.size() > 0 && (pauseIx <= pauseRecords.size()-1) && (record.getFieldLongValue(REC_TIME) >= pauseRecords.get(pauseIx).timeStart)) {
@@ -468,9 +574,7 @@ public class FitFile {
 
             // if in PAUSE, see if pause ends
             } else if (inPause && (pauseIx <= pauseRecords.size()-1) && (record.getFieldLongValue(REC_TIME) >= pauseRecords.get(pauseIx).timeStop)) {
-                // if (pauseIx < pauseRecords.size()-1) {
-                    pauseIx += 1;
-                // }
+                pauseIx += 1;
                 inPause = false;
 
             // if in PAUSE and see records
@@ -579,97 +683,118 @@ public class FitFile {
         int latStop = 0;
         int lonStop = 0;
 
-
         int recordIx = 0;
         int lapIx = 0;
         int eventIx = 0;
 
+        secExtraRecords.clear();
         pauseRecords.clear();
 
-        for (Mesg record : eventMesg){
-            //if (Event.getStringFromValue(record.getEvent()).equals("TIMER")) {
-            if (record.getFieldValue(EVE_EVENT).equals(Event.TIMER.getValue())) {
-                // -------------- 
-                // STOP event (pause START)
-                if (pauseCounter > 0 && !inPause && record.getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
-                    System.out.println("==> WARNING - START Event w/o Stopping first @" + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
+        for (Mesg record : eventTimerMesg){
 
-                } else if (!inPause && record.getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
-                    inPause = true;
-                    pauseCounter += 1;
+            // -------------- 
+            // STOP event (pause START)
+            if (pauseCounter > 0 && !inPause && record.getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
+                System.out.println("==> WARNING - START Event w/o Stopping first @" + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
 
-                    if (record.getFieldLongValue(EVE_TIME).equals(timeLastRecord.getTimestamp())) {
-                        //System.out.println("   SLUT   " + FitDateTime.toString(record.getTimestamp()));
-                    } else {
-                        startPauseTime = record.getFieldLongValue(EVE_TIME);
+            } else if (!inPause && record.getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
+                inPause = true;
+                pauseCounter += 1;
 
-                        // FIND record in secRecords
-                        while (!recordMesg.get(recordIx).getFieldLongValue(REC_TIME).equals(record.getFieldLongValue(EVE_TIME))) {
-                            recordIx += 1;
-                        }
-                        ixRecordStart = recordIx;
-                        ixEvStart = eventIx;
-                }
-                }
-                
-                // -------------- 
-                // START event (pause END)
-                if (inPause && record.getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
+                if (record.getFieldLongValue(EVE_TIME).equals(timeLastRecord.getTimestamp())) {
+                    //System.out.println("   SLUT   " + FitDateTime.toString(record.getTimestamp()));
+                } else {
+                    startPauseTime = record.getFieldLongValue(EVE_TIME);
 
+                    // FIND record in secRecords
                     while (!recordMesg.get(recordIx).getFieldLongValue(REC_TIME).equals(record.getFieldLongValue(EVE_TIME))) {
                         recordIx += 1;
                     }
-
-                    // Find LapNo
-                    try {
-                        while ((lapMesg.get(lapIx).getFieldLongValue(LAP_STIME) <= record.getFieldLongValue(EVE_TIME))) {
-                            lapIx += 1;
-                            if (lapIx >= (lapMesg.size()-0)) {
-                                break;
-                            }
-                        }
-                    } catch(Exception e) {
-                    }
-                    ixRecordStop = recordIx;
-                    ixLap = lapIx-1;
-                    ixEvStop = eventIx;
-
-                    Long timeStop = record.getFieldLongValue(EVE_TIME);
-                    Float distStart = recordMesg.get(ixRecordStart).getFieldFloatValue(REC_DIST);
-                    if (recordMesg.get(ixRecordStart).getFieldIntegerValue(REC_LAT) != null) {
-                        latStart = recordMesg.get(ixRecordStart).getFieldIntegerValue(REC_LAT);
-                        lonStart = recordMesg.get(ixRecordStart).getFieldIntegerValue(REC_LON);
-                    } else {
-                        int i = 0;
-                        while (recordMesg.get(ixRecordStart-i).getFieldIntegerValue(REC_LAT) == null){
-                            i++;
-                        }
-                        latStart = recordMesg.get(ixRecordStart-i).getFieldIntegerValue(REC_LAT);
-                        lonStart = recordMesg.get(ixRecordStart-i).getFieldIntegerValue(REC_LON);
-                    }
-                    if (recordMesg.get(ixRecordStop).getFieldIntegerValue(REC_LAT) != null) {
-                        latStop = recordMesg.get(ixRecordStop).getFieldIntegerValue(REC_LAT);
-                        lonStop = recordMesg.get(ixRecordStop).getFieldIntegerValue(REC_LON);
-                    } else {
-                        int i = 0;
-                        while (recordMesg.get(ixRecordStop-i).getFieldIntegerValue(REC_LAT) == null){
-                            i++;
-                        }
-                        latStop = recordMesg.get(ixRecordStop-i).getFieldIntegerValue(REC_LAT);
-                        lonStop = recordMesg.get(ixRecordStop-i).getFieldIntegerValue(REC_LON);
-                    }
-                    Float altStart = recordMesg.get(ixRecordStart).getFieldFloatValue(REC_EALT);
-                    Float altStop = recordMesg.get(ixRecordStop).getFieldFloatValue(REC_EALT);
-                    pauseRecords.add(new PauseMesg(pauseCounter, startPauseTime, timeStop,
-                     ixRecordStart, ixRecordStop, ixEvStart, ixEvStop, ixLap,
-                      distStart, latStart, lonStart, latStop, lonStop,
-                        altStart, altStop));
-
-                    inPause = false;
+                    ixRecordStart = recordIx;
+                    ixEvStart = eventIx;
                 }
             }
-            eventIx += 1;
+            
+            // -------------- 
+            // START event (pause END)
+            if (inPause && record.getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
 
+                while (!recordMesg.get(recordIx).getFieldLongValue(REC_TIME).equals(record.getFieldLongValue(EVE_TIME))) {
+                    recordIx += 1;
+                }
+
+                // Find LapNo
+                try {
+                    while ((lapMesg.get(lapIx).getFieldLongValue(LAP_STIME) <= record.getFieldLongValue(EVE_TIME))) {
+                        lapIx += 1;
+                        if (lapIx >= (lapMesg.size()-0)) {
+                            break;
+                        }
+                    }
+                } catch(Exception e) {
+                }
+                ixRecordStop = recordIx;
+                ixLap = lapIx-1;
+                ixEvStop = eventIx;
+
+                Long timeStop = record.getFieldLongValue(EVE_TIME);
+                Float distStart = recordMesg.get(ixRecordStart).getFieldFloatValue(REC_DIST);
+                if (recordMesg.get(ixRecordStart).getFieldIntegerValue(REC_LAT) != null) {
+                    latStart = recordMesg.get(ixRecordStart).getFieldIntegerValue(REC_LAT);
+                    lonStart = recordMesg.get(ixRecordStart).getFieldIntegerValue(REC_LON);
+                } else {
+                    int i = 0;
+                    while (recordMesg.get(ixRecordStart-i).getFieldIntegerValue(REC_LAT) == null){
+                        i++;
+                    }
+                    latStart = recordMesg.get(ixRecordStart-i).getFieldIntegerValue(REC_LAT);
+                    lonStart = recordMesg.get(ixRecordStart-i).getFieldIntegerValue(REC_LON);
+                }
+                if (recordMesg.get(ixRecordStop).getFieldIntegerValue(REC_LAT) != null) {
+                    latStop = recordMesg.get(ixRecordStop).getFieldIntegerValue(REC_LAT);
+                    lonStop = recordMesg.get(ixRecordStop).getFieldIntegerValue(REC_LON);
+                } else {
+                    int i = 0;
+                    while (recordMesg.get(ixRecordStop-i).getFieldIntegerValue(REC_LAT) == null){
+                        i++;
+                    }
+                    latStop = recordMesg.get(ixRecordStop-i).getFieldIntegerValue(REC_LAT);
+                    lonStop = recordMesg.get(ixRecordStop-i).getFieldIntegerValue(REC_LON);
+                }
+                Float altStart = recordMesg.get(ixRecordStart).getFieldFloatValue(REC_EALT);
+                Float altStop = recordMesg.get(ixRecordStop).getFieldFloatValue(REC_EALT);
+
+                PauseMesg newPause = new PauseMesg();
+                newPause.setNo(pauseCounter);
+                newPause.setTimeStart(startPauseTime);
+                newPause.setTimeStop(timeStop);
+                newPause.setIxStart(ixRecordStart);
+                newPause.setIxStop(ixRecordStop);
+                newPause.setIxEvStart(ixEvStart);
+                newPause.setIxEvStop(ixEvStop);
+                newPause.setIxLap(ixLap);
+                newPause.setDistStart(distStart);
+                newPause.setLatStart(latStart);
+                newPause.setLonStart(lonStart);
+                newPause.setLatStop(latStop);
+                newPause.setLonStop(lonStop);
+                newPause.setAltStart(altStart);
+                newPause.setAltStop(altStop);
+                newPause.calcTimePause();
+                newPause.calcDistGap();
+                newPause.calcDistPause();   // uses lat/lon values already set
+
+                pauseRecords.add(newPause);
+
+                /* pauseRecords.add(new PauseMesg(pauseCounter, startPauseTime, timeStop,
+                    ixRecordStart, ixRecordStop, ixEvStart, ixEvStop, ixLap,
+                    distStart, latStart, lonStart, latStop, lonStop,
+                    altStart, altStop)); */
+
+                inPause = false;
+            } else {
+            }
+            eventIx += 1;
         }
     }
 
@@ -1469,6 +1594,10 @@ public class FitFile {
                             break;
                         case MesgNum.EVENT:
                             eventMesg.add(mesg);
+                            // If TIMER event add to eventTIMER list
+                            if (mesg.getFieldValue(EVE_EVENT).equals(Event.TIMER.getValue())) {
+                                eventTimerMesg.add(mesg);
+                            }
                             break;
                         case MesgNum.RECORD:
                             recordMesg.add(mesg);
