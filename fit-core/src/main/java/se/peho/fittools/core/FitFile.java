@@ -956,11 +956,6 @@ public class FitFile {
         // ----------------------
         int newLatSemi = GeoUtils.toSemicircles(coords[0]);
         int newLonSemi = GeoUtils.toSemicircles(coords[1]);
-        /* System.out.printf("Input: %-40s →\n", input);
-        System.out.printf("  Decimal Degrees: Lat %.8f, Lon %.8f%n", coords[0], coords[1]);
-        System.out.printf("  Garmin Semicircles: Lat %d, Lon %d%n", newLatSemi, newLonSemi);
-        System.out.printf("  Back to Decimal: Lat %.8f, Lon %.8f%n%n", GeoUtils.fromSemicircles(newLatSemi), GeoUtils.fromSemicircles(newLonSemi));
-        */
 
         // Collecting existing record data
         // --------------------------------
@@ -1006,18 +1001,21 @@ public class FitFile {
         addDistToRecords(gapToChange.ixStop+1, newTotalDistChange);
 
         String info = "";
-        info += "-- New gap coordinates:" + System.lineSeparator();
+        info += "----------------------------" + System.lineSeparator();
+        info += "-- Adding GPS point in gap: " + gapNo + System.lineSeparator();
+        info += "   New gap coordinates: " + coords[0] + ", " + coords[1] + System.lineSeparator();
         info += String.format("    Decimal Degrees: Lat %.8f, Lon %.8f%n", coords[0], coords[1]);
         info += String.format("    Garmin Semicircles: Lat %d, Lon %d%n", newLatSemi, newLonSemi);
         info += String.format("    Back to Decimal: Lat %.8f, Lon %.8f%n", GeoUtils.fromSemicircles(newLatSemi), GeoUtils.fromSemicircles(newLonSemi));
 
-        info += "   >>> ixStart:" + gapToChange.ixStart + System.lineSeparator();
+        info += "   >>> ix start-stop:" + gapToChange.ixStart + gapToChange.ixStop + System.lineSeparator();
         info += "   >>> Calc old dist:" + Math.round(GeoUtils.distCalc(startLat, startLon, stopLat, stopLon)) + "m" + System.lineSeparator();
         info += "   >>> Garmin old Dist/Time" + gapToChange.distGap + "m / " + PehoUtils.sec2minSecLong(gapToChange.timeGap) + "sec" + System.lineSeparator();
         info += "   >>> Dist/Time to new point:" + Math.round(distToNew) + "m / " + Math.round(gapToChange.timeGap * (distToNew / (distToNew + distFromNew))) + "sec" + System.lineSeparator();
+        info += "   >>> Pace to new point:" + PehoUtils.mps2minpkm((float) (distToNew/timeToNew)) + "min/km" + System.lineSeparator();
         info += "   >>> Dist/Time from new point:" + Math.round(distFromNew) + "m / " + Math.round(gapToChange.timeGap * (distFromNew / (distToNew + distFromNew))) + "sec" + System.lineSeparator();
+        info += "   >>> Pace to from point:" + PehoUtils.mps2minpkm((float) (distFromNew/timeFromNew)) + "min/km" + System.lineSeparator();
         info += "   >>> Dist change:" + Math.round(newTotalDistChange) + "m" + System.lineSeparator();
-        info += "   >>> ixStop:" + gapToChange.ixStop + System.lineSeparator();
         savedFileUpdateLogg += info;
         System.out.print(info);
 
