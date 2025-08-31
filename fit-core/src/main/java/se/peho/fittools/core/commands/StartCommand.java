@@ -21,6 +21,7 @@ public class StartCommand implements Command {
         if (secs == null) return;
         watchFitFile.addRecordAtStart(secs.longValue(), coords);
         
+        watchFitFile.createTimerList();
         watchFitFile.createGapList();
         watchFitFile.printGapList("",0);
     }

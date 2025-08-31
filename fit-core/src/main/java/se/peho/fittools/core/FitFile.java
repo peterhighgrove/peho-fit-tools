@@ -476,33 +476,87 @@ public class FitFile {
         Long recordTimerDelta = 0l;
         Long lastRecordTime = recordMesg.get(0).getFieldLongValue(REC_TIME) - 1;
 
-        for (Mesg record : recordMesg) {
-            recordTimerDelta = record.getFieldLongValue(REC_TIME) - lastRecordTime; 
-            timerCounter += recordTimerDelta;
-            RecordExtraMesg newExtraRecord = new RecordExtraMesg(timerCounter);
-            secExtraRecords.add(newExtraRecord);
+        int eventTimerIx = 1; // Skip first START event, ix = 0
+        Boolean inPause = false;
+        Boolean increaseTimer = true;
+        Boolean isEventTImerTime = false;
 
-            if (eventTimerMesg.size() > 0) {
+        secExtraRecords.clear();
+
+        for (Mesg record : recordMesg) {
+
+            increaseTimer = true;
+
+            if (eventTimerMesg.size() > 0) { // More than First START and last STOP
+
+                // If record time is the same or more than NEXT eventTimer mesg
+                // ------------------------------------------------------------
+                if (record.getFieldLongValue(REC_TIME) >= eventTimerMesg.get(eventTimerIx).getFieldLongValue(EVE_TIME)) {
+                    isEventTImerTime = true;
+                                /* System.out.println();
+                            System.out.println("==> EVENT TIMER MESG @"
+                                + EventType.getByValue(eventTimerMesg.get(eventTimerIx).getFieldShortValue(EVE_TYPE)) + " @time: "
+                                + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC)); */
+
+                    if (eventTimerMesg.get(eventTimerIx).getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
+                        // If inPause - warning
+                        if (inPause) {
+                            System.out.println("==> WARNING - STOP AGAIN when already in pause, STOP event w/o Starting first @"
+                                + eventTimerIx + " @time: "
+                                + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
+                        } else {
+                            /* System.out.println("==> EVENT TIMER STOP MESG @"
+                                + eventTimerIx + " @time: "
+                                + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC)); */
+                            inPause = true;
+                            increaseTimer = true;
+                        }
+                    }
+                    
+                    if (eventTimerMesg.get(eventTimerIx).getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
+                        // If not inPause - warning
+                        if (!inPause) {
+                            System.out.println("==> WARNING - START when not in pause, START event w/o Stopping first @"
+                                + eventTimerIx + " @time: "
+                                + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
+                        } else {
+                            /* System.out.println("==> EVENT TIMER START MESG @"
+                                + eventTimerIx + " @time: "
+                                + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC)); */
+                            inPause = false;
+                            increaseTimer = false;
+                        }
+                    } 
+                    
+                    eventTimerIx += 1;
+                }
+
+                // If record not the same as event timer
+                if (!isEventTImerTime && inPause) {
+                    System.out.println("==> WARNING - Records in pause @"
+                        + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
+                    increaseTimer = false;
+                }
+
+                if (increaseTimer) {
+                    recordTimerDelta = record.getFieldLongValue(REC_TIME) - lastRecordTime; 
+                    timerCounter += recordTimerDelta;
+                    //System.out.println("==> Timer INCREASE for Record @" 
+                      //  + FitDateTime.toString(record.getFieldLongValue(REC_TIME),diffMinutesLocalUTC));
+                } else {
+                    /* System.out.println("==> Timer do not increase for Record @" 
+                        + FitDateTime.toString(record.getFieldLongValue(REC_TIME),diffMinutesLocalUTC)); */
+                }
+
+                RecordExtraMesg newExtraRecord = new RecordExtraMesg(timerCounter);
+                secExtraRecords.add(newExtraRecord);
 
             }
 
             lastRecordTime = record.getFieldLongValue(REC_TIME);
 
-
-/*             System.out.println(String.format("   Pause (%d) timer %d %s %dsec Dist:%.0fm ele:%.1fm HR:%d->%d @dist:%.2fm %s lapNo:%d   @ix:%d->%d   @ixEv:%d->%d", pauseCounter,
-                timerCounter, PehoUtils.sec2minSecShort(timerCounter),
-                (timeStop - startPauseTime), (recordMesg.get(ixRecordStop).getFieldFloatValue(REC_DIST) - distStart),
-                (altStop - altStart),
-                recordMesg.get(ixRecordStart).getFieldIntegerValue(REC_HR),
-                recordMesg.get(ixRecordStop).getFieldIntegerValue(REC_HR),
-                distStart,
-                FitDateTime.toString(startPauseTime,diffMinutesLocalUTC),
-                (ixLap+1),
-                ixRecordStart, ixRecordStop,
-                ixEvStart, ixEvStop
-                )); */
         }
-
+        System.out.println("======== Records: " + recordMesg.size() + " extraRecords: " + secExtraRecords.size());
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void createGapList() {
@@ -521,11 +575,11 @@ public class FitFile {
         for (Mesg record : recordMesg) {
 
             // if statment to see if this is a PAUSE
-            if (!inPause && pauseRecords.size() > 0 && (pauseIx <= pauseRecords.size()-1) && (record.getFieldLongValue(REC_TIME) >= pauseRecords.get(pauseIx).timeStart)) {
+            if (!inPause && pauseRecords.size() > 0 && (pauseIx <= pauseRecords.size()-1) && (record.getFieldLongValue(REC_TIME) >= pauseRecords.get(pauseIx).getTimeStart())) {
                 inPause = true;
 
             // if in PAUSE, see if pause ends
-            } else if (inPause && (pauseIx <= pauseRecords.size()-1) && (record.getFieldLongValue(REC_TIME) >= pauseRecords.get(pauseIx).timeStop)) {
+            } else if (inPause && (pauseIx <= pauseRecords.size()-1) && (record.getFieldLongValue(REC_TIME) >= pauseRecords.get(pauseIx).getTimeStop())) {
                 pauseIx += 1;
                 inPause = false;
 
@@ -602,11 +656,12 @@ public class FitFile {
                     hrSign = "+";
                 }
                 System.out.print(String.format(" HR:%1$d%2$s%3$d", recordMesg.get(record.ixStart).getFieldIntegerValue(REC_HR), hrSign, hrDiff));
+                System.out.print(" @time:" + PehoUtils.sec2minSecShort(secExtraRecords.get(record.getIxStart()).getTimer()));
+                System.out.print(String.format(" @dist:%1$.0fm", record.getDistStart()));
 
                 if (gapCommandInput == null) {
                     // Show minimal
                 } else if (gapCommandInput.equals("d")) {
-                    System.out.print(String.format("  @dist:%1$.0fm", record.distStart));
                     System.out.print(" " + FitDateTime.toString(new DateTime(record.timeStart),diffMinutesLocalUTC));
                     System.out.print(" ele:" + (record.altStart) + "m");
                     System.out.print(" lapNo:" + (record.ixLap+1));
@@ -639,7 +694,6 @@ public class FitFile {
         int lapIx = 0;
         int eventIx = 0;
 
-        secExtraRecords.clear();
         pauseRecords.clear();
 
         for (Mesg record : eventTimerMesg){
@@ -783,6 +837,7 @@ public class FitFile {
                     recordMesg.get(record.getIxStart()).getFieldIntegerValue(REC_HR),
                     hrSign,
                     hrDiff));
+                System.out.print(" @time:" + PehoUtils.sec2minSecShort(secExtraRecords.get(record.getIxStart()).getTimer()));
                 System.out.print(" @dist:" + PehoUtils.m2km2(record.getDistStart()) + "km");
 
                 if (pauseCommandInput == null) {
@@ -797,7 +852,6 @@ public class FitFile {
                 }
                 System.out.println();
             }
-
         }
         System.out.println("--------------------------------------------------");
     }
@@ -1263,7 +1317,7 @@ public class FitFile {
         savedFileUpdateLogg += "--> newSpeed:"+PehoUtils.mps2minpkm(startGapSpeed)+"km/min gpsDist:"+pauseToShorten.getDistPause() +
             "m gapStartDist:"+startGapDist+"m gapEnd:"+stopGapDist +
             "m gapEnd-startTime:"+(stopGapTime - startGapTime) + "s newTime:" + newPauseTime + "s" + System.lineSeparator();
-        System.out.println(savedFileUpdateLogg);
+        // System.out.println(savedFileUpdateLogg);
 
         // Updating EVENT-TIMER-START DATA
         //----------------------   

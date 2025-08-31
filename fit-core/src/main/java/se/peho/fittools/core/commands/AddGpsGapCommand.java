@@ -21,6 +21,7 @@ public class AddGpsGapCommand implements Command {
         if (coords == null) return;
         watchFitFile.addRecordInGap(gapNo, coords);
 
+        watchFitFile.createTimerList();
         watchFitFile.createGapList();
         watchFitFile.printGapList("",0);
     }

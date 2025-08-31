@@ -32,6 +32,7 @@ public class Main {
 
         // SAVE INFO ABOUT FILE BEFORE UPDATIING
         watchFitFile.saveFileInfoBefore();
+        watchFitFile.createTimerList();
         watchFitFile.createPauseList();
         watchFitFile.createGapList();
 

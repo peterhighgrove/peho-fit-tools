@@ -16,6 +16,7 @@ public class FillGapsCommand implements Command {
     public void run(Scanner sc, FitFile watchFitFile) {
         watchFitFile.fillRecordsInGap();
 
+        watchFitFile.createTimerList();
         watchFitFile.createGapList();
         watchFitFile.printGapList("",0);
     }

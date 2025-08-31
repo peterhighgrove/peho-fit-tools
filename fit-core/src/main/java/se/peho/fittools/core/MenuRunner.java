@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import se.peho.fittools.core.commands.AddGpsGapCommand;
 import se.peho.fittools.core.commands.ChangeStartTimeCommand;
+import se.peho.fittools.core.commands.CreateTimerListCommand;
 import se.peho.fittools.core.commands.FillGapsCommand;
 import se.peho.fittools.core.commands.IncreasePauseCommand;
 import se.peho.fittools.core.commands.ShortenPauseCommand;
@@ -41,7 +42,8 @@ public class MenuRunner {
             new FillGapsCommand(),
             new StartCommand(),
             new ShowDetailedFileInfoCommand(),
-            new ChangeStartTimeCommand()
+            new ChangeStartTimeCommand(),
+            new CreateTimerListCommand()
         };
 
         // Add each command to the map using its own key

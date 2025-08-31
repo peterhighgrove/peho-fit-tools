@@ -21,6 +21,7 @@ public class ShortenPauseCommand implements Command {
         if (newPauseLen == null) return;
         watchFitFile.shortenPause(pauseNo, newPauseLen.longValue());
 
+        watchFitFile.createTimerList();
         watchFitFile.createPauseList();
         watchFitFile.createGapList();
         watchFitFile.printGapList("",0);

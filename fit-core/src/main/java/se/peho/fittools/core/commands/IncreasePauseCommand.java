@@ -21,6 +21,7 @@ public class IncreasePauseCommand implements Command {
         if (secs == null) return;
         watchFitFile.increasePause(pauseNo, secs.longValue());
 
+        watchFitFile.createTimerList();
         watchFitFile.createPauseList();
         watchFitFile.printPauseList("", 0);
     }

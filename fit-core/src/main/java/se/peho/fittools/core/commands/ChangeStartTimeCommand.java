@@ -17,6 +17,7 @@ public class ChangeStartTimeCommand implements Command {
     public void run(Scanner sc, FitFile watchFitFile) {
         Integer changeMinutes = InputHelper.askForNumber("Enter number of minutes to add to starttime (- for substract)", sc);
         if (changeMinutes == null) return;
+        watchFitFile.createTimerList();
         watchFitFile.changeStartTime(changeMinutes * 60);
     }
 }
