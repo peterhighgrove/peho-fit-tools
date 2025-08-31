@@ -189,50 +189,27 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public class GapMesg {
-        int no;
-        Long timeStart;
-        Long timeStop;
-        Long timeGap; //seconds
-        int ixStart;
-        int ixStop;
-        int ixLap;
-        Float distStart;
-        Float distStop;
-        int latStart;
-        int lonStart;
-        int latStop;
-        int lonStop;
-        Float distGap;
-        Float distGapGps;
-        Float altStart;
-        Float altStop;
-        Float altGap;
+        private int no;
+        private Long timeStart;
+        private Long timeStop;
+        private Long timeGap; //seconds
+        private int ixStart;
+        private int ixStop;
+        private int ixLap;
+        private Float distStart;
+        private Float distStop;
+        private int latStart;
+        private int lonStart;
+        private int latStop;
+        private int lonStop;
+        private Float distGap;
+        private Float distGapGps;
+        private Float altStart;
+        private Float altStop;
+        private Float altGap;
 
         public GapMesg() {
         }
-
-        /* public GapMesg(int pauseNo, Long startDateTime, Long stopDateTime,
-         int ixStart, int ixStop, int ixLap,
-          Float dist,
-           int lat1, int lon1, int lat2, int lon2,
-           Float altStart, Float altStop) {
-            this.no = pauseNo;
-            this.timeStart = startDateTime;
-            this.timeStop = stopDateTime;
-            this.timeGap = stopDateTime - startDateTime;
-            this.ixStart = ixStart;
-            this.ixStop = ixStop;
-            this.ixLap = ixLap;
-            this.distStart = dist;
-            this.latStart = lat1;
-            this.lonStart = lon1;
-            this.latStop = lat2;
-            this.lonStop = lon2;
-            this.distGapGps = (float) GeoUtils.distCalc(this.latStart, this.lonStart, this.latStop, this.lonStop);
-            this.altStart = altStart;
-            this.altStop = altStop;
-            this.altGap = altStop - altStart;
-        } */
 
         // Getters and Setters
         public int getNo() { return no; }
@@ -312,49 +289,24 @@ public class FitFile {
         private Long timeStart;
         private Long timeStop;
         private Long timePause; //seconds
-        int ixStart;
-        int ixStop;
-        int ixEvStart;
-        int ixEvStop;
-        int ixLap;
-        Float distStart;
-        int latStart;
-        int lonStart;
-        int latStop;
-        int lonStop;
-        public Float distPause;
-        Float altStart;
-        Float altStop;
-        Float altPause;
+        private int ixStart;
+        private int ixStop;
+        private int ixEvStart;
+        private int ixEvStop;
+        private int ixLap;
+        private Float distStart;
+        private int latStart;
+        private int lonStart;
+        private int latStop;
+        private int lonStop;
+        private Float distPause;
+        private Float altStart;
+        private Float altStop;
+        private Float altPause;
 
         public PauseMesg() {
         }
 
-        /* public PauseMesg(int pauseNo, Long startDateTime, Long stopDateTime,
-         int ixStart, int ixStop, int ixEvStart, int ixEvStop, int ixLap,
-          Float dist,
-           int lat1, int lon1, int lat2, int lon2,
-           Float altStart, Float altStop) {
-            this.no = pauseNo;
-            this.timeStart = startDateTime;
-            this.timeStop = stopDateTime;
-            this.timePause = stopDateTime - startDateTime;
-            this.ixStart = ixStart;
-            this.ixStop = ixStop;
-            this.ixEvStart = ixEvStart;
-            this.ixEvStop = ixEvStop;
-            this.ixLap = ixLap;
-            this.distStart = dist;
-            this.latStart = lat1;
-            this.lonStart = lon1;
-            this.latStop = lat2;
-            this.lonStop = lon2;
-            this.distPause = (float) GeoUtils.distCalc(this.latStart, this.lonStart, this.latStop, this.lonStop);
-            this.altStart = altStart;
-            this.altStop = altStop;
-            this.altPause = altStop - altStart;
-        } */
-        
         public int getNo() { return no; }
         public void setNo(int no) { this.no = no; }
 
@@ -530,7 +482,7 @@ public class FitFile {
             RecordExtraMesg newExtraRecord = new RecordExtraMesg(timerCounter);
             secExtraRecords.add(newExtraRecord);
 
-            if (eventMesg.size() > 0) {
+            if (eventTimerMesg.size() > 0) {
 
             }
 
@@ -813,27 +765,34 @@ public class FitFile {
         //System.out.print(" No:" + record.getEvent().getValue());
 
         for (PauseMesg record : pauseRecords) {
-            if ((record.ixStop - record.ixStart) > 1) {
-                System.out.println("==> WARNING - Data Records in pause! Pause no: " + record.no);
+            if ((record.getIxStop() - record.getIxStart()) > 1) {
+                System.out.println("==> WARNING - Data Records in pause! Pause no: " + record.getNo());
             }
-            if (record.distPause >= minDistToShow) {
-                System.out.print("   Pause (" + record.no + ")");
-                System.out.print(String.format(" %1$dsec %2$.0fm ele%3$.1fm", record.timePause, record.distPause, record.altPause));
-                hrDiff = recordMesg.get(record.ixStop).getFieldIntegerValue(REC_HR) - recordMesg.get(record.ixStart).getFieldIntegerValue(REC_HR);
-                if (hrDiff>0) {
+            if (record.getDistPause() >= minDistToShow) {
+                System.out.print("   Pause (" + record.getNo() + ")");
+                System.out.print(String.format(" %1$dsec %2$.0fm ele%3$.1fm", record.getTimePause(), record.getDistPause(), record.getAltPause()));
+
+                hrDiff = recordMesg.get(record.getIxStop()).getFieldIntegerValue(REC_HR)
+                       - recordMesg.get(record.getIxStart()).getFieldIntegerValue(REC_HR);
+                if (hrDiff > 0) {
                     hrSign = "+";
+                } else {
+                    hrSign = "";
                 }
-                System.out.print(String.format(" HR:%1$d%2$s%3$d", recordMesg.get(record.ixStart).getFieldIntegerValue(REC_HR), hrSign, hrDiff));
-                System.out.print(" @dist:" + PehoUtils.m2km2(record.distStart) + "km");
+                System.out.print(String.format(" HR:%1$d%2$s%3$d",
+                    recordMesg.get(record.getIxStart()).getFieldIntegerValue(REC_HR),
+                    hrSign,
+                    hrDiff));
+                System.out.print(" @dist:" + PehoUtils.m2km2(record.getDistStart()) + "km");
 
                 if (pauseCommandInput == null) {
                     // Show minimal
                 } else if (pauseCommandInput.equals("d")) {
-                    System.out.print(" " + FitDateTime.toString(record.timeStart,diffMinutesLocalUTC));
-                    System.out.print(" Ele:" + (record.altStart) + "m");
-                    System.out.print(" lapNo:" + (record.ixLap+1));
-                    System.out.print("   @ix:" + (record.ixStart) + "->" + (record.ixStop));
-                    System.out.print(" @ixEv:" + (record.ixEvStart) + "->" + (record.ixEvStop));
+                    System.out.print(" " + FitDateTime.toString(record.getTimeStart(),diffMinutesLocalUTC));
+                    System.out.print(" Ele:" + (record.getAltStart()) + "m");
+                    System.out.print(" lapNo:" + (record.getIxLap()+1));
+                    System.out.print("   @ix:" + (record.getIxStart()) + "->" + (record.getIxStop()));
+                    System.out.print(" @ixEv:" + (record.getIxEvStart()) + "->" + (record.getIxEvStop()));
                     //System.out.print("sec TimerTrigger:" + record.getTimerTrigger());
                 }
                 System.out.println();
@@ -879,16 +838,16 @@ public class FitFile {
             Double altDelta = 0d;
 
         for (GapMesg record : gapRecords) {
-            numberOfNewSeconds = record.timeGap.intValue();
+            numberOfNewSeconds = record.getTimeGap().intValue();
             //System.out.println("numberOfNewSeconds: "+numberOfNewSeconds);
 
             numberOfNewRecords = numberOfNewSeconds - 1;
             //System.out.println("numberOfNewRecords: "+numberOfNewRecords);
 
-            allMesgIxStart = findIxInAllMesg(record.timeStop);
-            recordMesgIxStart = findIxInRecordMesg(record.timeStop);
+            allMesgIxStart = findIxInAllMesg(record.getTimeStop());
+            recordMesgIxStart = findIxInRecordMesg(record.getTimeStop());
 
-            startGapRecord = recordMesg.get(findIxInRecordMesg(record.timeStart));
+            startGapRecord = recordMesg.get(findIxInRecordMesg(record.getTimeStart()));
             startTime = startGapRecord.getFieldLongValue(REC_TIME);
             startDist = startGapRecord.getFieldFloatValue(REC_DIST);
             startSpeed = startGapRecord.getFieldFloatValue(REC_ESPEED);
@@ -917,7 +876,7 @@ public class FitFile {
             //System.out.println("powerDelta: "+powDelta);
             altDelta = (double) (stopAlt - startAlt) / numberOfNewSeconds;
             //System.out.println("altDelta: "+altDelta);
-            savedFileUpdateLogg += "-- GapNo: "+record.no+", dist: "+record.distGap+"m, time: "+record.timeGap+"sec, @Dist: "+startDist+"-"+stopDist+"m, time: "+FitDateTime.toString(record.timeStart,diffMinutesLocalUTC) + System.lineSeparator();
+            savedFileUpdateLogg += "-- GapNo: "+record.getNo()+", dist: "+record.getDistGap()+"m, time: "+record.getTimeGap()+"sec, @Dist: "+startDist+"-"+stopDist+"m, time: "+FitDateTime.toString(record.getTimeStart(),diffMinutesLocalUTC) + System.lineSeparator();
 
             for (int i=1; i<=numberOfNewRecords; i++) {
                 Mesg newRecord = new Mesg(startGapRecord);
@@ -987,7 +946,7 @@ public class FitFile {
         //newStartRecord.setFieldValue(REC_EALT, newAlt);
 
         String info = "";
-        info += "-- New gap coordinates:" + System.lineSeparator();
+        info += "-- New START coordinates:" + coords[0] + ", " + coords[1] + System.lineSeparator();
         info += String.format("    Decimal Degrees: Lat %.8f, Lon %.8f%n", coords[0], coords[1]);
         info += String.format("    Garmin Semicircles: Lat %d, Lon %d%n", newLatSemi, newLonSemi);
         info += String.format("    Back to Decimal: Lat %.8f, Lon %.8f%n", GeoUtils.fromSemicircles(newLatSemi), GeoUtils.fromSemicircles(newLonSemi));
@@ -1000,13 +959,17 @@ public class FitFile {
         recordMesg.add(0, newStartRecord);
         numberOfRecords++;
 
-        eventMesg.get(0).setFieldValue(EVE_TIME, startTime);
+        // Editing first TIMER START MESG
+        //------------------------------
+        eventTimerMesg.get(0).setFieldValue(EVE_TIME, startTime);
 
         // Setting speed on the original start record
+        // ----------------------------------------------
         recordMesg.get(1).setFieldValue(REC_SPEED, distFromNew / timeToIncrease);
         recordMesg.get(1).setFieldValue(REC_ESPEED, distFromNew / timeToIncrease);
 
         // Adding distance to all records starting from org start record
+        // --------------------------------------------------------------
         addDistToRecords(1, (float) (distFromNew-0.0));
 
         // Log for troubleshooting
@@ -1133,7 +1096,7 @@ public class FitFile {
         info += String.format("    Garmin Semicircles: Lat %d, Lon %d%n", newLatSemi, newLonSemi);
         info += String.format("    Back to Decimal: Lat %.8f, Lon %.8f%n", GeoUtils.fromSemicircles(newLatSemi), GeoUtils.fromSemicircles(newLonSemi));
 
-        info += "   >>> ix start-stop:" + gapToChange.ixStart + gapToChange.ixStop + System.lineSeparator();
+        info += "   >>> ix start-stop:" + gapToChange.ixStart + "-" + gapToChange.ixStop + System.lineSeparator();
         info += "   >>> Calc old dist:" + Math.round(GeoUtils.distCalc(startLat, startLon, stopLat, stopLon)) + "m" + System.lineSeparator();
         info += "   >>> Garmin old Dist/Time" + gapToChange.distGap + "m / " + PehoUtils.sec2minSecLong(gapToChange.timeGap) + "sec" + System.lineSeparator();
         info += "   >>> Dist/Time to new point:" + Math.round(distToNew) + "m / " + Math.round(gapToChange.timeGap * (distToNew / (distToNew + distFromNew))) + "sec" + System.lineSeparator();
@@ -1178,10 +1141,10 @@ public class FitFile {
 
         PauseMesg pauseToIncrease = pauseRecords.get(pauseNo-1);
 
-        Mesg startPauseEvent = eventMesg.get(pauseToIncrease.ixEvStart);
+        Mesg startPauseEvent = eventTimerMesg.get(pauseToIncrease.getIxEvStart());
         Long orgStartEventTime = startPauseEvent.getFieldLongValue(EVE_TIME);
 
-        Mesg startPauseRecord = recordMesg.get(pauseToIncrease.ixStart);
+        Mesg startPauseRecord = recordMesg.get(pauseToIncrease.getIxStart());
         Float orgStartPauseDist = startPauseRecord.getFieldFloatValue(REC_DIST);
 
         Long newStartEventTime = orgStartEventTime - secondsToPutIntoPause;
@@ -1189,7 +1152,7 @@ public class FitFile {
 
         Long recordToDeleteTime = orgStartEventTime;
         int i = 0;
-        int recordToDeleteIx = pauseToIncrease.ixStart;
+        int recordToDeleteIx = pauseToIncrease.getIxStart();
         int allMesgToDeleteIx = findIxInAllMesg(orgStartEventTime);
         while (recordToDeleteTime > newStartEventTime) {
             //System.out.println("Deleting record time:"+recordToDeleteTime+" Rix:"+recordToDeleteIx+" Aix:"+allMesgToDeleteIx);
@@ -1208,7 +1171,7 @@ public class FitFile {
         numberOfRecords -= i;
 
         savedFileUpdateLogg += "Increased pause no: " + pauseNo + System.lineSeparator();
-        savedFileUpdateLogg += "-- Pause increased with " + secondsToPutIntoPause + "sec to " + PehoUtils.sec2minSecLong(pauseToIncrease.timePause+secondsToPutIntoPause) + "min" + System.lineSeparator();
+        savedFileUpdateLogg += "-- Pause increased with " + secondsToPutIntoPause + "sec to " + PehoUtils.sec2minSecLong(pauseToIncrease.getTimePause()+secondsToPutIntoPause) + "min" + System.lineSeparator();
 
 
         // Increase distance after the shortened pause, starting from 1 after pause stop
@@ -1220,13 +1183,13 @@ public class FitFile {
 
         // Updating LAP DATA
         //------------------
-        Float lapTime = lapMesg.get(pauseToIncrease.ixLap).getFieldFloatValue(LAP_TIMER) - secondsToPutIntoPause;
-        Float lapDist = lapMesg.get(pauseToIncrease.ixLap).getFieldFloatValue(LAP_DIST) + distChangeValue;
-        lapMesg.get(pauseToIncrease.ixLap).setFieldValue(LAP_TIMER, (lapTime));
+        Float lapTime = lapMesg.get(pauseToIncrease.getIxLap()).getFieldFloatValue(LAP_TIMER) - secondsToPutIntoPause;
+        Float lapDist = lapMesg.get(pauseToIncrease.getIxLap()).getFieldFloatValue(LAP_DIST) + distChangeValue;
+        lapMesg.get(pauseToIncrease.getIxLap()).setFieldValue(LAP_TIMER, (lapTime));
         //lapMesg.get(pauseToShorten.ixLap).setFieldValue(LAP_ETIMER, (lapTime - secondsToPutIntoPause));
-        lapMesg.get(pauseToIncrease.ixLap).setFieldValue(LAP_DIST, (lapDist));
-        lapMesg.get(pauseToIncrease.ixLap).setFieldValue(LAP_SPEED, (lapDist / lapTime));
-        lapMesg.get(pauseToIncrease.ixLap).setFieldValue(LAP_ESPEED, (lapDist / lapTime));
+        lapMesg.get(pauseToIncrease.getIxLap()).setFieldValue(LAP_DIST, (lapDist));
+        lapMesg.get(pauseToIncrease.getIxLap()).setFieldValue(LAP_SPEED, (lapDist / lapTime));
+        lapMesg.get(pauseToIncrease.getIxLap()).setFieldValue(LAP_ESPEED, (lapDist / lapTime));
 
         // Updating SESSION DATA
         //----------------------
@@ -1250,7 +1213,7 @@ public class FitFile {
 
         PauseMesg pauseToShorten = pauseRecords.get(pauseNo-1);
 
-        if (newPauseTime > pauseToShorten.timePause) {
+        if (newPauseTime > pauseToShorten.getTimePause()) {
             System.out.println("----- NEW Pause time is to large ------");
             System.exit(0);
         }
@@ -1259,8 +1222,8 @@ public class FitFile {
             System.exit(0);
         }
 
-        Mesg startPauseRecord = recordMesg.get(pauseToShorten.ixStart);
-        Mesg stopGapRecord = recordMesg.get(pauseToShorten.ixStop); // Org PAUSE STOP = New GAP STOP
+        Mesg startPauseRecord = recordMesg.get(pauseToShorten.getIxStart());
+        Mesg stopGapRecord = recordMesg.get(pauseToShorten.getIxStop()); // Org PAUSE STOP = New GAP STOP
 
         Long startPauseTime = startPauseRecord.getFieldLongValue(REC_TIME);
         Float startPauseDist = startPauseRecord.getFieldFloatValue(REC_DIST);
@@ -1274,19 +1237,19 @@ public class FitFile {
         int startGapLat = startPauseLat;
         int startGapLon = startPauseLon;
         int startGapPow = 0;
-        if (recordMesg.get(pauseToShorten.ixStop+1).getFieldIntegerValue(REC_POW) != null){
+        if (recordMesg.get(pauseToShorten.getIxStop()+1).getFieldIntegerValue(REC_POW) != null){
             startGapPow = recordMesg.get(pauseToShorten.ixStop+1).getFieldIntegerValue(REC_POW);
         }
 
         Long stopGapTime = stopGapRecord.getFieldLongValue(REC_TIME); // New GAP END
-        Float stopGapDist = startGapDist + pauseToShorten.distPause; // New GAP END
+        Float stopGapDist = startGapDist + pauseToShorten.getDistPause(); // New GAP END
         Float stopGapAlt = stopGapRecord.getFieldFloatValue(REC_EALT);
         int stopGapLat = stopGapRecord.getFieldIntegerValue(REC_LAT);
         int stopGapLon = stopGapRecord.getFieldIntegerValue(REC_LON);
         int stopGapPow = startGapPow;
 
         // Speed Vaules
-        Float startGapSpeed = (float) (pauseToShorten.distPause / (stopGapTime - startGapTime)) ;
+        Float startGapSpeed = (float) (pauseToShorten.getDistPause() / (stopGapTime - startGapTime)) ;
         Float stopGapSpeed = startGapSpeed;
 
         stopGapRecord.setFieldValue(REC_SPEED, stopGapSpeed);
@@ -1296,45 +1259,46 @@ public class FitFile {
         stopGapRecord.setFieldValue(REC_POW, stopGapPow);
 
         savedFileUpdateLogg += "Shortened pause no: " + pauseNo + System.lineSeparator();
-        savedFileUpdateLogg += "-- Pause decreased from " + pauseToShorten.timePause + "sec to " + newPauseTime + "sec" + System.lineSeparator();
-        savedFileUpdateLogg += "--> newSpeed:"+PehoUtils.mps2minpkm(startGapSpeed)+"km/min gpsDist:"+pauseToShorten.distPause+
-            "m gapStartDist:"+startGapDist+"m gapEnd:"+stopGapDist+
-            "m gapEnd-startTime:"+(stopGapTime - startGapTime)+"s newTime:"+newPauseTime+"s" + System.lineSeparator();
-        System.out.println("--> newSpeed:"+PehoUtils.mps2minpkm(startGapSpeed)+"km/min gpsDist:"+pauseToShorten.distPause+
-            "m gapStartDist:"+startGapDist+"m gapEnd:"+stopGapDist+
-            "m gapEnd-startTime:"+(stopGapTime - startGapTime)+"s newTime:"+newPauseTime+"s");
+        savedFileUpdateLogg += "-- Pause decreased from " + pauseToShorten.getTimePause() + "sec to " + newPauseTime + "sec" + System.lineSeparator();
+        savedFileUpdateLogg += "--> newSpeed:"+PehoUtils.mps2minpkm(startGapSpeed)+"km/min gpsDist:"+pauseToShorten.getDistPause() +
+            "m gapStartDist:"+startGapDist+"m gapEnd:"+stopGapDist +
+            "m gapEnd-startTime:"+(stopGapTime - startGapTime) + "s newTime:" + newPauseTime + "s" + System.lineSeparator();
+        System.out.println(savedFileUpdateLogg);
 
-        // Create new PAUSE STOP & GAP START
+        // Updating EVENT-TIMER-START DATA
+        //----------------------   
+        eventTimerMesg.get(pauseToShorten.getIxEvStop()).setFieldValue(EVE_TIME, startGapTime);
+
+        // Create new PAUSE STOP / GAP START
         // ------------------------------------------------
         Mesg startGapNewRecord = new Mesg(startPauseRecord); // New PAUSE STOP = GAP START
-        eventMesg.get(pauseToShorten.ixEvStop).setFieldValue(EVE_TIME, startGapTime);
         startGapNewRecord.setFieldValue(REC_TIME, startGapTime);
         startGapNewRecord.setFieldValue(REC_SPEED, startGapSpeed);
         startGapNewRecord.setFieldValue(REC_ESPEED, startGapSpeed);
         startGapNewRecord.setFieldValue(REC_POW, startGapPow);
         allMesg.add(findIxInAllMesg(stopGapTime), startGapNewRecord);
-        recordMesg.add(pauseToShorten.ixStop, startGapNewRecord);
+        recordMesg.add(pauseToShorten.getIxStop(), startGapNewRecord);
         numberOfRecords++;
 
         // Increase distance after the shortened pause, starting from 1 after pause stop
         // ------------------------------------------------------
-        addDistToRecords(pauseToShorten.ixStop+1, pauseToShorten.distPause);
+        addDistToRecords(pauseToShorten.getIxStop()+1, pauseToShorten.getDistPause());
 
         // Updating LAP DATA
         //------------------
-        Float lapTime = lapMesg.get(pauseToShorten.ixLap).getFieldFloatValue(LAP_TIMER) + pauseToShorten.timePause - newPauseTime;
-        Float lapDist = lapMesg.get(pauseToShorten.ixLap).getFieldFloatValue(LAP_DIST) + pauseToShorten.distPause;
-        lapMesg.get(pauseToShorten.ixLap).setFieldValue(LAP_TIMER, (lapTime));
-        //lapMesg.get(pauseToShorten.ixLap).setFieldValue(LAP_ETIMER, (lapTime));
-        lapMesg.get(pauseToShorten.ixLap).setFieldValue(LAP_DIST, (lapDist));
-        lapMesg.get(pauseToShorten.ixLap).setFieldValue(LAP_SPEED, (lapDist / lapTime));
-        lapMesg.get(pauseToShorten.ixLap).setFieldValue(LAP_ESPEED, (lapDist / lapTime));
+        Float lapTime = lapMesg.get(pauseToShorten.getIxLap()).getFieldFloatValue(LAP_TIMER) + pauseToShorten.getTimePause() - newPauseTime;
+        Float lapDist = lapMesg.get(pauseToShorten.getIxLap()).getFieldFloatValue(LAP_DIST) + pauseToShorten.getDistPause();
+        lapMesg.get(pauseToShorten.getIxLap()).setFieldValue(LAP_TIMER, (lapTime));
+        //lapMesg.get(pauseToShorten.getIxLap()).setFieldValue(LAP_ETIMER, (lapTime));
+        lapMesg.get(pauseToShorten.getIxLap()).setFieldValue(LAP_DIST, (lapDist));
+        lapMesg.get(pauseToShorten.getIxLap()).setFieldValue(LAP_SPEED, (lapDist / lapTime));
+        lapMesg.get(pauseToShorten.getIxLap()).setFieldValue(LAP_ESPEED, (lapDist / lapTime));
 
         // Updating SESSION DATA
         //----------------------
-        totalTimerTime += (float) pauseToShorten.timePause - newPauseTime;
+        totalTimerTime += (float) pauseToShorten.getTimePause() - newPauseTime;
         sessionMesg.get(0).setFieldValue(SES_TIMER, (totalTimerTime));
-        //elapsedTimerTime += (float) pauseToShorten.timePause - newPauseTime;
+        //elapsedTimerTime += (float) pauseToShorten.getTimePause() - newPauseTime;
         //sessionMesg.get(0).setFieldValue(SES_ETIMER, elapsedTimerTime);
 
         totalDistance = recordMesg.get(numberOfRecords-1).getFieldFloatValue(RecordMesg.DistanceFieldNum);
