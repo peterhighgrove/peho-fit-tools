@@ -6,7 +6,6 @@ import java.util.Scanner;
 
 import se.peho.fittools.core.commands.AddGpsGapCommand;
 import se.peho.fittools.core.commands.ChangeStartTimeCommand;
-import se.peho.fittools.core.commands.CreateTimerListCommand;
 import se.peho.fittools.core.commands.FillGapsCommand;
 import se.peho.fittools.core.commands.IncreasePauseCommand;
 import se.peho.fittools.core.commands.ShortenPauseCommand;
@@ -42,15 +41,13 @@ public class MenuRunner {
             new FillGapsCommand(),
             new StartCommand(),
             new ShowDetailedFileInfoCommand(),
-            new ChangeStartTimeCommand(),
-            new CreateTimerListCommand()
+            new ChangeStartTimeCommand()
         };
 
         // Add each command to the map using its own key
         for (Command cmd : cmds) {
             commands.put(cmd.getKey(), cmd);
         }
-
     }
 
     public void run() {
@@ -65,6 +62,7 @@ public class MenuRunner {
                 String doublecheckCommand = InputHelper.askForString("Have you changed starttime (Enter/anything = YES) or", sc);
                 if (doublecheckCommand != null) {
                     watchFitFile.saveChanges(conf);
+                    break;
                 }
             } else {
                 Command cmd = commands.get(choice);
