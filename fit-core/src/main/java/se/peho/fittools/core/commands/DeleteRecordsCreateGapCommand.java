@@ -20,6 +20,10 @@ public class DeleteRecordsCreateGapCommand implements Command {
         if (startGapTimer == null) return;
         Long stopGapTimer = InputHelper.askForTimer("Enter timer value for LAST record that are going to be deleted", sc);
         if (stopGapTimer == null) return;
+        if (stopGapTimer <= startGapTimer) {
+            System.out.println("==XX> Last timer value must be larger than first timer value. Returning to main menu.");
+            return;
+        }
         watchFitFile.deleteRecordsCreateGap(startGapTimer, stopGapTimer);
 
         //watchFitFile.createTimerList();

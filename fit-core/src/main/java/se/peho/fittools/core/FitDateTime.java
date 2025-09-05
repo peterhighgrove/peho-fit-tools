@@ -86,7 +86,19 @@ public class FitDateTime {
         }
         String tz = offsetToTimeZoneString(0);
         String formatPattern = "yyyy-MM-dd-HH-mm-ss";
-        long unixDateTime = fitDateTime.getTimestamp()+FIT_EPOCH_OFFSET;
+        long unixDateTime = fitDateTime.getTimestamp() + FIT_EPOCH_OFFSET;
+        Instant instantDateTime = Instant.ofEpochSecond(unixDateTime);
+        String strDateTime = DateTimeFormatter.ofPattern(formatPattern).withZone(ZoneOffset.of(tz)).format(instantDateTime);
+        return strDateTime;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    static public String toString(Long fitDateTime) {
+        if (fitDateTime == null) {
+            fitDateTime= 0l;
+        }
+        String tz = offsetToTimeZoneString(0);
+        String formatPattern = "yyyy-MM-dd-HH-mm-ss";
+        long unixDateTime = fitDateTime + FIT_EPOCH_OFFSET;
         Instant instantDateTime = Instant.ofEpochSecond(unixDateTime);
         String strDateTime = DateTimeFormatter.ofPattern(formatPattern).withZone(ZoneOffset.of(tz)).format(instantDateTime);
         return strDateTime;

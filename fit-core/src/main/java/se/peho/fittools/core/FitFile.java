@@ -86,14 +86,21 @@ public class FitFile {
     public static final int REC_LON = RecordMesg.PositionLongFieldNum; //int
     public static final int REC_EALT = RecordMesg.EnhancedAltitudeFieldNum; //float
 
-    String manufacturer;
-    int productNo;
-    String product = "";
-    Float swVer;
-    public DateTime activityDateTimeUTC;  // Original file
-    public DateTime activityDateTimeLocal; // Original file
-    public DateTime activityDateTimeLocalOrg; // Original file
-    Long diffMinutesLocalUTC;
+    private String manufacturer;
+    private int productNo;
+    private String product = "";
+    private Float swVer;
+    private Long activityDateTimeUTC;  // Original file
+    private Long activityDateTimeLocal; // Original file
+    private Long activityDateTimeLocalOrg; // Original file
+    private Long diffMinutesLocalUTC;
+
+    Long timeFirstRecord;
+    Long timeFirstRecordOrg;   // Original file
+    Long timeLastRecord;
+    int numberOfRecords;
+    int numberOfLaps;
+    int changedStartTimeBySec = 0;
 
     String wktName;
     Sport sport;
@@ -109,16 +116,9 @@ public class FitFile {
     int avgPower;
     //int maxPower;
 
-    int numberOfLaps;
-    DateTime timeFirstRecord;
-    DateTime timeFirstRecordOrg;   // Original file
-    DateTime timeLastRecord;
-    int numberOfRecords;
-    int changedStartTimeBySec = 0;
-
-    public String savedFileInfoBefore = "";
-    public String savedFileInfoAfter = "";
-    public String savedFileUpdateLogg = "";
+    private String savedFileInfoBefore = "";
+    private String savedFileInfoAfter = "";
+    private String savedFileUpdateLogg = "";
     String savedStrLapsActiveInfoShort = "";
     String savedStrLapsRestInfoShort = "";
 
@@ -133,7 +133,6 @@ public class FitFile {
     Decode decode;
     MesgBroadcaster broadcaster;
 
-    public Boolean allMesgFlag = false;
     List<Mesg> allMesg = new ArrayList<>();
     List<Mesg> fileIdMesg = new ArrayList<>();
     List<Mesg> deviceInfoMesg = new ArrayList<>();
@@ -185,8 +184,85 @@ public class FitFile {
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public FitFile () {
-    	
     }
+
+    public Long getTimeFirstRecord() { return timeFirstRecord; }
+    public void setTimeFirstRecord(Long timeFirstRecord) { this.timeFirstRecord = timeFirstRecord; }
+
+    public Long getTimeLastRecord() { return timeLastRecord; }
+    public void setTimeLastRecord(Long timeLastRecord) { this.timeLastRecord = timeLastRecord; }
+
+    public Long getTimeFirstRecordOrg() { return timeFirstRecordOrg; }
+    public void setTimeFirstRecordOrg(Long timeFirstRecordOrg) { this.timeFirstRecordOrg = timeFirstRecordOrg; }
+
+    public Long getActivityDateTimeUTC() { return activityDateTimeUTC; }
+    public void setActivityDateTimeUTC(Long activityDateTimeUTC) { this.activityDateTimeUTC = activityDateTimeUTC; }
+
+    public Long getActivityDateTimeLocal() { return activityDateTimeLocal; }
+    public void setActivityDateTimeLocal(Long activityDateTimeLocal) { this.activityDateTimeLocal = activityDateTimeLocal; }
+
+    public Long getActivityDateTimeLocalOrg() { return activityDateTimeLocalOrg; }
+    public void setActivityDateTimeLocalOrg(Long activityDateTimeLocalOrg) { this.activityDateTimeLocalOrg = activityDateTimeLocalOrg; }
+
+    public Long getDiffMinutesLocalUTC() { return diffMinutesLocalUTC; }
+    public void setDiffMinutesLocalUTC(Long diffMinutesLocalUTC) { this.diffMinutesLocalUTC = diffMinutesLocalUTC; }
+
+    public int getNumberOfRecords() { return numberOfRecords; }
+    public void setNumberOfRecords(int numberOfRecords) { this.numberOfRecords = numberOfRecords; }
+
+    public Float getTotalDistance() { return totalDistance; }
+    public void setTotalDistance(Float totalDistance) { this.totalDistance = totalDistance; }
+
+    public Float getTotalDistanceOrg() { return totalDistanceOrg; }
+    public void setTotalDistanceOrg(Float totalDistanceOrg) { this.totalDistanceOrg = totalDistanceOrg; }
+
+    public String getManufacturer() { return manufacturer; }
+    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
+
+    public int getProductNo() { return productNo; }
+    public void setProductNo(int productNo) { this.productNo = productNo; }
+
+    public String getProduct() { return product; }
+    public void setProduct(String product) { this.product = product; }
+
+    public Float getSwVer() { return swVer; }
+    public void setSwVer(Float swVer) { this.swVer = swVer; }
+
+    public String getWktName() { return wktName; }
+    public void setWktName(String wktName) { this.wktName = wktName; }
+
+    public Sport getSport() { return sport; }
+    public void setSport(Sport sport) { this.sport = sport; }
+
+    public SubSport getSubsport() { return subsport; }
+    public void setSubsport(SubSport subsport) { this.subsport = subsport; }
+
+    public String getSportProfile() { return sportProfile; }
+    public void setSportProfile(String sportProfile) { this.sportProfile = sportProfile; }
+
+    public Float getTotalTimerTime() { return totalTimerTime; }
+    public void setTotalTimerTime(Float totalTimerTime) { this.totalTimerTime = totalTimerTime; }
+
+
+
+    public Float getAvgSpeed() { return avgSpeed; }
+    public void setAvgSpeed(Float avgSpeed) { this.avgSpeed = avgSpeed; }
+
+    public Float getMaxSpeed() { return maxSpeed; }
+    public void setMaxSpeed(Float maxSpeed) { this.maxSpeed = maxSpeed; }
+
+    public int getAvgCadence() { return avgCadence; }
+    public void setAvgCadence(int avgCadence) { this.avgCadence = avgCadence; }
+
+    public int getAvgPower() { return avgPower; }
+    public void setAvgPower(int avgPower) { this.avgPower = avgPower; }
+
+    public int getNumberOfLaps() { return numberOfLaps; }
+    public void setNumberOfLaps(int numberOfLaps) { this.numberOfLaps = numberOfLaps; }
+
+    public int getChangedStartTimeBySec() { return changedStartTimeBySec; }
+    public void setChangedStartTimeBySec(int changedStartTimeBySec) { this.changedStartTimeBySec = changedStartTimeBySec; }
+    
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public class GapMesg {
         private int no;
@@ -729,7 +805,7 @@ public class FitFile {
                 inPause = true;
                 pauseCounter += 1;
 
-                if (record.getFieldLongValue(EVE_TIME).equals(timeLastRecord.getTimestamp())) {
+                if (record.getFieldLongValue(EVE_TIME).equals(timeLastRecord)) {
                     //System.out.println("   SLUT   " + FitDateTime.toString(record.getTimestamp()));
                 } else {
                     startPauseTime = record.getFieldLongValue(EVE_TIME);
@@ -1002,9 +1078,7 @@ public class FitFile {
         Double distFromNew = GeoUtils.distCalc(newLatSemi, newLonSemi, startLat, startLon);
         Long orgStartTime = startTime;
         startTime -= timeToIncrease;
-        timeFirstRecord = new DateTime(startTime);
-
-
+        setTimeFirstRecord(startTime);
 
         //Float newTotalDistChange = (float) distFromNew + gapToChange.distGap;
         //Long timeFromNew = (long) (gapToChange.timeGap - timeToNew);
@@ -1097,10 +1171,10 @@ public class FitFile {
         //----------------------
         // Updating ACTIVITY DATA
         //----------------------
-        activityDateTimeUTC = new DateTime(activityDateTimeUTC.getTimestamp() - timeToIncrease);
-        activityDateTimeLocal = new DateTime(activityDateTimeLocal.getTimestamp() - timeToIncrease);
-        activityMesg.get(0).setFieldValue(ACT_TIME, activityDateTimeUTC.getTimestamp());
-        activityMesg.get(0).setFieldValue(ACT_LOCTIME, activityDateTimeLocal.getTimestamp());
+        activityDateTimeUTC = activityDateTimeUTC - timeToIncrease;
+        activityDateTimeLocal = activityDateTimeLocal - timeToIncrease;
+        activityMesg.get(0).setFieldValue(ACT_TIME, activityDateTimeUTC);
+        activityMesg.get(0).setFieldValue(ACT_LOCTIME, activityDateTimeLocal);
 
         info2 += "NEW TIMES" + System.lineSeparator();
         info2 += "startTime:"+FitDateTime.toString(new DateTime(startTime)) + System.lineSeparator();
@@ -1114,7 +1188,8 @@ public class FitFile {
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void countRecordsBetweenTimerValues(Long fromTimer, Long toTimer) {
+    public int countRecordsBetweenTimerValues(Long fromTimer, Long toTimer) {
+        return (findIxInRecordMesgBasedOnTimer(toTimer) - findIxInRecordMesgBasedOnTimer(fromTimer) - 1);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void deleteRecordsCreateGap(Long fromTimer, Long toTimer) {
@@ -1667,65 +1742,65 @@ public class FitFile {
             }
 
             if (fileIdMesg.get(0).getFieldIntegerValue(FID_MANU) != null) {
-                manufacturer = Manufacturer.getStringFromValue(fileIdMesg.get(0).getFieldIntegerValue(FID_MANU));
-                if (manufacturer == "GARMIN") {
+                setManufacturer(Manufacturer.getStringFromValue(fileIdMesg.get(0).getFieldIntegerValue(FID_MANU)));
+                if ("GARMIN".equals(getManufacturer())) {
                     if (fileIdMesg.get(0).getFieldIntegerValue(FID_MANU) != null) {
-                        productNo = fileIdMesg.get(0).getFieldIntegerValue(FID_PROD);
-                        product = GarminProduct.getStringFromValue(fileIdMesg.get(0).getFieldIntegerValue(FID_PROD));
+                        setProductNo(fileIdMesg.get(0).getFieldIntegerValue(FID_PROD));
+                        setProduct(GarminProduct.getStringFromValue(fileIdMesg.get(0).getFieldIntegerValue(FID_PROD)));
                     }
                 }
             }
 
-            swVer = deviceInfoMesg.get(0).getFieldFloatValue(DINFO_SWVER);
-            timeFirstRecord = new DateTime (recordMesg.get(0).getFieldLongValue(REC_TIME));
+            setSwVer(deviceInfoMesg.get(0).getFieldFloatValue(DINFO_SWVER));
+            setTimeFirstRecord(recordMesg.get(0).getFieldLongValue(REC_TIME));
 
             if (activityMesg.get(0).getFieldLongValue(ACT_TIME) == null) {
-                activityMesg.get(0).setFieldValue(ACT_TIME, timeFirstRecord.getTimestamp());
+                activityMesg.get(0).setFieldValue(ACT_TIME, timeFirstRecord);
             }
-            activityDateTimeUTC = new DateTime (activityMesg.get(0).getFieldLongValue(ACT_TIME));
+            setActivityDateTimeUTC(activityMesg.get(0).getFieldLongValue(ACT_TIME));
             if (activityMesg.get(0).getFieldLongValue(ACT_LOCTIME) == null) {
-                activityMesg.get(0).setFieldValue(ACT_LOCTIME, timeFirstRecord.getTimestamp());
+                activityMesg.get(0).setFieldValue(ACT_LOCTIME, timeFirstRecord);
             }
-            activityDateTimeLocal = new DateTime(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME));
-            diffMinutesLocalUTC = (activityDateTimeLocal.getTimestamp() - activityDateTimeUTC.getTimestamp()) / 60;
-            activityDateTimeLocalOrg = activityDateTimeLocal;
+            setActivityDateTimeLocal(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME));
+            setDiffMinutesLocalUTC((getActivityDateTimeLocal() - getActivityDateTimeUTC()) / 60);
+            setActivityDateTimeLocalOrg(getActivityDateTimeLocal());
 
             if (!wktRecordMesg.isEmpty()) {
                 if (wktRecordMesg.get(0).getFieldStringValue(WKT_NAME) != null) {
-                    wktName = wktRecordMesg.get(0).getFieldStringValue(WKT_NAME);
+                    setWktName(wktRecordMesg.get(0).getFieldStringValue(WKT_NAME));
                 }
             }
 
             if (sessionMesg.get(0).getFieldValue(SES_SPORT) != null) {
-                sport = Sport.getByValue(sessionMesg.get(0).getFieldShortValue(SES_SPORT));
+                setSport(Sport.getByValue(sessionMesg.get(0).getFieldShortValue(SES_SPORT)));
             }
             if (sessionMesg.get(0).getFieldValue(SES_SUBSPORT) != null) {
-                subsport = SubSport.getByValue(sessionMesg.get(0).getFieldShortValue(SES_SUBSPORT));
+                setSubsport(SubSport.getByValue(sessionMesg.get(0).getFieldShortValue(SES_SUBSPORT)));
             }
             if (sessionMesg.get(0).getFieldStringValue(SES_PROFILE) == null) {
                 sessionMesg.get(0).setFieldValue(SES_PROFILE, "noProfile");
             } else {
-                sportProfile = sessionMesg.get(0).getFieldStringValue(SES_PROFILE);
+                setSportProfile(sessionMesg.get(0).getFieldStringValue(SES_PROFILE));
             }
             if (sessionMesg.get(0).getFieldFloatValue(SES_TIMER) != null) {
-                totalTimerTime = sessionMesg.get(0).getFieldFloatValue(SES_TIMER);
+                setTotalTimerTime(sessionMesg.get(0).getFieldFloatValue(SES_TIMER));
             }
             if (sessionMesg.get(0).getFieldFloatValue(SES_DIST) != null) {
-                totalDistance = sessionMesg.get(0).getFieldFloatValue(SES_DIST);
-                totalDistanceOrg = totalDistance;
+                setTotalDistance(sessionMesg.get(0).getFieldFloatValue(SES_DIST));
+                setTotalDistanceOrg(sessionMesg.get(0).getFieldFloatValue(SES_DIST));
             }
             if (sessionMesg.get(0).getFieldFloatValue(SES_SPEED) != null) {
-                avgSpeed = sessionMesg.get(0).getFieldFloatValue(SES_SPEED);
+                setAvgSpeed(sessionMesg.get(0).getFieldFloatValue(SES_SPEED));
             }
             if (sessionMesg.get(0).getFieldFloatValue(SES_ESPEED) != null) {
-                avgSpeed = sessionMesg.get(0).getFieldFloatValue(SES_ESPEED);
+                setAvgSpeed(sessionMesg.get(0).getFieldFloatValue(SES_ESPEED));
             }
 
-            numberOfLaps = lapMesg.size();
-            
-            timeFirstRecordOrg = timeFirstRecord;
-            timeLastRecord = new DateTime (recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
-            numberOfRecords = recordMesg.size();
+            setNumberOfLaps(lapMesg.size());
+
+            setTimeFirstRecordOrg(timeFirstRecord);
+            setTimeLastRecord(recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
+            setNumberOfRecords(recordMesg.size());
 
             System.out.println("FIT file successfully read. Total records: " + numberOfRecords + " -- " + FitDateTime.toString(timeLastRecord,0));
 
@@ -1831,23 +1906,23 @@ public class FitFile {
                     break;
             }
         }
-        timeFirstRecord = new DateTime (recordMesg.get(0).getFieldLongValue(REC_TIME));
-        timeLastRecord = new DateTime (recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
-        activityDateTimeLocal = new DateTime(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME));
-        changedStartTimeBySec += changeSeconds;
+        setTimeFirstRecord(recordMesg.get(0).getFieldLongValue(REC_TIME));
+        setTimeLastRecord(recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
+        setActivityDateTimeLocal(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME));
+        setChangedStartTimeBySec(getChangedStartTimeBySec() + changeSeconds);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String createFileSummary() {
         String tempFileInfo = "";
         tempFileInfo += "--------------------------------------------------" + System.lineSeparator();
-        tempFileInfo += " --> Manufacturer:" + manufacturer + ", " + product + "(" + productNo + ")" + ", SW: v" + swVer + System.lineSeparator();
-        tempFileInfo += " --> Sport:"+ sport + ", SubSport:" + subsport + ", SportProfile:" + sportProfile + ", WktName:" + wktName + System.lineSeparator();
-        tempFileInfo += " --> Org activity dateTime Local:" + FitDateTime.toString(activityDateTimeLocalOrg) + System.lineSeparator();
-        tempFileInfo += " --> New activity dateTime Local:" + FitDateTime.toString(activityDateTimeLocal) + System.lineSeparator();
-        tempFileInfo += " --> Org activity DateTime UTC:  " + FitDateTime.toString(activityDateTimeUTC) + System.lineSeparator();
-        tempFileInfo += " --> timeZone:                   " + FitDateTime.offsetToTimeZoneString(diffMinutesLocalUTC) + System.lineSeparator();
-        tempFileInfo += " --> Org start datetime UTC:     " + FitDateTime.toString(timeFirstRecordOrg) + System.lineSeparator();
-        tempFileInfo += " --> New start datetime UTC:     " + FitDateTime.toString(timeFirstRecord) + System.lineSeparator();
+        tempFileInfo += " --> Manufacturer:" + getManufacturer() + ", " + getProduct() + "(" + getProductNo() + ")" + ", SW: v" + getSwVer() + System.lineSeparator();
+        tempFileInfo += " --> Sport:" + getSport() + ", SubSport:" + getSubsport() + ", SportProfile:" + getSportProfile() + ", WktName:" + getWktName() + System.lineSeparator();
+        tempFileInfo += " --> Org activity dateTime Local:" + FitDateTime.toString(getActivityDateTimeLocalOrg()) + System.lineSeparator();
+        tempFileInfo += " --> New activity dateTime Local:" + FitDateTime.toString(getActivityDateTimeLocal()) + System.lineSeparator();
+        tempFileInfo += " --> Org activity DateTime UTC:  " + FitDateTime.toString(getActivityDateTimeUTC()) + System.lineSeparator();
+        tempFileInfo += " --> timeZone:                   " + FitDateTime.offsetToTimeZoneString(getDiffMinutesLocalUTC()) + System.lineSeparator();
+        tempFileInfo += " --> Org start datetime UTC:     " + FitDateTime.toString(getTimeFirstRecordOrg()) + System.lineSeparator();
+        tempFileInfo += " --> New start datetime UTC:     " + FitDateTime.toString(getTimeFirstRecord()) + System.lineSeparator();
         
         tempFileInfo += "--------------------------------------------------" + System.lineSeparator();
 
