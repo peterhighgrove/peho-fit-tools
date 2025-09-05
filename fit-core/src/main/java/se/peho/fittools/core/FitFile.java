@@ -1114,6 +1114,9 @@ public class FitFile {
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void countRecordsBetweenTimerValues(Long fromTimer, Long toTimer) {
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void deleteRecordsCreateGap(Long fromTimer, Long toTimer) {
         System.out.println("===> Deleting records to create gap of " + FitDateTime.toTimerString(toTimer-fromTimer) + ", from " + FitDateTime.toTimerString(fromTimer) + " into the activity");
         Long fromTime = recordMesg.get(findIxInRecordMesgBasedOnTimer(fromTimer)).getFieldLongValue(REC_TIME);
