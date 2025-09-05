@@ -186,10 +186,6 @@ public class FitFile {
     public FitFile () {
     }
 
-    public List getSecExtraRecords() { return secExtraRecords; }
-    public List getGapRecords() { return gapRecords; }
-    public List getPauseRecords() { return pauseRecords; }
-
     public Long getTimeFirstRecord() { return timeFirstRecord; }
     public void setTimeFirstRecord(Long timeFirstRecord) { this.timeFirstRecord = timeFirstRecord; }
 
@@ -573,6 +569,10 @@ public class FitFile {
             ix += 1;
         }
         return ix;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public int countRecordsBetweenTimerValues(Long fromTimer, Long toTimer) {
+        return (findIxInRecordMesgBasedOnTimer(toTimer) - findIxInRecordMesgBasedOnTimer(fromTimer) - 1);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void createTimerList() {
@@ -1192,10 +1192,6 @@ public class FitFile {
         savedFileUpdateLogg += info2;
 
 
-    }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public int countRecordsBetweenTimerValues(Long fromTimer, Long toTimer) {
-        return (findIxInRecordMesgBasedOnTimer(toTimer) - findIxInRecordMesgBasedOnTimer(fromTimer) - 1);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void deleteRecordsCreateGap(Long fromTimer, Long toTimer) {
