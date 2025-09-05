@@ -186,6 +186,10 @@ public class FitFile {
     public FitFile () {
     }
 
+    public List getSecExtraRecords() { return secExtraRecords; }
+    public List getGapRecords() { return gapRecords; }
+    public List getPauseRecords() { return pauseRecords; }
+
     public Long getTimeFirstRecord() { return timeFirstRecord; }
     public void setTimeFirstRecord(Long timeFirstRecord) { this.timeFirstRecord = timeFirstRecord; }
 
@@ -242,8 +246,6 @@ public class FitFile {
 
     public Float getTotalTimerTime() { return totalTimerTime; }
     public void setTotalTimerTime(Float totalTimerTime) { this.totalTimerTime = totalTimerTime; }
-
-
 
     public Float getAvgSpeed() { return avgSpeed; }
     public void setAvgSpeed(Float avgSpeed) { this.avgSpeed = avgSpeed; }
@@ -513,6 +515,10 @@ public class FitFile {
             recordDist = recordMesg.get(ix).getFieldFloatValue(REC_DIST);
             recordMesg.get(ix).setFieldValue(REC_DIST, (recordDist + distToAdd));
         }
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public Long getLastTimerInTimerList() {
+        return secExtraRecords.get(secExtraRecords.size() - 1).getTimer();
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public Long findTimeInTimerListBasedOnTimer(Long timerValueToSearchFor) {
