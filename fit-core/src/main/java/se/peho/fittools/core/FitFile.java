@@ -439,7 +439,29 @@ public class FitFile {
         }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public int findIxInAllMesg(Long timeToSearchFor) {
+    public Long findTimeInTimerListBasedOnTimer(Long timerValueToSearchFor) {
+        int ix = 0;
+        // FIND IX i allMesg list
+        for (RecordExtraMesg record : secExtraRecords) {
+            if (record.getTimer().equals(timerValueToSearchFor)) {
+                break;
+            }
+            ix += 1;
+        }
+
+        // Get the time of the day for this record
+        return recordMesg.get(ix).getFieldLongValue(REC_TIME);
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public int findIxInAllMesgBasedOnTimer(Long timerValueToSearchFor) {
+        return findIxInAllMesgBasedOnTime(findTimeInTimerListBasedOnTimer(timerValueToSearchFor));
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public int findIxInRecordMesgBasedOnTimer(Long timerValueToSearchFor) {
+        return findIxInRecordMesgBasedOnTime(findTimeInTimerListBasedOnTimer(timerValueToSearchFor));
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public int findIxInAllMesgBasedOnTime(Long timeToSearchFor) {
         int ix = 0;
         // FIND IX i allMesg list
         for (Mesg record : allMesg) {
@@ -455,7 +477,7 @@ public class FitFile {
         return ix;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public int findIxInRecordMesg(Long timeToSearchFor) {
+    public int findIxInRecordMesgBasedOnTime(Long timeToSearchFor) {
         int ix = 0;
         // FIND IX i allMesg list
         for (Mesg record : recordMesg) {
@@ -898,10 +920,10 @@ public class FitFile {
             numberOfNewRecords = numberOfNewSeconds - 1;
             //System.out.println("numberOfNewRecords: "+numberOfNewRecords);
 
-            allMesgIxStart = findIxInAllMesg(record.getTimeStop());
-            recordMesgIxStart = findIxInRecordMesg(record.getTimeStop());
+            allMesgIxStart = findIxInAllMesgBasedOnTime(record.getTimeStop());
+            recordMesgIxStart = findIxInRecordMesgBasedOnTime(record.getTimeStop());
 
-            startGapRecord = recordMesg.get(findIxInRecordMesg(record.getTimeStart()));
+            startGapRecord = recordMesg.get(findIxInRecordMesgBasedOnTime(record.getTimeStart()));
             startTime = startGapRecord.getFieldLongValue(REC_TIME);
             startDist = startGapRecord.getFieldFloatValue(REC_DIST);
             startSpeed = startGapRecord.getFieldFloatValue(REC_ESPEED);
@@ -1009,7 +1031,7 @@ public class FitFile {
         System.out.print(info);
 
         // Adding new start record
-        allMesg.add(findIxInAllMesg(orgStartTime), newStartRecord);
+        allMesg.add(findIxInAllMesgBasedOnTime(orgStartTime), newStartRecord);
         recordMesg.add(0, newStartRecord);
         numberOfRecords++;
 
@@ -1092,6 +1114,14 @@ public class FitFile {
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void deleteRecordsCreateGap(Long fromTimer, Long toTimer) {
+        System.out.println("===> Deleting records to create gap of " + FitDateTime.toTimerString(toTimer-fromTimer) + ", from " + FitDateTime.toTimerString(fromTimer) + " into the activity");
+        Long fromTime = recordMesg.get(findIxInRecordMesgBasedOnTimer(fromTimer)).getFieldLongValue(REC_TIME);
+        Long toTime = recordMesg.get(findIxInRecordMesgBasedOnTimer(toTimer)).getFieldLongValue(REC_TIME);
+        System.out.println("===> Deleting records from " + FitDateTime.toString(fromTime,0) + " to " + FitDateTime.toString(toTime,0));
+
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void addRecordInGap(int gapNo, double[] coords) {
 
         // Parsing GPS input data
@@ -1161,7 +1191,7 @@ public class FitFile {
         savedFileUpdateLogg += info;
         System.out.print(info);
 
-        allMesg.add(findIxInAllMesg(stopTime), newGapRecord);
+        allMesg.add(findIxInAllMesgBasedOnTime(stopTime), newGapRecord);
         recordMesg.add(gapToChange.ixStop, newGapRecord);
         numberOfRecords++;
 
@@ -1207,7 +1237,7 @@ public class FitFile {
         Long recordToDeleteTime = orgStartEventTime;
         int i = 0;
         int recordToDeleteIx = pauseToIncrease.getIxStart();
-        int allMesgToDeleteIx = findIxInAllMesg(orgStartEventTime);
+        int allMesgToDeleteIx = findIxInAllMesgBasedOnTime(orgStartEventTime);
         while (recordToDeleteTime > newStartEventTime) {
             //System.out.println("Deleting record time:"+recordToDeleteTime+" Rix:"+recordToDeleteIx+" Aix:"+allMesgToDeleteIx);
             allMesg.remove(allMesgToDeleteIx);
@@ -1330,7 +1360,7 @@ public class FitFile {
         startGapNewRecord.setFieldValue(REC_SPEED, startGapSpeed);
         startGapNewRecord.setFieldValue(REC_ESPEED, startGapSpeed);
         startGapNewRecord.setFieldValue(REC_POW, startGapPow);
-        allMesg.add(findIxInAllMesg(stopGapTime), startGapNewRecord);
+        allMesg.add(findIxInAllMesgBasedOnTime(stopGapTime), startGapNewRecord);
         recordMesg.add(pauseToShorten.getIxStop(), startGapNewRecord);
         numberOfRecords++;
 

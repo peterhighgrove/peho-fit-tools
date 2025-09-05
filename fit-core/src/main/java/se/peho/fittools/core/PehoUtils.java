@@ -12,6 +12,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class PehoUtils {
+    // Garmin epoch (1989-12-31 00:00:00 UTC) in Unix seconds
+    private static final long GARMIN_EPOCH_OFFSET = 631065600L; 
+
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private static final String[] SEARCH_LOCATIONS = {
         "./conf.txt",                          // current directory
