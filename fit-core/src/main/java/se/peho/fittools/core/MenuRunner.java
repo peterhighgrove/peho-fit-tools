@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import se.peho.fittools.core.commands.AddGpsGapCommand;
 import se.peho.fittools.core.commands.ChangeStartTimeCommand;
+import se.peho.fittools.core.commands.DeletePauseCommand;
 import se.peho.fittools.core.commands.DeleteRecordsCreateGapCommand;
 import se.peho.fittools.core.commands.FillGapsCommand;
 import se.peho.fittools.core.commands.IncreasePauseCommand;
@@ -38,6 +39,7 @@ public class MenuRunner {
             new ShowGapListFilteredCommand(),
             new ShortenPauseCommand(),
             new IncreasePauseCommand(),
+            new DeletePauseCommand(),
             new AddGpsGapCommand(),
             new FillGapsCommand(),
             new StartCommand(),

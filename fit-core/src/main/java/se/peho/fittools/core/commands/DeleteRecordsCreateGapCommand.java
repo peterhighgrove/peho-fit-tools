@@ -5,15 +5,12 @@ import java.util.Scanner;
 import se.peho.fittools.core.Command;
 import se.peho.fittools.core.FitDateTime;
 import se.peho.fittools.core.FitFile;
-import se.peho.fittools.core.FitFile.CheckForPausesResult;
-import se.peho.fittools.core.FitFile.PauseVariant;
 import se.peho.fittools.core.InputHelper;
-import se.peho.fittools.core.PehoUtils;
 
 public class DeleteRecordsCreateGapCommand implements Command {
     
     @Override
-    public String getKey() { return "del"; }
+    public String getKey() { return "delr"; }
 
     @Override
     public String getDescription() { return "Delete records and create GAP"; }
@@ -65,7 +62,6 @@ public class DeleteRecordsCreateGapCommand implements Command {
             if (watchFitFile.checkForPausesAndGivePrintedResult(startGapTimer, stopGapTimer)) {
                 continue;
             }
-                
 
             watchFitFile.deleteRecordsCreateGap(startGapTimer, stopGapTimer);
 

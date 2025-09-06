@@ -148,9 +148,9 @@ public class FitFile {
     List<Mesg> recordMesg = new ArrayList<>();
 
     // List<LapExtraMesg> lapExtraRecords = new ArrayList<>(); //Not Garmin SDK
-    List<RecordExtraMesg> secExtraRecords = new ArrayList<>(); //Not Garmin SDK
-    List<GapMesg> gapRecords = new ArrayList<>(); //Not Garmin SDK
-    List<PauseMesg> pauseRecords = new ArrayList<>(); //Not Garmin SDK
+    private List<PauseMesg> pauseRecords = new ArrayList<>(); //Not Garmin SDK
+    private List<GapMesg> gapRecords = new ArrayList<>(); //Not Garmin SDK
+    private List<RecordMesgAddOnRecords> recordMesgAddOnRecords = new ArrayList<>(); //Not Garmin SDK
 
     SimpleDateFormat sweDateTime = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 
@@ -261,6 +261,23 @@ public class FitFile {
     public int getChangedStartTimeBySec() { return changedStartTimeBySec; }
     public void setChangedStartTimeBySec(int changedStartTimeBySec) { this.changedStartTimeBySec = changedStartTimeBySec; }
     
+    public List<PauseMesg> getPauseList() { return pauseRecords; }
+    public List<GapMesg> getGapList() { return gapRecords; }
+    public List<RecordMesgAddOnRecords> getRecordMesgAddOnRecords() { return recordMesgAddOnRecords; }
+    public List<Mesg> getAllMesg() { return allMesg; }
+    public List<Mesg> getFileIdMesg() { return fileIdMesg; }
+    public List<Mesg> getDeviceInfoMesg() { return deviceInfoMesg; }
+    public List<Mesg> getWktSessionMesg() { return wktSessionMesg; }
+    public List<Mesg> getWktStepMesg() { return wktStepMesg; }
+    public List<Mesg> getWktRecordMesg() { return wktRecordMesg; }
+    public List<Mesg> getActivityMesg() { return activityMesg; }
+    public List<Mesg> getSessionMesg() { return sessionMesg; }
+    public List<Mesg> getSplitMesg() { return splitMesg; }
+    public List<Mesg> getLapMesg() { return lapMesg; }
+    public List<Mesg> getEventMesg() { return eventMesg; }
+    public List<Mesg> getEventTimerMesg() { return eventTimerMesg; }
+    public List<Mesg> getRecordMesg() { return recordMesg; }
+
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public class GapMesg {
         private int no;
@@ -446,19 +463,20 @@ public class FitFile {
         public void calcDistGap () {
             this.altPause = this.altStop - this.altStart;
         }
+        
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    class RecordExtraMesg {
+    class RecordMesgAddOnRecords {
         Long timer;
         int lapNo;
 
-        public RecordExtraMesg() {
+        public RecordMesgAddOnRecords() {
         }
-        public RecordExtraMesg(Long timer) {
+        public RecordMesgAddOnRecords(Long timer) {
             this.timer = timer;
         }
-        public RecordExtraMesg(int lapNo, Long timer) {
+        public RecordMesgAddOnRecords(int lapNo, Long timer) {
             this.lapNo = lapNo;
             this.timer = timer;
         }
@@ -514,13 +532,13 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public Long getLastTimerInTimerList() {
-        return secExtraRecords.get(secExtraRecords.size() - 1).getTimer();
+        return recordMesgAddOnRecords.get(recordMesgAddOnRecords.size() - 1).getTimer();
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public Long findTimeInTimerListBasedOnTimer(Long timerValueToSearchFor) {
         int ix = 0;
         // FIND IX i allMesg list
-        for (RecordExtraMesg record : secExtraRecords) {
+        for (RecordMesgAddOnRecords record : recordMesgAddOnRecords) {
             if (record.getTimer().equals(timerValueToSearchFor)) {
                 break;
             }
@@ -533,10 +551,6 @@ public class FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public int findIxInAllMesgBasedOnTimer(Long timerValueToSearchFor) {
         return findIxInAllMesgBasedOnTime(findTimeInTimerListBasedOnTimer(timerValueToSearchFor));
-    }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public int findIxInRecordMesgBasedOnTimer(Long timerValueToSearchFor) {
-        return findIxInRecordMesgBasedOnTime(findTimeInTimerListBasedOnTimer(timerValueToSearchFor));
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public int findIxInAllMesgBasedOnTime(Long timeToSearchFor) {
@@ -553,6 +567,10 @@ public class FitFile {
             ix += 1;
         }
         return ix;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public int findIxInRecordMesgBasedOnTimer(Long timerValueToSearchFor) {
+        return findIxInRecordMesgBasedOnTime(findTimeInTimerListBasedOnTimer(timerValueToSearchFor));
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public int findIxInRecordMesgBasedOnTime(Long timeToSearchFor) {
@@ -732,7 +750,7 @@ public class FitFile {
         Boolean increaseTimer = true;
         Boolean isEventTImerTime = false;
 
-        secExtraRecords.clear();
+        recordMesgAddOnRecords.clear();
 
         for (Mesg record : recordMesg) {
 
@@ -799,15 +817,15 @@ public class FitFile {
                         + FitDateTime.toString(record.getFieldLongValue(REC_TIME),diffMinutesLocalUTC)); */
                 }
 
-                RecordExtraMesg newExtraRecord = new RecordExtraMesg(timerCounter);
-                secExtraRecords.add(newExtraRecord);
+                RecordMesgAddOnRecords newExtraRecord = new RecordMesgAddOnRecords(timerCounter);
+                recordMesgAddOnRecords.add(newExtraRecord);
 
             }
 
             lastRecordTime = record.getFieldLongValue(REC_TIME);
 
         }
-        System.out.println("======== Records: " + recordMesg.size() + " extraRecords: " + secExtraRecords.size());
+        System.out.println("======== Records: " + recordMesg.size() + " extraRecords: " + recordMesgAddOnRecords.size());
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void createGapList() {
@@ -907,7 +925,7 @@ public class FitFile {
                     hrSign = "+";
                 }
                 System.out.print(String.format(" HR:%1$d%2$s%3$d", recordMesg.get(record.ixStart).getFieldIntegerValue(REC_HR), hrSign, hrDiff));
-                System.out.print(" @time:" + PehoUtils.sec2minSecShort(secExtraRecords.get(record.getIxStart()).getTimer()));
+                System.out.print(" @time:" + PehoUtils.sec2minSecShort(recordMesgAddOnRecords.get(record.getIxStart()).getTimer()));
                 System.out.print(String.format(" @dist:%1$.0fm", record.getDistStart()));
 
                 if (gapCommandInput == null) {
@@ -1074,7 +1092,7 @@ public class FitFile {
             recordMesg.get(record.getIxStart()).getFieldIntegerValue(REC_HR),
             hrSign,
             hrDiff));
-        System.out.print(" @time:" + PehoUtils.sec2minSecShort(secExtraRecords.get(record.getIxStart()).getTimer()));
+        System.out.print(" @time:" + PehoUtils.sec2minSecShort(recordMesgAddOnRecords.get(record.getIxStart()).getTimer()));
         System.out.print(" @dist:" + PehoUtils.m2km2(record.getDistStart()) + "km");
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -1132,6 +1150,7 @@ public class FitFile {
         System.out.println("--------------------------------------------------");
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void fillRecordsInGap() {
 
             savedFileUpdateLogg += "Filling gaps with 1sec records" + System.lineSeparator();
@@ -1146,9 +1165,9 @@ public class FitFile {
             Float startDist = 0f;
             Float startSpeed = 0f;
             Short startHr = 0;
-            int startPow = 0;
-            int startLat = 0;
-            int startLon = 0;
+            Integer startPow = 0;
+            Integer startLat = 0;
+            Integer startLon = 0;
             Float startAlt = 0f;
 
             Mesg stopGapRecord;
@@ -1156,9 +1175,9 @@ public class FitFile {
             Float stopDist = 0f;
             Float stopSpeed = 0f;
             Short stopHr = 0;
-            int stopPow = 0;
-            int stopLat = 0;
-            int stopLon = 0;
+            Integer stopPow = 0;
+            Integer stopLat = 0;
+            Integer stopLon = 0;
             Float stopAlt = 0f;
 
             Double distDelta = 0d;
@@ -1183,8 +1202,11 @@ public class FitFile {
             startSpeed = startGapRecord.getFieldFloatValue(REC_ESPEED);
             startHr = startGapRecord.getFieldShortValue(REC_HR);
             startPow = startGapRecord.getFieldIntegerValue(REC_POW);
+            if (startPow == null) { startPow = 0; }
             startLat = startGapRecord.getFieldIntegerValue(REC_LAT);
+            if (startLat == null) { startLat = 0; }
             startLon = startGapRecord.getFieldIntegerValue(REC_LON);
+            if (startLon == null) { startLon = 0; }
             startAlt = startGapRecord.getFieldFloatValue(REC_EALT);
 
             stopGapRecord = recordMesg.get(recordMesgIxStart);
@@ -1193,8 +1215,11 @@ public class FitFile {
             stopSpeed = stopGapRecord.getFieldFloatValue(REC_ESPEED);
             stopHr = stopGapRecord.getFieldShortValue(REC_HR);
             stopPow = stopGapRecord.getFieldIntegerValue(REC_POW);
+            if (stopPow == null) { stopPow = 0; }
             stopLat = stopGapRecord.getFieldIntegerValue(REC_LAT);
+            if (stopLat == null) { stopLat = 0; }
             stopLon = stopGapRecord.getFieldIntegerValue(REC_LON);
+            if (stopLon == null) { stopLon = 0; }
             stopAlt = stopGapRecord.getFieldFloatValue(REC_EALT);
 
             distDelta = (double) (stopDist - startDist) / numberOfNewSeconds;
@@ -1380,7 +1405,7 @@ public class FitFile {
 
         for (int i=1; i<numberOfRecordsToDelete; i++) {
             while (allMesg.get(ixInAllMesgToDelete).getNum() != MesgNum.RECORD) {
-                ixInAllMesgToDelete += 1;
+                ixInAllMesgToDelete++;
             }
             allMesg.remove(ixInAllMesgToDelete);
             recordMesg.remove(ixInRecordMesgToDelete);
@@ -1496,6 +1521,74 @@ public class FitFile {
         sessionMesg.get(0).setFieldValue(SES_SPEED, avgSpeed);
         sessionMesg.get(0).setFieldValue(SES_ESPEED, avgSpeed);
 
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void deletePause(int pauseNoToDelete) {
+        int pauseIx = pauseNoToDelete - 1;
+        PauseMesg pauseToDelete = getPauseList().get(pauseIx);
+        Long timeStart = pauseToDelete.getTimeStart();
+        Long timeStop = pauseToDelete.getTimeStop();
+
+        // Search for ix in allMesg
+        int mesgCounter = 0;
+        int foundCounter = 0;
+        int allMesgStopEventToDelete = 0;
+        int allMesgStartEventToDelete = 0;
+        for (Mesg mesg:allMesg) {
+            if (mesg.getNum() == MesgNum.EVENT) {
+                if (mesg.getFieldLongValue(EVE_TIME).equals(timeStart)) {
+                    if (mesg.getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
+                        allMesgStopEventToDelete = mesgCounter;
+                        foundCounter++;
+                        System.out.println("Found STOP in allMesg Ix: "+mesgCounter);
+                    }
+                }
+                if (mesg.getFieldLongValue(EVE_TIME).equals(timeStop)) {
+                    if (mesg.getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
+                        allMesgStartEventToDelete = mesgCounter;
+                        foundCounter++;
+                        System.out.println("Found START in allMesg Ix: "+mesgCounter);
+                    }
+                }
+            }
+            if (foundCounter >= 2) { break; }
+            mesgCounter++;
+        }
+        mesgCounter = 0;
+        foundCounter = 0;
+        int eventMesgStopEventToDelete = 0;
+        int eventMesgStartEventToDelete = 0;
+        for (Mesg mesg:eventMesg) {
+            if (mesg.getFieldLongValue(EVE_TIME).equals(timeStart)) {
+                if (mesg.getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
+                    eventMesgStopEventToDelete = mesgCounter;
+                    foundCounter++;
+                    System.out.println("Found STOP in eventMesg Ix: "+mesgCounter);
+                }
+            }
+            if (mesg.getFieldLongValue(EVE_TIME).equals(timeStop)) {
+                if (mesg.getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
+                    eventMesgStartEventToDelete = mesgCounter;
+                    foundCounter++;
+                    System.out.println("Found START in eventMesg Ix: "+mesgCounter);
+                }
+            }
+            if (foundCounter >= 2) { break; }
+            mesgCounter++;
+        }
+
+        System.out.println("Found STOP in eventTimerMesg Ix: "+pauseToDelete.getIxEvStart());
+        System.out.println("Found START in eventTimerMesg Ix: "+pauseToDelete.getIxEvStop());
+
+        // Delete pause END, START EVENT - Delete of the last record first, otherwise index will change
+        allMesg.remove(allMesgStartEventToDelete);
+        eventMesg.remove(eventMesgStartEventToDelete);
+        eventTimerMesg.remove(pauseToDelete.getIxEvStop());
+
+        // Delete pause START, STOP EVENT
+        allMesg.remove(allMesgStopEventToDelete);
+        eventMesg.remove(eventMesgStopEventToDelete);
+        eventTimerMesg.remove(pauseToDelete.getIxEvStart());
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void increasePause(int pauseNo, Long secondsToPutIntoPause) {
