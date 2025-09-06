@@ -575,6 +575,153 @@ public class FitFile {
         return (findIxInRecordMesgBasedOnTimer(toTimer) - findIxInRecordMesgBasedOnTimer(fromTimer) - 1);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public record CheckForPausesResult(
+            List<Integer> unmatchedStopPauses,   // pauses with stop but no start
+            List<Integer> completePauses,        // pauses fully inside the interval
+            List<Integer> unmatchedStartPauses   // pauses with start but no stop
+    ) {
+        public boolean hasCompletePauses() {
+            return completePauses != null && !completePauses.isEmpty();
+        }
+
+        public boolean hasUnmatchedStart() {
+            return unmatchedStartPauses != null && !unmatchedStartPauses.isEmpty();
+        }
+
+        public boolean hasUnmatchedEnd() {
+            return unmatchedStopPauses != null && !unmatchedStopPauses.isEmpty();
+        }
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public Boolean checkForPausesAndGivePrintedResult(Long fromTimer, Long toTimer) {
+
+        Boolean isPauses = false;
+        CheckForPausesResult result = checkForPausesByTimer(fromTimer, toTimer);
+
+        if (result.hasCompletePauses() || result.hasUnmatchedStart() || result.hasUnmatchedEnd()) {
+            isPauses = true;
+            System.out.println();
+            System.out.println("==XX> There is at least one PAUSE between start and stop.");
+            System.out.println("==XX> You need to DELETE PAUSES to proceeed. Enter a new timer value.");
+
+            if (result.hasCompletePauses()) {
+                System.out.println("List of COMPLETED PAUSE(S) between start and stop.");
+                for (int ix : result.completePauses()) {
+                    printPause(ix);
+                    System.out.println();
+                }
+            }
+            if (result.hasUnmatchedStart()) {
+                System.out.println("List of UNMATCHED START PAUSE(S), pause started before, but ending in interval.");
+                for (int ix : result.unmatchedStartPauses()) {
+                    printPause(ix);
+                    System.out.println();
+                }
+            }
+            if (result.hasUnmatchedEnd()) {
+                System.out.println("List of UNMATCHED END PAUSE(S), pause starting in interval, but ending after.");
+                for (int ix : result.unmatchedStopPauses()) {
+                    printPause(ix);
+                    System.out.println();
+                }
+            }
+            
+        }
+        return isPauses;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public CheckForPausesResult checkForPausesByTimer(Long fromTimer, Long toTimer) {
+
+        Long fromTime = findTimeInTimerListBasedOnTimer(fromTimer);
+        Long toTime = findTimeInTimerListBasedOnTimer(toTimer);
+
+        return checkForPausesByTime(fromTime, toTime);
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public CheckForPausesResult checkForPausesByTime(Long fromTime, Long toTime) {
+        List<Integer> completePauses = new ArrayList<>();
+        List<Integer> unmatchedStartPauses = new ArrayList<>();
+        List<Integer> unmatchedStopPauses = new ArrayList<>();
+
+        for (PauseMesg pause : pauseRecords) {
+            Long start = pause.getTimeStart();
+            Long stop = pause.getTimeStop();
+            int ix = pause.getNo() - 1;
+
+            if (start < fromTime && stop >= fromTime && stop <= toTime) {
+                unmatchedStopPauses.add(ix);
+            } else if (start >= fromTime && stop <= toTime) {
+                completePauses.add(ix);
+            } else if (start >= fromTime && start <= toTime && (stop == null || stop > toTime)) {
+                unmatchedStartPauses.add(ix);
+            } else {
+            }
+        }
+
+        return new CheckForPausesResult(unmatchedStopPauses, completePauses, unmatchedStartPauses);
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public enum PauseVariant {
+        ANY,            // any pause (complete, unmatched start, unmatched end)
+        COMPLETE,       // complete pauses inside interval
+        UNMATCHED_START,// pauses that start but have no stop
+        UNMATCHED_END   // pauses that end but have no start
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public boolean isTherePauseBetweenTimerValues(
+            Long startTimer,
+            Long endTimer,
+            PauseVariant variant
+    ) {
+        CheckForPausesResult result = checkForPausesByTimer(startTimer, endTimer);
+
+        return switch (variant) {
+            case ANY -> result.hasCompletePauses() || result.hasUnmatchedStart() || result.hasUnmatchedEnd();
+            case COMPLETE -> result.hasCompletePauses();
+            case UNMATCHED_START -> result.hasUnmatchedStart();
+            case UNMATCHED_END -> result.hasUnmatchedEnd();
+        };
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public boolean isThereAnyPausesBetweenTimerValues(Long startTimer, Long endTimer) {
+
+        // Reuse the checkForPausesTime method
+        CheckForPausesResult result = checkForPausesByTimer(startTimer, endTimer);
+
+        // If any of the three variants have a match, return true
+        return result.hasCompletePauses() 
+            || result.hasUnmatchedStart() 
+            || result.hasUnmatchedEnd();
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public boolean isThereAnyCompletedPausesBetweenTimer(Long startTimer, Long endTimer) {
+
+        // Reuse the checkForPausesTime method
+        CheckForPausesResult result = checkForPausesByTimer(startTimer, endTimer);
+
+        // If any of the three variants have a match, return true
+        return result.hasCompletePauses();
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public boolean isThereAnyUnmatchedStartPauseByTimer(Long startTimer, Long endTimer) {
+
+        // Reuse the checkForPausesTime method
+        CheckForPausesResult result = checkForPausesByTimer(startTimer, endTimer);
+
+        // If any of the three variants have a match, return true
+        return result.hasUnmatchedStart();
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public boolean isThereAnyUnmatchedEndPauseByTimer(Long startTimer, Long endTimer) {
+
+        // Reuse the checkForPausesTime method
+        CheckForPausesResult result = checkForPausesByTimer(startTimer, endTimer);
+
+        // If any of the three variants have a match, return true
+        return result.hasUnmatchedEnd();
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void createTimerList() {
         Long timerCounter = -1l;
         Long recordTimerDelta = 0l;
@@ -907,12 +1054,35 @@ public class FitFile {
             eventIx += 1;
         }
     }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void printPause(int ix) {
+        PauseMesg record = pauseRecords.get(ix);
+        int hrDiff = 0;
+        String hrSign = "";
 
+        System.out.print("   Pause (" + record.getNo() + ")");
+        System.out.print(String.format(" %1$dsec %2$.0fm ele%3$.1fm", record.getTimePause(), record.getDistPause(), record.getAltPause()));
+
+        hrDiff = recordMesg.get(record.getIxStop()).getFieldIntegerValue(REC_HR)
+                - recordMesg.get(record.getIxStart()).getFieldIntegerValue(REC_HR);
+        if (hrDiff > 0) {
+            hrSign = "+";
+        } else {
+            hrSign = "";
+        }
+        System.out.print(String.format(" HR:%1$d%2$s%3$d",
+            recordMesg.get(record.getIxStart()).getFieldIntegerValue(REC_HR),
+            hrSign,
+            hrDiff));
+        System.out.print(" @time:" + PehoUtils.sec2minSecShort(secExtraRecords.get(record.getIxStart()).getTimer()));
+        System.out.print(" @dist:" + PehoUtils.m2km2(record.getDistStart()) + "km");
+    }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printPauseList(String pauseCommandInput, Integer minDistToShow) {
 
         int hrDiff = 0;
         String hrSign = "";
+        int ix = 0;
 
         System.out.println("==================================================");
         System.out.println("PAUSES IN FILE");
@@ -927,7 +1097,8 @@ public class FitFile {
                 System.out.println("==> WARNING - Data Records in pause! Pause no: " + record.getNo());
             }
             if (record.getDistPause() >= minDistToShow) {
-                System.out.print("   Pause (" + record.getNo() + ")");
+                printPause(ix);
+                /* System.out.print("   Pause (" + record.getNo() + ")");
                 System.out.print(String.format(" %1$dsec %2$.0fm ele%3$.1fm", record.getTimePause(), record.getDistPause(), record.getAltPause()));
 
                 hrDiff = recordMesg.get(record.getIxStop()).getFieldIntegerValue(REC_HR)
@@ -942,7 +1113,7 @@ public class FitFile {
                     hrSign,
                     hrDiff));
                 System.out.print(" @time:" + PehoUtils.sec2minSecShort(secExtraRecords.get(record.getIxStart()).getTimer()));
-                System.out.print(" @dist:" + PehoUtils.m2km2(record.getDistStart()) + "km");
+                System.out.print(" @dist:" + PehoUtils.m2km2(record.getDistStart()) + "km"); */
 
                 if (pauseCommandInput == null) {
                     // Show minimal
@@ -955,6 +1126,7 @@ public class FitFile {
                     //System.out.print("sec TimerTrigger:" + record.getTimerTrigger());
                 }
                 System.out.println();
+                ix ++;
             }
         }
         System.out.println("--------------------------------------------------");
@@ -1210,9 +1382,7 @@ public class FitFile {
             while (allMesg.get(ixInAllMesgToDelete).getNum() != MesgNum.RECORD) {
                 ixInAllMesgToDelete += 1;
             }
-            System.out.println("Deleting AllMesgIx:    " + ixInAllMesgToDelete + ", time: " + FitDateTime.toString(allMesg.get(ixInAllMesgToDelete).getFieldLongValue(REC_TIME),0));
             allMesg.remove(ixInAllMesgToDelete);
-            System.out.println("Deleting RecordMesgIx: " + ixInRecordMesgToDelete + ", time: " + FitDateTime.toString(recordMesg.get(ixInRecordMesgToDelete).getFieldLongValue(REC_TIME),0));
             recordMesg.remove(ixInRecordMesgToDelete);
         }
 

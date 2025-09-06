@@ -3,6 +3,7 @@ package se.peho.fittools.core;
 import java.util.Scanner;
 
 public class InputHelper {
+    
     public static Long askForTimer(String prompt, Scanner sc) {
         while (true) {
             System.out.print(prompt + " (format ss, m:ss or h:mm:ss) (b = back): ");
