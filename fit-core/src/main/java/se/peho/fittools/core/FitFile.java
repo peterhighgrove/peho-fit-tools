@@ -1034,7 +1034,8 @@ public class FitFile {
             //System.out.println("powerDelta: "+powDelta);
             altDelta = (double) (stopAlt - startAlt) / numberOfNewSeconds;
             //System.out.println("altDelta: "+altDelta);
-            savedFileUpdateLogg += "-- GapNo: "+record.getNo()+", dist: "+record.getDistGap()+"m, time: "+record.getTimeGap()+"sec, @Dist: "+startDist+"-"+stopDist+"m, time: "+FitDateTime.toString(record.getTimeStart(),diffMinutesLocalUTC) + System.lineSeparator();
+            savedFileUpdateLogg += "-- GapNo: "+record.getNo()+", dist: "+record.getDistGap()+"m, time: "+record.getTimeGap()+"sec, @Dist: "
+                +startDist+"-"+stopDist+"m, time: "+FitDateTime.toString(record.getTimeStart(),diffMinutesLocalUTC) + System.lineSeparator();
 
             for (int i=1; i<=numberOfNewRecords; i++) {
                 Mesg newRecord = new Mesg(startGapRecord);
@@ -1163,42 +1164,68 @@ public class FitFile {
         sessionMesg.get(0).setFieldValue(SES_TIME, sesTime);
         sessionMesg.get(0).setFieldValue(SES_STIME, sesSTime);
 
-        totalTimerTime += timeToIncrease;
-        sessionMesg.get(0).setFieldValue(SES_TIMER, totalTimerTime);
+        setTotalTimerTime(getTotalTimerTime() + timeToIncrease);
+        sessionMesg.get(0).setFieldValue(SES_TIMER, getTotalTimerTime());
         sessionMesg.get(0).setFieldValue(SES_ETIMER, sessionMesg.get(0).getFieldFloatValue(SES_ETIMER) + timeToIncrease);
 
-        totalDistance = recordMesg.get(numberOfRecords-1).getFieldFloatValue(RecordMesg.DistanceFieldNum);
-        sessionMesg.get(0).setFieldValue(SES_DIST, totalDistance);
+        setTotalDistance(recordMesg.get(getNumberOfRecords() - 1).getFieldFloatValue(RecordMesg.DistanceFieldNum));
+        sessionMesg.get(0).setFieldValue(SES_DIST, getTotalDistance());
 
-        avgSpeed = totalDistance / totalTimerTime;
-        sessionMesg.get(0).setFieldValue(SES_SPEED, avgSpeed);
-        sessionMesg.get(0).setFieldValue(SES_ESPEED, avgSpeed);
+        setAvgSpeed(getTotalDistance() / getTotalTimerTime());
+        sessionMesg.get(0).setFieldValue(SES_SPEED, getAvgSpeed());
+        sessionMesg.get(0).setFieldValue(SES_ESPEED, getAvgSpeed());
 
         //----------------------
         // Updating ACTIVITY DATA
         //----------------------
-        activityDateTimeUTC = activityDateTimeUTC - timeToIncrease;
-        activityDateTimeLocal = activityDateTimeLocal - timeToIncrease;
-        activityMesg.get(0).setFieldValue(ACT_TIME, activityDateTimeUTC);
-        activityMesg.get(0).setFieldValue(ACT_LOCTIME, activityDateTimeLocal);
+        setActivityDateTimeUTC(getActivityDateTimeUTC() - timeToIncrease);
+        setActivityDateTimeLocal(getActivityDateTimeLocal() - timeToIncrease);
+        activityMesg.get(0).setFieldValue(ACT_TIME, getActivityDateTimeUTC());
+        activityMesg.get(0).setFieldValue(ACT_LOCTIME, getActivityDateTimeLocal());
 
         info2 += "NEW TIMES" + System.lineSeparator();
-        info2 += "startTime:"+FitDateTime.toString(new DateTime(startTime)) + System.lineSeparator();
-        info2 += "Lap time/stime:"+FitDateTime.toString(new DateTime(lapTime))+" / "+FitDateTime.toString(new DateTime(lapSTime)) + System.lineSeparator();
-        info2 += "Ses time/stime:"+FitDateTime.toString(new DateTime(sesTime))+" / "+FitDateTime.toString(new DateTime(sesSTime)) + System.lineSeparator();
-        info2 += "Act time UTC:"+FitDateTime.toString(activityDateTimeUTC) + System.lineSeparator();
-        info2 += "Act time Loc:"+FitDateTime.toString(activityDateTimeLocal) + System.lineSeparator();
+        info2 += "startTime:" + FitDateTime.toString(new DateTime(startTime)) + System.lineSeparator();
+        info2 += "Lap time/stime:" + FitDateTime.toString(new DateTime(lapTime)) + " / " + FitDateTime.toString(new DateTime(lapSTime)) + System.lineSeparator();
+        info2 += "Ses time/stime:" + FitDateTime.toString(new DateTime(sesTime)) + " / " + FitDateTime.toString(new DateTime(sesSTime)) + System.lineSeparator();
+        info2 += "Act time UTC:" + FitDateTime.toString(getActivityDateTimeUTC()) + System.lineSeparator();
+        info2 += "Act time Loc:" + FitDateTime.toString(getActivityDateTimeLocal()) + System.lineSeparator();
         System.out.print(info2);
         savedFileUpdateLogg += info2;
-
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void deleteRecordsCreateGap(Long fromTimer, Long toTimer) {
-        System.out.println("===> Deleting records to create gap of " + FitDateTime.toTimerString(toTimer-fromTimer) + ", from " + FitDateTime.toTimerString(fromTimer) + " into the activity");
         Long fromTime = recordMesg.get(findIxInRecordMesgBasedOnTimer(fromTimer)).getFieldLongValue(REC_TIME);
         Long toTime = recordMesg.get(findIxInRecordMesgBasedOnTimer(toTimer)).getFieldLongValue(REC_TIME);
-        System.out.println("===> Deleting records from " + FitDateTime.toString(fromTime,0) + " to " + FitDateTime.toString(toTime,0));
+
+        int ixInRecordMesgStart = findIxInRecordMesgBasedOnTime(fromTime);
+        int ixInRecordMesgStop = findIxInRecordMesgBasedOnTime(toTime);
+        int numberOfRecordsToDelete = ixInRecordMesgStop - ixInRecordMesgStart + 1;
+        int ixInRecordMesgToDelete = ixInRecordMesgStart;
+
+        int ixInAllMesgStart = findIxInAllMesgBasedOnTime(fromTime);
+        int ixInAllMesgToDelete = ixInAllMesgStart;
+
+        for (int i=1; i<numberOfRecordsToDelete; i++) {
+            while (allMesg.get(ixInAllMesgToDelete).getNum() != MesgNum.RECORD) {
+                ixInAllMesgToDelete += 1;
+            }
+            System.out.println("Deleting AllMesgIx:    " + ixInAllMesgToDelete + ", time: " + FitDateTime.toString(allMesg.get(ixInAllMesgToDelete).getFieldLongValue(REC_TIME),0));
+            allMesg.remove(ixInAllMesgToDelete);
+            System.out.println("Deleting RecordMesgIx: " + ixInRecordMesgToDelete + ", time: " + FitDateTime.toString(recordMesg.get(ixInRecordMesgToDelete).getFieldLongValue(REC_TIME),0));
+            recordMesg.remove(ixInRecordMesgToDelete);
+        }
+
+        String tempLogg = "";
+        tempLogg += "===> Input values: " + FitDateTime.toTimerString(fromTimer) + ", " + FitDateTime.toTimerString(toTimer) + System.lineSeparator();
+        tempLogg += "===> RecordMesgIx to delete from-to: " + ixInRecordMesgStart + " - " + ixInRecordMesgStop + System.lineSeparator();
+        tempLogg += "===> AllMesgIx to delete from: " + ixInAllMesgStart + " and number of records: " + numberOfRecordsToDelete + System.lineSeparator();
+        tempLogg += "===> Deleting records to create gap of " + FitDateTime.toTimerString(toTimer-fromTimer+3) //+3 because to and from should be included
+             + ", from " + FitDateTime.toTimerString(fromTimer) + " into the activity" + System.lineSeparator();
+        tempLogg += "===> Deleting records from " + FitDateTime.toString(fromTime,0)
+             + " to " + FitDateTime.toString(toTime,0) + System.lineSeparator();
+        savedFileUpdateLogg += tempLogg;
+        System.out.print(tempLogg);
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

@@ -57,8 +57,8 @@ public class DeleteRecordsCreateGapCommand implements Command {
 
         watchFitFile.deleteRecordsCreateGap(startGapTimer, stopGapTimer);
 
-        //watchFitFile.createTimerList();
-        //watchFitFile.createPauseList();
+        watchFitFile.createTimerList();
+        watchFitFile.createPauseList();
         watchFitFile.createGapList();
         watchFitFile.printGapList("", 0);
     }
