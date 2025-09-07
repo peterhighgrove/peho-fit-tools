@@ -19,7 +19,7 @@ public class LapMergeCommand implements Command {
 
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
-        System.out.println();
+        watchFitFile.printLapRecords0();
         System.out.println("Last lap number is: " + watchFitFile.getLapMesg().size());
 
         while (true) { 
@@ -32,7 +32,7 @@ public class LapMergeCommand implements Command {
                 System.out.println("==XX> Lap number must be positive. Enter a new lap number.");
                 continue;
             }
-            if (firstLapToBeMerged > watchFitFile.getLapMesg().size()) {
+            if (firstLapToBeMerged >= watchFitFile.getLapMesg().size()) {
                 System.out.println("==XX> Lap number must be within range of existing records. Enter a new lap number.");
                 continue;
             }
@@ -50,7 +50,7 @@ public class LapMergeCommand implements Command {
             }
 
             // Check if stop is larger than start
-            if (lastLapToBeMerged > firstLapToBeMerged) {
+            if (firstLapToBeMerged >= lastLapToBeMerged) {
                 System.out.println("==XX> Last lap number must be larger than first lap number. Enter new lap numbers.");
                 continue;
             }

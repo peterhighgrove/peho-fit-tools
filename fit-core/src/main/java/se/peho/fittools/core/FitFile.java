@@ -40,42 +40,55 @@ public class FitFile {
     public static final int EVE_TYPE = EventMesg.EventTypeFieldNum; //long
     public static final int SPL_STIME = SplitMesg.StartTimeFieldNum; //long
     public static final int SPL_ETIME = SplitMesg.EndTimeFieldNum; //long
-    public static final int SPL_MESSAGE_INDEX      = SplitMesg.MessageIndexFieldNum;      // int
-    public static final int SPL_SPLIT_TYPE         = SplitMesg.SplitTypeFieldNum;         // enum
-    public static final int SPL_TOTAL_ELAPSED_TIME = SplitMesg.TotalElapsedTimeFieldNum;  // float
-    public static final int SPL_TOTAL_TIMER        = SplitMesg.TotalTimerTimeFieldNum;    // float
-    public static final int SPL_TOTAL_DISTANCE     = SplitMesg.TotalDistanceFieldNum;     // float
-    public static final int SPL_AVG_SPEED          = SplitMesg.AvgSpeedFieldNum;          // float
-    public static final int SPL_START_TIME         = SplitMesg.StartTimeFieldNum;         // long
-    public static final int SPL_TOTAL_ASCENT       = SplitMesg.TotalAscentFieldNum;       // int
-    public static final int SPL_TOTAL_DESCENT      = SplitMesg.TotalDescentFieldNum;      // int
-    public static final int SPL_START_LAT          = SplitMesg.StartPositionLatFieldNum;  // int (semicircles)
-    public static final int SPL_START_LON          = SplitMesg.StartPositionLongFieldNum; // int (semicircles)
-    public static final int SPL_END_LAT            = SplitMesg.EndPositionLatFieldNum;    // int (semicircles)
-    public static final int SPL_END_LON            = SplitMesg.EndPositionLongFieldNum;   // int (semicircles)
-    public static final int SPL_MAX_SPEED          = SplitMesg.MaxSpeedFieldNum;          // float
-    public static final int SPL_AVG_VERT_SPEED     = SplitMesg.AvgVertSpeedFieldNum;      // float
-    public static final int SPL_END_TIME           = SplitMesg.EndTimeFieldNum;           // long
-    public static final int SPL_TOTAL_CALORIES     = SplitMesg.TotalCaloriesFieldNum;     // int
-    public static final int SPL_START_ELEVATION    = SplitMesg.StartElevationFieldNum;    // int
-    public static final int SPL_TOTAL_MOVING_TIME  = SplitMesg.TotalMovingTimeFieldNum;   // float
+    public static final int SPL_MESSAGE_INDEX = SplitMesg.MessageIndexFieldNum; // int
+    public static final int SPL_SPLIT_TYPE = SplitMesg.SplitTypeFieldNum; // enum
+    public static final int SPL_TOTAL_ELAPSED_TIME = SplitMesg.TotalElapsedTimeFieldNum; // float
+    public static final int SPL_TOTAL_TIMER = SplitMesg.TotalTimerTimeFieldNum; // float
+    public static final int SPL_TOTAL_DISTANCE = SplitMesg.TotalDistanceFieldNum; // float
+    public static final int SPL_AVG_SPEED = SplitMesg.AvgSpeedFieldNum; // float
+    public static final int SPL_START_TIME = SplitMesg.StartTimeFieldNum; // long
+    public static final int SPL_TOTAL_ASCENT = SplitMesg.TotalAscentFieldNum; // int
+    public static final int SPL_TOTAL_DESCENT = SplitMesg.TotalDescentFieldNum; // int
+    public static final int SPL_START_LAT = SplitMesg.StartPositionLatFieldNum; // int (semicircles)
+    public static final int SPL_START_LON = SplitMesg.StartPositionLongFieldNum; // int (semicircles)
+    public static final int SPL_END_LAT = SplitMesg.EndPositionLatFieldNum; // int (semicircles)
+    public static final int SPL_END_LON = SplitMesg.EndPositionLongFieldNum; // int (semicircles)
+    public static final int SPL_MAX_SPEED = SplitMesg.MaxSpeedFieldNum; // float
+    public static final int SPL_AVG_VERT_SPEED = SplitMesg.AvgVertSpeedFieldNum; // float
+    public static final int SPL_END_TIME = SplitMesg.EndTimeFieldNum; // long
+    public static final int SPL_TOTAL_CALORIES = SplitMesg.TotalCaloriesFieldNum; // int
+    public static final int SPL_START_ELEVATION = SplitMesg.StartElevationFieldNum; // int
+    public static final int SPL_TOTAL_MOVING_TIME = SplitMesg.TotalMovingTimeFieldNum; // float
     public static final int LAP_TIME = LapMesg.TimestampFieldNum; //long
     public static final int LAP_STIME = LapMesg.StartTimeFieldNum; //long
     public static final int LAP_TIMER = LapMesg.TotalTimerTimeFieldNum; //float
     public static final int LAP_ETIMER = LapMesg.TotalElapsedTimeFieldNum; //float
+    public static final int LAP_MTIMER = LapMesg.TotalMovingTimeFieldNum; //float
     public static final int LAP_DIST = LapMesg.TotalDistanceFieldNum; //float
     public static final int LAP_SPEED = LapMesg.AvgSpeedFieldNum; //float
-    public static final int LAP_MSPEED     = LapMesg.MaxSpeedFieldNum;             // float
+    public static final int LAP_MSPEED = LapMesg.MaxSpeedFieldNum; // float
     public static final int LAP_ESPEED = LapMesg.EnhancedAvgSpeedFieldNum; //float
-    public static final int LAP_EMSPEED = LapMesg.EnhancedMaxSpeedFieldNum;   
-    public static final int LAP_HR        = LapMesg.AvgHeartRateFieldNum;       
-    public static final int LAP_MHR        = LapMesg.MaxHeartRateFieldNum;       
-    public static final int LAP_CAD   = LapMesg.AvgCadenceFieldNum;           // short
-    public static final int LAP_MCAD   = LapMesg.MaxCadenceFieldNum;           // short    
-    public static final int LAP_INTENSITY     = LapMesg.IntensityFieldNum;            // enum (short) -> Intensity.getByValue()
-    public static final int LAP_WKT_STEP_IDX  = LapMesg.WktStepIndexFieldNum;         // integer
-    public static final int LAP_POW       = LapMesg.AvgPowerFieldNum;           
-    public static final int LAP_MPOW       = LapMesg.MaxPowerFieldNum;           
+    public static final int LAP_EMSPEED = LapMesg.EnhancedMaxSpeedFieldNum; // float
+    public static final int LAP_HR = LapMesg.AvgHeartRateFieldNum; // int
+    public static final int LAP_MHR = LapMesg.MaxHeartRateFieldNum; // int
+    public static final int LAP_CAD = LapMesg.AvgCadenceFieldNum; // short
+    public static final int LAP_MCAD = LapMesg.MaxCadenceFieldNum; // short
+    public static final int LAP_INTENSITY = LapMesg.IntensityFieldNum; // enum (short) -> Intensity.getByValue()
+    public static final int LAP_WKT_STEP_IDX = LapMesg.WktStepIndexFieldNum; // integer
+    public static final int LAP_POW = LapMesg.AvgPowerFieldNum; // int
+    public static final int LAP_MPOW = LapMesg.MaxPowerFieldNum; // int
+    public static final int LAP_ASC = LapMesg.TotalAscentFieldNum; // int
+    public static final int LAP_DESC = LapMesg.TotalDescentFieldNum; // int
+    public static final int LAP_ALT = LapMesg.AvgAltitudeFieldNum; // float
+    public static final int LAP_MALT = LapMesg.MaxAltitudeFieldNum; // float
+    public static final int LAP_MINALT = LapMesg.MinAltitudeFieldNum; // float
+    public static final int LAP_SLAT = LapMesg.StartPositionLatFieldNum; // int (semicircles)
+    public static final int LAP_SLON = LapMesg.StartPositionLongFieldNum; // int (semicircles)
+    public static final int LAP_ELAT = LapMesg.EndPositionLatFieldNum; // int (semicircles)
+    public static final int LAP_ELON = LapMesg.EndPositionLongFieldNum; // int (semicircles)
+    public static final int LAP_TEMP = LapMesg.AvgTemperatureFieldNum; // byte
+    public static final int LAP_MTEMP = LapMesg.MaxTemperatureFieldNum; // byte
+    public static final int LAP_MINTEMP = LapMesg.MinTemperatureFieldNum; // byte
     public static final int REC_TIME = RecordMesg.TimestampFieldNum; //long
     public static final int REC_DIST = RecordMesg.DistanceFieldNum; //float
     public static final int REC_HR = RecordMesg.HeartRateFieldNum; //int
@@ -1657,9 +1670,256 @@ public class FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void mergeLaps(int fromLap, int toLap) {
 
-        for (int lapCounter = fromLap; lapCounter < toLap; lapCounter++) {
-            
+        Long timeStart = 0L;
+        Long timeEnd = 0L;
+        Float timerSumOfLaps = 0f;
+        Float elapsedTimerSumOfLaps = 0f;
+        Float movingTimerSumOfLaps = 0f;
+        Float distSumOfLaps = 0f;
+        Float hrAvgFaktorsumOfLaps = 0f;
+        Integer hrMaxOfLaps = 0;
+        Float speedAvgFaktorsumOfLaps = 0f;
+        Float speedMaxOfLaps = 0f;
+        Float enhSpeedAvgFaktorsumOfLaps = 0f;
+        Float enhSpeedMaxOfLaps = 0f;
+        Float powerAvgFaktorsumOfLaps = 0f;
+        Integer powerMaxOfLaps = 0;
+        Float cadenceAvgFaktorsumOfLaps = 0f;
+        Integer cadenceMaxOfLaps = 0;
+        Float ascentSumOfLaps = 0f;
+        Float descentSumOfLaps = 0f;
+        Float altAvgFaktorsumOfLaps = 0f;
+        Float altMaxOfLaps = 0f;
+        Float altMinOfLaps = 0f;
+        Integer latStart = 0;
+        Integer lonStart = 0;
+        Integer latEnd = 0;
+        Integer lonEnd = 0;
+        Float tempAvgFaktorsumOfLaps = 0f;
+        Byte tempMaxOfLaps = 0;
+        Byte tempMinOfLaps = 0;
+
+        for (int lapIxCounter = (fromLap-1); lapIxCounter <= (toLap-1); lapIxCounter++) {
+
+            // Summing up values from laps to be merged
+            //-----------------------------------------------
+            if (lapIxCounter == fromLap-1) {
+                if (lapMesg.get(lapIxCounter).getFieldLongValue(LAP_STIME) != null) {
+                    timeStart = lapMesg.get(lapIxCounter).getFieldLongValue(LAP_STIME);
+                }
+                if (lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_SLAT) != null) {
+                    latStart = lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_SLAT);
+                }
+                if (lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_SLON) != null) {
+                    lonStart = lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_SLON);
+                }
+            }
+            if (lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_TIMER) != null) {
+                timerSumOfLaps += lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_TIMER);
+            }
+            if (lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_ETIMER) != null) {
+                elapsedTimerSumOfLaps += lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_ETIMER);
+            }
+            if (lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_MTIMER) != null) {
+                movingTimerSumOfLaps += lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_MTIMER);
+            }
+            if (lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_DIST) != null) {
+                distSumOfLaps += lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_DIST);
+            }
+            if (lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_HR) != null) {
+                hrAvgFaktorsumOfLaps += lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_HR)
+                    * lapMesg.get(lapIxCounter).getFieldLongValue(LAP_TIME);
+            }
+            if (lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_MHR) != null) {
+                if (lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_MHR) > hrMaxOfLaps) {
+                    hrMaxOfLaps = lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_MHR);
+                }
+            }
+            if (lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_SPEED) != null) {
+                speedAvgFaktorsumOfLaps += lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_SPEED)
+                    * lapMesg.get(lapIxCounter).getFieldLongValue(LAP_TIMER);
+            }
+            if (lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_MSPEED) != null) {
+                if (lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_MSPEED) > speedMaxOfLaps) {
+                    speedMaxOfLaps = lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_MSPEED);
+                }
+            }
+            if (lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_ESPEED) != null) {
+                enhSpeedAvgFaktorsumOfLaps += lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_ESPEED)
+                    * lapMesg.get(lapIxCounter).getFieldLongValue(LAP_TIMER);
+            }
+            if (lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_EMSPEED) != null) {
+                if (lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_EMSPEED) > enhSpeedMaxOfLaps) {
+                    enhSpeedMaxOfLaps = lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_EMSPEED);
+                }
+            }
+            if (lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_POW) != null) {
+                powerAvgFaktorsumOfLaps += lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_POW)
+                    * lapMesg.get(lapIxCounter).getFieldLongValue(LAP_TIMER);
+            }
+            if (lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_MPOW) != null) {
+                if (lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_MPOW) > powerMaxOfLaps) {
+                    powerMaxOfLaps = lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_MPOW);
+                }
+            }
+            if (lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_CAD) != null) {
+                cadenceAvgFaktorsumOfLaps += lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_CAD)
+                    * lapMesg.get(lapIxCounter).getFieldLongValue(LAP_TIMER);
+            }
+            if (lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_MCAD) != null) {
+                if (lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_MCAD) > cadenceMaxOfLaps) {
+                    cadenceMaxOfLaps = lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_MCAD);
+                }
+            }
+            if (lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_ASC) != null) {
+                ascentSumOfLaps += lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_ASC);
+            }
+            if (lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_DESC) != null) {
+                descentSumOfLaps += lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_DESC);
+            }
+            if (lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_ALT) != null) {
+                altAvgFaktorsumOfLaps += lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_ALT)
+                    * lapMesg.get(lapIxCounter).getFieldLongValue(LAP_TIMER);
+            }
+            if (lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_MALT) != null) {
+                if (lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_MALT) > altMaxOfLaps) {
+                    altMaxOfLaps = lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_MALT);
+                }
+            }
+            if (lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_MINALT) != null) {
+                if ((lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_MINALT) < altMinOfLaps) || (altMinOfLaps == 0f)) {
+                    altMinOfLaps = lapMesg.get(lapIxCounter).getFieldFloatValue(LAP_MINALT);
+                }
+            }
+            if (lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_TEMP) != null) {
+                tempAvgFaktorsumOfLaps += lapMesg.get(lapIxCounter).getFieldIntegerValue(LAP_TEMP)
+                    * lapMesg.get(lapIxCounter).getFieldLongValue(LAP_TIMER);
+            }
+            if (lapMesg.get(lapIxCounter).getFieldByteValue(LAP_MTEMP) != null) {
+                if (lapMesg.get(lapIxCounter).getFieldByteValue(LAP_MTEMP) > tempMaxOfLaps) {
+                    tempMaxOfLaps = lapMesg.get(lapIxCounter).getFieldByteValue(LAP_MTEMP);
+                }
+            }
+            if (lapMesg.get(lapIxCounter).getFieldByteValue(LAP_MINTEMP) != null) {
+                if ((lapMesg.get(lapIxCounter).getFieldByteValue(LAP_MINTEMP) < tempMinOfLaps) || (tempMinOfLaps == 0)) {
+                    tempMinOfLaps = lapMesg.get(lapIxCounter).getFieldByteValue(LAP_MINTEMP);
+                }
+            }
         }
+
+        // Getting values from the "toLap - 1" lap, but will not be used
+        //-----------------------------------------------
+        if (lapMesg.get(toLap-1).getFieldLongValue(LAP_TIME) != null) {
+            timeEnd = lapMesg.get(toLap-1).getFieldLongValue(LAP_TIME);
+        }
+        if (lapMesg.get(toLap-1).getFieldIntegerValue(LAP_ELAT) != null) {
+            latEnd = lapMesg.get(toLap-1).getFieldIntegerValue(LAP_ELAT);
+        }
+        if (lapMesg.get(toLap-1).getFieldIntegerValue(LAP_ELON) != null) {
+            lonEnd = lapMesg.get(toLap-1).getFieldIntegerValue(LAP_ELON);
+        }
+
+        // Setting values in the "toLap - 1" lap
+        //-----------------------------------------------
+        if (lapMesg.get(toLap-1).getFieldLongValue(LAP_STIME) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_STIME, timeStart);
+        }
+        if (lapMesg.get(toLap-1).getFieldFloatValue(LAP_TIMER) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_TIMER, timerSumOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldFloatValue(LAP_ETIMER) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_ETIMER, elapsedTimerSumOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldFloatValue(LAP_MTIMER) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_MTIMER, movingTimerSumOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldFloatValue(LAP_DIST) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_DIST, distSumOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldIntegerValue(LAP_HR) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_HR, Math.round(hrAvgFaktorsumOfLaps / timerSumOfLaps));
+        }
+        if (lapMesg.get(toLap-1).getFieldIntegerValue(LAP_MHR) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_MHR, hrMaxOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldFloatValue(LAP_SPEED) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_SPEED, speedAvgFaktorsumOfLaps / timerSumOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldFloatValue(LAP_MSPEED) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_MSPEED, speedMaxOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldFloatValue(LAP_ESPEED) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_ESPEED, enhSpeedAvgFaktorsumOfLaps / timerSumOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldFloatValue(LAP_EMSPEED) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_EMSPEED, enhSpeedMaxOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldIntegerValue(LAP_POW) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_POW, Math.round(powerAvgFaktorsumOfLaps / timerSumOfLaps));
+        }
+        if (lapMesg.get(toLap-1).getFieldIntegerValue(LAP_MPOW) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_MPOW, powerMaxOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldIntegerValue(LAP_CAD) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_CAD, Math.round(cadenceAvgFaktorsumOfLaps / timerSumOfLaps));
+        }
+        if (lapMesg.get(toLap-1).getFieldIntegerValue(LAP_MCAD) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_MCAD, cadenceMaxOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldFloatValue(LAP_ASC) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_ASC, ascentSumOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldFloatValue(LAP_DESC) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_DESC, descentSumOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldFloatValue(LAP_ALT) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_ALT, altAvgFaktorsumOfLaps / timerSumOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldFloatValue(LAP_MALT) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_MALT, altMaxOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldFloatValue(LAP_MINALT) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_MINALT, altMinOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldIntegerValue(LAP_TEMP) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_TEMP, Math.round(tempAvgFaktorsumOfLaps / timerSumOfLaps));
+        }
+        if (lapMesg.get(toLap-1).getFieldByteValue(LAP_MTEMP) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_MTEMP, tempMaxOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldByteValue(LAP_MINTEMP) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_MINTEMP, tempMinOfLaps);
+        }
+        if (lapMesg.get(toLap-1).getFieldIntegerValue(LAP_SLAT) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_SLAT, latStart);
+        }
+        if (lapMesg.get(toLap-1).getFieldIntegerValue(LAP_SLON) != null) {
+            lapMesg.get(toLap-1).setFieldValue(LAP_SLON, lonStart);
+        }
+
+        savedFileUpdateLogg += "Merged laps: " + fromLap + " to " + toLap + System.lineSeparator();
+        savedFileUpdateLogg += "-- New lap " + (toLap-1) + " time: " + PehoUtils.sec2minSecLong(timerSumOfLaps) + " min, dist: " + Math.round(distSumOfLaps) + " m" + System.lineSeparator();
+
+        // Deleting the merged laps (fromLap to toLap-1)
+        //-----------------------------------------------
+        for (int lapIxCounter = fromLap-1; lapIxCounter <= toLap-2; lapIxCounter++) {
+
+            Long lapStartTime = lapMesg.get(lapIxCounter).getFieldLongValue(LAP_STIME);
+            int mesgIxCounter = 0;
+            for (Mesg mesg:allMesg) {
+                if (mesg.getNum() == MesgNum.LAP) {
+                    if (mesg.getFieldLongValue(LAP_STIME).equals(lapStartTime)) {
+                        savedFileUpdateLogg += "-- Deleting lap ix:" + lapIxCounter + " time:" + FitDateTime.toString(mesg.getFieldLongValue(LAP_STIME),0) + System.lineSeparator();
+                        break;
+                    }
+                }
+                mesgIxCounter++;
+            }
+            allMesg.remove(mesgIxCounter);
+            lapMesg.remove(fromLap-1);
+        }
+
+        numberOfLaps -= (toLap - fromLap);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void shortenPause(int pauseNo, Long newPauseTime) {
