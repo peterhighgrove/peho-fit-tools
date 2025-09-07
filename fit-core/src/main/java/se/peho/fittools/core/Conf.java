@@ -207,7 +207,7 @@ public class Conf {
         System.out.println("c2SyncSecondsLapDistCalc: " + getC2SyncSecondsLapDistCalc());
         System.out.println("+++++++++++++++++++++++++++++++++++");
 
-        System.out.println("Input file path: " + getInputFilePath());
+        System.out.println("Input file used: " + getInputFilePath());
 
 
     } //constructor conf

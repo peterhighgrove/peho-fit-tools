@@ -19,15 +19,6 @@ public class Main {
 
         FitFile watchFitFile = new FitFile();
 
-        // READING FIT FILE
-        watchFitFile.readFitFile (conf.getInputFilePath());
-
-        // SAVE INFO ABOUT FILE BEFORE UPDATIING
-        watchFitFile.saveFileInfoBefore();
-        watchFitFile.createTimerList();
-        watchFitFile.createPauseList();
-        watchFitFile.createGapList();
-
         // INTERACTIVE MENU
         MenuRunner menu = new MenuRunner(watchFitFile, conf);
         menu.run();

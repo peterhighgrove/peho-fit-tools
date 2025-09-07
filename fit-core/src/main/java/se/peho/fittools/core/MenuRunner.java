@@ -69,6 +69,16 @@ public class MenuRunner {
     }
 
     public void run() {
+        
+        // READING FIT FILE
+        watchFitFile.readFitFile (conf.getInputFilePath());
+
+        // SAVE INFO ABOUT FILE BEFORE UPDATIING
+        watchFitFile.saveFileInfoBefore();
+        watchFitFile.createTimerList();
+        watchFitFile.createPauseList();
+        watchFitFile.createGapList();
+
         boolean firstTime = true;
 
         while (true) {
