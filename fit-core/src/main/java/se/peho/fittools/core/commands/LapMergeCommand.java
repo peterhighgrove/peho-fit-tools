@@ -60,7 +60,7 @@ public class LapMergeCommand implements Command {
             watchFitFile.createTimerList();
             watchFitFile.createPauseList();
             watchFitFile.createGapList();
-            watchFitFile.printGapList("", 0);
+            watchFitFile.printLapRecords0();
             return;
         }
     }
