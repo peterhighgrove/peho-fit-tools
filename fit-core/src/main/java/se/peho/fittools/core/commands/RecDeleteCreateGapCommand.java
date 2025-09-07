@@ -7,13 +7,16 @@ import se.peho.fittools.core.FitDateTime;
 import se.peho.fittools.core.FitFile;
 import se.peho.fittools.core.InputHelper;
 
-public class DeleteRecordsCreateGapCommand implements Command {
+public class RecDeleteCreateGapCommand implements Command {
     
     @Override
     public String getKey() { return "delr"; }
 
     @Override
     public String getDescription() { return "Delete records and create GAP"; }
+
+    @Override
+    public String getCategory() { return "Records"; }
 
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {

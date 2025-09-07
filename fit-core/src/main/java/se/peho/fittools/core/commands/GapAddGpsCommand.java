@@ -6,12 +6,15 @@ import se.peho.fittools.core.Command;
 import se.peho.fittools.core.FitFile;
 import se.peho.fittools.core.InputHelper;
 
-public class AddGpsGapCommand implements Command {
+public class GapAddGpsCommand implements Command {
     @Override
     public String getKey() { return "a"; }
 
     @Override
     public String getDescription() { return "Add GPS points in gap"; }
+
+    @Override
+    public String getCategory() { return "Gaps"; }
 
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {

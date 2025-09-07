@@ -6,12 +6,15 @@ import se.peho.fittools.core.Command;
 import se.peho.fittools.core.FitFile;
 import se.peho.fittools.core.InputHelper;
 
-public class ShowPauseListFilteredCommand implements Command {
+public class PauseShowListFilteredCommand implements Command {
     @Override
     public String getKey() { return "pf"; }
 
     @Override
     public String getDescription() { return "Show PAUSE list with filter/more details"; }
+
+    @Override
+    public String getCategory() { return "Pauses"; }
 
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {

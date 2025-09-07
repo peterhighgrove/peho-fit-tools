@@ -1,22 +1,29 @@
 package se.peho.fittools.core;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import se.peho.fittools.core.commands.AddGpsGapCommand;
-import se.peho.fittools.core.commands.ChangeStartTimeCommand;
-import se.peho.fittools.core.commands.DeletePauseCommand;
-import se.peho.fittools.core.commands.DeleteRecordsCreateGapCommand;
-import se.peho.fittools.core.commands.FillGapsCommand;
-import se.peho.fittools.core.commands.IncreasePauseCommand;
-import se.peho.fittools.core.commands.ShortenPauseCommand;
-import se.peho.fittools.core.commands.ShowDetailedFileInfoCommand;
-import se.peho.fittools.core.commands.ShowGapListCommand;
-import se.peho.fittools.core.commands.ShowGapListFilteredCommand;
-import se.peho.fittools.core.commands.ShowPauseListCommand;
-import se.peho.fittools.core.commands.ShowPauseListFilteredCommand;
-import se.peho.fittools.core.commands.StartCommand;
+import se.peho.fittools.core.commands.FileInfoShowDetailedCommand;
+import se.peho.fittools.core.commands.GapAddGpsCommand;
+import se.peho.fittools.core.commands.GapShowListCommand;
+import se.peho.fittools.core.commands.GapShowListFilteredCommand;
+import se.peho.fittools.core.commands.GapsFillCommand;
+import se.peho.fittools.core.commands.LapShowList1Command;
+import se.peho.fittools.core.commands.LapShowList2Command;
+import se.peho.fittools.core.commands.LapShowList3Command;
+import se.peho.fittools.core.commands.LapShowList4Command;
+import se.peho.fittools.core.commands.PauseDeleteCommand;
+import se.peho.fittools.core.commands.PauseIncreaseCommand;
+import se.peho.fittools.core.commands.PauseShortenCommand;
+import se.peho.fittools.core.commands.PauseShowListCommand;
+import se.peho.fittools.core.commands.PauseShowListFilteredCommand;
+import se.peho.fittools.core.commands.RecDeleteCreateGapCommand;
+import se.peho.fittools.core.commands.RecStartCommand;
+import se.peho.fittools.core.commands.SaveChangeStartTimeExitCommand;
+import se.peho.fittools.core.commands.SplitShowListCommand;
 
 public class MenuRunner {
     private final FitFile watchFitFile;
@@ -33,19 +40,24 @@ public class MenuRunner {
     private void registerCommands() {
 
         Command[] cmds = {
-            new ShowPauseListCommand(),
-            new ShowPauseListFilteredCommand(),
-            new ShowGapListCommand(),
-            new ShowGapListFilteredCommand(),
-            new ShortenPauseCommand(),
-            new IncreasePauseCommand(),
-            new DeletePauseCommand(),
-            new AddGpsGapCommand(),
-            new FillGapsCommand(),
-            new StartCommand(),
-            new DeleteRecordsCreateGapCommand(),
-            new ShowDetailedFileInfoCommand(),
-            new ChangeStartTimeCommand()
+            new GapShowListCommand(),
+            new GapShowListFilteredCommand(),
+            new GapAddGpsCommand(),
+            new GapsFillCommand(),
+            new PauseShowListCommand(),
+            new PauseShowListFilteredCommand(),
+            new PauseShortenCommand(),
+            new PauseIncreaseCommand(),
+            new PauseDeleteCommand(),
+            new LapShowList1Command(),
+            new LapShowList2Command(),
+            new LapShowList3Command(),
+            new LapShowList4Command(),
+            new SplitShowListCommand(),
+            new RecDeleteCreateGapCommand(),
+            new RecStartCommand(),
+            new FileInfoShowDetailedCommand(),
+            new SaveChangeStartTimeExitCommand(conf)
         };
 
         // Add each command to the map using its own key
@@ -55,36 +67,58 @@ public class MenuRunner {
     }
 
     public void run() {
+        boolean firstTime = true;
+
         while (true) {
-            printMenu();
+            if (firstTime) {
+                printFullMenu();
+                firstTime = false;
+            } else {
+                printMainMenu();
+            }
+
             String choice = sc.nextLine().trim();
 
             if (choice.equals("x")) {
                 System.out.println("Nothing done. Exiting.");
                 break;
-            } else if (choice.equals("save")) {
-                String doublecheckCommand = InputHelper.askForString("Have you changed starttime (Enter/anything = YES) or", sc);
-                if (doublecheckCommand != null) {
-                    watchFitFile.saveChanges(conf);
-                    break;
-                }
+            } else if (choice.equals("m")) {
+                printFullMenu();
+                choice = sc.nextLine().trim(); // read new choice after showing menu
+            }
+
+            Command cmd = commands.get(choice);
+            if (cmd != null) {
+                cmd.run(sc, watchFitFile);
             } else {
-                Command cmd = commands.get(choice);
-                if (cmd != null) {
-                    cmd.run(sc, watchFitFile);
-                } else {
-                    System.out.println("Unknown command: " + choice);
-                }
+                System.out.println("Unknown command: " + choice);
             }
         }
     }
 
-    private void printMenu() {
+    private void printMainMenu() {
         System.out.println("\n=== MAIN MENU ===");
+        System.out.println("(m) Show full menu");
+        System.out.println("(x) Stop without saving");
+        System.out.print("Choose action: ");
+    }
+
+    private void printFullMenu() {
+        System.out.println("\n=== FULL MENU ===");
+
+        // Group commands by category
+        Map<String, List<Command>> grouped = new LinkedHashMap<>();
         for (Command cmd : commands.values()) {
-            System.out.println("(" + cmd.getKey() + ") " + cmd.getDescription());
+            grouped.computeIfAbsent(cmd.getCategory(), k -> new ArrayList<>()).add(cmd);
         }
-        System.out.println("(save) Save & exit");
+
+        for (Map.Entry<String, List<Command>> entry : grouped.entrySet()) {
+            System.out.println("-- " + entry.getKey() + " --");
+            for (Command cmd : entry.getValue()) {
+                System.out.println("(" + cmd.getKey() + ") " + cmd.getDescription());
+            }
+        }
+
         System.out.println("(x) Stop without saving");
         System.out.print("Choose action: ");
     }

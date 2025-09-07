@@ -6,12 +6,15 @@ import se.peho.fittools.core.Command;
 import se.peho.fittools.core.FitFile;
 import se.peho.fittools.core.InputHelper;
 
-public class StartCommand implements Command {
+public class RecStartCommand implements Command {
     @Override
     public String getKey() { return "start"; }
 
     @Override
     public String getDescription() { return "Add time at start"; }
+
+    @Override
+    public String getCategory() { return "Records"; }
 
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
