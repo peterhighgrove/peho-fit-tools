@@ -1520,7 +1520,6 @@ public class FitFile {
         avgSpeed = totalDistance / totalTimerTime;
         sessionMesg.get(0).setFieldValue(SES_SPEED, avgSpeed);
         sessionMesg.get(0).setFieldValue(SES_ESPEED, avgSpeed);
-
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void deletePause(int pauseNoToDelete) {
@@ -1540,14 +1539,12 @@ public class FitFile {
                     if (mesg.getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
                         allMesgStopEventToDelete = mesgCounter;
                         foundCounter++;
-                        System.out.println("Found STOP in allMesg Ix: "+mesgCounter);
                     }
                 }
                 if (mesg.getFieldLongValue(EVE_TIME).equals(timeStop)) {
                     if (mesg.getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
                         allMesgStartEventToDelete = mesgCounter;
                         foundCounter++;
-                        System.out.println("Found START in allMesg Ix: "+mesgCounter);
                     }
                 }
             }
@@ -1563,22 +1560,17 @@ public class FitFile {
                 if (mesg.getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
                     eventMesgStopEventToDelete = mesgCounter;
                     foundCounter++;
-                    System.out.println("Found STOP in eventMesg Ix: "+mesgCounter);
                 }
             }
             if (mesg.getFieldLongValue(EVE_TIME).equals(timeStop)) {
                 if (mesg.getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
                     eventMesgStartEventToDelete = mesgCounter;
                     foundCounter++;
-                    System.out.println("Found START in eventMesg Ix: "+mesgCounter);
                 }
             }
             if (foundCounter >= 2) { break; }
             mesgCounter++;
         }
-
-        System.out.println("Found STOP in eventTimerMesg Ix: "+pauseToDelete.getIxEvStart());
-        System.out.println("Found START in eventTimerMesg Ix: "+pauseToDelete.getIxEvStop());
 
         // Delete pause END, START EVENT - Delete of the last record first, otherwise index will change
         allMesg.remove(allMesgStartEventToDelete);
@@ -1663,7 +1655,11 @@ public class FitFile {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void mergeLaps(int pauseNo, int newPauseTime) {
+    public void mergeLaps(int fromLap, int toLap) {
+
+        for (int lapCounter = fromLap; lapCounter < toLap; lapCounter++) {
+            
+        }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void shortenPause(int pauseNo, Long newPauseTime) {
