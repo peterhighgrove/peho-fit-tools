@@ -8,8 +8,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Calendar;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -2612,10 +2614,42 @@ public class FitFile {
                 System.out.print(SubSport.getByValue(subSportVal));
             }
 
+            Long capField = mesg.getFieldLongValue(WorkoutMesg.CapabilitiesFieldNum);
+
+            if (capField != null) {
+                System.out.print(" Capabilities: " + PehoUtils.getLabelWithValue(WorkoutCapabilities.class, capField));
+            }
+            /* Field capField = mesg.getField(WorkoutMesg.CapabilitiesFieldNum);
+            Long raw = capField != null ? capField.getLongValue() : null;
+
+            if (raw != null) {
+                List<String> caps = decodeWorkoutCapabilities(raw);
+                System.out.print(" Capabilities: " + String.join(", ", caps));
+            } */
+
             System.out.println();
         }
         System.out.println("--------------------------------------------------");
     }
+    public static List<String> decodeWorkoutCapabilities(long value) {
+        List<String> result = new ArrayList<>();
+        try {
+            java.lang.reflect.Field mapField = WorkoutCapabilities.class.getDeclaredField("stringMap");
+            mapField.setAccessible(true);
+            Map<Long, String> stringMap = (Map<Long, String>) mapField.get(null);
+
+            for (Map.Entry<Long, String> entry : stringMap.entrySet()) {
+                long flag = entry.getKey();
+                if ((value & flag) != 0 && flag != WorkoutCapabilities.INVALID) {
+                    result.add(entry.getValue());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printWktSessionInfo() {
         int i = 0;
@@ -2643,9 +2677,6 @@ public class FitFile {
             }
 
             System.out.println();
-            if (i == 11) {
-                break;
-            }
         }
         System.out.println("--------------------------------------------------");
     }
@@ -2663,17 +2694,81 @@ public class FitFile {
                 System.out.print(msgIx);
             }
 
-            Short durationType = mesg.getFieldShortValue(WorkoutStepMesg.DurationTypeFieldNum);
-            if (durationType != null) {
-                System.out.print(" Type:");
-                System.out.print(durationType);
+            Short intensity = mesg.getFieldShortValue(WorkoutStepMesg.IntensityFieldNum);
+            if (intensity != null) {
+                System.out.print(" Intensity:");
+                System.out.print(Intensity.getByValue(intensity) + "(" + intensity + ")");
             }
 
-            Integer durationTime = mesg.getFieldIntegerValue(WorkoutStepMesg.DurationValueFieldNum);
-            if (durationTime != null) {
-                System.out.print(" Tid:");
-                System.out.print(durationTime + "sec");
+            Short durType = mesg.getFieldShortValue(WorkoutStepMesg.DurationTypeFieldNum);
+            if (durType != null) {
+                System.out.print("  Type:");
+                System.out.print(WktStepDuration.getByValue(durType) + "(" + durType + ")");
             }
+
+            if (durType != null && durType == WktStepDuration.TIME.getValue()) {
+                Integer durationTime = mesg.getFieldIntegerValue(WorkoutStepMesg.DurationValueFieldNum);
+                if (durationTime != null) {
+                    System.out.print("  Tid:");
+                    System.out.print(durationTime + "sec");
+                }
+            }
+            if (durType != null && durType == WktStepDuration.DISTANCE.getValue()) {
+                Integer durationDistance = mesg.getFieldIntegerValue(WorkoutStepMesg.DurationValueFieldNum);
+                if (durationDistance != null) {
+                    System.out.print("  Dist:");
+                    System.out.print(durationDistance + "m");
+                }
+            }
+            if (durType != null && durType == WktStepDuration.REPS.getValue()) {
+                Integer durationReps = mesg.getFieldIntegerValue(WorkoutStepMesg.DurationValueFieldNum);
+                if (durationReps != null) {
+                    System.out.print("  Reps:");
+                    System.out.print(durationReps);
+                }
+            }
+            if (durType != null && durType == WktStepDuration.REPETITION_TIME.getValue()) {
+                Integer durationRepTime = mesg.getFieldIntegerValue(WorkoutStepMesg.DurationValueFieldNum);
+                if (durationRepTime != null) {
+                    System.out.print("  Reps:");
+                    System.out.print(durationRepTime);
+                }
+            }
+            if (durType != null && durType == WktStepDuration.CALORIES.getValue()) {
+                Integer durationCal = mesg.getFieldIntegerValue(WorkoutStepMesg.DurationValueFieldNum);
+                if (durationCal != null) {
+                    System.out.print(" Cal:");
+                    System.out.print(durationCal);
+                }
+            }
+            if (durType != null && durType == WktStepDuration.HR_LESS_THAN.getValue()) {
+                Integer durationHRmin = mesg.getFieldIntegerValue(WorkoutStepMesg.DurationValueFieldNum);
+                if (durationHRmin != null) {
+                    System.out.print(" HRmin:");
+                    System.out.print(durationHRmin + "bpm");
+                }
+            }
+            if (durType != null && durType == WktStepDuration.HR_GREATER_THAN.getValue()) {
+                Integer durationHRmax = mesg.getFieldIntegerValue(WorkoutStepMesg.DurationValueFieldNum);
+                if (durationHRmax != null) {
+                    System.out.print(" HRmax:");
+                    System.out.print(durationHRmax + "bpm");
+                }
+            }
+
+            String stepName = mesg.getFieldStringValue(WorkoutStepMesg.WktStepNameFieldNum);
+            if (stepName != null) {
+                System.out.print(" Name:");
+                System.out.print(stepName);
+            }
+            String stepNotes = mesg.getFieldStringValue(WorkoutStepMesg.NotesFieldNum);
+            if (stepNotes != null) {
+                System.out.print(" Notes:");
+                System.out.print(stepNotes);
+            }
+            
+
+
 
             System.out.println();
         }
@@ -2809,7 +2904,9 @@ public class FitFile {
             System.out.print("No:" + (i + 1));
 
             Short splitType = mesg.getFieldShortValue(SPL_TYPE);
-            if (splitType != null) System.out.print(" Type:" + SplitType.getStringFromValue(SplitType.getByValue(splitType.shortValue())));
+            if (splitType != null) {
+                if (splitType != null) System.out.print(" Type:" + SplitType.getByValue(splitType));
+            }
 
             Long startTime = mesg.getFieldLongValue(SPL_START_TIME);
             if (startTime != null) System.out.print(" Time:" + FitDateTime.toString(startTime, diffMinutesLocalUTC));
@@ -2892,8 +2989,8 @@ public class FitFile {
                 Short avgRunningCad = mesg.getFieldShortValue(LapMesg.AvgCadenceFieldNum, 0, Profile.SubFields.LAP_MESG_AVG_CADENCE_FIELD_AVG_RUNNING_CADENCE);
                 if (avgRunningCad != null) System.out.print(" LapRunningCad: " + avgRunningCad);
 
-                Short intensity = mesg.getFieldShortValue(LapMesg.IntensityFieldNum);
-                if (intensity != null) System.out.print(" WktIntensity: " + Intensity.getStringFromValue(Intensity.getByValue(intensity.shortValue())));
+                Long intensity = mesg.getFieldLongValue(LapMesg.IntensityFieldNum);
+                if (intensity != null) System.out.print(" WktIntensity: " + PehoUtils.getLabel(Intensity.class, intensity));
 
                 Integer wktStepIx = mesg.getFieldIntegerValue(LapMesg.WktStepIndexFieldNum);
                 if (wktStepIx != null) System.out.print(" LapWktStepIx: " + wktStepIx);
@@ -3478,6 +3575,7 @@ public class FitFile {
 
         System.out.println("==================================================");
     }
+    
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void saveChanges (Conf conf) {
 

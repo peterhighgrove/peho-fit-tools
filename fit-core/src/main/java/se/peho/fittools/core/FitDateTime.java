@@ -4,6 +4,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import com.garmin.fit.DateTime;
+
 public class FitDateTime {
     
     public static final long FIT_EPOCH_OFFSET = 631065600L; // seconds

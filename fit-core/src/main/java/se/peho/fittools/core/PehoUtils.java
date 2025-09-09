@@ -4,12 +4,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 
 public class PehoUtils {
     // Garmin epoch (1989-12-31 00:00:00 UTC) in Unix seconds
@@ -250,5 +255,172 @@ public class PehoUtils {
         }
         return minStr;
     }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    // HOW TO USE BELOW
+    //------------------
+    /* 
+    // --- Enum example ---
+    Long intensityRaw = mesg.getFieldLongValue(LapMesg.IntensityFieldNum);
+    System.out.println(FitEnumUtils.getLabel(Intensity.class, intensityRaw)); 
+    // → "ACTIVE"
+    System.out.println(FitEnumUtils.getLabelWithValue(Intensity.class, intensityRaw)); 
+    // → "ACTIVE(0)"
 
+    Long val = FitEnumUtils.getRawValue(Intensity.class, "REST"); 
+    System.out.println(val); 
+    // → 1
+
+    // --- Bitmask example ---
+    Long capsRaw = workoutMesg.getFieldLongValue(WorkoutMesg.CapabilitiesFieldNum);
+    System.out.println(FitEnumUtils.getLabel(WorkoutCapabilities.class, capsRaw)); 
+    // → "INTERVAL,POWER"
+    System.out.println(FitEnumUtils.getLabelWithValue(WorkoutCapabilities.class, capsRaw)); 
+    // → "INTERVAL(1),POWER(2048)"
+
+    Long mask = FitEnumUtils.getRawValue(WorkoutCapabilities.class, "INTERVAL,POWER"); 
+    System.out.println(mask); 
+    // → combined numeric value
+    */
+    // --- Forward: just labels ---
+    public static String getLabel(Object enumOrBitmaskClass, long rawValue) {
+        return getLabel(enumOrBitmaskClass, rawValue, false);
+    }
+
+    // --- Forward: label + numeric value ---
+    public static String getLabelWithValue(Object enumOrBitmaskClass, long rawValue) {
+        return getLabel(enumOrBitmaskClass, rawValue, true);
+    }
+
+    // --- Core forward method ---
+    @SuppressWarnings("unchecked")
+    private static String getLabel(Object enumOrBitmaskClass, long rawValue, boolean withValue) {
+        if (!(enumOrBitmaskClass instanceof Class)) return "UNKNOWN(" + rawValue + ")";
+        Class<?> clazz = (Class<?>) enumOrBitmaskClass;
+
+        // --- Enum handling ---
+        if (clazz.isEnum()) {
+            try {
+                Method getByValue;
+                Object enumObj;
+                try {
+                    getByValue = clazz.getMethod("getByValue", Short.class);
+                    enumObj = getByValue.invoke(null, (short) rawValue);
+                } catch (NoSuchMethodException e) {
+                    getByValue = clazz.getMethod("getByValue", int.class);
+                    enumObj = getByValue.invoke(null, (int) rawValue);
+                }
+
+                Method getStringFromValue = clazz.getMethod("getStringFromValue", clazz);
+                Object str = getStringFromValue.invoke(null, enumObj);
+                String name = (str instanceof String && !((String) str).toString().isEmpty())
+                        ? (String) str
+                        : "UNKNOWN";
+                return withValue ? name + "(" + rawValue + ")" : name;
+            } catch (Exception ignored) {
+                return "UNKNOWN(" + rawValue + ")";
+            }
+        }
+
+        // --- Bitmask handling ---
+        try {
+            java.lang.reflect.Field stringMapField = clazz.getField("stringMap");
+            Object mapObj = stringMapField.get(null);
+            if (mapObj instanceof Map) {
+                Map<Long, String> stringMap = (Map<Long, String>) mapObj;
+                List<String> labels = new ArrayList<>();
+                for (Map.Entry<Long, String> e : stringMap.entrySet()) {
+                    if ((rawValue & e.getKey()) != 0) {
+                        String label = withValue ? e.getValue() + "(" + e.getKey() + ")" : e.getValue();
+                        labels.add(label);
+                    }
+                }
+                if (labels.isEmpty()) {
+                    labels.add("UNKNOWN(" + rawValue + ")");
+                }
+                return String.join(",", labels);
+            }
+        } catch (Exception ignored) {}
+
+        return "UNKNOWN(" + rawValue + ")";
+    }
+
+    // --- Reverse mapping: label(s) to numeric value ---
+    public static Long getRawValue(Object enumOrBitmaskClass, String labelString) {
+        if (!(enumOrBitmaskClass instanceof Class)) return null;
+        Class<?> clazz = (Class<?>) enumOrBitmaskClass;
+
+        // --- Enum ---
+        if (clazz.isEnum()) {
+            return getEnumValue((Class<? extends Enum<?>>) clazz, labelString);
+        }
+
+        // --- Bitmask ---
+        try {
+            java.lang.reflect.Field stringMapField = clazz.getField("stringMap");
+            Object mapObj = stringMapField.get(null);
+            if (mapObj instanceof Map) {
+                return getBitmaskValue((Map<Long, String>) mapObj, labelString);
+            }
+        } catch (Exception ignored) {}
+
+        return null;
+    }
+
+    // --- Enum helper ---
+    @SuppressWarnings("unchecked")
+    private static Long getEnumValue(Class<? extends Enum<?>> enumClass, String label) {
+        if (label == null || label.isEmpty()) return null;
+
+        // Case: "LABEL(num)"
+        if (label.contains("(") && label.endsWith(")")) {
+            try {
+                String inside = label.substring(label.indexOf('(') + 1, label.length() - 1);
+                return Long.parseLong(inside);
+            } catch (NumberFormatException ignored) {}
+        }
+
+        try {
+            Enum<?> enumObj = Enum.valueOf((Class) enumClass, label.toUpperCase());
+            Method getValue = enumClass.getMethod("getValue");
+            Object raw = getValue.invoke(enumObj);
+            if (raw instanceof Number) {
+                return ((Number) raw).longValue();
+            }
+        } catch (Exception ignored) {}
+
+        return null;
+    }
+
+    // --- Bitmask helper ---
+    private static Long getBitmaskValue(Map<Long, String> stringMap, String labelString) {
+        if (labelString == null || labelString.isEmpty()) return 0L;
+
+        long result = 0L;
+        String[] parts = labelString.split(",");
+        for (String part : parts) {
+            String trimmed = part.trim().toUpperCase();
+            Long match = null;
+
+            for (Map.Entry<Long, String> entry : stringMap.entrySet()) {
+                if (entry.getValue().equalsIgnoreCase(trimmed)) {
+                    match = entry.getKey();
+                    break;
+                }
+            }
+
+            // If "UNKNOWN(num)"
+            if (match == null && trimmed.startsWith("UNKNOWN(") && trimmed.endsWith(")")) {
+                try {
+                    String inside = trimmed.substring(8, trimmed.length() - 1);
+                    match = Long.parseLong(inside);
+                } catch (NumberFormatException ignored) {}
+            }
+
+            if (match != null) {
+                result |= match;
+            }
+        }
+
+        return result;
+    }
 }

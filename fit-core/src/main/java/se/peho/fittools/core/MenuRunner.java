@@ -25,6 +25,7 @@ import se.peho.fittools.core.commands.RecStartCommand;
 import se.peho.fittools.core.commands.SaveChangeStartTimeExitCommand;
 import se.peho.fittools.core.commands.SplitShowListCommand;
 import se.peho.fittools.core.commands.LapMergeCommand;
+import se.peho.fittools.core.commands.WktShowCommand;
 
 public class MenuRunner {
     private final FitFile watchFitFile;
@@ -58,6 +59,7 @@ public class MenuRunner {
             new SplitShowListCommand(),
             new RecDeleteCreateGapCommand(),
             new RecStartCommand(),
+            new WktShowCommand(),
             new FileInfoShowDetailedCommand(),
             new SaveChangeStartTimeExitCommand(conf)
         };
