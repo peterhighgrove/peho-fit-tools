@@ -25,6 +25,7 @@ public class RecStartCommand implements Command {
         watchFitFile.addRecordAtStart(secs.longValue(), coords);
         
         watchFitFile.createTimerList();
+        watchFitFile.createPauseList();
         watchFitFile.createGapList();
         watchFitFile.printGapList("",0);
     }

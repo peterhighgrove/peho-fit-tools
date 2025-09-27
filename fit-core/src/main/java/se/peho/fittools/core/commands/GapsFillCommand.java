@@ -20,6 +20,7 @@ public class GapsFillCommand implements Command {
         watchFitFile.fillRecordsInGap();
 
         watchFitFile.createTimerList();
+        watchFitFile.createPauseList();
         watchFitFile.createGapList();
         watchFitFile.printGapList("",0);
     }

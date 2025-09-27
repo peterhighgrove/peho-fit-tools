@@ -25,6 +25,7 @@ public class GapAddGpsCommand implements Command {
         watchFitFile.addRecordInGap(gapNo, coords);
 
         watchFitFile.createTimerList();
+        watchFitFile.createPauseList();
         watchFitFile.createGapList();
         watchFitFile.printGapList("",0);
     }

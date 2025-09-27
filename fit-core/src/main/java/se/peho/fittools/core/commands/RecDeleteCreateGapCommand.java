@@ -1,5 +1,6 @@
 package se.peho.fittools.core.commands;
 
+import java.util.List;
 import java.util.Scanner;
 
 import se.peho.fittools.core.Command;
@@ -60,6 +61,12 @@ public class RecDeleteCreateGapCommand implements Command {
             if ((watchFitFile.countRecordsBetweenTimerValues(startGapTimer, stopGapTimer)) < 1) {
                 System.out.println("==XX> It must at least be one data record between start and stop. Enter a new timer value.");
                 continue;
+            }
+
+            List<Integer> includingLaps = watchFitFile.findLapStartsBetweenTimeValues(watchFitFile.findTimeBasedOnTimer(startGapTimer), watchFitFile.findTimeBasedOnTimer(stopGapTimer));
+            if (!includingLaps.isEmpty()) {
+                System.out.println("==XX> Cannot delete records in range as it includes laps. These laps need to be merged: " + includingLaps);
+                break;
             }
 
             if (watchFitFile.checkForPausesAndGivePrintedResult(startGapTimer, stopGapTimer)) {
