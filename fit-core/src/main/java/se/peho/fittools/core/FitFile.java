@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Calendar;
+import java.util.Collections;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 
@@ -115,7 +116,7 @@ public class FitFile {
     Long timeLastRecord;
     int numberOfRecords;
     int numberOfLaps;
-    int changedStartTimeBySec = 0;
+    //int changedStartTimeBySec = 0;
 
     String wktName;
     Sport sport;
@@ -273,8 +274,8 @@ public class FitFile {
     public int getNumberOfLaps() { return numberOfLaps; }
     public void setNumberOfLaps(int numberOfLaps) { this.numberOfLaps = numberOfLaps; }
 
-    public int getChangedStartTimeBySec() { return changedStartTimeBySec; }
-    public void setChangedStartTimeBySec(int changedStartTimeBySec) { this.changedStartTimeBySec = changedStartTimeBySec; }
+    //public int getChangedStartTimeBySec() { return changedStartTimeBySec; }
+    //public void setChangedStartTimeBySec(int changedStartTimeBySec) { this.changedStartTimeBySec = changedStartTimeBySec; }
     
     public List<PauseMesg> getPauseList() { return pauseRecords; }
     public List<GapMesg> getGapList() { return gapRecords; }
@@ -622,6 +623,26 @@ public class FitFile {
         return (findIxInRecordMesgBasedOnTimer(toTimer) - findIxInRecordMesgBasedOnTimer(fromTimer) - 1);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public Boolean checkForLapStartsBetweenTimerValues(Long fromTimer, Long toTimer) {
+        return (checkForLapStartsBetweenTimeValues(findTimeBasedOnTimer(fromTimer), findTimeBasedOnTimer(toTimer))) ;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public Boolean checkForLapStartsBetweenTimeValues(Long fromTime, Long toTime) {
+
+        Boolean haveLaps = false;            
+        List<Integer> includingLaps = findLapStartsBetweenTimeValues(fromTime, toTime);
+        if (!includingLaps.isEmpty()) {
+            System.out.println("==XX> Cannot delete records in range as it includes laps. These laps need to be merged: " + includingLaps);
+            haveLaps = true;
+        }
+
+        return (haveLaps);
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public List<Integer> findLapStartsBetweenTimerValues(Long fromTimer, Long toTimer) {
+        return (findLapStartsBetweenTimeValues(findTimeBasedOnTimer(fromTimer), findTimeBasedOnTimer(toTimer))) ;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public List<Integer> findLapStartsBetweenTimeValues(Long fromTime, Long toTime) {
 
         List<Integer> lapsBetweenTimeValues = new ArrayList<>();
@@ -652,34 +673,20 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public record CheckForPausesResult(
-            List<Integer> unmatchedStopPauses,   // pauses with stop but no start
-            List<Integer> completePauses,        // pauses fully inside the interval
-            List<Integer> unmatchedStartPauses   // pauses with start but no stop
-    ) {
-        public boolean hasCompletePauses() {
-            return completePauses != null && !completePauses.isEmpty();
-        }
-
-        public boolean hasUnmatchedStart() {
-            return unmatchedStartPauses != null && !unmatchedStartPauses.isEmpty();
-        }
-
-        public boolean hasUnmatchedEnd() {
-            return unmatchedStopPauses != null && !unmatchedStopPauses.isEmpty();
-        }
+    public Boolean checkForPausesAndGivePrintedResultBasedOnTimer(Long fromTimer, Long toTimer) {
+        return (checkForPausesAndGivePrintedResultBasedOnTime(findTimeBasedOnTimer(fromTimer), findTimeBasedOnTimer(toTimer)));
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public Boolean checkForPausesAndGivePrintedResult(Long fromTimer, Long toTimer) {
+    public Boolean checkForPausesAndGivePrintedResultBasedOnTime(Long fromTime, Long toTime) {
 
         Boolean isPauses = false;
-        CheckForPausesResult result = checkForPausesByTimer(fromTimer, toTimer);
+        CheckForPausesResult result = checkForPausesByTime(fromTime, toTime);
 
         if (result.hasCompletePauses() || result.hasUnmatchedStart() || result.hasUnmatchedEnd()) {
             isPauses = true;
             System.out.println();
             System.out.println("==XX> There is at least one PAUSE between start and stop.");
-            System.out.println("==XX> You need to DELETE PAUSES to proceeed. Enter a new timer value.");
+            System.out.println("==XX> You need to DELETE PAUSES to proceeed.");
 
             if (result.hasCompletePauses()) {
                 System.out.println("List of COMPLETED PAUSE(S) between start and stop.");
@@ -705,6 +712,24 @@ public class FitFile {
             
         }
         return isPauses;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public record CheckForPausesResult(
+            List<Integer> unmatchedStopPauses,   // pauses with stop but no start
+            List<Integer> completePauses,        // pauses fully inside the interval
+            List<Integer> unmatchedStartPauses   // pauses with start but no stop
+    ) {
+        public boolean hasCompletePauses() {
+            return completePauses != null && !completePauses.isEmpty();
+        }
+
+        public boolean hasUnmatchedStart() {
+            return unmatchedStartPauses != null && !unmatchedStartPauses.isEmpty();
+        }
+
+        public boolean hasUnmatchedEnd() {
+            return unmatchedStopPauses != null && !unmatchedStopPauses.isEmpty();
+        }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public CheckForPausesResult checkForPausesByTimer(Long fromTimer, Long toTimer) {
@@ -913,7 +938,7 @@ public class FitFile {
 
             // if in PAUSE and see records
             } else if (inPause) {
-                System.out.println("WARNING - Records in pause");
+                System.out.println("WARNING - Records in pause (createGap)");
 
             // Check if GAP
             } else if ((!inPause && (record.getFieldLongValue(REC_TIME) - lastRecordTime) > gapThreshold)) {
@@ -1030,7 +1055,7 @@ public class FitFile {
             // -------------- 
             // STOP event (pause START)
             if (pauseCounter > 0 && !inPause && record.getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
-                System.out.println("==> WARNING - START Event w/o Stopping first @" + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
+                System.out.println("==> WARNING - START Event w/o Stopping first (inCreatePause) @" + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
 
             } else if (!inPause && record.getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
                 inPause = true;
@@ -1583,11 +1608,137 @@ public class FitFile {
         sessionMesg.get(0).setFieldValue(SES_ESPEED, avgSpeed);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void printEvents(Long eventTimeStartToPrint, Long eventTimeEndToPrint, Event eventToPrint, EventType eventTypeToPrint) {
+
+        // Use EventType EventType.INVALID for Event independent of type
+
+        int eventIx = 0;
+
+        for (Mesg mesg:allMesg) {
+            if (mesg.getNum() == MesgNum.EVENT) {
+                Short rawEvent = mesg.getFieldShortValue(EVE_EVENT);
+                Short rawEventType = mesg.getFieldShortValue(EVE_TYPE);
+                Long eventTime = mesg.getFieldLongValue(EVE_TIME);
+                if (rawEvent == null || rawEventType == null || eventTime == null)
+                    continue;
+
+                Event mesgEvent = Event.getByValue(rawEvent);
+                EventType mesgEventType = EventType.getByValue(rawEventType);
+
+                if (eventTime >= eventTimeStartToPrint && eventTime <= eventTimeEndToPrint) {
+                    System.out.println("Event ix: " + eventIx + " / " + Event.getByValue(mesg.getFieldShortValue(EVE_EVENT)) + " / " + EventType.getByValue(mesg.getFieldShortValue(EVE_TYPE)) + " / " + FitDateTime.toString(new DateTime(mesg.getFieldLongValue(EVE_TIME)),diffMinutesLocalUTC));
+                }
+                eventIx++;
+            }
+        }
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void deleteEvents(Long eventTimeStartToDelete, Long eventTimeStopToDelete, Event eventToDelete, EventType eventTypeToDelete) {
+
+        // Use EventType EventType.INVALID for Event independent of type
+
+        // Find EVENT messages to delete in mesg list
+        // ========================================
+        int mesgIx = 0;
+        int eventCounter = 0;
+        List<Integer> mesgToDelete = new ArrayList<>();
+        String tempLog = "START - Deleting events" + System.lineSeparator() + "------------------------------" + System.lineSeparator() +
+                         "Input values to delete events between " + FitDateTime.toString(new DateTime(eventTimeStartToDelete),diffMinutesLocalUTC) + " and " + FitDateTime.toString(new DateTime(eventTimeStopToDelete),diffMinutesLocalUTC) + System.lineSeparator() +
+                         "Event to delete: " + eventToDelete + System.lineSeparator();
+
+
+        for (Mesg mesg:allMesg) {
+            // Find event messages
+            if (mesg.getNum() == MesgNum.EVENT) {
+                eventCounter++;
+                Short rawEvent = mesg.getFieldShortValue(EVE_EVENT);
+                Short rawEventType = mesg.getFieldShortValue(EVE_TYPE);
+                Long eventTime = mesg.getFieldLongValue(EVE_TIME);
+                if (rawEvent == null || rawEventType == null || eventTime == null)
+                continue;
+
+                Event mesgEvent = Event.getByValue(rawEvent);
+                EventType mesgEventType = EventType.getByValue(rawEventType);
+
+                // Find matching time
+                if (eventTime >= eventTimeStartToDelete && eventTime <= eventTimeStopToDelete) {
+
+                    // Find matching event
+                        if (mesgEvent.equals(eventToDelete)) {
+
+                        // If event is a TIMER event
+                        if (eventTypeToDelete.equals(EventType.INVALID)) {
+                            mesgToDelete.add(mesgIx);
+                                tempLog += "Found matching TIMER event to delete in allMesg: " + 
+                                    Event.getByValue(mesg.getFieldShortValue(EVE_EVENT)) + 
+                                    EventType.getByValue(mesg.getFieldShortValue(EVE_TYPE)) + 
+                                    " @ix:" + mesgIx +
+                                    System.lineSeparator();
+
+                        // If event is not a TIMER event
+                        } else {
+                            if (mesgEventType.equals(eventTypeToDelete)) {
+                                mesgToDelete.add(mesgIx);
+                                tempLog += "Found matching TIMER and TYPE event to delete in allMesg: " + 
+                                    Event.getByValue(mesg.getFieldShortValue(EVE_EVENT)) + 
+                                    EventType.getByValue(mesg.getFieldShortValue(EVE_TYPE)) + 
+                                    " @ix:" + mesgIx +
+                                    System.lineSeparator();
+                            }
+                        }
+                    }
+                }
+            }
+            mesgIx++;
+        }
+
+        // Remove messages from mesg list to delete
+        Collections.reverse(mesgToDelete);
+        for (int mesgIxToDelete : mesgToDelete) {
+            allMesg.remove(mesgIxToDelete);
+        }
+
+        // Update event message list and event timer message list
+        reCreateEventMesg();
+
+        savedFileUpdateLogg += tempLog;
+        System.out.println(tempLog);
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void reCreateEventMesg() {
+
+        eventMesg.clear();
+        eventTimerMesg.clear();
+
+        for (Mesg mesg:allMesg) {
+
+            if (mesg.getNum() == MesgNum.EVENT) {
+                eventMesg.add(mesg);
+
+                Event event = Event.getByValue(mesg.getFieldShortValue(EVE_EVENT));
+                if (event.equals(Event.TIMER)) {
+                    eventTimerMesg.add(mesg);
+                }
+            }
+        }
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void deletePause(int pauseNoToDelete) {
         int pauseIx = pauseNoToDelete - 1;
         PauseMesg pauseToDelete = getPauseList().get(pauseIx);
         Long timeStart = pauseToDelete.getTimeStart();
         Long timeStop = pauseToDelete.getTimeStop();
+
+        String tempLog = "";
+        tempLog += System.lineSeparator();
+        tempLog += "PAUSE - DELETE, creating a gap" + System.lineSeparator();
+        tempLog += "------------------------------" + System.lineSeparator();
+        tempLog += "Pause no to be deleted: " + pauseNoToDelete + System.lineSeparator();
+        tempLog += "-- New gap duration is " + PehoUtils.sec2minSecLong(pauseToDelete.getTimePause()) + "min" + System.lineSeparator();
+        System.out.println(tempLog);
+        savedFileUpdateLogg += tempLog;
+
+        deleteEvents(timeStart, timeStop, Event.TIMER, EventType.INVALID);
 
         // Search for ix in allMesg
         int mesgCounter = 0;
@@ -1612,6 +1763,8 @@ public class FitFile {
             if (foundCounter >= 2) { break; }
             mesgCounter++;
         }
+
+        // Search for ix in eventMesg
         mesgCounter = 0;
         foundCounter = 0;
         int eventMesgStopEventToDelete = 0;
@@ -1636,12 +1789,12 @@ public class FitFile {
         // Delete pause END, START EVENT - Delete of the last record first, otherwise index will change
         allMesg.remove(allMesgStartEventToDelete);
         eventMesg.remove(eventMesgStartEventToDelete);
-        eventTimerMesg.remove(pauseToDelete.getIxEvStop());
+        eventTimerMesg.remove(pauseToDelete.getIxEvStop()); //Event Ix when pause stop, START event
 
         // Delete pause START, STOP EVENT
         allMesg.remove(allMesgStopEventToDelete);
         eventMesg.remove(eventMesgStopEventToDelete);
-        eventTimerMesg.remove(pauseToDelete.getIxEvStart());
+        eventTimerMesg.remove(pauseToDelete.getIxEvStart()); //Event Ix when pause start, STOP event
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void increasePause(int pauseNo, Long secondsToPutIntoPause) {
@@ -1679,9 +1832,13 @@ public class FitFile {
         }
         numberOfRecords -= i;
 
-        savedFileUpdateLogg += "Increased pause no: " + pauseNo + System.lineSeparator();
-        savedFileUpdateLogg += "-- Pause increased with " + secondsToPutIntoPause + "sec to " + PehoUtils.sec2minSecLong(pauseToIncrease.getTimePause()+secondsToPutIntoPause) + "min" + System.lineSeparator();
-
+        String tempLog = "";
+        tempLog += "PAUSE - INCREASE, forgot to stop before" + System.lineSeparator();
+        tempLog += "---------------------------------------" + System.lineSeparator();
+        tempLog += "Increased pause no: " + pauseNo + System.lineSeparator();
+        tempLog += "-- Pause increased with " + secondsToPutIntoPause + "sec to " + PehoUtils.sec2minSecLong(pauseToIncrease.getTimePause()+secondsToPutIntoPause) + "min" + System.lineSeparator();
+        System.out.println(tempLog);
+        savedFileUpdateLogg += tempLog;
 
         // Increase distance after the shortened pause, starting from 1 after pause stop
         // ------------------------------------------------------
@@ -2021,12 +2178,16 @@ public class FitFile {
         // Power Value always missing in record after Pause
         stopGapRecord.setFieldValue(REC_POW, stopGapPow);
 
-        savedFileUpdateLogg += "Shortened pause no: " + pauseNo + System.lineSeparator();
-        savedFileUpdateLogg += "-- Pause decreased from " + pauseToShorten.getTimePause() + "sec to " + newPauseTime + "sec" + System.lineSeparator();
-        savedFileUpdateLogg += "--> newSpeed:"+PehoUtils.mps2minpkm(startGapSpeed)+"km/min gpsDist:"+pauseToShorten.getDistPause() +
+        String tempLog = "";
+        tempLog += "PAUSE - SHORTEN, forgot to start after pause" + System.lineSeparator();
+        tempLog += "--------------------------------------------" + System.lineSeparator();
+        tempLog += "Shortened pause no: " + pauseNo + System.lineSeparator();
+        tempLog += "-- Pause decreased from " + pauseToShorten.getTimePause() + "sec to " + newPauseTime + "sec" + System.lineSeparator();
+        tempLog += "--> newSpeed:"+PehoUtils.mps2minpkm(startGapSpeed)+"km/min gpsDist:"+pauseToShorten.getDistPause() +
             "m gapStartDist:"+startGapDist+"m gapEnd:"+stopGapDist +
             "m gapEnd-startTime:"+(stopGapTime - startGapTime) + "s newTime:" + newPauseTime + "s" + System.lineSeparator();
-        // System.out.println(savedFileUpdateLogg);
+        System.out.println(tempLog);
+        savedFileUpdateLogg += tempLog;
 
         // Updating EVENT-TIMER-START DATA
         //----------------------   
@@ -2505,7 +2666,7 @@ public class FitFile {
         setTimeFirstRecord(recordMesg.get(0).getFieldLongValue(REC_TIME));
         setTimeLastRecord(recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
         setActivityDateTimeLocal(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME));
-        setChangedStartTimeBySec(getChangedStartTimeBySec() + changeSeconds);
+        //setChangedStartTimeBySec(getChangedStartTimeBySec() + changeSeconds);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String createFileSummary() {
@@ -3197,7 +3358,7 @@ public class FitFile {
         // Start Time
         Long startTime = lapRecord.getFieldLongValue(LAP_STIME);
         if (startTime != null) {
-            System.out.print(" start@:" + FitDateTime.toString(startTime, diffMinutesLocalUTC));
+            System.out.print(" start@:" + PehoUtils.sec2minSecLong(findTimerBasedOnTime(startTime)) + ", " + FitDateTime.toString(startTime, diffMinutesLocalUTC));
         }
 
         // Start Timer WRONG VALUE!!!!!
@@ -3755,7 +3916,8 @@ public class FitFile {
         saveFileInfoAfter();
 
         outputFilenameBase = getFilenameAndSetNewSportProfileName(conf.getProfileNameSuffix(), outputFilePath);
-        outputFilePath = conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (changedStartTimeBySec/60) + "min.fit";
+        //outputFilePath = conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (changedStartTimeBySec/60) + "min.fit";
+        outputFilePath = conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (conf.getTimeOffsetSec()/60) + "min.fit";
         
         encodeNewFit(outputFilePath, encodeWorkoutRecords);
         

@@ -9,7 +9,7 @@ import se.peho.fittools.core.InputHelper;
 
 public class PauseIncreaseCommand implements Command {
     @Override
-    public String getKey() { return "inc"; }
+    public String getKey() { return "pinc"; }
 
     @Override
     public String getDescription() { return "Increase a pause"; }
@@ -34,22 +34,20 @@ public class PauseIncreaseCommand implements Command {
 
             Long newPauseStartTime = watchFitFile.getPauseList().get(pauseNo - 1).getTimeStart() - secs;
             Long oldPauseStartTime = watchFitFile.getPauseList().get(pauseNo - 1).getTimeStart();
-            List<Integer> includingLaps = watchFitFile.findLapStartsBetweenTimeValues(newPauseStartTime, oldPauseStartTime);
-            if (!includingLaps.isEmpty()) {
-                System.out.println("==XX> Cannot increase pause as it includes laps. These laps need to be merged: " + includingLaps);
-                break;
+
+            if (watchFitFile.checkForLapStartsBetweenTimeValues(newPauseStartTime, oldPauseStartTime)) {
+                return;
             }
 
-            Long newPauseStartTimer = watchFitFile.findTimerBasedOnTime(newPauseStartTime);
-            Long oldPauseStartTimer = watchFitFile.findTimerBasedOnTime(oldPauseStartTime);
-            if (watchFitFile.checkForPausesAndGivePrintedResult(newPauseStartTimer, oldPauseStartTimer)) {
-                continue;
+            if (watchFitFile.checkForPausesAndGivePrintedResultBasedOnTime(newPauseStartTime, oldPauseStartTime)) {
+                return;
             }
 
             watchFitFile.increasePause(pauseNo, secs.longValue());
 
             watchFitFile.createTimerList();
             watchFitFile.createPauseList();
+            watchFitFile.createGapList();
             watchFitFile.printPauseList("", 0);
             break;
         }

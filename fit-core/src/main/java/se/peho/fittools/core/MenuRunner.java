@@ -8,23 +8,27 @@ import java.util.Scanner;
 
 import se.peho.fittools.core.commands.FileInfoShowDetailedCommand;
 import se.peho.fittools.core.commands.GapAddGpsCommand;
+import se.peho.fittools.core.commands.GapEventsPrintCommand;
 import se.peho.fittools.core.commands.GapShowListCommand;
 import se.peho.fittools.core.commands.GapShowListFilteredCommand;
+import se.peho.fittools.core.commands.GapTimerDelCommand;
 import se.peho.fittools.core.commands.GapsFillCommand;
+import se.peho.fittools.core.commands.LapMergeCommand;
 import se.peho.fittools.core.commands.LapShowList1Command;
 import se.peho.fittools.core.commands.LapShowList2Command;
 import se.peho.fittools.core.commands.LapShowList3Command;
 import se.peho.fittools.core.commands.LapShowList4Command;
 import se.peho.fittools.core.commands.PauseDeleteCommand;
+import se.peho.fittools.core.commands.PauseEventsPrintCommand;
 import se.peho.fittools.core.commands.PauseIncreaseCommand;
 import se.peho.fittools.core.commands.PauseShortenCommand;
 import se.peho.fittools.core.commands.PauseShowListCommand;
 import se.peho.fittools.core.commands.PauseShowListFilteredCommand;
+import se.peho.fittools.core.commands.PauseTimerDelCommand;
 import se.peho.fittools.core.commands.RecDeleteCreateGapCommand;
 import se.peho.fittools.core.commands.RecStartCommand;
 import se.peho.fittools.core.commands.SaveChangeStartTimeExitCommand;
 import se.peho.fittools.core.commands.SplitShowListCommand;
-import se.peho.fittools.core.commands.LapMergeCommand;
 import se.peho.fittools.core.commands.WktShowCommand;
 
 public class MenuRunner {
@@ -46,11 +50,15 @@ public class MenuRunner {
             new GapShowListFilteredCommand(),
             new GapAddGpsCommand(),
             new GapsFillCommand(),
+            new GapTimerDelCommand(),
+            new GapEventsPrintCommand(),
             new PauseShowListCommand(),
             new PauseShowListFilteredCommand(),
             new PauseShortenCommand(),
             new PauseIncreaseCommand(),
             new PauseDeleteCommand(),
+            new PauseTimerDelCommand(),
+            new PauseEventsPrintCommand(),
             new LapShowList1Command(),
             new LapShowList2Command(),
             new LapShowList3Command(),
@@ -84,12 +92,13 @@ public class MenuRunner {
         boolean firstTime = true;
 
         while (true) {
-            if (firstTime) {
+            printMainMenu();
+/*             if (firstTime) {
                 printFullMenu();
                 firstTime = false;
             } else {
                 printMainMenu();
-            }
+            } */
 
             String choice = sc.nextLine().trim();
 

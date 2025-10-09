@@ -19,7 +19,7 @@ public class LapMergeCommand implements Command {
 
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
-        watchFitFile.printLapRecords0();
+        watchFitFile.printLapRecords();
         System.out.println("Last lap number is: " + watchFitFile.getLapMesg().size());
 
         while (true) { 
@@ -60,7 +60,7 @@ public class LapMergeCommand implements Command {
             watchFitFile.createTimerList();
             watchFitFile.createPauseList();
             watchFitFile.createGapList();
-            watchFitFile.printLapRecords0();
+            watchFitFile.printLapRecords();
             return;
         }
     }

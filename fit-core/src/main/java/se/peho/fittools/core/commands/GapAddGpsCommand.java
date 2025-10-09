@@ -8,7 +8,7 @@ import se.peho.fittools.core.InputHelper;
 
 public class GapAddGpsCommand implements Command {
     @Override
-    public String getKey() { return "a"; }
+    public String getKey() { return "gadd"; }
 
     @Override
     public String getDescription() { return "Add GPS points in gap"; }

@@ -8,7 +8,7 @@ import se.peho.fittools.core.InputHelper;
 
 public class PauseShortenCommand implements Command {
     @Override
-    public String getKey() { return "s"; }
+    public String getKey() { return "ps"; }
 
     @Override
     public String getDescription() { return "Shorten a pause"; }

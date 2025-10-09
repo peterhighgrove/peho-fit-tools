@@ -8,7 +8,7 @@ import se.peho.fittools.core.InputHelper;
 
 public class PauseDeleteCommand implements Command {
     @Override
-    public String getKey() { return "delp"; }
+    public String getKey() { return "pdel"; }
 
     @Override
     public String getDescription() { return "Delete a pause"; }
@@ -19,8 +19,8 @@ public class PauseDeleteCommand implements Command {
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
         while (true) {
-            watchFitFile.printPauseList("", 0);
-            System.out.println();
+            //watchFitFile.printPauseList("", 0);
+            //System.out.println();
             Integer pauseNo = InputHelper.askForNumber("Enter PAUSE number to DELETE", sc);
             if (pauseNo == null) return;
 

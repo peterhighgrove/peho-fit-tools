@@ -34,8 +34,8 @@ public class InputHelper {
                         seconds = Integer.parseInt(parts[2]);
                     }
 
-                    if (minutes < 0 || minutes > 59) {
-                        System.out.println("XXXX> Minutes must be between 0 and 59.");
+                    if (minutes < 0) {
+                        System.out.println("XXXX> Minutes must be greater than 0.");
                     } else if (seconds < 0 || seconds > 59) {
                         System.out.println("XXXX> Seconds must be between 0 and 59.");
                         continue;
@@ -65,8 +65,38 @@ public class InputHelper {
         }
     }
 
+    public static Integer askForNumber(String prompt, String defaultValue, Scanner sc) {
+        while (true) {
+            System.out.println("Default value: " + defaultValue);
+            System.out.print(prompt + " (b = back, default = enter): ");
+            String input = sc.nextLine().trim();
+            if (input.equalsIgnoreCase("b")) return null;
+            if (input.equals("")) input = defaultValue;
+
+            try {
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("XXXX> Not a valid number.");
+            }
+        }
+    }
+
     public static String askForString(String prompt, Scanner sc) {
         while (true) {
+            System.out.print(prompt + " (b = back): ");
+            String input = sc.nextLine().trim();
+            if (input.equalsIgnoreCase("b")) return null;
+            try {
+                return input;
+            } catch (Exception e) {
+                System.out.println("XXXX> Invalid string, try again.");
+            }
+        }
+    }
+
+    public static String askForString(String prompt, String defaultValue, Scanner sc) {
+        while (true) {
+            System.out.println("Default value: " + defaultValue);
             System.out.print(prompt + " (b = back): ");
             String input = sc.nextLine().trim();
             if (input.equalsIgnoreCase("b")) return null;
