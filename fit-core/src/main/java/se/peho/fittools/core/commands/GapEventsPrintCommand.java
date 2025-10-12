@@ -33,7 +33,13 @@ public class GapEventsPrintCommand implements Command {
             Long gapStart = watchFitFile.getGapList().get(gapNo - 1).getTimeStart();
             Long gapStop = watchFitFile.getGapList().get(gapNo - 1).getTimeStop();
 
+            System.out.println();
+            System.out.println("------------------------------------------");
+            System.out.println("Printing events in GAP " + gapNo);
+            System.out.println("------------------------------------------");
+            
             watchFitFile.printEvents(gapStart, gapStop, Event.TIMER, EventType.INVALID);
+
             System.out.println("==>> Printed Timer events between " + FitDateTime.toString(gapStart, watchFitFile.getDiffMinutesLocalUTC()) + " and " + FitDateTime.toString(gapStop, watchFitFile.getDiffMinutesLocalUTC()) + " (inclusive).");
             System.out.println("");
 

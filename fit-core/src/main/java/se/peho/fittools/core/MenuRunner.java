@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import se.peho.fittools.core.commands.FileInfoShowDetailedCommand;
 import se.peho.fittools.core.commands.GapAddGpsCommand;
+import se.peho.fittools.core.commands.GapEventCreateCommand;
 import se.peho.fittools.core.commands.GapEventsPrintCommand;
 import se.peho.fittools.core.commands.GapShowListCommand;
 import se.peho.fittools.core.commands.GapShowListFilteredCommand;
@@ -52,6 +53,7 @@ public class MenuRunner {
             new GapsFillCommand(),
             new GapTimerDelCommand(),
             new GapEventsPrintCommand(),
+            new GapEventCreateCommand(),
             new PauseShowListCommand(),
             new PauseShowListFilteredCommand(),
             new PauseShortenCommand(),

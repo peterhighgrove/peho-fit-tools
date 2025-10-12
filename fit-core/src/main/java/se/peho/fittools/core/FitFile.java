@@ -134,7 +134,8 @@ public class FitFile {
 
     private String savedFileInfoBefore = "";
     private String savedFileInfoAfter = "";
-    private String savedFileUpdateLogg = "";
+    private String updateLogg = "";
+    private String tempUpdateLogg = "";
     String savedStrLapsActiveInfoShort = "";
     String savedStrLapsRestInfoShort = "";
 
@@ -273,6 +274,18 @@ public class FitFile {
 
     public int getNumberOfLaps() { return numberOfLaps; }
     public void setNumberOfLaps(int numberOfLaps) { this.numberOfLaps = numberOfLaps; }
+
+    public String getUpdateLogg() { return updateLogg; }
+    public void setUpdateLogg(String savedFileUpdateLogg) { this.updateLogg = savedFileUpdateLogg; }
+    public void appendUpdateLogg(String text) { this.updateLogg += text; }
+    public void appendUpdateLoggLn(String text) { this.updateLogg += text + System.lineSeparator(); }
+    public void clearUpdateLogg() { this.updateLogg = ""; }
+
+    public String getTempUpdateLogg() { return tempUpdateLogg; }
+    public void setTempUpdateLogg(String tempUpdateLogg) { this.tempUpdateLogg = tempUpdateLogg; }
+    public void appendTempUpdateLogg(String text) { this.tempUpdateLogg += text; }
+    public void appendTempUpdateLoggLn(String text) { this.tempUpdateLogg += text + System.lineSeparator(); }
+    public void clearTempUpdateLogg() { this.tempUpdateLogg = ""; }
 
     //public int getChangedStartTimeBySec() { return changedStartTimeBySec; }
     //public void setChangedStartTimeBySec(int changedStartTimeBySec) { this.changedStartTimeBySec = changedStartTimeBySec; }
@@ -1055,7 +1068,8 @@ public class FitFile {
             // -------------- 
             // STOP event (pause START)
             if (pauseCounter > 0 && !inPause && record.getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
-                System.out.println("==> WARNING - START Event w/o Stopping first (inCreatePause) @" + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
+                System.out.println("==> WARNING - START Event w/o Stopping first (inCreatePause) @"
+                     + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
 
             } else if (!inPause && record.getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
                 inPause = true;
@@ -1239,7 +1253,7 @@ public class FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void fillRecordsInGap() {
 
-            savedFileUpdateLogg += "Filling gaps with 1sec records" + System.lineSeparator();
+            updateLogg += "Filling gaps with 1sec records" + System.lineSeparator();
 
             int numberOfNewSeconds = 0;
             int numberOfNewRecords = 0;
@@ -1317,7 +1331,7 @@ public class FitFile {
             //System.out.println("powerDelta: "+powDelta);
             altDelta = (double) (stopAlt - startAlt) / numberOfNewSeconds;
             //System.out.println("altDelta: "+altDelta);
-            savedFileUpdateLogg += "-- GapNo: "+record.getNo()+", dist: "+record.getDistGap()+"m, time: "+record.getTimeGap()+"sec, @Dist: "
+            updateLogg += "-- GapNo: "+record.getNo()+", dist: "+record.getDistGap()+"m, time: "+record.getTimeGap()+"sec, @Dist: "
                 +startDist+"-"+stopDist+"m, time: "+FitDateTime.toString(record.getTimeStart(),diffMinutesLocalUTC) + System.lineSeparator();
 
             for (int i=1; i<=numberOfNewRecords; i++) {
@@ -1391,7 +1405,7 @@ public class FitFile {
         info += String.format("    Garmin Semicircles: Lat %d, Lon %d%n", newLatSemi, newLonSemi);
         info += String.format("    Back to Decimal: Lat %.8f, Lon %.8f%n", GeoUtils.fromSemicircles(newLatSemi), GeoUtils.fromSemicircles(newLonSemi));
         info += "   >>> Dist/Time from new point:" + Math.round(distFromNew) + "m / " + timeToIncrease + "sec " + PehoUtils.sec2minSecLong(timeToIncrease) + "min" + System.lineSeparator();
-        savedFileUpdateLogg += info;
+        updateLogg += info;
         System.out.print(info);
 
         // Adding new start record
@@ -1473,7 +1487,7 @@ public class FitFile {
         info2 += "Act time UTC:" + FitDateTime.toString(getActivityDateTimeUTC()) + System.lineSeparator();
         info2 += "Act time Loc:" + FitDateTime.toString(getActivityDateTimeLocal()) + System.lineSeparator();
         System.out.print(info2);
-        savedFileUpdateLogg += info2;
+        updateLogg += info2;
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -1497,16 +1511,15 @@ public class FitFile {
             recordMesg.remove(ixInRecordMesgToDelete);
         }
 
-        String tempLogg = "";
-        tempLogg += "===> Input values: " + FitDateTime.toTimerString(fromTimer) + ", " + FitDateTime.toTimerString(toTimer) + System.lineSeparator();
-        tempLogg += "===> RecordMesgIx to delete from-to: " + ixInRecordMesgStart + " - " + ixInRecordMesgStop + System.lineSeparator();
-        tempLogg += "===> AllMesgIx to delete from: " + ixInAllMesgStart + " and number of records: " + numberOfRecordsToDelete + System.lineSeparator();
-        tempLogg += "===> Deleting records to create gap of " + FitDateTime.toTimerString(toTimer-fromTimer+3) //+3 because to and from should be included
-             + ", from " + FitDateTime.toTimerString(fromTimer) + " into the activity" + System.lineSeparator();
-        tempLogg += "===> Deleting records from " + FitDateTime.toString(fromTime,0)
-             + " to " + FitDateTime.toString(toTime,0) + System.lineSeparator();
-        savedFileUpdateLogg += tempLogg;
-        System.out.print(tempLogg);
+        appendTempUpdateLogg("===> Input values: " + FitDateTime.toTimerString(fromTimer) + ", " + FitDateTime.toTimerString(toTimer) + System.lineSeparator());
+        appendTempUpdateLogg("===> RecordMesgIx to delete from-to: " + ixInRecordMesgStart + " - " + ixInRecordMesgStop + System.lineSeparator());
+        appendTempUpdateLogg("===> AllMesgIx to delete from: " + ixInAllMesgStart + " and number of records: " + numberOfRecordsToDelete + System.lineSeparator());
+        appendTempUpdateLogg("===> Deleting records to create gap of " + FitDateTime.toTimerString(toTimer-fromTimer+3) //+3 because to and from should be included
+             + ", from " + FitDateTime.toTimerString(fromTimer) + " into the activity" + System.lineSeparator());
+        appendTempUpdateLogg("===> Deleting records from " + FitDateTime.toString(fromTime,0)
+             + " to " + FitDateTime.toString(toTime,0) + System.lineSeparator());
+        appendUpdateLogg(getTempUpdateLogg());
+        System.out.print(getTempUpdateLogg());
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -1576,7 +1589,7 @@ public class FitFile {
         info += "   >>> Dist/Time from new point:" + Math.round(distFromNew) + "m / " + Math.round(gapToChange.timeGap * (distFromNew / (distToNew + distFromNew))) + "sec" + System.lineSeparator();
         info += "   >>> Pace to from point:" + PehoUtils.mps2minpkm((float) (distFromNew/timeFromNew)) + "min/km" + System.lineSeparator();
         info += "   >>> Dist change:" + Math.round(newTotalDistChange) + "m" + System.lineSeparator();
-        savedFileUpdateLogg += info;
+        updateLogg += info;
         System.out.print(info);
 
         allMesg.add(findIxInAllMesgBasedOnTime(stopTime), newGapRecord);
@@ -1612,6 +1625,12 @@ public class FitFile {
 
         // Use EventType EventType.INVALID for Event independent of type
 
+        System.out.println("------------------------------------------");
+        System.out.println("Printing events from " + FitDateTime.toString(eventTimeStartToPrint, diffMinutesLocalUTC)
+                + " to " + FitDateTime.toString(eventTimeEndToPrint, diffMinutesLocalUTC)
+                + " for event: " + eventToPrint + " and type: " + eventTypeToPrint);
+        System.out.println("------------------------------------------");
+
         int eventIx = 0;
 
         for (Mesg mesg:allMesg) {
@@ -1625,12 +1644,92 @@ public class FitFile {
                 Event mesgEvent = Event.getByValue(rawEvent);
                 EventType mesgEventType = EventType.getByValue(rawEventType);
 
+                Long startTime = mesg.getFieldLongValue(EVE_STIME);
+                Integer eventData = mesg.getFieldIntegerValue(EventMesg.DataFieldNum);
+
+                Short rawActType = mesg.getFieldShortValue(EventMesg.ActivityTypeFieldNum);
+                ActivityType mesgActType = null;
+                if (rawActType != null) {
+                    mesgActType = ActivityType.getByValue(rawActType);
+                }
+
                 if (eventTime >= eventTimeStartToPrint && eventTime <= eventTimeEndToPrint) {
-                    System.out.println("Event ix: " + eventIx + " / " + Event.getByValue(mesg.getFieldShortValue(EVE_EVENT)) + " / " + EventType.getByValue(mesg.getFieldShortValue(EVE_TYPE)) + " / " + FitDateTime.toString(new DateTime(mesg.getFieldLongValue(EVE_TIME)),diffMinutesLocalUTC));
+                    System.out.println("Event ix: " + eventIx
+                         + " / " + mesgEvent
+                         + " / " + mesgEventType
+                         + " / " + eventData
+                        //  + " / " + mesgActType
+                         + " @" + FitDateTime.toString(eventTime,diffMinutesLocalUTC)
+                        //  + " stime:" + FitDateTime.toString(startTime,diffMinutesLocalUTC)
+                        );
                 }
                 eventIx++;
             }
         }
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void createEvent(Long eventTime, Event eventToCreate, EventType eventTypeToCreate) {
+
+        int i = 0;
+        int latestRecordIndex = 0;
+        int addEventHereIndex = 0;
+        int addOneToIndexIfToPutAfter = 0;
+        Boolean firstMatchingEventFound = false;
+        Mesg eventMesgToAdd = null;
+
+
+        // if STOP_ALL then the event should be after RECORD
+        if (eventTypeToCreate == EventType.STOP_ALL) {
+            addOneToIndexIfToPutAfter = 1;
+            appendTempUpdateLogg("Event Type is a STOP_ALL. Insert of Event record will be AFTER data record with the same time.");
+        } else {
+            appendTempUpdateLogg("Event Type is NOT STOP_ALL. Insert of Event record will be BEFORE data record with the same time.");
+        }
+
+        for (Mesg mesg : allMesg) {
+
+            if (!firstMatchingEventFound && mesg.getNum() == MesgNum.EVENT) {
+                Short rawEvent = mesg.getFieldShortValue(EVE_EVENT);
+                Event mesgEvent = Event.getByValue(rawEvent);
+
+                if (mesgEvent.equals(eventToCreate)) {
+                    System.out.println("Found first matching event @ix: " + i + " / " + mesgEvent);
+                    eventMesgToAdd = new Mesg(mesg);
+                    firstMatchingEventFound = true;
+                }
+            }
+
+            if (mesg.getNum() == MesgNum.RECORD) {
+
+                Long recordTime = mesg.getFieldLongValue(REC_TIME);
+                if (recordTime != null && recordTime >= eventTime) {
+                    System.out.println("Found matching record @ix: " + i + " / " + FitDateTime.toString(recordTime,diffMinutesLocalUTC));
+                    if (recordTime.equals(eventTime)) {
+                        // If we found a matching record time, we can insert the event here
+                        addEventHereIndex = i + addOneToIndexIfToPutAfter;
+                        appendTempUpdateLoggLn("Data record was found at wanted event time.");
+                    } else {
+                        // record time is greater than event time
+                        // insert at latest record
+                        addEventHereIndex = latestRecordIndex + addOneToIndexIfToPutAfter;
+                        appendTempUpdateLoggLn("Data record was NOT found at wanted event time. Insert at latest record.");
+                    }
+                    break;
+                }
+
+                latestRecordIndex = i;
+            }
+            i++;
+        }
+        eventMesgToAdd.setFieldValue(EVE_TIME, eventTime);
+        eventMesgToAdd.setFieldValue(EVE_EVENT, eventToCreate.getValue());
+        eventMesgToAdd.setFieldValue(EVE_TYPE, eventTypeToCreate.getValue());
+        allMesg.add(addEventHereIndex, eventMesgToAdd);
+        reCreateEventMesg();
+
+        appendTempUpdateLoggLn("Created event @ix: " + addEventHereIndex);
+        System.out.println(getTempUpdateLogg());
+        appendUpdateLogg(getTempUpdateLogg());
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void deleteEvents(Long eventTimeStartToDelete, Long eventTimeStopToDelete, Event eventToDelete, EventType eventTypeToDelete) {
@@ -1701,7 +1800,7 @@ public class FitFile {
         // Update event message list and event timer message list
         reCreateEventMesg();
 
-        savedFileUpdateLogg += tempLog;
+        updateLogg += tempLog;
         System.out.println(tempLog);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -1736,7 +1835,7 @@ public class FitFile {
         tempLog += "Pause no to be deleted: " + pauseNoToDelete + System.lineSeparator();
         tempLog += "-- New gap duration is " + PehoUtils.sec2minSecLong(pauseToDelete.getTimePause()) + "min" + System.lineSeparator();
         System.out.println(tempLog);
-        savedFileUpdateLogg += tempLog;
+        updateLogg += tempLog;
 
         deleteEvents(timeStart, timeStop, Event.TIMER, EventType.INVALID);
 
@@ -1838,7 +1937,7 @@ public class FitFile {
         tempLog += "Increased pause no: " + pauseNo + System.lineSeparator();
         tempLog += "-- Pause increased with " + secondsToPutIntoPause + "sec to " + PehoUtils.sec2minSecLong(pauseToIncrease.getTimePause()+secondsToPutIntoPause) + "min" + System.lineSeparator();
         System.out.println(tempLog);
-        savedFileUpdateLogg += tempLog;
+        updateLogg += tempLog;
 
         // Increase distance after the shortened pause, starting from 1 after pause stop
         // ------------------------------------------------------
@@ -2104,8 +2203,8 @@ public class FitFile {
             lapMesg.get(toLap-1).setFieldValue(LAP_SLON, lonStart);
         }
 
-        savedFileUpdateLogg += "Merged laps: " + fromLap + " to " + toLap + System.lineSeparator();
-        savedFileUpdateLogg += "-- New lap " + (toLap-1) + " time: " + PehoUtils.sec2minSecLong(timerSumOfLaps) + " min, dist: " + Math.round(distSumOfLaps) + " m" + System.lineSeparator();
+        updateLogg += "Merged laps: " + fromLap + " to " + toLap + System.lineSeparator();
+        updateLogg += "-- New lap " + (toLap-1) + " time: " + PehoUtils.sec2minSecLong(timerSumOfLaps) + " min, dist: " + Math.round(distSumOfLaps) + " m" + System.lineSeparator();
 
         // Deleting the merged laps (fromLap to toLap-1)
         //-----------------------------------------------
@@ -2116,7 +2215,7 @@ public class FitFile {
             for (Mesg mesg:allMesg) {
                 if (mesg.getNum() == MesgNum.LAP) {
                     if (mesg.getFieldLongValue(LAP_STIME).equals(lapStartTime)) {
-                        savedFileUpdateLogg += "-- Deleting lap ix:" + lapIxCounter + " time:" + FitDateTime.toString(mesg.getFieldLongValue(LAP_STIME),0) + System.lineSeparator();
+                        updateLogg += "-- Deleting lap ix:" + lapIxCounter + " time:" + FitDateTime.toString(mesg.getFieldLongValue(LAP_STIME),0) + System.lineSeparator();
                         break;
                     }
                 }
@@ -2187,7 +2286,7 @@ public class FitFile {
             "m gapStartDist:"+startGapDist+"m gapEnd:"+stopGapDist +
             "m gapEnd-startTime:"+(stopGapTime - startGapTime) + "s newTime:" + newPauseTime + "s" + System.lineSeparator();
         System.out.println(tempLog);
-        savedFileUpdateLogg += tempLog;
+        updateLogg += tempLog;
 
         // Updating EVENT-TIMER-START DATA
         //----------------------   
@@ -3935,7 +4034,7 @@ public class FitFile {
         }
         try {
             FileWriter myWriter = new FileWriter(conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-log.txt");
-            myWriter.write(savedFileUpdateLogg);
+            myWriter.write(updateLogg);
             myWriter.close();
         } catch (IOException e) {
             System.out.println("An error occurred saving log file.");
