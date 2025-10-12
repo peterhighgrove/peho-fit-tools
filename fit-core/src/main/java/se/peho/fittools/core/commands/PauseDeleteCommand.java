@@ -2,6 +2,9 @@ package se.peho.fittools.core.commands;
 
 import java.util.Scanner;
 
+import com.garmin.fit.Event;
+import com.garmin.fit.EventType;
+
 import se.peho.fittools.core.Command;
 import se.peho.fittools.core.FitFile;
 import se.peho.fittools.core.InputHelper;
@@ -29,7 +32,11 @@ public class PauseDeleteCommand implements Command {
                 continue;
             }
 
-            watchFitFile.deletePause(pauseNo);
+            Long pauseStartTime = watchFitFile.getPauseList().get(pauseNo - 1).getTimeStart();
+            Long pauseEndTime = watchFitFile.getPauseList().get(pauseNo - 1).getTimeStop();
+
+            watchFitFile.deleteEvents(pauseStartTime, pauseEndTime, Event.TIMER, EventType.INVALID);
+            // watchFitFile.deletePause(pauseNo);
 
             watchFitFile.createTimerList();
             watchFitFile.createPauseList();
