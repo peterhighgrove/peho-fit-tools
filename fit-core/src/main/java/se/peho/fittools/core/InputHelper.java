@@ -100,6 +100,8 @@ public class InputHelper {
             System.out.print(prompt + " (b = back): ");
             String input = sc.nextLine().trim();
             if (input.equalsIgnoreCase("b")) return null;
+            if (input.equals("")) input = defaultValue;
+
             try {
                 return input;
             } catch (Exception e) {

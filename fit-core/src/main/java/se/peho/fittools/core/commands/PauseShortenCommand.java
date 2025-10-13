@@ -3,8 +3,10 @@ package se.peho.fittools.core.commands;
 import java.util.Scanner;
 
 import se.peho.fittools.core.Command;
+import se.peho.fittools.core.FitDateTime;
 import se.peho.fittools.core.FitFile;
 import se.peho.fittools.core.InputHelper;
+import se.peho.fittools.core.PehoUtils;
 
 public class PauseShortenCommand implements Command {
     @Override
@@ -18,6 +20,10 @@ public class PauseShortenCommand implements Command {
 
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
+
+        Long gTime = null;
+        Float gDist = null;
+
         while (true) {
             watchFitFile.printPauseList("", 0);
             System.out.println();
@@ -28,10 +34,29 @@ public class PauseShortenCommand implements Command {
                 continue;
             }
 
-            Integer newPauseLen = InputHelper.askForNumber("Enter new pause length", sc);
-            if (newPauseLen == null) return;
+            gTime = watchFitFile.getPauseList().get(pauseNo - 1).getTimePause();
+            gDist = watchFitFile.getPauseList().get(pauseNo - 1).getDistPause();
 
-            watchFitFile.shortenPause(pauseNo, newPauseLen.longValue());
+            System.out.println();
+            System.out.println("New gap dist: " + Math.round(gDist) + " m / " + PehoUtils.m2km2(gDist) + " km");
+            System.out.println("New gap maxtime: " + gTime + " sec / " + FitDateTime.toTimerString(gTime));
+            System.out.println("New gap minspeed: " + PehoUtils.mps2minpkm(gDist / gTime) + " min/km / " + PehoUtils.mps2kmph2(gDist / gTime) + " km/h");
+            Integer newPauseTime = InputHelper.askForNumber("Enter new pause length in seconds", sc);
+            if (newPauseTime == null) return;
+
+            // New GAP time 
+            gTime = gTime - newPauseTime;
+
+            System.out.println();
+            System.out.println("New gap time: " + gTime + " sec / " + FitDateTime.toTimerString(gTime));
+            System.out.println("New gap speed: " + PehoUtils.mps2minpkm(gDist / gTime) + " min/km / " + PehoUtils.mps2kmph2(gDist / gTime) + " km/h");
+
+            System.out.println("");
+            String yesNo = InputHelper.askForString("Happy with gap (y/n)", "y", sc);
+            if (yesNo == null) return;
+            if (!yesNo.equalsIgnoreCase("y")) continue;
+
+            watchFitFile.shortenPause(pauseNo, newPauseTime.longValue());
 
             watchFitFile.createTimerList();
             watchFitFile.createPauseList();
