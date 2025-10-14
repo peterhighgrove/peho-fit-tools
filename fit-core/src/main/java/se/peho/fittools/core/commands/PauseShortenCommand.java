@@ -13,7 +13,7 @@ public class PauseShortenCommand implements Command {
     public String getKey() { return "ps"; }
 
     @Override
-    public String getDescription() { return "Shorten a pause"; }
+    public String getDescription() { return "Shorten a pause when forgot to resume the timer."; }
 
     @Override
     public String getCategory() { return "Pauses"; }
@@ -24,9 +24,10 @@ public class PauseShortenCommand implements Command {
         Long gTime = null;
         Float gDist = null;
 
+        watchFitFile.printPauseList("", 0);
+        System.out.println();
+
         while (true) {
-            watchFitFile.printPauseList("", 0);
-            System.out.println();
             Integer pauseNo = InputHelper.askForNumber("Enter pause number to modify", sc);
             if (pauseNo == null) return;
             if (pauseNo > watchFitFile.getPauseList().size() || pauseNo < 1) {
@@ -41,8 +42,12 @@ public class PauseShortenCommand implements Command {
             System.out.println("New gap dist: " + Math.round(gDist) + " m / " + PehoUtils.m2km2(gDist) + " km");
             System.out.println("New gap maxtime: " + gTime + " sec / " + FitDateTime.toTimerString(gTime));
             System.out.println("New gap minspeed: " + PehoUtils.mps2minpkm(gDist / gTime) + " min/km / " + PehoUtils.mps2kmph2(gDist / gTime) + " km/h");
-            Integer newPauseTime = InputHelper.askForNumber("Enter new pause length in seconds", sc);
+            Integer newPauseTime = InputHelper.askForNumber("Enter new pause time in seconds", sc);
             if (newPauseTime == null) return;
+            if (newPauseTime > gTime || newPauseTime < 0) {
+                System.out.println("==XX> Pause time must be within range. Enter a new pause time.");
+                continue;
+            }
 
             // New GAP time 
             gTime = gTime - newPauseTime;

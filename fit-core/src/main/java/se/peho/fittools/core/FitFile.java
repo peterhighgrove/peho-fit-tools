@@ -1006,11 +1006,11 @@ public class FitFile {
         String hrSign = "";
 
         System.out.println();
-        System.out.println("==================================================");
+        System.out.println("================================================");
         System.out.println("====GAPS IN FILE");
         System.out.println(" File  between " + FitDateTime.toString(timeFirstRecord,diffMinutesLocalUTC) + " >>>> " + FitDateTime.toString(timeLastRecord,diffMinutesLocalUTC));
         System.out.println(String.format(" TotalTime:%1$.0fsec Dist:%2$.0fm", totalTimerTime, totalDistance));
-        System.out.println("--------------------------------------------------");
+        System.out.println("------------------------------------------------");
         //System.out.print(" Event:" + record.getEvent());
         //System.out.print(" No:" + record.getEvent().getValue());
 
@@ -1039,7 +1039,7 @@ public class FitFile {
             }
 
         }
-        System.out.println("--------------------------------------------------");
+        System.out.println("------------------------------------------------");
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void createPauseList() {
@@ -1202,11 +1202,11 @@ public class FitFile {
         int ix = 0;
 
         System.out.println();
-        System.out.println("==================================================");
+        System.out.println("================================================");
         System.out.println("PAUSES IN FILE");
         System.out.println(" File  between " + FitDateTime.toString(timeFirstRecord,diffMinutesLocalUTC) + " >>>> " + FitDateTime.toString(timeLastRecord,diffMinutesLocalUTC));
         System.out.println(String.format(" TotalTime:%1$.0fsec Dist:%2$.0fm", totalTimerTime, totalDistance));
-        System.out.println("--------------------------------------------------");
+        System.out.println("------------------------------------------------");
         //System.out.print(" Event:" + record.getEvent());
         //System.out.print(" No:" + record.getEvent().getValue());
 
@@ -1247,7 +1247,7 @@ public class FitFile {
                 ix ++;
             }
         }
-        System.out.println("--------------------------------------------------");
+        System.out.println("------------------------------------------------");
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -2232,15 +2232,6 @@ public class FitFile {
 
         PauseMesg pauseToShorten = pauseRecords.get(pauseNo-1);
 
-        if (newPauseTime > pauseToShorten.getTimePause()) {
-            System.out.println("----- NEW Pause time is to large ------");
-            System.exit(0);
-        }
-        if (pauseNo > pauseRecords.size()) {
-            System.out.println("----- PauseNo is to large ------");
-            System.exit(0);
-        }
-
         Mesg startPauseRecord = recordMesg.get(pauseToShorten.getIxStart());
         Mesg stopGapRecord = recordMesg.get(pauseToShorten.getIxStop()); // Org PAUSE STOP = New GAP STOP
 
@@ -2277,16 +2268,20 @@ public class FitFile {
         // Power Value always missing in record after Pause
         stopGapRecord.setFieldValue(REC_POW, stopGapPow);
 
-        String tempLog = "";
-        tempLog += "PAUSE - SHORTEN, forgot to start after pause" + System.lineSeparator();
-        tempLog += "--------------------------------------------" + System.lineSeparator();
-        tempLog += "Shortened pause no: " + pauseNo + System.lineSeparator();
-        tempLog += "-- Pause decreased from " + pauseToShorten.getTimePause() + "sec to " + newPauseTime + "sec" + System.lineSeparator();
-        tempLog += "--> newSpeed:"+PehoUtils.mps2minpkm(startGapSpeed)+"km/min gpsDist:"+pauseToShorten.getDistPause() +
-            "m gapStartDist:"+startGapDist+"m gapEnd:"+stopGapDist +
-            "m gapEnd-startTime:"+(stopGapTime - startGapTime) + "s newTime:" + newPauseTime + "s" + System.lineSeparator();
-        System.out.println(tempLog);
-        updateLogg += tempLog;
+        clearTempUpdateLogg();
+        appendTempUpdateLoggLn("");
+        appendTempUpdateLoggLn("PAUSE - SHORTEN, forgot to resume timer after pause");
+        appendTempUpdateLoggLn("--------------------------------------------");
+        appendTempUpdateLoggLn("Shortened pause no: " + pauseNo);
+        appendTempUpdateLoggLn("-- Pause decreased from " + pauseToShorten.getTimePause() + "sec to " + newPauseTime + "sec");
+        appendTempUpdateLoggLn("-->"
+            + "new speed:" + PehoUtils.mps2minpkm(startGapSpeed) + "min/km" 
+            + " / " + PehoUtils.mps2kmph3(startGapSpeed) + "km/h"
+            + " dist:" + pauseToShorten.getDistPause() + "m"
+            + " gap dist start:" + startGapDist + "m end:" + stopGapDist + "m"
+            + " gap time end-start:" + (stopGapTime - startGapTime) + "s");
+        System.out.println(getTempUpdateLogg());
+        appendUpdateLogg(getTempUpdateLogg());
 
         // Updating EVENT-TIMER-START DATA
         //----------------------   
@@ -3366,7 +3361,7 @@ public class FitFile {
         int lapNo = 1;
         try {
         System.out.println();
-        System.out.println("==================================================");
+        System.out.println("================================================");
         System.out.println("====LAPS IN FILE (lap1)");
             for (Mesg mesg : lapMesg) {
                 System.out.print("Lap:" + lapNo);
@@ -3405,7 +3400,7 @@ public class FitFile {
                 i++;
                 lapNo++;
             }
-            System.out.println("--------------------------------------------------");
+        System.out.println("------------------------------------------------");
         }
         catch (FitRuntimeException e) {
             System.out.println("LAP ERROR!!!!");
@@ -3488,7 +3483,7 @@ public class FitFile {
 
         try {
         System.out.println();
-        System.out.println("==================================================");
+        System.out.println("================================================");
         System.out.println("====LAPS IN FILE (lap2)");
 
             for (Mesg mesg : lapMesg) {
@@ -3496,7 +3491,7 @@ public class FitFile {
                 ix++;
             }
 
-            System.out.println("--------------------------------------------------");
+        System.out.println("------------------------------------------------");
         } catch (FitRuntimeException e) {
             System.out.println("LAP ERROR!!!!");
         }
@@ -3557,7 +3552,7 @@ public class FitFile {
         int i = 0;
         int lapNo = 1;
         System.out.println();
-        System.out.println("==================================================");
+        System.out.println("================================================");
         System.out.println("====LAPS IN FILE (lap4-LapAllSummary)");
         for (Mesg mesg : lapMesg) {
             System.out.print("Lap:" + lapNo);
@@ -3651,7 +3646,7 @@ public class FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printLapLongSummary() {
         System.out.println();
-        System.out.println("==================================================");
+        System.out.println("================================================");
         System.out.println("====LAPS IN FILE (lap3-LapLongSummary)");
         System.out.println("---- ACTIVE LAPS ----");
         int i = 0;
@@ -3966,9 +3961,9 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printDetailedFileInfo() {
-        System.out.println("==================================================");
+        System.out.println("================================================");
         System.out.println("Detailed file info:");
-        System.out.println("==================================================");
+        System.out.println("================================================");
         System.out.print(createFileSummary());
         printFileIdInfo();
         printDeviceInfo();
@@ -3996,7 +3991,7 @@ public class FitFile {
         //printDevDataId();
         //printFieldDescr();
 
-        System.out.println("==================================================");
+        System.out.println("================================================");
     }
     
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
