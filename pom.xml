@@ -13,6 +13,7 @@
         <module>fit-core</module>
         <module>fit-wkt-merge-analyze</module>
         <module>fit-fix-gps-activities</module>
+        <module>fit-zip-renamer</module>
     </modules>
 
     <properties>

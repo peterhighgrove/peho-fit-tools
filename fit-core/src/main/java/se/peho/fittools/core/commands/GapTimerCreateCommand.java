@@ -10,12 +10,12 @@ import se.peho.fittools.core.FitDateTime;
 import se.peho.fittools.core.FitFile;
 import se.peho.fittools.core.InputHelper;
 
-public class GapEventCreateCommand implements Command {
+public class GapTimerCreateCommand implements Command {
     @Override
-    public String getKey() { return "gecr"; }
+    public String getKey() { return "g2p"; }
 
     @Override
-    public String getDescription() { return "Create timer events in GAP and convert to PAUSE"; }
+    public String getDescription() { return "Convert to PAUSE. Create timer events in GAP."; }
 
     @Override
     public String getCategory() { return "Gaps"; }
@@ -23,7 +23,7 @@ public class GapEventCreateCommand implements Command {
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
         while (true) {
-            Integer gapNo = InputHelper.askForNumber("Enter GAP number to CREATE events in and create PAUSE", sc);
+            Integer gapNo = InputHelper.askForNumber("Enter GAP number to CREATE TIMER events in and create PAUSE", sc);
             if (gapNo == null) return;
 
             if (gapNo > watchFitFile.getGapList().size() || gapNo < 1) {
@@ -42,12 +42,16 @@ public class GapEventCreateCommand implements Command {
 
             watchFitFile.createEvent(gapStart, Event.TIMER, EventType.STOP_ALL);
             watchFitFile.createEvent(gapStop, Event.TIMER, EventType.START);
-
-            watchFitFile.appendTempUpdateLogg("==>> Created Timer events between "
+            watchFitFile.appendTempUpdateLoggLn("==>> Created Timer events between "
                  + FitDateTime.toString(gapStart, watchFitFile.getDiffMinutesLocalUTC())
                  + " and "
                  + FitDateTime.toString(gapStop, watchFitFile.getDiffMinutesLocalUTC())
-                 + " (inclusive)." + System.lineSeparator());
+                 + " (inclusive).");
+
+            watchFitFile.updateActivityInfoWhenDeletingGapToPause(gapNo - 1);
+
+            System.out.println(watchFitFile.getTempUpdateLogg());
+            watchFitFile.appendUpdateLogg(watchFitFile.getTempUpdateLogg());
 
             watchFitFile.createTimerList();
             watchFitFile.createPauseList();

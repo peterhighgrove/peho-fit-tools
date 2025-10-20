@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 import se.peho.fittools.core.commands.FileInfoShowDetailedCommand;
 import se.peho.fittools.core.commands.GapAddGpsCommand;
-import se.peho.fittools.core.commands.GapEventCreateCommand;
+import se.peho.fittools.core.commands.GapTimerCreateCommand;
 import se.peho.fittools.core.commands.GapEventsPrintCommand;
 import se.peho.fittools.core.commands.GapShowListCommand;
 import se.peho.fittools.core.commands.GapShowListFilteredCommand;
@@ -19,17 +19,18 @@ import se.peho.fittools.core.commands.LapShowList1Command;
 import se.peho.fittools.core.commands.LapShowList2Command;
 import se.peho.fittools.core.commands.LapShowList3Command;
 import se.peho.fittools.core.commands.LapShowList4Command;
-import se.peho.fittools.core.commands.PauseDeleteCommand;
-import se.peho.fittools.core.commands.PauseEventsPrintCommand;
+import se.peho.fittools.core.commands.PauseTimersPrintCommand;
 import se.peho.fittools.core.commands.PauseIncreaseCommand;
 import se.peho.fittools.core.commands.PauseShortenCommand;
 import se.peho.fittools.core.commands.PauseShowListCommand;
 import se.peho.fittools.core.commands.PauseShowListFilteredCommand;
 import se.peho.fittools.core.commands.PauseTimerDelCommand;
+import se.peho.fittools.core.commands.PrintRecordsCommand;
 import se.peho.fittools.core.commands.RecDeleteCreateGapCommand;
 import se.peho.fittools.core.commands.RecStartCommand;
 import se.peho.fittools.core.commands.SaveChangeStartTimeExitCommand;
 import se.peho.fittools.core.commands.SplitShowListCommand;
+import se.peho.fittools.core.commands.StopPrintCommand;
 import se.peho.fittools.core.commands.WktShowCommand;
 
 public class MenuRunner {
@@ -53,23 +54,25 @@ public class MenuRunner {
             new GapsFillCommand(),
             new GapTimerDelCommand(),
             new GapEventsPrintCommand(),
-            new GapEventCreateCommand(),
+            new GapTimerCreateCommand(),
             new PauseShowListCommand(),
             new PauseShowListFilteredCommand(),
             new PauseShortenCommand(),
             new PauseIncreaseCommand(),
-            new PauseDeleteCommand(),
+            //new PauseDeleteCommand(),
             new PauseTimerDelCommand(),
-            new PauseEventsPrintCommand(),
+            new PauseTimersPrintCommand(),
             new LapShowList1Command(),
             new LapShowList2Command(),
             new LapShowList3Command(),
             new LapShowList4Command(),
             new LapMergeCommand(),
             new SplitShowListCommand(),
+            new PrintRecordsCommand(),
             new RecDeleteCreateGapCommand(),
             new RecStartCommand(),
             new WktShowCommand(),
+            new StopPrintCommand(),
             new FileInfoShowDetailedCommand(),
             new SaveChangeStartTimeExitCommand(conf)
         };

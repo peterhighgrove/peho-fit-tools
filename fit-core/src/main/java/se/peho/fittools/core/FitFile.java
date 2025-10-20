@@ -1,4 +1,4 @@
-package se.peho.fittools.core;
+package  se.peho.fittools.core;
 import com.garmin.fit.*;
 
 import java.io.File;
@@ -554,7 +554,7 @@ public class FitFile {
         Float recordDist;
         //  +1 cause not to update 3 new records
         int ix = 0;
-        for (ix = fromRecordIx; ix < numberOfRecords; ix++) {
+        for (ix = fromRecordIx; ix < getNumberOfRecords(); ix++) {
             recordDist = recordMesg.get(ix).getFieldFloatValue(REC_DIST);
             recordMesg.get(ix).setFieldValue(REC_DIST, (recordDist + distToAdd));
         }
@@ -686,10 +686,454 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void listStops(Long durationForStopToBeSearched, Float distanceForStopToBeSearched) {
+
+        Long durationCounter = 0L;
+        Float distanceCounter = 0F;
+
+        for (Mesg mesg : allMesg) {
+            Long stopDuration = mesg.getFieldLongValue(REC_TIME);
+            Float stopDistance = mesg.getFieldFloatValue(REC_DIST);
+            durationCounter += stopDuration != null ? stopDuration : 0L;
+            distanceCounter += stopDistance != null ? stopDistance : 0F;
+
+            if (stopDuration != null && stopDuration.equals(durationForStopToBeSearched) &&
+                stopDistance != null && stopDistance.equals(distanceForStopToBeSearched)) {
+                printStopRecord(mesg);
+            }
+        }
+    }
+
+    public void printStopRecord(Mesg mesg) {
+        System.out.println("Stop Record:");
+        System.out.println("  Duration: " + mesg.getFieldLongValue(REC_TIME));
+        System.out.println("  Distance: " + mesg.getFieldFloatValue(REC_DIST));
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public Boolean checkForPausesAndGivePrintedResultBasedOnTimer(Long fromTimer, Long toTimer) {
         return (checkForPausesAndGivePrintedResultBasedOnTime(findTimeBasedOnTimer(fromTimer), findTimeBasedOnTimer(toTimer)));
     }
+
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+// ...existing code...
+    /**
+     * Print RECORD and EVENT messages between two timer values (inclusive).
+     * Columns: timer (sec/human), timestamp (local), lapNo, type, distance (m), altitude (m), pace(min/km), cadence(rpm), info
+     * Requires recordMesgAddOnRecords (createTimerList must have been run).
+     */
+    public void printMessagesBetweenTimers(Long fromTimer, Long toTimer) {
+        if (recordMesgAddOnRecords == null || recordMesgAddOnRecords.isEmpty()) {
+            System.out.println("Timer list empty - run createTimerList() first.");
+            return;
+        }
+        if (fromTimer == null || toTimer == null || fromTimer > toTimer) {
+            System.out.println("Invalid timer range.");
+            return;
+        }
+
+        Long timeStart = findTimeBasedOnTimer(fromTimer);
+        Long timeEnd = findTimeBasedOnTimer(toTimer);
+
+        int allStartIx = findIxInAllMesgBasedOnTime(timeStart);
+        int allEndIx = findIxInAllMesgBasedOnTime(timeEnd);
+
+        if (allStartIx < 0 || allEndIx < 0 || allStartIx >= allMesg.size()) {
+            System.out.println("No messages found in the requested timer range.");
+            return;
+        }
+        if (allEndIx >= allMesg.size()) allEndIx = allMesg.size() - 1;
+        if (allStartIx > allEndIx) {
+            System.out.println("No messages in range (start after end).");
+            return;
+        }
+
+        // Prebuild lap start times (if any) for quick lookup
+        List<Long> lapStarts = new ArrayList<>();
+        if (lapMesg != null) {
+            for (Mesg l : lapMesg) {
+                Long s = l.getFieldLongValue(LAP_STIME);
+                if (s == null) s = l.getFieldLongValue(LAP_TIME);
+                if (s != null) lapStarts.add(s);
+            }
+        }
+
+        // helper to find 1-based lap number for a timestamp, 0 if unknown
+        java.util.function.Function<Long,Integer> lapForTime = (t) -> {
+            if (t == null || lapStarts.isEmpty()) return 0;
+            int last = 0;
+            for (int i = 0; i < lapStarts.size(); i++) {
+                Long st = lapStarts.get(i);
+                if (st != null && st <= t) last = i + 1; // 1-based
+            }
+            return last;
+        };
+
+        // compute recordCounter at allStartIx (0-based index into recordMesg / recordMesgAddOnRecords)
+        int recordCounter = 0;
+        for (int i = 0; i < allStartIx && i < allMesg.size(); i++) {
+            if (allMesg.get(i).getNum() == MesgNum.RECORD) recordCounter++;
+        }
+
+        System.out.println("timer   time       lap  type    dist(m)   alt(m)   pace    cad   info");
+        System.out.println("-------------------------------------------------------------");
+
+        for (int i = allStartIx; i <= allEndIx && i < allMesg.size(); i++) {
+            Mesg m = allMesg.get(i);
+
+            if (m.getNum() == MesgNum.RECORD) {
+                Long timer = null;
+                if (recordCounter >= 0 && recordCounter < recordMesgAddOnRecords.size()) {
+                    timer = recordMesgAddOnRecords.get(recordCounter).getTimer();
+                }
+                Long time = m.getFieldLongValue(REC_TIME);
+                Float dist = m.getFieldFloatValue(REC_DIST);
+                Float alt = m.getFieldFloatValue(REC_EALT);
+
+                // pace (min/km) — prefer enhanced speed then speed
+                Float speed = m.getFieldFloatValue(REC_ESPEED);
+                if (speed == null) speed = m.getFieldFloatValue(REC_SPEED);
+                String paceStr = (speed != null && speed > 0f) ? PehoUtils.mps2minpkm(speed) : "-";
+
+                // cadence
+                Short cad = m.getFieldShortValue(RecordMesg.CadenceFieldNum);
+                String cadStr = cad != null ? String.valueOf(cad) : "-";
+
+                String timeStr = time != null ? FitDateTime.toStringTime(time, diffMinutesLocalUTC) : "unknown";
+                String timerStr = timer != null ? PehoUtils.sec2minSecShort(timer) : "N/A";
+                int lapNo = lapForTime.apply(time);
+                System.out.println(String.format("%-7s %-10s %-4s %-7s %-9s %-8s %-7s %-5s",
+                        timerStr,
+                        timeStr,
+                        (lapNo > 0 ? String.valueOf(lapNo) : "-"),
+                        "RECORD",
+                        dist != null ? String.format("%.1f", dist) : "-",
+                        alt != null ? String.format("%.1f", alt) : "-",
+                        paceStr,
+                        cadStr,
+                        "recIdx=" + recordCounter + " allIx=" + i));
+                recordCounter++;
+            } else if (m.getNum() == MesgNum.EVENT) {
+                Long evTime = m.getFieldLongValue(EVE_TIME);
+                Short rawEvent = m.getFieldShortValue(EVE_EVENT);
+                Short rawType = m.getFieldShortValue(EVE_TYPE);
+                String evName = rawEvent != null ? String.valueOf(Event.getByValue(rawEvent)) : "unknown";
+                String evType = rawType != null ? String.valueOf(EventType.getByValue(rawType)) : "unknown";
+                Long timerForEvent = evTime != null ? findTimerBasedOnTime(evTime) : null;
+                String timerStr = timerForEvent != null ? PehoUtils.sec2minSecShort(timerForEvent) : "-";
+                String timeStr = evTime != null ? FitDateTime.toStringTime(evTime, diffMinutesLocalUTC) : "unknown";
+                int lapNo = lapForTime.apply(evTime);
+                // Events don't have dist/alt/pace/cad
+                System.out.println(String.format("%-7s %-10s %-3s %-7s %-9s %-8s %-7s %-5s %s",
+                        timerStr,
+                        timeStr,
+                        (lapNo > 0 ? String.valueOf(lapNo) : "-"),
+                        "EVENT",
+                        "-",
+                        "-",
+                        "-",
+                        "-",
+                        evName + "/" + evType));
+            }
+        }
+        System.out.println("-------------------------------------------------------------");
+    }
+// ...existing code...
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+// ...existing code...
+    /**
+     * Combine low-movement intervals, pauses and gaps into one time-sorted list and print them.
+     * Output columns:
+     * TYPE No   timerStart->timerEnd      timeStart -> timeEnd                 dur(s)   distStart->distStop (Δm)   altStart->altStop (Δm)   note
+     *
+     * Duration printed in seconds. Timer printed as min:sec (no "(sec)" suffix).
+     */
+    public void printCombinedStopsPausesLowMovement(int windowSize, double thresholdMeters) {
+        if (allMesg.isEmpty() || windowSize <= 0) return;
+
+        class CombinedEntry {
+            enum Type { LOW, PAUSE, GAP }
+            Type type;
+            int no = -1;
+            Long startTime;
+            Long endTime;
+            Long startTimer;
+            Long endTimer;
+            Float distStart;
+            Float distStop;
+            Float altStart;
+            Float altStop;
+            String note;
+            int recIxStart = -1;
+            int recIxEnd = -1;
+
+            CombinedEntry(Type t) { type = t; }
+        }
+
+        List<CombinedEntry> combined = new ArrayList<>();
+
+        // ---------- Detect low-movement intervals ----------
+        double[] window = new double[windowSize];
+        long[] times = new long[windowSize];
+        int[] allIdxs = new int[windowSize];
+
+        int idx = 0, count = 0;
+        double sum = 0.0;
+
+        Mesg prevRec = null;
+        boolean inLow = false;
+
+        Long lowStartTime = null;
+        int lowStartRecIdx = -1;
+        int recordIndex = 0; // 1-based
+        int allIx = 0;
+
+        int pauseIx = 0;
+        Long lastPauseEndedTime = null;
+        int lastPauseNo = -1;
+        boolean pauseRestartHandled = true;
+        boolean recentlyRestartedByPause = false;
+        int restartPauseNo = -1;
+
+        final long TOL = 3;
+
+        for (Mesg m : allMesg) {
+            if (m.getNum() != MesgNum.RECORD) { allIx++; continue; }
+
+            recordIndex++;
+            int thisAllIx = allIx;
+
+            Float distF = m.getFieldFloatValue(REC_DIST);
+            Long timeL = m.getFieldLongValue(REC_TIME);
+
+            // advance pauseIx
+            while (pauseIx < pauseRecords.size()
+                    && pauseRecords.get(pauseIx).getTimeStop() != null
+                    && timeL != null
+                    && pauseRecords.get(pauseIx).getTimeStop() < timeL) {
+                pauseIx++;
+            }
+
+            // skip records inside pause
+            if (timeL != null && pauseIx < pauseRecords.size()) {
+                PauseMesg p = pauseRecords.get(pauseIx);
+                Long pStart = p.getTimeStart();
+                Long pStop = p.getTimeStop();
+                if (pStart != null && pStop != null && timeL >= pStart && timeL <= pStop) {
+                    lastPauseEndedTime = pStop;
+                    lastPauseNo = p.getNo();
+                    pauseRestartHandled = false;
+                    count = 0; sum = 0.0; idx = 0; inLow = false; prevRec = null;
+                    recentlyRestartedByPause = false; restartPauseNo = -1;
+                    allIx++; continue;
+                }
+            }
+            if (lastPauseEndedTime != null && !pauseRestartHandled && timeL != null && timeL >= lastPauseEndedTime) {
+                count = 0; sum = 0.0; idx = 0; inLow = false; prevRec = null;
+                recentlyRestartedByPause = true;
+                restartPauseNo = lastPauseNo;
+                pauseRestartHandled = true;
+            }
+
+            if (distF == null || timeL == null) { prevRec = m; allIx++; continue; }
+            double dist = distF;
+
+            double delta = 0.0;
+            if (prevRec != null) {
+                Float prevDistF = prevRec.getFieldFloatValue(REC_DIST);
+                if (prevDistF != null) { delta = dist - prevDistF; if (delta < 0) delta = 0; }
+            }
+
+            if (count < windowSize) {
+                window[idx] = delta; times[idx] = timeL; allIdxs[idx] = thisAllIx; sum += delta; count++;
+            } else {
+                sum -= window[idx];
+                window[idx] = delta; times[idx] = timeL; allIdxs[idx] = thisAllIx; sum += delta;
+            }
+
+            idx++; if (idx == windowSize) idx = 0;
+
+            if (count == windowSize) {
+                if (sum < thresholdMeters) {
+                    if (!inLow) {
+                        inLow = true;
+                        lowStartTime = times[idx];
+                        lowStartRecIdx = recordIndex - windowSize + 1; // 1-based
+                        if (recentlyRestartedByPause) {
+                            restartPauseNo = restartPauseNo;
+                            recentlyRestartedByPause = false;
+                        } else {
+                            restartPauseNo = -1;
+                        }
+                    }
+                } else {
+                    if (inLow) {
+                        CombinedEntry e = new CombinedEntry(CombinedEntry.Type.LOW);
+                        e.startTime = lowStartTime;
+                        e.endTime = timeL;
+                        e.recIxStart = lowStartRecIdx - 1;
+                        e.recIxEnd = recordIndex - 1;
+                        if (recordMesgAddOnRecords != null && e.recIxStart >= 0 && e.recIxEnd >= 0
+                                && recordMesgAddOnRecords.size() > Math.max(e.recIxStart, e.recIxEnd)) {
+                            e.startTimer = recordMesgAddOnRecords.get(e.recIxStart).getTimer();
+                            e.endTimer = recordMesgAddOnRecords.get(e.recIxEnd).getTimer();
+                        }
+                        if (e.recIxStart >= 0 && e.recIxStart < recordMesg.size()) {
+                            e.distStart = recordMesg.get(e.recIxStart).getFieldFloatValue(REC_DIST);
+                            e.altStart = recordMesg.get(e.recIxStart).getFieldFloatValue(REC_EALT);
+                        }
+                        if (e.recIxEnd >= 0 && e.recIxEnd < recordMesg.size()) {
+                            e.distStop = recordMesg.get(e.recIxEnd).getFieldFloatValue(REC_DIST);
+                            e.altStop = recordMesg.get(e.recIxEnd).getFieldFloatValue(REC_EALT);
+                        }
+                        e.no = combined.size() + 1;
+                        e.note = String.format("lowDistSum=%.2fm", sum);
+                        combined.add(e);
+
+                        inLow = false; lowStartTime = null; lowStartRecIdx = -1; restartPauseNo = -1;
+                    }
+                }
+            }
+
+            prevRec = m;
+            allIx++;
+        }
+
+        // ongoing low at EOF
+        if (inLow && lowStartTime != null) {
+            CombinedEntry e = new CombinedEntry(CombinedEntry.Type.LOW);
+            e.startTime = lowStartTime;
+            e.endTime = null;
+            e.recIxStart = lowStartRecIdx - 1;
+            e.recIxEnd = recordIndex - 1;
+            if (recordMesgAddOnRecords != null && e.recIxStart >= 0 && e.recIxEnd >= 0
+                    && recordMesgAddOnRecords.size() > Math.max(e.recIxStart, e.recIxEnd)) {
+                e.startTimer = recordMesgAddOnRecords.get(e.recIxStart).getTimer();
+                e.endTimer = recordMesgAddOnRecords.get(e.recIxEnd).getTimer();
+            }
+            if (e.recIxStart >= 0 && e.recIxStart < recordMesg.size()) {
+                e.distStart = recordMesg.get(e.recIxStart).getFieldFloatValue(REC_DIST);
+                e.altStart = recordMesg.get(e.recIxStart).getFieldFloatValue(REC_EALT);
+            }
+            if (e.recIxEnd >= 0 && e.recIxEnd < recordMesg.size()) {
+                e.distStop = recordMesg.get(e.recIxEnd).getFieldFloatValue(REC_DIST);
+                e.altStop = recordMesg.get(e.recIxEnd).getFieldFloatValue(REC_EALT);
+            }
+            e.no = combined.size() + 1;
+            e.note = "ONGOING";
+            combined.add(e);
+        }
+
+        // ---------- Add pauses ----------
+        for (PauseMesg p : pauseRecords) {
+            CombinedEntry e = new CombinedEntry(CombinedEntry.Type.PAUSE);
+            e.no = p.getNo();
+            e.startTime = p.getTimeStart();
+            e.endTime = p.getTimeStop();
+            e.startTimer = e.startTime != null ? findTimerBasedOnTime(e.startTime) : null;
+            e.endTimer = e.endTime != null ? findTimerBasedOnTime(e.endTime) : null;
+            e.distStart = p.getDistStart();
+            e.distStop = p.getDistStart() != null && p.getDistPause() != null ? p.getDistStart() + p.getDistPause() : null;
+            e.altStart = p.getAltStart();
+            e.altStop = p.getAltStop();
+            e.note = String.format("pauseDur=%ds", (p.getTimeStop() != null && p.getTimeStart() != null) ? (int)(p.getTimeStop() - p.getTimeStart()) : 0);
+            combined.add(e);
+        }
+
+        // ---------- Add gaps ----------
+        for (GapMesg g : gapRecords) {
+            CombinedEntry e = new CombinedEntry(CombinedEntry.Type.GAP);
+            e.no = g.getNo();
+            e.startTime = g.getTimeStart();
+            e.endTime = g.getTimeStop();
+            e.startTimer = e.startTime != null ? findTimerBasedOnTime(e.startTime) : null;
+            e.endTimer = e.endTime != null ? findTimerBasedOnTime(e.endTime) : null;
+            e.distStart = g.getDistStart();
+            e.distStop = g.getDistStop();
+            e.altStart = g.getAltStart();
+            e.altStop = g.getAltStop();
+            e.note = String.format("gapDur=%ds", g.getTimeGap() != null ? g.getTimeGap().intValue() : 0);
+            combined.add(e);
+        }
+
+        // ---------- Sort ----------
+        combined.sort((a, b) -> {
+            Long at = a.startTime == null ? Long.MAX_VALUE : a.startTime;
+            Long bt = b.startTime == null ? Long.MAX_VALUE : b.startTime;
+            return at.compareTo(bt);
+        });
+
+        // ---------- Print ----------
+        System.out.println("TYPE.No   timer           time                 dur   distance              altitude           note");
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------");
+
+        int lowSeq = 0;
+        for (CombinedEntry ce : combined) {
+            String tStartTimer = ce.startTimer != null ? PehoUtils.sec2minSecShort(ce.startTimer) : "N/A";
+            String tEndTimer = ce.endTimer != null ? PehoUtils.sec2minSecShort(ce.endTimer) : "N/A";
+            String tStartTime = ce.startTime != null ? FitDateTime.toStringTime(ce.startTime, diffMinutesLocalUTC) : "unknown";
+            String tEndTime = ce.endTime != null ? FitDateTime.toStringTime(ce.endTime, diffMinutesLocalUTC) : "unknown";
+
+            long dur = -1;
+            if (ce.startTime != null && ce.endTime != null) {
+                dur = ce.endTime - ce.startTime;
+            } else if (ce.startTimer != null && ce.endTimer != null) {
+                dur = ce.endTimer - ce.startTimer;
+            }
+
+            String durStr = dur >= 0 ? String.valueOf(dur) + "s" : "ONGOING";
+
+            Float ds = ce.distStart;
+            Float de = ce.distStop;
+            String distStr = "N/A";
+            if (ds != null || de != null) {
+                String s = ds != null ? String.format("%.0fm", ds) : "N/A";
+                String e = de != null ? String.format("%.0fm", de) : "N/A";
+                String d = (ds != null && de != null) ? String.format("%.1fm", (de - ds)) : "N/A";
+                distStr = s + "->" + e + "=" + d + "";
+            }
+
+            Float as = ce.altStart;
+            Float ae = ce.altStop;
+            String altStr = "N/A";
+            if (as != null || ae != null) {
+                String s = as != null ? String.format("%.0fm", as) : "N/A";
+                String e = ae != null ? String.format("%.0fm", ae) : "N/A";
+                String d = (as != null && ae != null) ? String.format("%.1fm", (ae - as)) : "N/A";
+                altStr = s + "->" + e + "=" + d + "";
+            }
+
+            String typeNo;
+            if (ce.type == CombinedEntry.Type.LOW) {
+                lowSeq++;
+                typeNo = "LOW." + lowSeq;
+            } else if (ce.type == CombinedEntry.Type.PAUSE) {
+                typeNo = "PAUSE." + ce.no;
+            } else {
+                typeNo = "GAP." + ce.no;
+            }
+
+            System.out.println(String.format("%-9s %-15s %-20s %-5s %-21s %-18s %s",
+                    typeNo,
+                    (tStartTimer + "->" + tEndTimer),
+                    (tStartTime + "->" + tEndTime),
+                    durStr,
+                    distStr,
+                    altStr,
+                    ce.note != null ? ce.note : ""));
+        }
+
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------");
+    }
+// ...existing code...
+
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    
     public Boolean checkForPausesAndGivePrintedResultBasedOnTime(Long fromTime, Long toTime) {
 
         Boolean isPauses = false;
@@ -725,6 +1169,104 @@ public class FitFile {
             
         }
         return isPauses;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void updateActivityInfoWhenDeletingPauseToGap(int pauseIndex) {
+
+        PauseMesg pause = getPauseList().get(pauseIndex);
+
+        // Increase distance after the shortened pause, starting from 1 after pause stop
+        // ------------------------------------------------------
+        addDistToRecords(pause.getIxStop()+1, pause.getDistPause());
+
+        // Updating LAP DATA
+        //------------------
+        Float lapTime = lapMesg.get(pause.getIxLap()).getFieldFloatValue(LAP_TIMER);
+        appendTempUpdateLogg("Increasing LAP_TIMER for lap " + pause.getIxLap() + " from " + lapTime);
+        lapTime += pause.getTimePause();
+        appendTempUpdateLoggLn(" to " + lapTime + "s");
+
+        Float lapDist = lapMesg.get(pause.getIxLap()).getFieldFloatValue(LAP_DIST);
+        appendTempUpdateLogg("Increasing LAP_DIST for lap " + pause.getIxLap() + " from " + lapDist);
+        lapDist += pause.getDistPause();
+        appendTempUpdateLoggLn(" to " + lapDist + "m");
+        
+        lapMesg.get(pause.getIxLap()).setFieldValue(LAP_TIMER, (lapTime));
+        //lapMesg.get(pause.getIxLap()).setFieldValue(LAP_ETIMER, (lapTime));
+        lapMesg.get(pause.getIxLap()).setFieldValue(LAP_DIST, (lapDist));
+        lapMesg.get(pause.getIxLap()).setFieldValue(LAP_SPEED, (lapDist / lapTime));
+        lapMesg.get(pause.getIxLap()).setFieldValue(LAP_ESPEED, (lapDist / lapTime));
+
+        // Updating SESSION DATA
+        //----------------------
+        appendTempUpdateLogg("Increasing SESSION_TIMER from " + totalTimerTime);
+        totalTimerTime += (float) pause.getTimePause();
+        appendTempUpdateLoggLn(" to " + totalTimerTime + "s");
+
+        sessionMesg.get(0).setFieldValue(SES_TIMER, (totalTimerTime));
+        //elapsedTimerTime += (float) pause.getTimePause() - newPauseTime;
+        //sessionMesg.get(0).setFieldValue(SES_ETIMER, elapsedTimerTime);
+
+        appendTempUpdateLogg("Increasing SESSION_DIST from " + totalDistance);
+        totalDistance = recordMesg.get(numberOfRecords-1).getFieldFloatValue(REC_DIST);
+        appendTempUpdateLoggLn(" to " + totalDistance + "m");
+
+        sessionMesg.get(0).setFieldValue(SES_DIST, (totalDistance));
+
+        appendTempUpdateLogg("Increasing SESSION_SPEED from " + avgSpeed + " / " + PehoUtils.mps2minpkm(avgSpeed));
+        avgSpeed = totalDistance / totalTimerTime;
+        appendTempUpdateLoggLn(" to " + avgSpeed + "m/s" + " / " + PehoUtils.mps2minpkm(avgSpeed) + "min/km");
+        sessionMesg.get(0).setFieldValue(SES_SPEED, (avgSpeed));
+        sessionMesg.get(0).setFieldValue(SES_ESPEED, (avgSpeed));
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void updateActivityInfoWhenDeletingGapToPause(int gapIndex) {
+
+        GapMesg gap = getGapList().get(gapIndex);
+
+        // Increase distance after the shortened pause, starting from 1 after pause stop
+        // ------------------------------------------------------
+        addDistToRecords(gap.getIxStop(), -gap.getDistGap());
+
+        // Updating LAP DATA
+        //------------------
+        appendTempUpdateLogg("Decreasing LAP_TIMER for lap " + gap.getIxLap() + " from " + lapMesg.get(gap.getIxLap()).getFieldFloatValue(LAP_TIMER));
+        Float lapTime = lapMesg.get(gap.getIxLap()).getFieldFloatValue(LAP_TIMER) - gap.getTimeGap();
+        appendTempUpdateLoggLn(" to " + lapTime + "s");
+
+        appendTempUpdateLogg("Decreasing LAP_DIST for lap " + gap.getIxLap() + " from " + lapMesg.get(gap.getIxLap()).getFieldFloatValue(LAP_DIST));
+        Float lapDist = lapMesg.get(gap.getIxLap()).getFieldFloatValue(LAP_DIST) - gap.getDistGap();
+        appendTempUpdateLoggLn(" to " + lapDist + "m");
+
+        lapMesg.get(gap.getIxLap()).setFieldValue(LAP_TIMER, (lapTime));
+        //lapMesg.get(gap.getIxLap()).setFieldValue(LAP_ETIMER, (lapTime));
+        lapMesg.get(gap.getIxLap()).setFieldValue(LAP_DIST, (lapDist));
+        lapMesg.get(gap.getIxLap()).setFieldValue(LAP_SPEED, (lapDist / lapTime));
+        lapMesg.get(gap.getIxLap()).setFieldValue(LAP_ESPEED, (lapDist / lapTime));
+
+        // Updating SESSION DATA
+        //----------------------
+        appendTempUpdateLogg("Decreasing SESSION_TIMER from " + totalTimerTime);
+        totalTimerTime -= (float) gap.getTimeGap();
+        appendTempUpdateLoggLn(" to " + totalTimerTime + "s");
+
+        sessionMesg.get(0).setFieldValue(SES_TIMER, (totalTimerTime));
+        //elapsedTimerTime -= (float) gap.getTimePause();
+        //sessionMesg.get(0).setFieldValue(SES_ETIMER, elapsedTimerTime);
+
+
+        appendTempUpdateLogg("Decreasing SESSION_DIST from " + totalDistance);
+        totalDistance = recordMesg.get(numberOfRecords-1).getFieldFloatValue(REC_DIST);
+        appendTempUpdateLoggLn(" to " + totalDistance + "m");
+        
+        sessionMesg.get(0).setFieldValue(SES_DIST, (totalDistance));
+
+        appendTempUpdateLogg("Decreasing SESSION_SPEED from " + avgSpeed + " / " + PehoUtils.mps2minpkm(avgSpeed));
+        avgSpeed = totalDistance / totalTimerTime;
+        appendTempUpdateLoggLn(" to " + avgSpeed + "m/s" + " / " + PehoUtils.mps2minpkm(avgSpeed) + "min/km");
+
+        sessionMesg.get(0).setFieldValue(SES_SPEED, (avgSpeed));
+        sessionMesg.get(0).setFieldValue(SES_ESPEED, (avgSpeed));
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public record CheckForPausesResult(
@@ -923,6 +1465,9 @@ public class FitFile {
 
         }
         System.out.println("======== Records: " + recordMesg.size() + " extraRecords: " + recordMesgAddOnRecords.size());
+        System.out.println("======== TotalTimerTime: " + PehoUtils.sec2minSecLong(totalTimerTime)
+             + " last timer value: "
+             + PehoUtils.sec2minSecLong(recordMesgAddOnRecords.get(recordMesgAddOnRecords.size()-1).getTimer()));
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void createGapList() {
@@ -1510,6 +2055,7 @@ public class FitFile {
             allMesg.remove(ixInAllMesgToDelete);
             recordMesg.remove(ixInRecordMesgToDelete);
         }
+        setNumberOfRecords(recordMesg.size());
 
         appendTempUpdateLogg("===> Input values: " + FitDateTime.toTimerString(fromTimer) + ", " + FitDateTime.toTimerString(toTimer) + System.lineSeparator());
         appendTempUpdateLogg("===> RecordMesgIx to delete from-to: " + ixInRecordMesgStart + " - " + ixInRecordMesgStop + System.lineSeparator());
@@ -1743,7 +2289,8 @@ public class FitFile {
         List<Integer> mesgToDelete = new ArrayList<>();
         String tempLog = "START - Deleting events" + System.lineSeparator() + "------------------------------" + System.lineSeparator() +
                          "Input values to delete events between " + FitDateTime.toString(new DateTime(eventTimeStartToDelete),diffMinutesLocalUTC) + " and " + FitDateTime.toString(new DateTime(eventTimeStopToDelete),diffMinutesLocalUTC) + System.lineSeparator() +
-                         "Event to delete: " + eventToDelete + System.lineSeparator();
+                         "Event to delete: " + eventToDelete + System.lineSeparator() +
+                         "Event type to delete: " + eventTypeToDelete + System.lineSeparator();
 
 
         for (Mesg mesg:allMesg) {
@@ -1768,7 +2315,7 @@ public class FitFile {
                         // If event is a TIMER event
                         if (eventTypeToDelete.equals(EventType.INVALID)) {
                             mesgToDelete.add(mesgIx);
-                                tempLog += "Found matching TIMER event to delete in allMesg: " + 
+                                tempLog += "Found matching EVENT to delete in allMesg: " + 
                                     Event.getByValue(mesg.getFieldShortValue(EVE_EVENT)) + 
                                     EventType.getByValue(mesg.getFieldShortValue(EVE_TYPE)) + 
                                     " @ix:" + mesgIx +
@@ -1778,7 +2325,7 @@ public class FitFile {
                         } else {
                             if (mesgEventType.equals(eventTypeToDelete)) {
                                 mesgToDelete.add(mesgIx);
-                                tempLog += "Found matching TIMER and TYPE event to delete in allMesg: " + 
+                                tempLog += "Found matching EVENT and eventTYPE to delete in allMesg: " + 
                                     Event.getByValue(mesg.getFieldShortValue(EVE_EVENT)) + 
                                     EventType.getByValue(mesg.getFieldShortValue(EVE_TYPE)) + 
                                     " @ix:" + mesgIx +

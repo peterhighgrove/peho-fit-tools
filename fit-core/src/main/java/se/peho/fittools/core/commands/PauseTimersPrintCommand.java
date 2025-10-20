@@ -10,12 +10,12 @@ import se.peho.fittools.core.FitDateTime;
 import se.peho.fittools.core.FitFile;
 import se.peho.fittools.core.InputHelper;
 
-public class PauseEventsPrintCommand implements Command {
+public class PauseTimersPrintCommand implements Command {
     @Override
-    public String getKey() { return "pepr"; }
+    public String getKey() { return "ptpr"; }
 
     @Override
-    public String getDescription() { return "Print events in PAUSE."; }
+    public String getDescription() { return "Print TIMER events in PAUSE."; }
 
     @Override
     public String getCategory() { return "Pauses"; }
@@ -23,7 +23,7 @@ public class PauseEventsPrintCommand implements Command {
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
         while (true) {
-            Integer pauseNo = InputHelper.askForNumber("Enter PAUSE number to PRINT events in", sc);
+            Integer pauseNo = InputHelper.askForNumber("Enter PAUSE number to PRINT TIMER events in", sc);
             if (pauseNo == null) return;
 
             if (pauseNo > watchFitFile.getPauseList().size() || pauseNo < 1) {

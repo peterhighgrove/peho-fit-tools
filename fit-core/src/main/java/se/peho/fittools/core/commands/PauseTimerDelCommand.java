@@ -12,10 +12,10 @@ import se.peho.fittools.core.InputHelper;
 
 public class PauseTimerDelCommand implements Command {
     @Override
-    public String getKey() { return "ptdel"; }
+    public String getKey() { return "p2g"; }
 
     @Override
-    public String getDescription() { return "Delete timer events in PAUSE, create GAP."; }
+    public String getDescription() { return "Create GAP. Delete timer events in PAUSE."; }
 
     @Override
     public String getCategory() { return "Pauses"; }
@@ -30,11 +30,22 @@ public class PauseTimerDelCommand implements Command {
                 System.out.println("==XX> Pause number must be within range. Enter a new pause number.");
                 continue;
             }
+
+            watchFitFile.clearTempUpdateLogg();
+            watchFitFile.appendTempUpdateLoggLn("-------------------------");
+            watchFitFile.appendTempUpdateLoggLn("Deleting TIMER events in pause " + pauseNo + " to create a GAP");
+            watchFitFile.appendTempUpdateLoggLn("-------------------------");
+
             Long pauseStart = watchFitFile.getPauseList().get(pauseNo - 1).getTimeStart();
             Long pauseStop = watchFitFile.getPauseList().get(pauseNo - 1).getTimeStop();
 
             watchFitFile.deleteEvents(pauseStart, pauseStop, Event.TIMER, EventType.INVALID);
-            System.out.println("==>> Deleted Timer events between " + FitDateTime.toString(pauseStart, watchFitFile.getDiffMinutesLocalUTC()) + " and " + FitDateTime.toString(pauseStop, watchFitFile.getDiffMinutesLocalUTC()) + " (inclusive).");
+            watchFitFile.appendTempUpdateLoggLn("==>> Deleted Timer events between " + FitDateTime.toString(pauseStart, watchFitFile.getDiffMinutesLocalUTC()) + " and " + FitDateTime.toStringTime(pauseStop, watchFitFile.getDiffMinutesLocalUTC()) + " (inclusive).");
+
+            watchFitFile.updateActivityInfoWhenDeletingPauseToGap(pauseNo - 1);
+
+            System.out.println(watchFitFile.getTempUpdateLogg());
+            watchFitFile.appendUpdateLogg(watchFitFile.getTempUpdateLogg());
 
             watchFitFile.createTimerList();
             watchFitFile.createPauseList();

@@ -81,12 +81,32 @@ public class FitDateTime {
         return strDateTime;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public String toStringTime() {
+        String formatPattern = "HH:mm:ss";
+        long unixDateTime = this.dateTimeValue.getTimestamp()+FIT_EPOCH_OFFSET;
+        Instant instantDateTime = Instant.ofEpochSecond(unixDateTime);
+        String strDateTime = DateTimeFormatter.ofPattern(formatPattern).format(instantDateTime);
+        return strDateTime;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     static public String toString(DateTime fitDateTime) {
         if (fitDateTime == null) {
             fitDateTime= new DateTime(0);
         }
         String tz = offsetToTimeZoneString(0);
         String formatPattern = "yyyy-MM-dd-HH-mm-ss";
+        long unixDateTime = fitDateTime.getTimestamp() + FIT_EPOCH_OFFSET;
+        Instant instantDateTime = Instant.ofEpochSecond(unixDateTime);
+        String strDateTime = DateTimeFormatter.ofPattern(formatPattern).withZone(ZoneOffset.of(tz)).format(instantDateTime);
+        return strDateTime;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    static public String toStringTime(DateTime fitDateTime) {
+        if (fitDateTime == null) {
+            fitDateTime= new DateTime(0);
+        }
+        String tz = offsetToTimeZoneString(0);
+        String formatPattern = "HH:mm:ss";
         long unixDateTime = fitDateTime.getTimestamp() + FIT_EPOCH_OFFSET;
         Instant instantDateTime = Instant.ofEpochSecond(unixDateTime);
         String strDateTime = DateTimeFormatter.ofPattern(formatPattern).withZone(ZoneOffset.of(tz)).format(instantDateTime);
@@ -105,6 +125,18 @@ public class FitDateTime {
         return strDateTime;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    static public String toStringTime(Long fitDateTime) {
+        if (fitDateTime == null) {
+            fitDateTime= 0l;
+        }
+        String tz = offsetToTimeZoneString(0);
+        String formatPattern = "HH:mm:ss";
+        long unixDateTime = fitDateTime + FIT_EPOCH_OFFSET;
+        Instant instantDateTime = Instant.ofEpochSecond(unixDateTime);
+        String strDateTime = DateTimeFormatter.ofPattern(formatPattern).withZone(ZoneOffset.of(tz)).format(instantDateTime);
+        return strDateTime;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     static public String toString(DateTime fitDateTime, long offsetMinutes) {
         if (fitDateTime == null) {
             fitDateTime = new DateTime(0);
@@ -117,12 +149,36 @@ public class FitDateTime {
         return strDateTime;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    static public String toStringTime(DateTime fitDateTime, long offsetMinutes) {
+        if (fitDateTime == null) {
+            fitDateTime = new DateTime(0);
+        }
+        String tz = offsetToTimeZoneString(offsetMinutes);
+        String formatPattern = "HH:mm:ss";
+        long unixDateTime = fitDateTime.getTimestamp() + FIT_EPOCH_OFFSET;
+        Instant instantDateTime = Instant.ofEpochSecond(unixDateTime);
+        String strDateTime = DateTimeFormatter.ofPattern(formatPattern).withZone(ZoneOffset.of(tz)).format(instantDateTime);
+        return strDateTime;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     static public String toString(Long fitDateTime, long offsetMinutes) {
         if (fitDateTime == null) {
             fitDateTime = 0l;
         }
         String tz = offsetToTimeZoneString(offsetMinutes);
         String formatPattern = "yyyy-MM-dd-HH-mm-ss";
+        long unixDateTime = fitDateTime + FIT_EPOCH_OFFSET;
+        Instant instantDateTime = Instant.ofEpochSecond(unixDateTime);
+        String strDateTime = DateTimeFormatter.ofPattern(formatPattern).withZone(ZoneOffset.of(tz)).format(instantDateTime);
+        return strDateTime;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    static public String toStringTime(Long fitDateTime, long offsetMinutes) {
+        if (fitDateTime == null) {
+            fitDateTime = 0l;
+        }
+        String tz = offsetToTimeZoneString(offsetMinutes);
+        String formatPattern = "HH:mm:ss";
         long unixDateTime = fitDateTime + FIT_EPOCH_OFFSET;
         Instant instantDateTime = Instant.ofEpochSecond(unixDateTime);
         String strDateTime = DateTimeFormatter.ofPattern(formatPattern).withZone(ZoneOffset.of(tz)).format(instantDateTime);

@@ -1994,6 +1994,13 @@ public class FitFilePerMesgType {
 
                 //--------------
                 // Calculate LAP MAX
+                if (lapRecords.get(lapIx).getEnhancedMaxSpeed() == null) {
+                    lapRecords.get(lapIx).setEnhancedMaxSpeed(0f);
+                }
+                if (lapRecords.get(lapIx).getMaxSpeed() == null) {
+                    lapRecords.get(lapIx).setMaxSpeed(0f);
+                }
+                
                 if (record.getEnhancedSpeed() > lapRecords.get(lapIx).getEnhancedMaxSpeed()) {
                     lapRecords.get(lapIx).setEnhancedMaxSpeed(record.getEnhancedSpeed());
                     lapRecords.get(lapIx).setMaxSpeed(record.getEnhancedSpeed());
@@ -2005,8 +2012,17 @@ public class FitFilePerMesgType {
                     currentLapSumCadence += secRecords.get(recordIx+tempC2SyncSecondsC2File).getCadence();
                     currentLapSumPower += secRecords.get(recordIx+tempC2SyncSecondsC2File).getPower();
                 }
+
+                if (lapRecords.get(lapIx).getMaxCadence() == null) {
+                    Short aaa = 0;
+                    lapRecords.get(lapIx).setMaxCadence(aaa);
+                }
                 if (record.getCadence() > lapRecords.get(lapIx).getMaxCadence()) {
                     lapRecords.get(lapIx).setMaxCadence(record.getCadence());
+                }
+
+                if (lapRecords.get(lapIx).getMaxPower() == null) {
+                    lapRecords.get(lapIx).setMaxPower(0);
                 }
                 if (record.getPower() > lapRecords.get(lapIx).getMaxPower()) {
                     lapRecords.get(lapIx).setMaxPower(record.getPower());

@@ -1,6 +1,5 @@
 package se.peho.fittools.core.commands;
 
-import java.util.List;
 import java.util.Scanner;
 
 import se.peho.fittools.core.Command;
@@ -8,13 +7,13 @@ import se.peho.fittools.core.FitDateTime;
 import se.peho.fittools.core.FitFile;
 import se.peho.fittools.core.InputHelper;
 
-public class RecDeleteCreateGapCommand implements Command {
+public class PrintRecordsCommand implements Command {
     
     @Override
-    public String getKey() { return "recdel"; }
+    public String getKey() { return "recpr"; }
 
     @Override
-    public String getDescription() { return "Delete records and create GAP"; }
+    public String getDescription() { return "Print records between timer values"; }
 
     @Override
     public String getCategory() { return "Records"; }
@@ -28,7 +27,7 @@ public class RecDeleteCreateGapCommand implements Command {
 
             // Input of start timer value
             System.out.println();
-            Long startGapTimer = InputHelper.askForTimer("Enter timer value for FIRST record that are going to be deleted", sc);
+            Long startGapTimer = InputHelper.askForTimer("Enter timer value for FIRST record that are going to be printed", sc);
             if (startGapTimer == null) return;
             if (startGapTimer <= 0) {
                 System.out.println("==XX> Timer values must be positive. Enter a new timer value.");
@@ -40,7 +39,7 @@ public class RecDeleteCreateGapCommand implements Command {
             }
 
             // Input of stop timer value
-            Long stopGapTimer = InputHelper.askForTimer("Enter timer value for LAST record that are going to be deleted", sc);
+            Long stopGapTimer = InputHelper.askForTimer("Enter timer value for LAST record that are going to be printed", sc);
             if (stopGapTimer == null) return;
             if (stopGapTimer <= 0) {
                 System.out.println("==XX> Timer values must be positive. Enter new timer values.");
@@ -63,20 +62,7 @@ public class RecDeleteCreateGapCommand implements Command {
                 continue;
             }
 
-            if (watchFitFile.checkForLapStartsBetweenTimerValues(startGapTimer, stopGapTimer)) {
-                return;
-            }
-
-            if (watchFitFile.checkForPausesAndGivePrintedResultBasedOnTimer(startGapTimer, stopGapTimer)) {
-                return;
-            }
-
-            watchFitFile.clearTempUpdateLogg();
-            watchFitFile.appendTempUpdateLogg("-------------------------" + System.lineSeparator());
-            watchFitFile.appendTempUpdateLogg("Deleting records to create a GAP" + System.lineSeparator());
-            watchFitFile.appendTempUpdateLogg("-------------------------" + System.lineSeparator());
-
-            watchFitFile.deleteRecordsCreateGap(startGapTimer, stopGapTimer);
+            watchFitFile.printMessagesBetweenTimers(startGapTimer, stopGapTimer);
 
             watchFitFile.createTimerList();
             watchFitFile.createPauseList();
