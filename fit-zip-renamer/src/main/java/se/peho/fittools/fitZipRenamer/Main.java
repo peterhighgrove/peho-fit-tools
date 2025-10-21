@@ -272,6 +272,9 @@ public class Main {
                 profile = mesg.getSportProfileName().toLowerCase();
             } else if (mesg.getSport() != null) {
                 profile = mesg.getSport().toString().toLowerCase();
+                if (mesg.getSubSport() != null) {
+                    profile += "-" + mesg.getSubSport().toString().toLowerCase();
+                }
             } else {
                 profile = "unknown";
             }

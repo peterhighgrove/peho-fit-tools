@@ -1603,6 +1603,7 @@ public class FitFilePerMesgType {
         //System.out.println("======== isSkiErgFile TEST ==========");
         Boolean isTrue = false;
         if (sportProfile.toLowerCase().contains("skierg")
+            || sportProfile.toLowerCase().contains("row")
             ) {
                 isTrue = true;
         }
@@ -1629,24 +1630,35 @@ public class FitFilePerMesgType {
         try {
             // Verify the file exists and is a valid FIT file
             File file1 = new File(filename);
-            if (!file1.exists()) { // || !file1.isTrue()
-                System.err.println("==========> c2FitFile not found: " + filename);
-                System.exit(0);
+            if (file1.exists()) { // || !file1.isTrue()
+                isTrue = true;
+            } else {
+                System.out.println("==========> c2FitFile NOT found: " + filename);
+                System.out.println("==========> RUN with values in WATCH FILE.");
+                //System.exit(0);
             }
         } catch (Exception e) {
             throw new RuntimeException("==========> Error opening c2FitFile: " + filename);
         }
-        isTrue = true;
+
         return isTrue;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void setNewSportSkiErg() {
         sport = Sport.FITNESS_EQUIPMENT;
         subsport = SubSport.INDOOR_ROWING;
-        wktRecords.get(0).setSport(sport);
-        wktRecords.get(0).setSubSport(subsport);
-        sessionRecords.get(0).setSport(sport);
-        sessionRecords.get(0).setSubSport(subsport);
+        if (!wktRecords.isEmpty()) {
+            wktRecords.get(0).setSport(sport);
+        }
+        if (!wktRecords.isEmpty()) {
+            wktRecords.get(0).setSubSport(subsport);
+        }
+        if (sessionRecords.get(0).getSport() == null) {
+            sessionRecords.get(0).setSport(sport);
+        }
+        if (sessionRecords.get(0).getSubSport() == null) {
+            sessionRecords.get(0).setSubSport(subsport);
+        }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void mergeC2CiqAndFitData(FitFilePerMesgType c2FitFile, int C2FitFileDistanceStartCorrection) {
@@ -1900,7 +1912,257 @@ public class FitFilePerMesgType {
         }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void SyncDataInTimeFromSkiErg(String useManualC2SyncSeconds) {
+    public void mergeCiqAndFitData() {
+        
+        Float currentDist = 0f;
+        Float currentDistBack1 = 0f;
+        Float currentDistBack2 = 0f;
+        Float currentSpeed = 0f;
+        Integer currentPower = 0;
+        Float currentStrokeLength = 0f;
+        Float currentDragFactor = 0f;
+        Float currentTrainingSession = 0f;
+
+        int lapNo = 1; // only for INIT of secExtraRecords for now
+
+        int recordIx = 0;
+        RecordMesg recordNext;
+        Float currentDistNext = 0f;
+        Float newDistStep = 0f;
+        int pauseRecordCounter = 0;
+        int sameDistCounter = 1;
+        
+        for (RecordMesg record : secRecords) {
+
+            //--------------
+            // Initiate secExtraRecords
+            secExtraRecords.add(new RecordExtraMesg(lapNo, null));
+            
+            //--------------
+            // Look for HR drop outs
+            
+            if (record.getHeartRate() == null) {
+            	System.out.println(">>>>>>> HR EMPTY.  recordIx:"+recordIx);
+            	if (recordIx>0) {
+            		record.setHeartRate(secRecords.get(recordIx-1).getHeartRate());
+            	}
+            }
+
+            // =========== MERGE/Import CIQ data to native =============
+            // =========================================================
+            for (DeveloperField field : record.getDeveloperFields()) {
+                /*
+                Power:0, 9a0508b9-0256-4639-88b3-a2690a14ddf9, 0, 1
+                , Cadence:0, 9a0508b9-0256-4639-88b3-a2690a14ddf9, 0, 2
+                , Speed:2.543, 9a0508b9-0256-4639-88b3-a2690a14ddf9, 0, 6
+                , Distance:17, 9a0508b9-0256-4639-88b3-a2690a14ddf9, 0, 7
+                , StrokeLength:0.53, 9a0508b9-0256-4639-88b3-a2690a14ddf9, 0, 8
+                , DragFactor:81.0, 9a0508b9-0256-4639-88b3-a2690a14ddf9, 0, 9
+                , Training_session:0.0, 03dc80ed-6991-40b0-a0cb-23925913a501, 1, 1
+                 */
+                if (field.getName().equals("Distance")) {
+                    currentDistBack2 = currentDistBack1;
+                    currentDistBack1 = currentDist;
+                    currentDist = field.getFloatValue();
+                    record.setDistance(currentDist);
+                    field.setValue(0f);
+                }
+                if (field.getName().equals("Power")) {
+                    currentPower = field.getIntegerValue();
+                    record.setPower(currentPower);
+                    field.setValue(0f);
+                }
+                if (field.getName().equals("Speed")) {
+                    currentSpeed = field.getFloatValue();
+                    record.setSpeed(currentSpeed);
+                    record.setEnhancedSpeed(currentSpeed);
+                    field.setValue(0f);
+                }
+                if (field.getName().equals("StrokeLength")) {
+                    currentStrokeLength = field.getFloatValue();
+                }
+                if (field.getName().equals("DragFactor")) {
+                    currentDragFactor = field.getFloatValue();
+                }
+            }
+
+            // =========== Distance Smoothing =============
+            // Smoothing distance records if 2 following record are the same, then calc avg for the one before and after the 2
+            // ============================================
+            if (recordIx >= 3 && recordIx < numberOfRecords-2) {
+                if (record.getDistance().equals(secRecords.get(recordIx-1).getDistance())) {
+                    //System.out.println("==========> Same dist in a row: " + recordIx + ", " + sameDistCounter + " @ " + currentDist + ", " + record.getTimestamp());
+                    if (sameDistCounter>1) {
+                        System.out.println("==========> MORE 1 Same dist in a row: " + recordIx + ", " + sameDistCounter + " @ " + currentDist + ", " + record.getTimestamp());
+                    }
+                    recordNext = secRecords.get(recordIx+1);
+                    for (DeveloperField fieldRecordNext : recordNext.getDeveloperFields()) {
+                        if (fieldRecordNext.getName().equals("Distance")) {
+                            currentDistNext = fieldRecordNext.getFloatValue();
+                        }
+                    }
+                    newDistStep = (currentDistNext - secRecords.get(recordIx-2).getDistance()) / 3;
+                    secRecords.get(recordIx-1).setDistance(secRecords.get(recordIx-2).getDistance() + newDistStep);
+                    record.setDistance(secRecords.get(recordIx-2).getDistance() + newDistStep*2);
+                    //System.out.println("-------->" + secRecords.get(recordIx-2).getDistance() + " " + currentDistBack1 + "->" + secRecords.get(recordIx-1).getDistance() + " " + currentDist + "->" + record.getDistance() + " " + currentDistNext);
+                    sameDistCounter++;
+                }
+                else {
+                    sameDistCounter = 1;
+                }
+            }
+
+            // =========== Fix EMPTY beginning of data ================
+            // ========================================================
+            if (numberOfRecords < maxIxFixEmptyBeginning) {
+                maxIxFixEmptyBeginning = numberOfRecords - 1;
+            }
+            if (recordIx <= maxIxFixEmptyBeginning) {
+                // FIX SPEED
+                if (lookingInBeginningForEmptySpeed) {
+                    if (record.getSpeed()!=0 && record.getSpeed()!=null) {
+                        for (int i = recordIx; i >= 0; i--) {
+                            secRecords.get(i).setSpeed(record.getSpeed());
+                            secRecords.get(i).setEnhancedSpeed(record.getSpeed());
+                        }
+                        System.err.println("========= FIXED Beginning SPEED, first value: " + record.getSpeed() + " @ " + recordIx);
+                        lookingInBeginningForEmptySpeed = false;
+                    }
+                }
+                // FIX CADENCE
+                if (lookingInBeginningForEmptyCadence) {
+                    if ((record.getCadence()!=null && record.getCadence()!=0)) {
+                        for (int i = recordIx-1; i >= 0; i--) {
+                            secRecords.get(i).setCadence(record.getCadence());
+                        }
+                        System.out.println("========= FIXED Beginning CADENCE, first value: " + record.getCadence() + " @ " + recordIx);
+                        lookingInBeginningForEmptyCadence = false;
+                    }
+                }
+                // FIX POWER
+                if (lookingInBeginningForEmptyPower) {
+                    if ((record.getPower()!=null && record.getPower()!=0)) {
+                        for (int i = recordIx-1; i >= 0; i--) {
+                            secRecords.get(i).setPower(record.getPower());
+                        }
+                        System.out.println("========= FIXED Beginning POWER, first value: " + record.getPower() + " @ " + recordIx);
+                        lookingInBeginningForEmptyPower = false;
+                    }
+                }
+                // FIX STROKE LENGTH
+                if (lookingInBeginningForEmptyStrokeLength) {
+                    if ((currentStrokeLength!=null && currentStrokeLength!=0)) {
+                        for (int i = recordIx-1; i >= 0; i--) {
+                            for (DeveloperField field : secRecords.get(i).getDeveloperFields()) {
+                                if (field.getName().equals("StrokeLength")) {
+                                    field.setValue(currentStrokeLength);
+                                }
+                            }
+                        }
+                        System.out.println("========= FIXED Beginning STROKE LENGTH, first value: " + currentStrokeLength + " @ " + recordIx);
+                        lookingInBeginningForEmptyStrokeLength = false;
+                    }
+                }
+                // FIX DRAG FACTOR
+                if (lookingInBeginningForEmptyDragFactor) {
+                    if ((currentDragFactor!=null && (currentDragFactor!=1 && currentDragFactor!=0))) {
+                        for (int i = recordIx-1; i >= 0; i--) {
+                            for (DeveloperField field : secRecords.get(i).getDeveloperFields()) {
+                                if (field.getName().equals("DragFactor")) {
+                                    field.setValue(currentDragFactor);
+                                }
+                            }
+                        }
+                        System.out.println("========= FIXED Beginning DRAG FACTOR, first value: " + currentDragFactor + " @ " + recordIx);
+                        lookingInBeginningForEmptyDragFactor = false;
+                    }
+                }
+                // FIX TRAINING_SESSION
+                if (lookingInBeginningForEmptyTrainingSession) {
+                    if ((currentTrainingSession!=null && currentTrainingSession!=1)) {
+                        for (int i = recordIx-1; i >= 0; i--) {
+                            for (DeveloperField field : secRecords.get(i).getDeveloperFields()) {
+                                if (field.getName().equals("Training_session")) {
+                                    field.setValue(currentTrainingSession);
+                                }
+                            }
+                        }
+                        System.out.println("========= FIXED Beginning TRAINING_SESSION, first value: " + currentTrainingSession + " @ " + recordIx);
+                        lookingInBeginningForEmptyTrainingSession = false;
+                    }
+                }
+            }
+            /* // =========== CHANGE TO 0 VALUES WHEN PAUSED ============
+            // =================================================
+            if (!lookingInBeginningForEmptyCadence) {
+                if (record.getCadence() == null) {
+                //if (secExtraRecords.get(recordIx).C2DateTime == null) {
+                    noneC2dataCounter++;
+                    if (noneC2dataCounter >= 7) {
+                        System.out.println("============ C2time null >= 7 times. "+ noneC2dataCounter + "recordIx: " + recordIx);
+                        pauseRecordCounter++;
+                        record.setSpeed(0f);
+                        record.setEnhancedSpeed(0f);
+                        record.setCadence((short) (0));
+                        record.setPower(0);
+                        if (noneC2dataCounter == 7 && recordIx > 4) {
+                            System.out.println("===>>>>>>>>> START PAUSE C2time null 7 times. recordIx: " + recordIx);
+                            secRecords.get(recordIx-1).setSpeed(0f);
+                            secRecords.get(recordIx-1).setEnhancedSpeed(0f);
+                            secRecords.get(recordIx-1).setCadence((short) (0));
+                            secRecords.get(recordIx-1).setPower(0);
+                            secRecords.get(recordIx-2).setSpeed(0f);
+                            secRecords.get(recordIx-2).setEnhancedSpeed(0f);
+                            secRecords.get(recordIx-2).setCadence((short) (0));
+                            secRecords.get(recordIx-2).setPower(0);
+                            secRecords.get(recordIx-3).setSpeed(0f);
+                            secRecords.get(recordIx-3).setEnhancedSpeed(0f);
+                            secRecords.get(recordIx-3).setCadence((short) (0));
+                            secRecords.get(recordIx-3).setPower(0);
+                        }
+                    } else {
+
+                    }
+                } else {
+                    if (pauseRecordCounter > 0 ) {
+                        System.out.println("============ Pause END. recordIx: " + recordIx + " pauseCounter: " + pauseRecordCounter + " " + noneC2dataCounter);
+                    }
+                    pauseRecordCounter = 0;
+                    noneC2dataCounter = 0;
+                }
+            } */
+
+            // =========== Fix GAPS fromC2 fitfile import =============
+            // ========================================================
+            if (record.getCadence() == null) {
+                if (recordIx > 0) {
+                    record.setCadence(secRecords.get(recordIx-1).getCadence());
+                } else {
+                    record.setCadence((short) 0);
+                }
+            }
+            if (record.getPower() == null) {
+                if (recordIx > 0) {
+                    record.setPower(secRecords.get(recordIx-1).getPower());
+                } else {
+                    record.setPower(0);
+                }
+            }
+            // || ((record.getCadence()-secRecords.get(recordIx-1).getCadence()) > 7)
+            // =========== Fix BAD PEAK data ================
+            // ==============================================
+            if (recordIx>0) {
+            if ((record.getCadence() > maxCadenceValue)) {
+                System.out.println("=======>>> Fixed Cadence PEAK from: " + secRecords.get(recordIx-1).getCadence() + "->" + record.getCadence());
+                record.setCadence(secRecords.get(recordIx-1).getCadence());
+            }
+            }
+
+            recordIx++;
+        }
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void SyncDataInTimeFromSkiErg(String useManualC2SyncSeconds, Boolean hasC2Fit) {
          
         int tempC2SyncSecondsC2File = 0;
         int tempC2SyncSecondsLapDistCalc = 0;
@@ -1955,7 +2217,7 @@ public class FitFilePerMesgType {
                 //--------------
                 // IF LAP START
                 currentTimeStamp = record.getTimestamp().getTimestamp();
-                if ( currentTimeStamp == nextLapStartTime ) {
+                if ( currentTimeStamp.equals(nextLapStartTime) ) {
 
                     // Initiate maxSpeed with 0 to be able to compare later
                     lapRecords.get(lapIx).setMaxSpeed(0f);
@@ -2071,7 +2333,7 @@ public class FitFilePerMesgType {
 
                 //--------------
                 // IF LAP END
-                if ( currentTimeStamp == currentLapTimeEnd ) {
+                if ( currentTimeStamp.equals(currentLapTimeEnd) ) {
 
                     // Save HR and recordIx END
                     lapExtraRecords.get(lapIx).hrEnd = record.getHeartRate();
@@ -2203,29 +2465,48 @@ public class FitFilePerMesgType {
             
         } // FOR LOOP
 
-        System.out.println("______ before phase shifting - syncSeconds C2 (pow, cad): "+c2SyncSecondsC2File+" lapdist (speed): "+c2SyncSecondsLapDistCalc);
+        if (hasC2Fit) {
+            System.out.println("______HAS C2fit-> before phase shifting - syncSeconds C2 (pow, cad): "+c2SyncSecondsC2File+" lapdist (speed): "+c2SyncSecondsLapDistCalc);
+        } else {
+            System.out.println("______NO C2fit before phase shifting - lapdist (power, speed): "+c2SyncSecondsLapDistCalc);
+        }
         System.out.println("------------------------------------------------------------------");
 
         int recordIx = 0;
 
         for (RecordMesg record : secRecords) {
 
-            if (recordIx<(numberOfRecords-1-c2SyncSecondsLapDistCalc)) {
-                record.setDistance(secRecords.get(recordIx+c2SyncSecondsLapDistCalc).getDistance());
-                record.setSpeed(secRecords.get(recordIx+c2SyncSecondsLapDistCalc).getSpeed());
-                record.setEnhancedSpeed(secRecords.get(recordIx+c2SyncSecondsLapDistCalc+1).getEnhancedSpeed());
-            } else {
-                record.setDistance(secRecords.get(numberOfRecords-1).getDistance());
-                record.setSpeed(secRecords.get(numberOfRecords-1).getSpeed());
-                record.setEnhancedSpeed(secRecords.get(numberOfRecords-1).getEnhancedSpeed());
-            }
+            if (hasC2Fit) {
+                if (recordIx<(numberOfRecords-1-c2SyncSecondsLapDistCalc)) {
+                    record.setDistance(secRecords.get(recordIx+c2SyncSecondsLapDistCalc).getDistance());
+                    record.setSpeed(secRecords.get(recordIx+c2SyncSecondsLapDistCalc).getSpeed());
+                    record.setEnhancedSpeed(secRecords.get(recordIx+c2SyncSecondsLapDistCalc+1).getEnhancedSpeed());
+                } else {
+                    record.setDistance(secRecords.get(numberOfRecords-1).getDistance());
+                    record.setSpeed(secRecords.get(numberOfRecords-1).getSpeed());
+                    record.setEnhancedSpeed(secRecords.get(numberOfRecords-1).getEnhancedSpeed());
+                }
 
-            if (recordIx<(numberOfRecords-1-c2SyncSecondsC2File)) {
-                record.setCadence(secRecords.get(recordIx+c2SyncSecondsC2File).getCadence());
-                record.setPower(secRecords.get(recordIx+c2SyncSecondsC2File).getPower());
+                if (recordIx<(numberOfRecords-1-c2SyncSecondsC2File)) {
+                    record.setCadence(secRecords.get(recordIx+c2SyncSecondsC2File).getCadence());
+                    record.setPower(secRecords.get(recordIx+c2SyncSecondsC2File).getPower());
+                } else {
+                    record.setCadence(secRecords.get(numberOfRecords-1).getCadence());
+                    record.setPower(secRecords.get(numberOfRecords-1).getPower());
+                }
             } else {
-                record.setCadence(secRecords.get(numberOfRecords-1).getCadence());
-                record.setPower(secRecords.get(numberOfRecords-1).getPower());
+                // NO C2fit
+                if (recordIx<(numberOfRecords-1-c2SyncSecondsLapDistCalc)) {
+                    record.setDistance(secRecords.get(recordIx+c2SyncSecondsLapDistCalc).getDistance());
+                    record.setSpeed(secRecords.get(recordIx+c2SyncSecondsLapDistCalc).getSpeed());
+                    record.setEnhancedSpeed(secRecords.get(recordIx+c2SyncSecondsLapDistCalc+1).getEnhancedSpeed());
+                    record.setPower(secRecords.get(recordIx+c2SyncSecondsC2File).getPower());
+                } else {
+                    record.setDistance(secRecords.get(numberOfRecords-1).getDistance());
+                    record.setSpeed(secRecords.get(numberOfRecords-1).getSpeed());
+                    record.setEnhancedSpeed(secRecords.get(numberOfRecords-1).getEnhancedSpeed());
+                    record.setPower(secRecords.get(numberOfRecords-1).getPower());
+                }
             }
 
             recordIx++;
@@ -2274,8 +2555,7 @@ public class FitFilePerMesgType {
             //--------------
             // IF LAP START
             currentTimeStamp = record.getTimestamp().getTimestamp();
-            if ( currentTimeStamp == nextLapStartTime ) {
-                //System.out.println("Lapstart " + lapIx + "  " + lapExtraRecords.get(lapIx).recordIxStart + "  " + recordIx);
+            if ( currentTimeStamp.equals(nextLapStartTime) ) {
 
                 // Initiate maxSpeed with 0 to be able to compare later
                 lapRecords.get(lapIx).setMaxSpeed(0f);
@@ -2377,7 +2657,7 @@ public class FitFilePerMesgType {
 
             //--------------
             // IF LAP END
-            if ( currentTimeStamp == currentLapTimeEnd ) {
+            if ( currentTimeStamp.equals(currentLapTimeEnd) ) {
                 //System.out.println("LapEND " + lapIx + "  " + lapExtraRecords.get(lapIx).recordIxStart + "  " + recordIx);
 
                 // Save HR and recordIx END
@@ -2624,7 +2904,7 @@ public class FitFilePerMesgType {
             //--------------
             // IF LAP START
             currentTimeStamp = record.getTimestamp().getTimestamp();
-            if ( currentTimeStamp == nextLapStartTime ) {
+            if ( currentTimeStamp.equals(nextLapStartTime) ) {
                 //System.out.println("Lapstart lapIx: " + lapIx + " recordIxStart: " + lapExtraRecords.get(lapIx).recordIxStart + " recordIx: " + recordIx);
 
                 // Initiate maxSpeed with 0 to be able to compare later
@@ -2684,7 +2964,7 @@ public class FitFilePerMesgType {
 
             //--------------
             // IF LAP END
-            if ( currentTimeStamp == currentLapTimeEnd ) {
+            if ( currentTimeStamp.equals(currentLapTimeEnd) ) {
                 //System.out.println("LapEND lapIx: " + lapIx + " recordIxStart: " + lapExtraRecords.get(lapIx).recordIxStart + " recordIx: " + recordIx);
 
                 // Save HR and recordIx END

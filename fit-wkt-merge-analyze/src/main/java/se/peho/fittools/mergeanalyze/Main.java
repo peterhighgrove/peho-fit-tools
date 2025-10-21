@@ -2,12 +2,10 @@ package se.peho.fittools.mergeanalyze;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Scanner;
 
 import se.peho.fittools.core.Conf;
 import se.peho.fittools.core.FitDateTime;
 import se.peho.fittools.core.FitFilePerMesgType;
-import se.peho.fittools.core.GeoUtils;
 import se.peho.fittools.core.PehoUtils;
 import se.peho.fittools.core.SportProfileFitFile;
 import se.peho.fittools.core.TextLapFile;
@@ -30,7 +28,7 @@ public class Main {
         
         System.out.println("ArgsLen: " + args.length);
 
-        if (args.length < 4) {
+        /*if (args.length < 4) {
             System.out.println("============= NO ARGS =============");
             System.out.println("------------- USES ONLY CONF FILE ------");
         }
@@ -81,7 +79,7 @@ public class Main {
             }
         }
 
-        System.out.println("+++++++++++++++++++++++++++++++++++");
+        /* System.out.println("+++++++++++++++++++++++++++++++++++");
         System.out.println("filePathPrefix: " + conf.getFilePathPrefix());
         System.out.println("profileNameSuffix: " + conf.getProfileNameSuffix());
         System.out.println("inputFilePath: " + conf.getInputFilePath());
@@ -96,15 +94,15 @@ public class Main {
         System.out.println("c2SyncSecondsLapDistCalc: " + conf.getC2SyncSecondsLapDistCalc());
         System.out.println("+++++++++++++++++++++++++++++++++++");
 
-        System.out.println("Input file path: " + conf.getInputFilePath());
+        System.out.println("Input file path: " + conf.getInputFilePath()); */
 
         // ================================
         // START
         // ================================
 
         // Use getters/setters instead of direct field access:
-        conf.setInputFilePath(conf.getFilePathPrefix() + conf.getInputFilePath());
-        conf.setInputFilePath(PehoUtils.checkFile(conf.getInputFilePath()));
+        // conf.setInputFilePath(conf.getFilePathPrefix() + conf.getInputFilePath());
+        // conf.setInputFilePath(PehoUtils.checkFile(conf.getInputFilePath()));
 
         if (conf.getCommand().toLowerCase().equals("sportprofile")) {
             SportProfileFitFile sportsFile = new SportProfileFitFile();
@@ -151,277 +149,11 @@ public class Main {
         //watchFitFile.printCourse();
         //watchFitFile.printLapRecords0();
         //watchFitFile.printSecRecords0();
+        //watchFitFile.printSecRecords();
 
         // Fix PAUSES MODE
         if (conf.getCommand().toLowerCase().equals("fixpauses")) {
-            //watchFitFile.wktAddSteps(conf.startWithWktStep, conf.newWktName);
-            watchFitFile.initLapExtraRecords();
-
-            String listMode = "p"; // p=pause, g=gap, s=stopped -mode
-            int listEntryNoToChange = 1;
-            Scanner userInputScanner = new Scanner (System.in);
-            String listCommandUserInput = null;
-            String userInputString;
-
-            long newPauseLen = 10l;
-
-            while (listEntryNoToChange > 0) {
-                switch (listMode) {
-                    case "p" : {
-                        // p=pause, g=gap, s=stopped -mode
-                        watchFitFile.createPauseList();
-                        watchFitFile.printPauseList(listCommandUserInput);
-                        System.out.println("==< PAUSE SHORTEN TIME -- forgot START efter >==");
-                        System.out.println("================================================");
-                        System.out.print("(d = show details, f = filter on min pause dist)");
-                        System.out.println();
-                        break;
-                    }
-                    case "inc" : {
-                        // p=pause, g=gap, s=stopped -mode
-                        watchFitFile.createPauseList();
-                        watchFitFile.printPauseList(listCommandUserInput);
-                        System.out.println("==< PAUSE INCREASE TIME -- forgot STOP before >==");
-                        System.out.println("=================================================");
-                        System.out.print("(d = show details, f = filter on min pause dist)");
-                        System.out.println();
-                        break;
-                    }
-                    case "g" : {
-                        // p=pause, g=gap, s=stopped -mode
-                        watchFitFile.createGapList();
-                        watchFitFile.printGapList(listCommandUserInput);
-                        System.out.println("==< GAP MODIFICATION >==");
-                        System.out.println("===============");
-                        System.out.print("(fill = fill gaps with one-sec records)");
-                        System.out.println();
-                        break;
-                    }
-                    default : throw new AssertionError();
-                }
-                listCommandUserInput = null;
-                userInputString = null;
-
-                System.out.print("(s = stop-do nothiing,  0 = go on save changes)");
-                System.out.println();
-                System.out.print("(g = GAP insert gps point or fill)");
-                System.out.println();
-                System.out.print("(p = PAUSE shorten time, forgot START after)");
-                System.out.println();
-                System.out.print("(inc = PAUSE INCrease time, forgot STOP before)");
-                System.out.println();
-                System.out.print("(start = add time in beginnning, forgot to START)");
-                System.out.println();
-                System.out.print("(enter = show again w/o details)");
-                System.out.println();
-                System.out.print("Enter LIST ENTRY NUMBER to change (or commands above): ");
-                listCommandUserInput = userInputScanner.nextLine();
-                System.out.println();
-
-                switch (listCommandUserInput) {
-                    case "d" : {
-                        break;
-                    }
-                    case "g" : {
-                        listMode = listCommandUserInput;
-                        break;
-                    }
-                    case"p" : {
-                        listMode = listCommandUserInput;
-                        break;
-                    }
-                    case"inc" : {
-                        listMode = listCommandUserInput;
-                        break;
-                    }
-                    case "f" : {
-                        break;
-                    }
-                    case "s" : {
-                        System.out.println("NOTHING DONE! (s command used)");
-                        System.out.println("-------------------------------");
-                        System.exit(0);
-                        break;
-                    }
-                    case "0" : {
-                        listEntryNoToChange = PehoUtils.safeParseInt(listCommandUserInput);
-                        break;
-                    }
-                    case "fill" : {
-                        switch (listMode) {
-                            case "g" : {
-                                watchFitFile.fillRecordsInGap();
-                                break;
-                            }
-                            default : {
-                                System.out.println("fill is only used in GAP mode.");
-                            }
-                        }
-                        break;
-                    }
-                    case "start" : {
-                        double[] coords = {0.0, 0.0};
-                        while (userInputString == null) {
-                            System.out.print("Enter new GPS START point OR s to stop: ");
-                            userInputString = userInputScanner.nextLine();
-                            System.out.println();
-                            if (!userInputString.equals("s")) {
-                                try {
-                                    coords = GeoUtils.parseCoordinates(userInputString);
-                                } catch (Exception e) {
-                                    System.out.println("Error parsing '" + userInputString + "': " + e.getMessage());
-                                    System.out.println("ENTER NEW GPS String!!!");
-                                    listCommandUserInput = null;
-                                    userInputString = null;
-                                }
-                            }
-                        }
-
-                        if (!userInputString.equals("s")) {
-                            watchFitFile.savedStrOrgFileInfo += "ADD TIME TO START" + System.lineSeparator();
-                            watchFitFile.savedStrOrgFileInfo += "   GPS START coords user input: " + userInputString + System.lineSeparator();
-                            userInputString = null;
-                            while (userInputString == null) {
-                                System.out.print("Enter time in seconds ot add at start OR s to stop: ");
-                                userInputString = userInputScanner.nextLine();
-                                System.out.println();
-                                if (!userInputString.equals("s")) {
-                                    if (PehoUtils.safeParseInt(userInputString) == null)  {
-                                        System.out.println("Not an integer as answer. Redo!");
-                                        System.out.println("-------------------------------");
-                                        userInputString = null;
-                                    } else {
-                                        newPauseLen = PehoUtils.safeParseInt(userInputString);
-                                        //System.out.println("New pace after pause: "+watchFitFile.mps2minpkm(watchFitFile.pauseRecords.get(listEntryNoToChange-1).distPause/(watchFitFile.pauseRecords.get(listEntryNoToChange-1).timePause-newPauseLen))+"min/km.");
-                                        System.out.print("OK? (n=not/enter other=ok)?");
-                                        userInputString = userInputScanner.nextLine();
-                                        System.out.println();
-                                        if (userInputString.equals("n")) {
-                                            userInputString = null;
-                                        }
-                                    }
-                                } 
-
-                            }
-                            if (!userInputString.equals("s")) {
-                                watchFitFile.addRecordAtStart(newPauseLen, coords);
-                                listMode = "g";
-                            }
-                        }
-                        break;
-                    }
-                    default : {
-                        // entered a number to change in list
-                        if (PehoUtils.safeParseInt(listCommandUserInput) == null)  {
-                            // double checking that its a number
-                            System.out.println("Not an integer or allowed command as answer. Redo!");
-                            System.out.println("-------------------------------");
-                            listCommandUserInput = null;
-                        } else {
-                            // GO INTO ListEntryChange
-                            // =======================
-                            listEntryNoToChange = PehoUtils.safeParseInt(listCommandUserInput);
-
-                            switch (listMode) {
-                                case "p" : {
-                                    //if (listEntryNoToChange != 0) {
-                                        while (userInputString == null) {
-                                            System.out.println("Min pace after pause: "+PehoUtils.mps2minpkm(watchFitFile.pauseRecords.get(listEntryNoToChange-1).distPause/watchFitFile.pauseRecords.get(listEntryNoToChange-1).timePause)+"min/km");
-                                            System.out.print("Enter new pause time in seconds: ");
-                                            userInputString = userInputScanner.nextLine();
-                                            System.out.println();
-
-                                            if (PehoUtils.safeParseInt(userInputString) == null)  {
-                                                System.out.println("Not an integer as answer. Redo!");
-                                                System.out.println("-------------------------------");
-                                                userInputString = null;
-                                            } else {
-                                                newPauseLen = PehoUtils.safeParseInt(userInputString);
-                                                System.out.println("New pace after pause: "+PehoUtils.mps2minpkm(watchFitFile.pauseRecords.get(listEntryNoToChange-1).distPause/(watchFitFile.pauseRecords.get(listEntryNoToChange-1).timePause-newPauseLen))+"min/km.");
-                                                System.out.print("OK? (n=not/enter other=ok)?");
-                                                userInputString = userInputScanner.nextLine();
-                                                System.out.println();
-                                                if (userInputString.equals("n")) {
-                                                    userInputString = null;
-                                                }
-                                            }
-                                        }
-                                        watchFitFile.shortenPause(listEntryNoToChange, newPauseLen);
-                                    //} //if
-                                    break;
-                                }
-
-                                case "inc" : {
-                                    //if (listEntryNoToChange != 0) {
-                                        while (userInputString == null) {
-                                            //System.out.println("Min pace after pause: "+watchFitFile.mps2minpkm(watchFitFile.pauseRecords.get(listEntryNoToChange-1).distPause/watchFitFile.pauseRecords.get(listEntryNoToChange-1).timePause)+"min/km");
-                                            System.out.print("Enter time before to put into pause in seconds: ");
-                                            userInputString = userInputScanner.nextLine();
-                                            System.out.println();
-
-                                            if (PehoUtils.safeParseInt(userInputString) == null)  {
-                                                System.out.println("Not an integer as answer. Redo!");
-                                                System.out.println("-------------------------------");
-                                                userInputString = null;
-                                            } else {
-                                                newPauseLen = PehoUtils.safeParseInt(userInputString);
-                                                //System.out.println("New pace after pause: "+watchFitFile.mps2minpkm(watchFitFile.pauseRecords.get(listEntryNoToChange-1).distPause/(watchFitFile.pauseRecords.get(listEntryNoToChange-1).timePause-newPauseLen))+"min/km.");
-                                                System.out.print("OK? (n=not/enter other=ok)?");
-                                                userInputString = userInputScanner.nextLine();
-                                                System.out.println();
-                                                if (userInputString.equals("n")) {
-                                                    userInputString = null;
-                                                }
-                                            }
-                                        }
-                                        watchFitFile.increasePause(listEntryNoToChange, newPauseLen);
-                                    //} //if
-                                    break;
-                                }
-
-                                case "g" : {
-                                    //if (listEntryNoToChange != 0) {
-                                    double[] coords = {0.0, 0.0};
-                                    while (userInputString == null) {
-                                        System.out.println("Dist in gap: "+PehoUtils.m2km2(watchFitFile.gapRecords.get(listEntryNoToChange-1).getDistGap()) + "km");
-                                        System.out.println("Time in gap: "+PehoUtils.sec2minSecShort(watchFitFile.gapRecords.get(listEntryNoToChange-1).getTimeGap()) + "min");
-                                        System.out.println("Pace in gap: "+PehoUtils.mps2minpkm(watchFitFile.gapRecords.get(listEntryNoToChange-1).getDistGap() / watchFitFile.gapRecords.get(listEntryNoToChange-1).getTimeGap()) + "min/km");
-                                        System.out.print("Enter new GPS point OR s to stop: ");
-                                        userInputString = userInputScanner.nextLine();
-                                        System.out.println();
-                                        if (!userInputString.equals("s")) {
-                                            try {
-                                                coords = GeoUtils.parseCoordinates(userInputString);
-                                            } catch (Exception e) {
-                                                System.out.println("Error parsing '" + userInputString + "': " + e.getMessage());
-                                                System.out.println("ENTER NEW GPS String!!!");
-                                                listCommandUserInput = null;
-                                                userInputString = null;
-                                            }
-                                        }
-                                    }
-                                    //}
-                                    if (!userInputString.equals("s")) {
-                                        watchFitFile.savedStrOrgFileInfo += "Modifying gap no: " + listEntryNoToChange + System.lineSeparator();
-                                        watchFitFile.savedStrOrgFileInfo += "   GPS coords user input: "+ userInputString + System.lineSeparator();
-                                        watchFitFile.addRecordInGap(listEntryNoToChange, coords);
-                                    }
-                                    break;
-                                }
-
-                                default : {
-                                }
-                            } //switch
-                        }
-                    }
-
-
-                    }
-                // d used as parameter to print method
-                // f used as parameter to print method
-                            } // listEntryNo > 0
             
-
         // Analyze and Merge WORKOUT FIT Files
         } else {
             
@@ -466,11 +198,11 @@ public class Main {
             // ================================
             else if (watchFitFile.isSkiErgFile()) {
                 System.out.println("======== isSkiErgFile YES ==========");
-                if (conf.getExtraFilename().equals("")) {
-                    conf.setExtraFilename("c2.fit");
+                if (!conf.getExtraFilename().equals("")) {
+                    //conf.setExtraFilename("c2.fit");
+                    conf.setExtraFilename(conf.getFilePathPrefix() + conf.getExtraFilename());
+                    conf.setExtraFilename(PehoUtils.checkFile(conf.getExtraFilename()));
                 }
-                conf.setExtraFilename(conf.getFilePathPrefix() + conf.getExtraFilename());
-                conf.setExtraFilename(PehoUtils.checkFile(conf.getExtraFilename()));
                 hasC2Fit = watchFitFile.hasC2FitFile(conf.getExtraFilename());
                 if (hasC2Fit) {
                     watchFitFile.initLapExtraRecords();
@@ -488,9 +220,25 @@ public class Main {
 
                     watchFitFile.mergeC2CiqAndFitData(c2FitFile, conf.getC2FitFileDistanceStartCorrection());
                     //watchFitFile.printSecRecords();
+                    if (!conf.getUseManualC2SyncSeconds().toLowerCase().equals("yes")) {
+                        watchFitFile.SyncDataInTimeFromSkiErg(conf.getUseManualC2SyncSeconds(), hasC2Fit);
+                    }
+                    
+                    watchFitFile.calcLapDataFromSecRecordsSkiErg();
+                    watchFitFile.setNewSportSkiErg();
+                    //watchFitFile.changeDeveloper(watchFitFile);
+                    watchFitFile.removeDevFieldDescr();
+                    
+                    //watchFitFile.addDeveloperfieldsSkiErg();;
+                } else {
+                    watchFitFile.initLapExtraRecords();
+
+                    System.out.println("======== NO C2 FITFILE FOUND, USE DEV DATA ONLY ==========");
+                    watchFitFile.mergeCiqAndFitData();
+                    //watchFitFile.printSecRecords();
 
                     if (!conf.getUseManualC2SyncSeconds().toLowerCase().equals("yes")) {
-                        watchFitFile.SyncDataInTimeFromSkiErg(conf.getUseManualC2SyncSeconds());
+                        watchFitFile.SyncDataInTimeFromSkiErg(conf.getUseManualC2SyncSeconds(), hasC2Fit);
                     }
                     
                     watchFitFile.calcLapDataFromSecRecordsSkiErg();

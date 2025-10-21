@@ -8,12 +8,12 @@ import java.nio.file.Path;
 public class Conf {
     String configFilename = "";
 	int hoursToAdd = 0;
-	String filePathPrefix = "C:/Users/peter/Downloads/";
-	String inputFilePath = "aaa.zip";
+	String filePathPrefix = "";
+	String inputFilePath = "";
 	String extraFilename = "";
     String profileNameSuffix = "test";
 	int timeOffsetSec = 0;
-	String command = "fixPauses";
+	String command = "";
 	String startWithWktStep = "";
 	String newWktName = "";
 	int C2FitFileDistanceStartCorrection = 0;
