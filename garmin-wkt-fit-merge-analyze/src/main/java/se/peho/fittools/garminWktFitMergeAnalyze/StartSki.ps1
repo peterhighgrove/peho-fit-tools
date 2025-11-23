@@ -1,0 +1,3 @@
+java -cp "lib/;classes" src/ModifyFitfileInMemory.java "2025-03-10-18-57-57-SkiErg 4-3-2-1-1-2-3-4 7.1km 35.10min-epix2pro-v20.22-analyzed.fit" "Friskis Orminge" 3 "2025-03-10-18-57-57-SkiErg 7.1km 35.10min-concept2-v1.0-analyzed.fit"
+# command: wkt   allActive, warmupThenActive, restThenActive, activeThenRest, noChange   newWktName
+# command: corr distanceInMetersToCorrect (if CIQ datafield started before)

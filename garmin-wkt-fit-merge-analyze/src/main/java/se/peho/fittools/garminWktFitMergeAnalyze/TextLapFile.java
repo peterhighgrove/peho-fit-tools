@@ -1,5 +1,4 @@
-package se.peho.fittools.core;
-
+package se.peho.fittools.garminWktFitMergeAnalyze;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -50,7 +49,7 @@ public class TextLapFile {
         }
         System.out.println("--------------------------------------------------");
     }
-    public boolean isNotNumberOfLapsEqual(FitFilePerMesgType fitFile) {
+    public boolean isNotNumberOfLapsEqual(FitFile fitFile) {
         boolean notEqual = false;
         if (fitFile.numberOfLaps != this.numberOfLaps) {
             System.out.println("No of Laps -- FIT:" + fitFile.numberOfLaps + ", TXT:" + this.numberOfLaps);
@@ -60,22 +59,15 @@ public class TextLapFile {
         return notEqual;
     }
     class LapRecord {
-        private Float level;
-        private Float distance;
-        private String comment;
+        Float level;
+        Float distance;
+        String comment;
 
         public LapRecord(Float level, Float distance, String comment) {
             this.level = level;
             this.distance = distance;
             this.comment = comment;
         }
-
-        public Float getLevel() { return level; }
-        public void setLevel(Float level) { this.level = level; }
-        public Float getDistance() { return distance; }
-        public void setDistance(Float distance) { this.distance = distance; }
-        public String getComment() { return comment; }
-        public void setComment(String comment) { this.comment = comment; }
 
         @Override
         public String toString() {

@@ -7,14 +7,13 @@ import se.peho.fittools.core.Conf;
 import se.peho.fittools.core.FitDateTime;
 import se.peho.fittools.core.FitFilePerMesgType;
 import se.peho.fittools.core.PehoUtils;
-import se.peho.fittools.core.SportProfileFitFile;
 import se.peho.fittools.core.TextLapFile;
  
 public class Main {
 
     public static void main(String[] args) {
         SimpleDateFormat sweDateTime = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-        System.out.println(" ========================= START OF PROGRAM fi-wkt-merge-analyze / mergeanalyze ===========================" + sweDateTime.format(Calendar.getInstance().getTime()));
+        System.out.println(" ========================= START OF PROGRAM fit-wkt-merge-analyze / mergeanalyze ===========================" + sweDateTime.format(Calendar.getInstance().getTime()));
         
         
         //int conf.Integer.parseInt( = 1; // 1 = winter time in swe, used for string conv to filename
@@ -104,7 +103,7 @@ public class Main {
         // conf.setInputFilePath(conf.getFilePathPrefix() + conf.getInputFilePath());
         // conf.setInputFilePath(PehoUtils.checkFile(conf.getInputFilePath()));
 
-        if (conf.getCommand().toLowerCase().equals("sportprofile")) {
+        /* if (conf.getCommand().toLowerCase().equals("sportprofile")) {
             SportProfileFitFile sportsFile = new SportProfileFitFile();
 
             // Use getter for filePathPrefix and extraFilename
@@ -117,17 +116,40 @@ public class Main {
             sportsFile.encodeNewFit(conf.getFilePathPrefix() + "SettingsNew.fit");
 
             System.exit(0);
-        }
+        } */
 
         FitFilePerMesgType watchFitFile = new FitFilePerMesgType(conf.getC2SyncSecondsC2File(), conf.getC2SyncSecondsLapDistCalc());
 
-        if (conf.getCommand().toLowerCase().equals("fixpauses")) {
+        /* if (conf.getCommand().toLowerCase().equals("fixpauses")) {
             watchFitFile.allMesgFlag = true;
-        }
+        } */
 
         // READING FIT FILE
         watchFitFile.readFitFile (conf.getInputFilePath());
 
+        watchFitFile.createFileSummary();
+        //watchFitFile.printFileIdInfo();
+        //watchFitFile.printDeviceInfo();
+        //watchFitFile.printWktInfo();
+        watchFitFile.printWktSessionInfo();
+        watchFitFile.printWktStepInfo();
+        //watchFitFile.printSessionInfo();
+        //watchFitFile.printDevDataId();
+        //watchFitFile.printFieldDescr();
+        //watchFitFile.printDevFieldDescr();
+        //watchFitFile.printCourse();
+        //watchFitFile.printLapRecords0();
+        //watchFitFile.printSecRecords0();
+        //watchFitFile.printSecRecords();
+        watchFitFile.debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
+        watchFitFile.printSplitRecords();
+        watchFitFile.printSplitSumRecords();
+
+        // STOP program after print methods if INFO COMMAND
+        if (conf.getCommand().toLowerCase().equals("info")) {
+            System.exit(0);
+        }
+        
         // Changes STARTTIME
         watchFitFile.changeStartTime(conf.getTimeOffsetSec());
         
@@ -136,21 +158,6 @@ public class Main {
             watchFitFile.wktAddSteps(conf.getStartWithWktStep(), conf.getNewWktName());
         }
         
-        watchFitFile.createFileSummary();
-        watchFitFile.printFileIdInfo();
-        watchFitFile.printDeviceInfo();
-        //watchFitFile.printWktInfo();
-        //watchFitFile.printWktSessionInfo();
-        //watchFitFile.printWktStepInfo();
-        //watchFitFile.printSessionInfo();
-        //watchFitFile.printDevFieldDescr();
-        //watchFitFile.printDevDataId();
-        //watchFitFile.printFieldDescr();
-        //watchFitFile.printCourse();
-        //watchFitFile.printLapRecords0();
-        //watchFitFile.printSecRecords0();
-        //watchFitFile.printSecRecords();
-
         // Fix PAUSES MODE
         if (conf.getCommand().toLowerCase().equals("fixpauses")) {
             
@@ -184,7 +191,7 @@ public class Main {
 
                     //manualLapsFile.mergeLapDataInFitFile(watchFitFile);
                     watchFitFile.mergeLapDataFromTextFile(manualLapsFile);
-                    watchFitFile.calcLapDataFromSecRecordsElliptical();
+                    watchFitFile.calcLapDataFromRecordMesgElliptical();
                     watchFitFile.setNewSportElliptical();
                 }
                 else {
@@ -220,7 +227,9 @@ public class Main {
 
                     watchFitFile.mergeC2CiqAndFitData(c2FitFile, conf.getC2FitFileDistanceStartCorrection());
                     //watchFitFile.printSecRecords();
+                    
                     if (!conf.getUseManualC2SyncSeconds().toLowerCase().equals("yes")) {
+                        // Use AUTO SYNC
                         watchFitFile.SyncDataInTimeFromSkiErg(conf.getUseManualC2SyncSeconds(), hasC2Fit);
                     }
                     
@@ -234,7 +243,10 @@ public class Main {
                     watchFitFile.initLapExtraRecords();
 
                     System.out.println("======== NO C2 FITFILE FOUND, USE DEV DATA ONLY ==========");
-                    watchFitFile.mergeCiqAndFitData();
+                    System.out.println("======== NEED C2 FITFILE UNTIL THIS METHOD IS FIXED watchFitFile.mergeCiqAndFitData() ==========");
+                    System.out.println("======== NEED C2 FITFILE ==========");
+                    System.out.println("======== NEED C2 FITFILE ==========");
+                    // THIS METHOD NEED TO BE FIXED -------> watchFitFile.mergeCiqAndFitData();
                     //watchFitFile.printSecRecords();
 
                     if (!conf.getUseManualC2SyncSeconds().toLowerCase().equals("yes")) {
@@ -247,6 +259,8 @@ public class Main {
                     watchFitFile.removeDevFieldDescr();
                     
                     //watchFitFile.addDeveloperfieldsSkiErg();;
+                    watchFitFile.calcSplitRecordsBasedOnLaps();
+                    watchFitFile.calcSplitSummaryBasedOnSplits();
                 }
             }
 
@@ -277,7 +291,7 @@ public class Main {
 
                     //manualLapsFile.mergeLapDataInFitFile(watchFitFile);
                     watchFitFile.mergeLapDataFromTextFile(manualLapsFile);
-                    watchFitFile.calcLapDataFromSecRecordsElliptical();
+                    watchFitFile.calcLapDataFromRecordMesgElliptical();
                     // NO NEW SportProfile watchFitFile.setNewSportElliptical();
                 }
                 else {
@@ -318,15 +332,21 @@ public class Main {
 
         watchFitFile.createFileSummary();
         //watchFitFile.printLapRecords();
-        //watchFitFile.printSecRecords();
+        //watchFitFile.printSecRecords2();
         //watchFitFile.printLapRecords0();
-        //watchFitFile.printLapAllSummery();
+        //watchFitFile.printLapRecords();
+        watchFitFile.printSplitRecords();
+        watchFitFile.printSplitSumRecords();
+
+        //watchFitFile.printLapAllSummaryAllMesg2();
+
         //watchFitFile.printLapLongSummery();
         watchFitFile.printWriteLapSummery(conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (int)(conf.getTimeOffsetSec()/60) + "min-laps.txt");
         //watchFitFile.printCourse();
         //watchFitFile.printDevFieldDescr();
         //watchFitFile.printDevDataId();
         //watchFitFile.printFieldDescr();
+        //watchFitFile.debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
     }
 
 }

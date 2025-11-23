@@ -1,0 +1,255 @@
+FIT file successfully read. Total records: 1236 -- 2025-11-09-15-01-44
+----- L A P   R E C O R D   D E B U G -----
+Laps: 9  Records: 1236
+
+---- LAP 1 ----
+Start: 1131633669  End: 1131634030  Dur: 361,0s  LapMesg Dist: 1157,00m  LapMesg AvgSpd: 3,211 m/s
+message_index=0  event=9  event_type=1  lap_trigger=0
+10 Records after lap start:
+  ?t=     0s  ts=1131633669  dist=0,00  spd=2,087  enhSpd=2,087
+  ?t=     1s  ts=1131633670  dist=1,00  spd=2,087  enhSpd=2,087
+  ?t=     2s  ts=1131633671  dist=3,00  spd=2,087  enhSpd=2,087
+  ?t=     3s  ts=1131633672  dist=6,00  spd=2,159  enhSpd=2,159
+  ?t=     4s  ts=1131633673  dist=8,00  spd=2,053  enhSpd=2,053
+  ?t=     5s  ts=1131633674  dist=9,00  spd=2,292  enhSpd=2,292
+  ?t=     6s  ts=1131633675  dist=10,00  spd=2,292  enhSpd=2,292
+  ?t=     7s  ts=1131633676  dist=11,00  spd=2,292  enhSpd=2,292
+  ?t=     8s  ts=1131633677  dist=18,00  spd=2,918  enhSpd=2,918
+  ?t=     9s  ts=1131633678  dist=20,67  spd=3,023  enhSpd=3,023
+10 Records before lap end:
+  ?t=   351s  ts=1131634020  dist=1128,00  spd=3,323  enhSpd=3,323
+  ?t=   352s  ts=1131634021  dist=1131,00  spd=3,356  enhSpd=3,356
+  ?t=   353s  ts=1131634022  dist=1134,00  spd=3,382  enhSpd=3,382
+  ?t=   354s  ts=1131634023  dist=1138,00  spd=3,423  enhSpd=3,423
+  ?t=   355s  ts=1131634024  dist=1142,00  spd=3,403  enhSpd=3,403
+  ?t=   356s  ts=1131634025  dist=1146,00  spd=3,389  enhSpd=3,389
+  ?t=   357s  ts=1131634026  dist=1150,00  spd=3,376  enhSpd=3,376
+  ?t=   358s  ts=1131634027  dist=1153,00  spd=3,363  enhSpd=3,363
+  ?t=   359s  ts=1131634028  dist=1157,00  spd=3,373  enhSpd=3,373
+  ?t=   360s  ts=1131634029  dist=1162,00  spd=3,407  enhSpd=3,407
+=> Records total: Dist=1163,00m  Time=361,0s  AvgSpeed=3,222 m/s
+Compare LapMesg vs Records: LapMesgDist=1157,00  RecordsDist=1163,00  LapMesgAvgSpd=3,211  RecAvgSpd=3,222
+
+---- LAP 2 ----
+Start: 1131634029  End: 1131634090  Dur: 61,0s  LapMesg Dist: 216,00m  LapMesg AvgSpd: 3,600 m/s
+message_index=1  event=9  event_type=1  lap_trigger=1
+10 Records after lap start:
+  ?t=     0s  ts=1131634029  dist=1162,00  spd=3,407  enhSpd=3,407
+  ?t=     1s  ts=1131634030  dist=1163,00  spd=3,407  enhSpd=3,407
+  ?t=     2s  ts=1131634031  dist=1167,00  spd=3,358  enhSpd=3,358
+  ?t=     3s  ts=1131634032  dist=1170,33  spd=3,377  enhSpd=3,377
+  ?t=     4s  ts=1131634033  dist=1173,67  spd=3,377  enhSpd=3,377
+  ?t=     5s  ts=1131634034  dist=1177,00  spd=3,518  enhSpd=3,518
+  ?t=     6s  ts=1131634035  dist=1178,00  spd=3,518  enhSpd=3,518
+  ?t=     7s  ts=1131634036  dist=1182,00  spd=3,401  enhSpd=3,401
+  ?t=     8s  ts=1131634037  dist=1186,00  spd=3,445  enhSpd=3,445
+  ?t=     9s  ts=1131634038  dist=1189,33  spd=3,571  enhSpd=3,571
+10 Records before lap end:
+  ?t=    51s  ts=1131634080  dist=1343,00  spd=3,670  enhSpd=3,670
+  ?t=    52s  ts=1131634081  dist=1347,00  spd=3,666  enhSpd=3,666
+  ?t=    53s  ts=1131634082  dist=1352,00  spd=3,619  enhSpd=3,619
+  ?t=    54s  ts=1131634083  dist=1354,67  spd=3,631  enhSpd=3,631
+  ?t=    55s  ts=1131634084  dist=1357,33  spd=3,631  enhSpd=3,631
+  ?t=    56s  ts=1131634085  dist=1360,00  spd=3,620  enhSpd=3,620
+  ?t=    57s  ts=1131634086  dist=1364,00  spd=3,626  enhSpd=3,626
+  ?t=    58s  ts=1131634087  dist=1369,00  spd=3,632  enhSpd=3,632
+  ?t=    59s  ts=1131634088  dist=1373,00  spd=3,665  enhSpd=3,665
+  ?t=    60s  ts=1131634089  dist=1374,00  spd=3,651  enhSpd=3,651
+=> Records total: Dist=216,00m  Time=61,0s  AvgSpeed=3,541 m/s
+Compare LapMesg vs Records: LapMesgDist=216,00  RecordsDist=216,00  LapMesgAvgSpd=3,600  RecAvgSpd=3,541
+
+---- LAP 3 ----
+Start: 1131634089  End: 1131634210  Dur: 121,0s  LapMesg Dist: 403,00m  LapMesg AvgSpd: 3,358 m/s
+message_index=2  event=9  event_type=1  lap_trigger=1
+10 Records after lap start:
+  ?t=     0s  ts=1131634089  dist=1374,00  spd=3,651  enhSpd=3,651
+  ?t=     1s  ts=1131634090  dist=1378,00  spd=3,641  enhSpd=3,641
+  ?t=     2s  ts=1131634091  dist=1382,00  spd=3,650  enhSpd=3,650
+  ?t=     3s  ts=1131634092  dist=1386,00  spd=3,648  enhSpd=3,648
+  ?t=     4s  ts=1131634093  dist=1390,00  spd=3,481  enhSpd=3,481
+  ?t=     5s  ts=1131634094  dist=1394,00  spd=3,402  enhSpd=3,402
+  ?t=     6s  ts=1131634095  dist=1398,00  spd=3,372  enhSpd=3,372
+  ?t=     7s  ts=1131634096  dist=1402,00  spd=3,316  enhSpd=3,316
+  ?t=     8s  ts=1131634097  dist=1403,00  spd=3,316  enhSpd=3,316
+  ?t=     9s  ts=1131634098  dist=1407,00  spd=3,283  enhSpd=3,283
+10 Records before lap end:
+  ?t=   111s  ts=1131634200  dist=1751,00  spd=3,387  enhSpd=3,387
+  ?t=   112s  ts=1131634201  dist=1754,00  spd=3,387  enhSpd=3,387
+  ?t=   113s  ts=1131634202  dist=1757,33  spd=3,346  enhSpd=3,346
+  ?t=   114s  ts=1131634203  dist=1760,67  spd=3,346  enhSpd=3,346
+  ?t=   115s  ts=1131634204  dist=1764,00  spd=3,317  enhSpd=3,317
+  ?t=   116s  ts=1131634205  dist=1767,00  spd=3,300  enhSpd=3,300
+  ?t=   117s  ts=1131634206  dist=1768,00  spd=3,300  enhSpd=3,300
+  ?t=   118s  ts=1131634207  dist=1772,00  spd=3,307  enhSpd=3,307
+  ?t=   119s  ts=1131634208  dist=1776,00  spd=3,319  enhSpd=3,319
+  ?t=   120s  ts=1131634209  dist=1780,00  spd=3,348  enhSpd=3,348
+=> Records total: Dist=410,00m  Time=121,0s  AvgSpeed=3,388 m/s
+Compare LapMesg vs Records: LapMesgDist=403,00  RecordsDist=410,00  LapMesgAvgSpd=3,358  RecAvgSpd=3,388
+
+---- LAP 4 ----
+Start: 1131634209  End: 1131634270  Dur: 61,0s  LapMesg Dist: 220,67m  LapMesg AvgSpd: 3,678 m/s
+message_index=3  event=9  event_type=1  lap_trigger=1
+10 Records after lap start:
+  ?t=     0s  ts=1131634209  dist=1780,00  spd=3,348  enhSpd=3,348
+  ?t=     1s  ts=1131634210  dist=1784,00  spd=3,345  enhSpd=3,345
+  ?t=     2s  ts=1131634211  dist=1788,00  spd=3,345  enhSpd=3,345
+  ?t=     3s  ts=1131634212  dist=1792,00  spd=3,328  enhSpd=3,328
+  ?t=     4s  ts=1131634213  dist=1796,00  spd=3,282  enhSpd=3,282
+  ?t=     5s  ts=1131634214  dist=1797,00  spd=3,364  enhSpd=3,364
+  ?t=     6s  ts=1131634215  dist=1801,00  spd=3,541  enhSpd=3,541
+  ?t=     7s  ts=1131634216  dist=1805,00  spd=3,599  enhSpd=3,599
+  ?t=     8s  ts=1131634217  dist=1809,00  spd=3,632  enhSpd=3,632
+  ?t=     9s  ts=1131634218  dist=1813,00  spd=3,641  enhSpd=3,641
+10 Records before lap end:
+  ?t=    51s  ts=1131634260  dist=1965,00  spd=3,701  enhSpd=3,701
+  ?t=    52s  ts=1131634261  dist=1969,00  spd=3,672  enhSpd=3,672
+  ?t=    53s  ts=1131634262  dist=1973,00  spd=3,662  enhSpd=3,662
+  ?t=    54s  ts=1131634263  dist=1981,00  spd=3,764  enhSpd=3,764
+  ?t=    55s  ts=1131634264  dist=1982,00  spd=3,756  enhSpd=3,756
+  ?t=    56s  ts=1131634265  dist=1986,00  spd=3,727  enhSpd=3,727
+  ?t=    57s  ts=1131634266  dist=1990,00  spd=3,682  enhSpd=3,682
+  ?t=    58s  ts=1131634267  dist=1993,33  spd=3,680  enhSpd=3,680
+  ?t=    59s  ts=1131634268  dist=1996,67  spd=3,680  enhSpd=3,680
+  ?t=    60s  ts=1131634269  dist=2000,00  spd=3,680  enhSpd=3,680
+=> Records total: Dist=224,00m  Time=61,0s  AvgSpeed=3,672 m/s
+Compare LapMesg vs Records: LapMesgDist=220,67  RecordsDist=224,00  LapMesgAvgSpd=3,678  RecAvgSpd=3,672
+
+---- LAP 5 ----
+Start: 1131634269  End: 1131634390  Dur: 121,0s  LapMesg Dist: 378,33m  LapMesg AvgSpd: 3,153 m/s
+message_index=4  event=9  event_type=1  lap_trigger=1
+10 Records after lap start:
+  ?t=     0s  ts=1131634269  dist=2000,00  spd=3,680  enhSpd=3,680
+  ?t=     1s  ts=1131634270  dist=2004,00  spd=3,703  enhSpd=3,703
+  ?t=     2s  ts=1131634271  dist=2008,00  spd=3,703  enhSpd=3,703
+  ?t=     3s  ts=1131634272  dist=2012,00  spd=3,689  enhSpd=3,689
+  ?t=     4s  ts=1131634273  dist=2013,00  spd=3,630  enhSpd=3,630
+  ?t=     5s  ts=1131634274  dist=2017,00  spd=3,511  enhSpd=3,511
+  ?t=     6s  ts=1131634275  dist=2020,00  spd=3,363  enhSpd=3,363
+  ?t=     7s  ts=1131634276  dist=2024,00  spd=3,219  enhSpd=3,219
+  ?t=     8s  ts=1131634277  dist=2027,00  spd=3,167  enhSpd=3,167
+  ?t=     9s  ts=1131634278  dist=2030,00  spd=3,167  enhSpd=3,167
+10 Records before lap end:
+  ?t=   111s  ts=1131634380  dist=2347,00  spd=3,307  enhSpd=3,307
+  ?t=   112s  ts=1131634381  dist=2350,00  spd=3,290  enhSpd=3,290
+  ?t=   113s  ts=1131634382  dist=2354,00  spd=3,294  enhSpd=3,294
+  ?t=   114s  ts=1131634383  dist=2359,00  spd=3,279  enhSpd=3,279
+  ?t=   115s  ts=1131634384  dist=2361,67  spd=3,313  enhSpd=3,313
+  ?t=   116s  ts=1131634385  dist=2364,33  spd=3,313  enhSpd=3,313
+  ?t=   117s  ts=1131634386  dist=2367,00  spd=3,302  enhSpd=3,302
+  ?t=   118s  ts=1131634387  dist=2371,00  spd=3,333  enhSpd=3,333
+  ?t=   119s  ts=1131634388  dist=2375,00  spd=3,371  enhSpd=3,371
+  ?t=   120s  ts=1131634389  dist=2377,67  spd=3,403  enhSpd=3,403
+=> Records total: Dist=380,33m  Time=121,0s  AvgSpeed=3,143 m/s
+Compare LapMesg vs Records: LapMesgDist=378,33  RecordsDist=380,33  LapMesgAvgSpd=3,153  RecAvgSpd=3,143
+
+---- LAP 6 ----
+Start: 1131634389  End: 1131634450  Dur: 61,0s  LapMesg Dist: 224,00m  LapMesg AvgSpd: 3,733 m/s
+message_index=5  event=9  event_type=1  lap_trigger=1
+10 Records after lap start:
+  ?t=     0s  ts=1131634389  dist=2377,67  spd=3,403  enhSpd=3,403
+  ?t=     1s  ts=1131634390  dist=2380,33  spd=3,403  enhSpd=3,403
+  ?t=     2s  ts=1131634391  dist=2383,00  spd=3,559  enhSpd=3,559
+  ?t=     3s  ts=1131634392  dist=2387,00  spd=3,749  enhSpd=3,749
+  ?t=     4s  ts=1131634393  dist=2392,00  spd=3,771  enhSpd=3,771
+  ?t=     5s  ts=1131634394  dist=2397,00  spd=3,759  enhSpd=3,759
+  ?t=     6s  ts=1131634395  dist=2398,00  spd=3,759  enhSpd=3,759
+  ?t=     7s  ts=1131634396  dist=2402,00  spd=3,762  enhSpd=3,762
+  ?t=     8s  ts=1131634397  dist=2406,00  spd=3,718  enhSpd=3,718
+  ?t=     9s  ts=1131634398  dist=2410,00  spd=3,747  enhSpd=3,747
+10 Records before lap end:
+  ?t=    51s  ts=1131634440  dist=2565,67  spd=3,778  enhSpd=3,778
+  ?t=    52s  ts=1131634441  dist=2567,00  spd=3,778  enhSpd=3,778
+  ?t=    53s  ts=1131634442  dist=2577,00  spd=3,818  enhSpd=3,818
+  ?t=    54s  ts=1131634443  dist=2581,00  spd=3,853  enhSpd=3,853
+  ?t=    55s  ts=1131634444  dist=2582,00  spd=3,853  enhSpd=3,853
+  ?t=    56s  ts=1131634445  dist=2586,00  spd=3,863  enhSpd=3,863
+  ?t=    57s  ts=1131634446  dist=2591,00  spd=3,820  enhSpd=3,820
+  ?t=    58s  ts=1131634447  dist=2595,00  spd=3,775  enhSpd=3,775
+  ?t=    59s  ts=1131634448  dist=2599,00  spd=3,799  enhSpd=3,799
+  ?t=    60s  ts=1131634449  dist=2604,00  spd=3,801  enhSpd=3,801
+=> Records total: Dist=231,33m  Time=61,0s  AvgSpeed=3,792 m/s
+Compare LapMesg vs Records: LapMesgDist=224,00  RecordsDist=231,33  LapMesgAvgSpd=3,733  RecAvgSpd=3,792
+
+---- LAP 7 ----
+Start: 1131634449  End: 1131634570  Dur: 121,0s  LapMesg Dist: 380,00m  LapMesg AvgSpd: 3,167 m/s
+message_index=6  event=9  event_type=1  lap_trigger=1
+10 Records after lap start:
+  ?t=     0s  ts=1131634449  dist=2604,00  spd=3,801  enhSpd=3,801
+  ?t=     1s  ts=1131634450  dist=2609,00  spd=3,782  enhSpd=3,782
+  ?t=     2s  ts=1131634451  dist=2613,00  spd=3,772  enhSpd=3,772
+  ?t=     3s  ts=1131634452  dist=2617,00  spd=3,714  enhSpd=3,714
+  ?t=     4s  ts=1131634453  dist=2618,00  spd=3,714  enhSpd=3,714
+  ?t=     5s  ts=1131634454  dist=2622,00  spd=3,567  enhSpd=3,567
+  ?t=     6s  ts=1131634455  dist=2626,00  spd=3,443  enhSpd=3,443
+  ?t=     7s  ts=1131634456  dist=2630,00  spd=3,356  enhSpd=3,356
+  ?t=     8s  ts=1131634457  dist=2632,33  spd=3,259  enhSpd=3,259
+  ?t=     9s  ts=1131634458  dist=2634,67  spd=3,259  enhSpd=3,259
+10 Records before lap end:
+  ?t=   111s  ts=1131634560  dist=2952,33  spd=3,357  enhSpd=3,357
+  ?t=   112s  ts=1131634561  dist=2955,00  spd=3,340  enhSpd=3,340
+  ?t=   113s  ts=1131634562  dist=2958,00  spd=3,286  enhSpd=3,286
+  ?t=   114s  ts=1131634563  dist=2962,00  spd=3,273  enhSpd=3,273
+  ?t=   115s  ts=1131634564  dist=2966,00  spd=3,308  enhSpd=3,308
+  ?t=   116s  ts=1131634565  dist=2970,00  spd=3,272  enhSpd=3,272
+  ?t=   117s  ts=1131634566  dist=2971,00  spd=3,272  enhSpd=3,272
+  ?t=   118s  ts=1131634567  dist=2975,00  spd=3,254  enhSpd=3,254
+  ?t=   119s  ts=1131634568  dist=2979,00  spd=3,253  enhSpd=3,253
+  ?t=   120s  ts=1131634569  dist=2985,00  spd=3,264  enhSpd=3,264
+=> Records total: Dist=382,00m  Time=121,0s  AvgSpeed=3,157 m/s
+Compare LapMesg vs Records: LapMesgDist=380,00  RecordsDist=382,00  LapMesgAvgSpd=3,167  RecAvgSpd=3,157
+
+---- LAP 8 ----
+Start: 1131634569  End: 1131634630  Dur: 61,0s  LapMesg Dist: 230,00m  LapMesg AvgSpd: 3,833 m/s
+message_index=7  event=9  event_type=1  lap_trigger=1
+10 Records after lap start:
+  ?t=     0s  ts=1131634569  dist=2985,00  spd=3,264  enhSpd=3,264
+  ?t=     1s  ts=1131634570  dist=2986,00  spd=3,264  enhSpd=3,264
+  ?t=     2s  ts=1131634571  dist=2990,00  spd=3,295  enhSpd=3,295
+  ?t=     3s  ts=1131634572  dist=2994,00  spd=3,408  enhSpd=3,408
+  ?t=     4s  ts=1131634573  dist=2997,33  spd=3,612  enhSpd=3,612
+  ?t=     5s  ts=1131634574  dist=3000,67  spd=3,612  enhSpd=3,612
+  ?t=     6s  ts=1131634575  dist=3004,00  spd=3,738  enhSpd=3,738
+  ?t=     7s  ts=1131634576  dist=3008,00  spd=3,758  enhSpd=3,758
+  ?t=     8s  ts=1131634577  dist=3012,00  spd=3,758  enhSpd=3,758
+  ?t=     9s  ts=1131634578  dist=3016,00  spd=3,794  enhSpd=3,794
+10 Records before lap end:
+  ?t=    51s  ts=1131634620  dist=3179,00  spd=3,919  enhSpd=3,919
+  ?t=    52s  ts=1131634621  dist=3183,00  spd=3,858  enhSpd=3,858
+  ?t=    53s  ts=1131634622  dist=3189,00  spd=3,879  enhSpd=3,879
+  ?t=    54s  ts=1131634623  dist=3193,00  spd=3,892  enhSpd=3,892
+  ?t=    55s  ts=1131634624  dist=3194,00  spd=3,892  enhSpd=3,892
+  ?t=    56s  ts=1131634625  dist=3199,00  spd=3,856  enhSpd=3,856
+  ?t=    57s  ts=1131634626  dist=3203,00  spd=3,854  enhSpd=3,854
+  ?t=    58s  ts=1131634627  dist=3206,00  spd=3,878  enhSpd=3,878
+  ?t=    59s  ts=1131634628  dist=3209,00  spd=3,878  enhSpd=3,878
+  ?t=    60s  ts=1131634629  dist=3212,00  spd=3,900  enhSpd=3,900
+=> Records total: Dist=231,00m  Time=61,0s  AvgSpeed=3,787 m/s
+Compare LapMesg vs Records: LapMesgDist=230,00  RecordsDist=231,00  LapMesgAvgSpd=3,833  RecAvgSpd=3,787
+
+---- LAP 9 ----
+Start: 1131634629  End: 1131634905  Dur: 276,0s  LapMesg Dist: 892,00m  LapMesg AvgSpd: 3,245 m/s
+message_index=8  event=9  event_type=1  lap_trigger=7
+10 Records after lap start:
+  ?t=     0s  ts=1131634629  dist=3212,00  spd=3,900  enhSpd=3,900
+  ?t=     1s  ts=1131634630  dist=3216,00  spd=3,868  enhSpd=3,868
+  ?t=     2s  ts=1131634631  dist=3221,00  spd=3,878  enhSpd=3,878
+  ?t=     3s  ts=1131634632  dist=3226,00  spd=3,864  enhSpd=3,864
+  ?t=     4s  ts=1131634633  dist=3227,00  spd=3,864  enhSpd=3,864
+  ?t=     5s  ts=1131634634  dist=3231,00  spd=3,716  enhSpd=3,716
+  ?t=     6s  ts=1131634635  dist=3235,00  spd=3,490  enhSpd=3,490
+  ?t=     7s  ts=1131634636  dist=3238,00  spd=3,311  enhSpd=3,311
+  ?t=     8s  ts=1131634637  dist=3242,00  spd=3,121  enhSpd=3,121
+  ?t=     9s  ts=1131634638  dist=3245,00  spd=3,003  enhSpd=3,003
+10 Records before lap end:
+  ?t=   266s  ts=1131634895  dist=4082,00  spd=2,565  enhSpd=2,565
+  ?t=   267s  ts=1131634896  dist=4085,00  spd=2,443  enhSpd=2,443
+  ?t=   268s  ts=1131634897  dist=4088,00  spd=2,355  enhSpd=2,355
+  ?t=   269s  ts=1131634898  dist=4088,67  spd=2,288  enhSpd=2,288
+  ?t=   270s  ts=1131634899  dist=4089,33  spd=2,288  enhSpd=2,288
+  ?t=   271s  ts=1131634900  dist=4090,00  spd=2,288  enhSpd=2,288
+  ?t=   272s  ts=1131634901  dist=4096,00  spd=2,242  enhSpd=2,242
+  ?t=   273s  ts=1131634902  dist=4098,00  spd=2,242  enhSpd=2,242
+  ?t=   274s  ts=1131634903  dist=4098,00  spd=2,242  enhSpd=2,242
+  ?t=   275s  ts=1131634904  dist=4101,00  spd=2,242  enhSpd=2,242
+=> Records total: Dist=889,00m  Time=276,0s  AvgSpeed=3,221 m/s
+Compare LapMesg vs Records: LapMesgDist=892,00  RecordsDist=889,00  LapMesgAvgSpd=3,245  RecAvgSpd=3,221

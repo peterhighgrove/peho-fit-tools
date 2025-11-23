@@ -18,7 +18,7 @@ import java.time.Duration;
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 public class FitFile {
 
-    public static final int FID_TIME = FileIdMesg.TimeCreatedFieldNum; //long
+    public static final int FID_CTIME = FileIdMesg.TimeCreatedFieldNum; //long
     public static final int FID_MANU = FileIdMesg.ManufacturerFieldNum; //int
     public static final int FID_PROD = FileIdMesg.ProductFieldNum; //int
     public static final int FID_PRODNAME = FileIdMesg.ProductNameFieldNum; //string
@@ -45,20 +45,17 @@ public class FitFile {
     public static final int SPL_ETIME = SplitMesg.EndTimeFieldNum; //long
     public static final int SPL_MESSAGE_INDEX = SplitMesg.MessageIndexFieldNum; // int
     public static final int SPL_TYPE = SplitMesg.SplitTypeFieldNum; // enum
-    public static final int SPL_TOTAL_ELAPSED_TIME = SplitMesg.TotalElapsedTimeFieldNum; // float
-    public static final int SPL_TOTAL_TIMER = SplitMesg.TotalTimerTimeFieldNum; // float
-    public static final int SPL_TOTAL_DISTANCE = SplitMesg.TotalDistanceFieldNum; // float
-    public static final int SPL_AVG_SPEED = SplitMesg.AvgSpeedFieldNum; // float
-    public static final int SPL_START_TIME = SplitMesg.StartTimeFieldNum; // long
-    public static final int SPL_TOTAL_ASCENT = SplitMesg.TotalAscentFieldNum; // int
-    public static final int SPL_TOTAL_DESCENT = SplitMesg.TotalDescentFieldNum; // int
+    public static final int SPL_TIMER = SplitMesg.TotalTimerTimeFieldNum; // float
+    public static final int SPL_DIST = SplitMesg.TotalDistanceFieldNum; // float
+    public static final int SPL_SPEED = SplitMesg.AvgSpeedFieldNum; // float
+    public static final int SPL_ASC = SplitMesg.TotalAscentFieldNum; // int
+    public static final int SPL_DESC = SplitMesg.TotalDescentFieldNum; // int
     public static final int SPL_START_LAT = SplitMesg.StartPositionLatFieldNum; // int (semicircles)
     public static final int SPL_START_LON = SplitMesg.StartPositionLongFieldNum; // int (semicircles)
     public static final int SPL_END_LAT = SplitMesg.EndPositionLatFieldNum; // int (semicircles)
     public static final int SPL_END_LON = SplitMesg.EndPositionLongFieldNum; // int (semicircles)
-    public static final int SPL_MAX_SPEED = SplitMesg.MaxSpeedFieldNum; // float
-    public static final int SPL_AVG_VERT_SPEED = SplitMesg.AvgVertSpeedFieldNum; // float
-    public static final int SPL_END_TIME = SplitMesg.EndTimeFieldNum; // long
+    public static final int SPL_MSPEED = SplitMesg.MaxSpeedFieldNum; // float
+    public static final int SPL_VSPEED = SplitMesg.AvgVertSpeedFieldNum; // float
     public static final int SPL_TOTAL_CALORIES = SplitMesg.TotalCaloriesFieldNum; // int
     public static final int SPL_START_ELEVATION = SplitMesg.StartElevationFieldNum; // int
     public static final int SPL_TOTAL_MOVING_TIME = SplitMesg.TotalMovingTimeFieldNum; // float
@@ -3235,9 +3232,9 @@ public class FitFile {
         for (Mesg mesg : allMesg) {
             switch (mesg.getNum()) {
                 case MesgNum.FILE_ID:
-                    timeToChange = mesg.getFieldLongValue(FID_TIME);
+                    timeToChange = mesg.getFieldLongValue(FID_CTIME);
                     if (timeToChange != null) {
-                        mesg.setFieldValue(FID_TIME, timeToChange + changeSeconds);
+                        mesg.setFieldValue(FID_CTIME, timeToChange + changeSeconds);
                     }
                     break;
                 case MesgNum.ACTIVITY:
@@ -3336,7 +3333,7 @@ public class FitFile {
             i++;
             System.out.println("File ID: " + i);
 
-            Long timeCreated = mesg.getFieldLongValue(FID_TIME);
+            Long timeCreated = mesg.getFieldLongValue(FID_CTIME);
             if (timeCreated != null) {
                 System.out.print(" Time: " + FitDateTime.toString(new DateTime(timeCreated)));
             }
@@ -3854,28 +3851,28 @@ public class FitFile {
                 if (splitType != null) System.out.print(" Type:" + SplitType.getByValue(splitType));
             }
 
-            Long startTime = mesg.getFieldLongValue(SPL_START_TIME);
+            Long startTime = mesg.getFieldLongValue(SPL_STIME);
             if (startTime != null) System.out.print(" Time:" + FitDateTime.toString(startTime, diffMinutesLocalUTC));
 
-            Long endTime = mesg.getFieldLongValue(SPL_END_TIME);
+            Long endTime = mesg.getFieldLongValue(SPL_ETIME);
             if (endTime != null) System.out.print("->" + FitDateTime.toString(endTime, diffMinutesLocalUTC));
 
-            Float totalTimer = mesg.getFieldFloatValue(SPL_TOTAL_TIMER);
+            Float totalTimer = mesg.getFieldFloatValue(SPL_TIMER);
             if (totalTimer != null)  System.out.print(" SplTime:" + PehoUtils.sec2minSecLong(totalTimer) + "min");
 
-            Float totalDistance = mesg.getFieldFloatValue(SPL_TOTAL_DISTANCE);
+            Float totalDistance = mesg.getFieldFloatValue(SPL_DIST);
             if (totalDistance != null) System.out.print(" Dist:" + PehoUtils.m2km2(totalDistance) + "km");
 
-            Float avgPace = mesg.getFieldFloatValue(SPL_AVG_SPEED);
+            Float avgPace = mesg.getFieldFloatValue(SPL_SPEED);
             if (avgPace != null) System.out.print(" AvgPace:" + PehoUtils.mps2minpkm(avgPace));
 
-            Float maxPace = mesg.getFieldFloatValue(SPL_MAX_SPEED);
+            Float maxPace = mesg.getFieldFloatValue(SPL_MSPEED);
             if (maxPace != null) System.out.print(" MaxPace:" + PehoUtils.mps2minpkm(maxPace));
 
-            Integer ascent = mesg.getFieldIntegerValue(SPL_TOTAL_ASCENT);
+            Integer ascent = mesg.getFieldIntegerValue(SPL_ASC);
             if (ascent != null) System.out.print(" Asc:" + ascent + "m");
 
-            Integer descent = mesg.getFieldIntegerValue(SPL_TOTAL_DESCENT);
+            Integer descent = mesg.getFieldIntegerValue(SPL_DESC);
             if (descent != null) System.out.print(" Desc:" + descent + "m");
 
             /* Integer startLat = mesg.getFieldIntegerValue(SPL_START_LAT);
