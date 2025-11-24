@@ -2007,10 +2007,10 @@ public class FitFilePerMesgType_v20251118 {
 
                 // =========== MERGE/Import C2 fitfile =============
                 // =================================================
-                while (c2FitFile.recordMesg.get(c2RecordIx).getFieldFloatValue(REC_DIST) - 0.5 <= record.getFieldFloatValue(REC_DIST) - C2FitFileDistanceStartCorrection) {
-                    record.setFieldValue(REC_CAD, c2FitFile.recordMesg.get(c2RecordIx).getFieldShortValue(REC_CAD));
-                    record.setFieldValue(REC_POW, c2FitFile.recordMesg.get(c2RecordIx).getFieldIntegerValue(REC_POW));
-                    secExtraRecords.get(recordIx).C2DateTime = new DateTime(c2FitFile.recordMesg.get(c2RecordIx).getFieldLongValue(REC_TIME));
+                while (c2FitFile.getRecordMesg().get(c2RecordIx).getFieldFloatValue(REC_DIST) - 0.5 <= record.getFieldFloatValue(REC_DIST) - C2FitFileDistanceStartCorrection) {
+                    record.setFieldValue(REC_CAD, c2FitFile.getRecordMesg().get(c2RecordIx).getFieldShortValue(REC_CAD));
+                    record.setFieldValue(REC_POW, c2FitFile.getRecordMesg().get(c2RecordIx).getFieldIntegerValue(REC_POW));
+                    secExtraRecords.get(recordIx).C2DateTime = new DateTime(c2FitFile.getRecordMesg().get(c2RecordIx).getFieldLongValue(REC_TIME));
                     c2RecordIx++;
                     if (c2RecordIx > c2FitFile.numberOfRecords - 1) {
                         c2RecordIx--;

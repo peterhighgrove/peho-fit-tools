@@ -239,6 +239,7 @@ public class Main {
                     watchFitFile.removeDevFieldDescr();
                     
                     //watchFitFile.addDeveloperfieldsSkiErg();;
+
                 } else {
                     watchFitFile.initLapExtraRecords();
 
@@ -259,9 +260,9 @@ public class Main {
                     watchFitFile.removeDevFieldDescr();
                     
                     //watchFitFile.addDeveloperfieldsSkiErg();;
-                    watchFitFile.calcSplitRecordsBasedOnLaps();
-                    watchFitFile.calcSplitSummaryBasedOnSplits();
                 }
+                watchFitFile.calcSplitRecordsBasedOnLaps();
+                watchFitFile.calcSplitSummaryBasedOnSplits();
             }
 
             // ================================
@@ -341,12 +342,12 @@ public class Main {
         //watchFitFile.printLapAllSummaryAllMesg2();
 
         //watchFitFile.printLapLongSummery();
-        watchFitFile.printWriteLapSummery(conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (int)(conf.getTimeOffsetSec()/60) + "min-laps.txt");
         //watchFitFile.printCourse();
         //watchFitFile.printDevFieldDescr();
         //watchFitFile.printDevDataId();
         //watchFitFile.printFieldDescr();
-        //watchFitFile.debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
+        watchFitFile.debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
+        watchFitFile.printWriteLapSummery(conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (int)(conf.getTimeOffsetSec()/60) + "min-laps.txt");
     }
 
 }

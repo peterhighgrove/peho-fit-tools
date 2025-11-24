@@ -130,6 +130,9 @@ public class FitFilePerMesgType {
     public static final int REC_LAT = RecordMesg.PositionLatFieldNum; //int
     public static final int REC_LON = RecordMesg.PositionLongFieldNum; //int
     public static final int REC_EALT = RecordMesg.EnhancedAltitudeFieldNum; //float
+    public static final int SP_SPORT = SportMesg.SportFieldNum; //short -> .getByValue -> Sport
+    public static final int SP_SUBSPORT = SportMesg.SubSportFieldNum;
+    public static final int SP_NAME = SportMesg.NameFieldNum; //string
 
     String manufacturer;
     int productNo;
@@ -187,22 +190,23 @@ public class FitFilePerMesgType {
     Decode decode;
     MesgBroadcaster broadcaster;
 
-    List<Mesg> allMesg = new ArrayList<>();
-    List<Mesg> fileIdMesg = new ArrayList<>();
-    List<Mesg> deviceInfoMesg = new ArrayList<>();
-    List<Mesg> wktSessionMesg = new ArrayList<>();
-    List<Mesg> wktStepMesg = new ArrayList<>();
-    List<Mesg> wktRecordMesg = new ArrayList<>();
-    List<Mesg> activityMesg = new ArrayList<>();
-    List<Mesg> sessionMesg = new ArrayList<>();
-    List<Mesg> lapMesg = new ArrayList<>();
-    List<Mesg> splitMesg = new ArrayList<>();
-    List<Mesg> splitSummaryMesg = new ArrayList<>();
-    List<Mesg> eventMesg = new ArrayList<>();
-    List<Mesg> recordMesg = new ArrayList<>();
-    List<Mesg> devDataIdMesg = new ArrayList<>();
-    List<Mesg> developerDataIdMesg = new ArrayList<>();
-    List<Mesg> fieldDescrMesg = new ArrayList<>();
+    private List<Mesg> allMesg = new ArrayList<>();
+    private List<Mesg> fileIdMesg = new ArrayList<>();
+    private List<Mesg> deviceInfoMesg = new ArrayList<>();
+    private List<Mesg> wktSessionMesg = new ArrayList<>();
+    private List<Mesg> wktStepMesg = new ArrayList<>();
+    private List<Mesg> wktRecordMesg = new ArrayList<>();
+    private List<Mesg> activityMesg = new ArrayList<>();
+    private List<Mesg> sessionMesg = new ArrayList<>();
+    private List<Mesg> lapMesg = new ArrayList<>();
+    private List<Mesg> splitMesg = new ArrayList<>();
+    private List<Mesg> splitSummaryMesg = new ArrayList<>();
+    private List<Mesg> eventMesg = new ArrayList<>();
+    private List<Mesg> recordMesg = new ArrayList<>();
+    private List<Mesg> devDataIdMesg = new ArrayList<>();
+    private List<Mesg> developerDataIdMesg = new ArrayList<>();
+    private List<Mesg> fieldDescrMesg = new ArrayList<>();
+    private List<Mesg> sportMesg = new ArrayList<>();
     public List<Mesg> getAllMesg() { return allMesg; }
     public List<Mesg> getFileIdMesg() { return fileIdMesg; }
     public List<Mesg> getDeviceInfoMesg() { return deviceInfoMesg; }
@@ -217,6 +221,7 @@ public class FitFilePerMesgType {
     public List<Mesg> getDevDataIdMesg() { return devDataIdMesg; }
     public List<Mesg> getDeveloperDataIdMesg() { return developerDataIdMesg; }
     public List<Mesg> getFieldDescrMesg() { return fieldDescrMesg; }
+    public List<Mesg> getSportMesg() { return sportMesg; }
     
     /* List<FileIdMesg> fileIdRecords = new ArrayList<>();
     List<FileCreatorMesg> fileCreatorRecords = new ArrayList<>();
@@ -586,8 +591,8 @@ public class FitFilePerMesgType {
                 System.out.println("----> New SportProfile:  " + newProfileName);
 
                 // Update first session message
-                Mesg session = sessionMesg.get(0);
-                session.setFieldValue(SES_PROFILE, newProfileName);
+                getSessionMesg().get(0).setFieldValue(SES_PROFILE, newProfileName);
+                getSportMesg().get(0).setFieldValue(SP_NAME, newProfileName);
             }
         }
 
@@ -876,6 +881,16 @@ public class FitFilePerMesgType {
                         mesg.setFieldValue(12, subsport.getValue());
                     }
                     break;
+                case MesgNum.SPORT:
+                    sportField = mesg.getField(SP_SPORT);
+                    if (sportField != null) {
+                        mesg.setFieldValue(SP_SPORT, sport.getValue());
+                    }
+                    Field subSportField = mesg.getField(SP_SUBSPORT);
+                    if (subSportField != null) {
+                        mesg.setFieldValue(SP_SUBSPORT, subsport.getValue());
+                    }
+                    break;
                 default:
                     break;
             }
@@ -948,14 +963,14 @@ public class FitFilePerMesgType {
                             record.setFieldValue(REC_CAD, cadFromDevField);
                         }
                         field.setValue((short)0);
-                        }
+                        } */
                     case "Power" -> {
                         Integer powerFromDevField = field.getIntegerValue();
                         if (powerFromDevField != null) {
                             record.setFieldValue(REC_POW, powerFromDevField);
                         }
                         field.setValue(0);
-                    } */
+                    }
                     case "Speed" -> {
                         speedFromDevField = field.getFloatValue();
                         if (speedFromDevField != null) {
@@ -1017,7 +1032,7 @@ public class FitFilePerMesgType {
             // =================================================
             while (c2FitFile.recordMesg.get(c2RecordIx).getFieldFloatValue(REC_DIST) - 0.5 <= record.getFieldFloatValue(REC_DIST) - C2FitFileDistanceStartCorrection) {
                 record.setFieldValue(REC_CAD, c2FitFile.recordMesg.get(c2RecordIx).getFieldShortValue(REC_CAD));
-                record.setFieldValue(REC_POW, c2FitFile.recordMesg.get(c2RecordIx).getFieldIntegerValue(REC_POW));
+                //record.setFieldValue(REC_POW, c2FitFile.recordMesg.get(c2RecordIx).getFieldIntegerValue(REC_POW));
                 secExtraRecords.get(recordIx).C2DateTime = new DateTime(c2FitFile.recordMesg.get(c2RecordIx).getFieldLongValue(REC_TIME));
                 c2RecordIx++;
                 if (c2RecordIx > c2FitFile.numberOfRecords - 1) {
@@ -1840,35 +1855,44 @@ public class FitFilePerMesgType {
         for (Mesg record : recordMesg) {
 
             if (hasC2Fit) {
-                if (recordIx<(numberOfRecords-1-c2SyncSecondsLapDistCalc)) {
-                    record.setFieldValue(REC_DIST, recordMesg.get(recordIx+c2SyncSecondsLapDistCalc).getFieldFloatValue(REC_DIST));
-                    record.setFieldValue(REC_SPEED, recordMesg.get(recordIx+c2SyncSecondsLapDistCalc).getFieldFloatValue(REC_SPEED));
-                    record.setFieldValue(REC_ESPEED, recordMesg.get(recordIx+c2SyncSecondsLapDistCalc+1).getFieldFloatValue(REC_ESPEED));
+                if (recordIx < (numberOfRecords-1-c2SyncSecondsLapDistCalc)) {
+                    Mesg recordToUpdate = recordMesg.get(recordIx + c2SyncSecondsLapDistCalc);
+                    record.setFieldValue(REC_DIST, recordToUpdate.getFieldFloatValue(REC_DIST));
+                    record.setFieldValue(REC_SPEED, recordToUpdate.getFieldFloatValue(REC_SPEED));
+                    record.setFieldValue(REC_ESPEED, recordToUpdate.getFieldFloatValue(REC_ESPEED));
+                    record.setFieldValue(REC_POW, recordToUpdate.getFieldIntegerValue(REC_POW));
                 } else {
-                    record.setFieldValue(REC_DIST, recordMesg.get(numberOfRecords-1).getFieldFloatValue(REC_DIST));
-                    record.setFieldValue(REC_SPEED, recordMesg.get(numberOfRecords-1).getFieldFloatValue(REC_SPEED));
-                    record.setFieldValue(REC_ESPEED, recordMesg.get(numberOfRecords-1).getFieldFloatValue(REC_ESPEED));
+                    Mesg recordLast = recordMesg.get(numberOfRecords-1);
+                    record.setFieldValue(REC_DIST, recordLast.getFieldFloatValue(REC_DIST));
+                    record.setFieldValue(REC_SPEED, recordLast.getFieldFloatValue(REC_SPEED));
+                    record.setFieldValue(REC_ESPEED, recordLast.getFieldFloatValue(REC_ESPEED));
+                    record.setFieldValue(REC_POW, recordLast.getFieldIntegerValue(REC_POW));
                 }
 
-                if (recordIx<(numberOfRecords-1-c2SyncSecondsC2File)) {
-                    record.setFieldValue(REC_CAD, recordMesg.get(recordIx+c2SyncSecondsC2File).getFieldIntegerValue(REC_CAD));
-                    record.setFieldValue(REC_POW, recordMesg.get(recordIx+c2SyncSecondsC2File).getFieldIntegerValue(REC_POW));
+                if (recordIx < (numberOfRecords-1-c2SyncSecondsC2File)) {
+                    Mesg recordToUpdate = recordMesg.get(recordIx + c2SyncSecondsC2File);
+                    record.setFieldValue(REC_CAD, recordToUpdate.getFieldIntegerValue(REC_CAD));
+                    //record.setFieldValue(REC_POW, recordToUpdate.getFieldIntegerValue(REC_POW));
                 } else {
-                    record.setFieldValue(REC_CAD, recordMesg.get(numberOfRecords-1).getFieldIntegerValue(REC_CAD));
-                    record.setFieldValue(REC_POW, recordMesg.get(numberOfRecords-1).getFieldIntegerValue(REC_POW));
+                    Mesg recordLast = recordMesg.get(numberOfRecords-1);
+                    record.setFieldValue(REC_CAD, recordLast.getFieldIntegerValue(REC_CAD));
+                    //record.setFieldValue(REC_POW, recordLast.getFieldIntegerValue(REC_POW));
                 }
             } else {
                 // NO C2fit
                 if (recordIx<(numberOfRecords-1-c2SyncSecondsLapDistCalc)) {
-                    record.setFieldValue(REC_DIST, recordMesg.get(recordIx+c2SyncSecondsLapDistCalc).getFieldFloatValue(REC_DIST));
-                    record.setFieldValue(REC_SPEED, recordMesg.get(recordIx+c2SyncSecondsLapDistCalc).getFieldFloatValue(REC_SPEED));
-                    record.setFieldValue(REC_ESPEED, recordMesg.get(recordIx+c2SyncSecondsLapDistCalc+1).getFieldFloatValue(REC_ESPEED));
-                    record.setFieldValue(REC_POW, recordMesg.get(recordIx+c2SyncSecondsC2File).getFieldIntegerValue(REC_POW));
+                    Mesg recordToUpdate = recordMesg.get(recordIx + c2SyncSecondsLapDistCalc);
+                    record.setFieldValue(REC_DIST, recordToUpdate.getFieldFloatValue(REC_DIST));
+                    record.setFieldValue(REC_SPEED, recordToUpdate.getFieldFloatValue(REC_SPEED));
+                    record.setFieldValue(REC_ESPEED, recordToUpdate.getFieldFloatValue(REC_ESPEED));
+                    record.setFieldValue(REC_POW, recordToUpdate.getFieldIntegerValue(REC_POW));
+                    //record.setFieldValue(REC_POW, recordMesg.get(recordIx+c2SyncSecondsC2File).getFieldIntegerValue(REC_POW));
                 } else {
-                    record.setFieldValue(REC_DIST, recordMesg.get(numberOfRecords-1).getFieldFloatValue(REC_DIST));
-                    record.setFieldValue(REC_SPEED, recordMesg.get(numberOfRecords-1).getFieldFloatValue(REC_SPEED));
-                    record.setFieldValue(REC_ESPEED, recordMesg.get(numberOfRecords-1).getFieldFloatValue(REC_ESPEED));
-                    record.setFieldValue(REC_POW, recordMesg.get(numberOfRecords-1).getFieldIntegerValue(REC_POW));
+                    Mesg recordLast = recordMesg.get(numberOfRecords-1);
+                    record.setFieldValue(REC_DIST, recordLast.getFieldFloatValue(REC_DIST));
+                    record.setFieldValue(REC_SPEED, recordLast.getFieldFloatValue(REC_SPEED));
+                    record.setFieldValue(REC_ESPEED, recordLast.getFieldFloatValue(REC_ESPEED));
+                    record.setFieldValue(REC_POW, recordLast.getFieldIntegerValue(REC_POW));
                 }
             }
 
@@ -2185,7 +2209,7 @@ public class FitFilePerMesgType {
             for (int i = 0; i < splitMesg.size(); i++) {
                 splitIx = splitMesg.get(i).getFieldIntegerValue(67);
                 if (splitIx != null && splitIx.equals(lapIx)) {
-                    System.out.println("----- Link SPLIT index " + splitIx + " to LAP index " + lapIx);
+                    System.out.println("----- Link   SPLIT index " + splitIx + " to LAP index " + lapIx);
                     break;
                 }
             }
@@ -2641,6 +2665,9 @@ public class FitFilePerMesgType {
                         case MesgNum.FIELD_DESCRIPTION:
                             fieldDescrMesg.add(mesg);
                             break;
+                        case MesgNum.SPORT:
+                            sportMesg.add(mesg);
+                            break;
                         default:
                             break;
                     }
@@ -2737,8 +2764,8 @@ public class FitFilePerMesgType {
                 /* if (record.getNum() != MesgNum.SPLIT &&
                     record.getNum() != MesgNum.SPLIT_SUMMARY) { */
                 if (record.getNum() != MesgNum.SPLIT) {
-                        encode.write(record);
-                    }
+                    encode.write(record);
+                }
                 
             }
 
