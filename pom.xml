@@ -6,7 +6,7 @@
 
     <groupId>se.peho.fittools</groupId>
     <artifactId>peho-fit-tools</artifactId>
-    <version>1.2.1</version>
+    <version>2</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -21,4 +21,5 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
     </properties>
+
 </project>
