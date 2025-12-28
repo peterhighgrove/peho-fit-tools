@@ -140,9 +140,9 @@ public class FitFilePerMesgType {
     int productNo;
     String product = "";
     Float swVer;
-    public DateTime activityDateTimeUTC;  // Original file
-    public DateTime activityDateTimeLocal; // Original file
-    public DateTime activityDateTimeLocalOrg; // Original file
+    public Long activityDateTimeUTC;  // Original file
+    public Long activityDateTimeLocal; // Original file
+    public Long activityDateTimeLocalOrg; // Original file
     Long diffMinutesLocalUTC;
 
     String wktName;
@@ -171,9 +171,9 @@ public class FitFilePerMesgType {
     //int maxPower;
 
     int numberOfLaps;
-    DateTime timeFirstRecord;
-    DateTime timeFirstRecordOrg;   // Original file
-    DateTime timeLastRecord;
+    Long timeFirstRecord;
+    Long timeFirstRecordOrg;   // Original file
+    Long timeLastRecord;
     int numberOfRecords;
 
     Float activeTime = 0f;
@@ -307,17 +307,17 @@ public class FitFilePerMesgType {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     class RecordExtraMesg {
         private int lapNo;
-        private DateTime C2DateTime;
+        private Long C2DateTime;
 
-        public RecordExtraMesg(int lapNo, DateTime C2DateTime) {
+        public RecordExtraMesg(int lapNo, Long C2DateTime) {
             this.lapNo = lapNo;
             this.C2DateTime = C2DateTime;
         }
 
         public int getLapNo() { return lapNo; }
         public void setLapNo(int lapNo) { this.lapNo = lapNo; }
-        public DateTime getC2DateTime() { return C2DateTime; }
-        public void setC2DateTime(DateTime C2DateTime) { this.C2DateTime = C2DateTime; }
+        public Long getC2DateTime() { return C2DateTime; }
+        public void setC2DateTime(Long C2DateTime) { this.C2DateTime = C2DateTime; }
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -325,7 +325,7 @@ public class FitFilePerMesgType {
         private int hrStart;
         private int hrEnd;
         private int hrMin;
-        private DateTime timeEnd;
+        private Long timeEnd;
         private int lapNo;
         private int recordIxStart;
         private int recordIxEnd;
@@ -338,7 +338,7 @@ public class FitFilePerMesgType {
         private Float speedLapSum;
         private Float cadLapSum;
 
-        public LapExtraMesg(int hrStart, int hrEnd, int hrMin, DateTime timeEnd, int lapNo, int recordIxStart, 
+        public LapExtraMesg(int hrStart, int hrEnd, int hrMin, Long timeEnd, int lapNo, int recordIxStart, 
                 int recordIxEnd, Float stepLen, Float level, Float avgStrokeLen, Float maxStrokeLen, Float avgDragFactor, Float maxDragFactor) {
             this.hrStart = hrStart;
             this.hrEnd = hrEnd;
@@ -361,8 +361,8 @@ public class FitFilePerMesgType {
         public void setHrEnd(int hrEnd) { this.hrEnd = hrEnd; }
         public int getHrMin() { return hrMin; }
         public void setHrMin(int hrMin) { this.hrMin = hrMin; }
-        public DateTime getTimeEnd() { return timeEnd; }
-        public void setTimeEnd(DateTime timeEnd) { this.timeEnd = timeEnd; }
+        public Long getTimeEnd() { return timeEnd; }
+        public void setTimeEnd(Long timeEnd) { this.timeEnd = timeEnd; }
         public int getLapNo() { return lapNo; }
         public void setLapNo(int lapNo) { this.lapNo = lapNo; }
         public int getRecordIxStart() { return recordIxStart; }
@@ -435,7 +435,7 @@ public class FitFilePerMesgType {
         int hrStart = 0;
         int hrEnd = 0;
         int hrMin = 9999;
-        DateTime timeEnd = null;
+        Long timeEnd = null;
         int lapNo = 0;
         int recordIxStart = 0;
         int recordIxEnd = 0;
@@ -980,7 +980,7 @@ public class FitFilePerMesgType {
     public void mergeC2CiqAndFitData(FitFilePerMesgType c2FitFile, int C2FitFileDistanceStartCorrection) {
         
 
-        DateTime C2DateTime = null;
+        Long C2DateTime = null;
 
         int noneC2dataCounter = 0;
         int pauseRecordCounter = 0;
@@ -1116,7 +1116,7 @@ public class FitFilePerMesgType {
             while (c2FitFile.recordMesg.get(c2RecordIx).getFieldFloatValue(REC_DIST) - 0.5 <= record.getFieldFloatValue(REC_DIST) - C2FitFileDistanceStartCorrection) {
                 record.setFieldValue(REC_CAD, c2FitFile.recordMesg.get(c2RecordIx).getFieldShortValue(REC_CAD));
                 //record.setFieldValue(REC_POW, c2FitFile.recordMesg.get(c2RecordIx).getFieldIntegerValue(REC_POW));
-                secExtraRecords.get(recordIx).C2DateTime = new DateTime(c2FitFile.recordMesg.get(c2RecordIx).getFieldLongValue(REC_TIME));
+                secExtraRecords.get(recordIx).C2DateTime = c2FitFile.recordMesg.get(c2RecordIx).getFieldLongValue(REC_TIME);
                 c2RecordIx++;
                 if (c2RecordIx > c2FitFile.numberOfRecords - 1) {
                     c2RecordIx--;
@@ -1655,10 +1655,10 @@ public class FitFilePerMesgType {
                         currentLapTimeEnd = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
                         nextLapStartTime = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME);
                     } else {
-                        currentLapTimeEnd = timeLastRecord.getTimestamp();
+                        currentLapTimeEnd = timeLastRecord;
                     }
                     // Save LAP END to table (DateTime)
-                    lapExtraRecords.get(lapIx).timeEnd = new DateTime(currentLapTimeEnd);
+                    lapExtraRecords.get(lapIx).timeEnd = currentLapTimeEnd;
                 }
 
                 // Calc LAP HR min
@@ -1792,7 +1792,7 @@ public class FitFilePerMesgType {
                     // Save HR and recordIx END
                     lapExtraRecords.get(lapIx).hrEnd = record.getFieldShortValue(REC_HR);
                     lapExtraRecords.get(lapIx).recordIxEnd = recordIx;
-                    lapExtraRecords.get(lapIx).timeEnd = new DateTime((Long) record.getFieldLongValue(REC_TIME));
+                    lapExtraRecords.get(lapIx).timeEnd = record.getFieldLongValue(REC_TIME);
 
                     // Calc LAP DISTANCE & AVG SPEED
                     if (lapNo == numberOfLaps) {
@@ -2080,14 +2080,14 @@ public class FitFilePerMesgType {
 
                 if (lapNo < numberOfLaps) {
                     Long nextStart = lapMesg.get(lapIx+1).getFieldLongValue(LAP_STIME);
-                    currentLapTimeEnd = nextStart != null ? nextStart - 1 : timeLastRecord.getTimestamp();
+                    currentLapTimeEnd = nextStart != null ? nextStart - 1 : timeLastRecord;
                     nextLapStartTime = nextStart != null ? nextStart : nextLapStartTime;
                 } else {
-                    currentLapTimeEnd = timeLastRecord.getTimestamp();
+                    currentLapTimeEnd = timeLastRecord;
                 }
 
                 // Save LAP END to table
-                lapExtraRecords.get(lapIx).timeEnd = new DateTime(currentLapTimeEnd);
+                lapExtraRecords.get(lapIx).timeEnd = currentLapTimeEnd;
             }
 
             // Calc LAP HR min
@@ -2199,7 +2199,7 @@ public class FitFilePerMesgType {
                 // Save HR and recordIx END
                 lapExtraRecords.get(lapIx).hrEnd = record.getFieldShortValue(REC_HR) != null ? record.getFieldShortValue(REC_HR) : 0;
                 lapExtraRecords.get(lapIx).recordIxEnd = recordIx;
-                lapExtraRecords.get(lapIx).timeEnd = new DateTime(currentTimeStamp);
+                lapExtraRecords.get(lapIx).timeEnd = currentTimeStamp;
 
                 // Calc LAP DISTANCE & AVG SPEED
                 // SHIFTED
@@ -2472,7 +2472,7 @@ public class FitFilePerMesgType {
         int recordIx = 0;
         int lapIx = 0;
         int lapNo = 1;
-        DateTime C2DateTime = null; // NOT NEEDED for Elliptical, need to be initilized
+        Long C2DateTime = null; // NOT NEEDED for Elliptical, need to be initilized
         Float recordDist = 0f;
         Float lapSumOfRecordDist = 0f;
         Float sumOfRecordDist = 0f;
@@ -2506,10 +2506,10 @@ public class FitFilePerMesgType {
                     currentLapTimeEnd = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
                     nextLapStartTime = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME);
                 } else {
-                    currentLapTimeEnd = timeLastRecord.getTimestamp();
+                    currentLapTimeEnd = timeLastRecord;
                 }
                 // Save LAP END to table
-                lapExtraRecords.get(lapIx).timeEnd = new DateTime(currentLapTimeEnd);
+                lapExtraRecords.get(lapIx).timeEnd = currentLapTimeEnd;
             }
 
             //--------------
@@ -2548,7 +2548,7 @@ public class FitFilePerMesgType {
 
                 // Save recordIx END
                 lapExtraRecords.get(lapIx).recordIxEnd = recordIx;
-                lapExtraRecords.get(lapIx).timeEnd = new DateTime((Long) record.getFieldLongValue(REC_TIME));
+                lapExtraRecords.get(lapIx).timeEnd = record.getFieldLongValue(REC_TIME);
 
                 // INIT of Variables
                 /* sumOfRecordDist = sumOfRecordDist - lapSumOfRecordDist;
@@ -2565,7 +2565,7 @@ public class FitFilePerMesgType {
         int recordIx = 0;
         int lapIx = 0;
         int lapNo = 1;
-        DateTime C2DateTime = null; // NOT NEEDED for Elliptical, need to be initilized
+        Long C2DateTime = null; // NOT NEEDED for Elliptical, need to be initilized
         Float recordDist = 0f;
         Float lapSumOfRecordDist = 0f;
         Float sumOfRecordDist = 0f;
@@ -2615,10 +2615,10 @@ public class FitFilePerMesgType {
                     currentLapTimeEnd = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
                     nextLapStartTime = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME);
                 } else {
-                    currentLapTimeEnd = timeLastRecord.getTimestamp();
+                    currentLapTimeEnd = timeLastRecord;
                 }
                 // Save LAP END to table
-                lapExtraRecords.get(lapIx).timeEnd = new DateTime(currentLapTimeEnd);
+                lapExtraRecords.get(lapIx).timeEnd = currentLapTimeEnd;
             }
 
             //--------------
@@ -2688,7 +2688,7 @@ public class FitFilePerMesgType {
                 // Save HR and recordIx END
                 lapExtraRecords.get(lapIx).hrEnd = record.getFieldShortValue(REC_HR);
                 lapExtraRecords.get(lapIx).recordIxEnd = recordIx;
-                lapExtraRecords.get(lapIx).timeEnd = new DateTime((Long) record.getFieldLongValue(REC_TIME));
+                lapExtraRecords.get(lapIx).timeEnd = record.getFieldLongValue(REC_TIME);
 
                 //--------------
                 // CORRECTION
@@ -2823,7 +2823,7 @@ public class FitFilePerMesgType {
             lap.setFieldValue(LAP_ESPEED, textLapDist / lapTimer);
 
             if (lapIx != 0) {
-                lapExtraRecords.get(lapIx-1).timeEnd = new DateTime(lapStartTime - 1); // 1 SEC
+                lapExtraRecords.get(lapIx-1).timeEnd = lapStartTime - 1; // 1 SEC
             }
             //System.err.println(" === lapDist: " + record.getTotalDistance() + " lapTime: " + record.getTotalTimerTime() +" speed: " + mps2kmph3(record.getEnhancedAvgSpeed()));
             lapExtraRecords.get(lapIx).setStepLen(textLapDist / ( lapCad * lapTimer / 60 )); // step length acc to FFRT
@@ -2939,17 +2939,17 @@ public class FitFilePerMesgType {
             }
 
             swVer = deviceInfoMesg.get(0).getFieldFloatValue(DINFO_SWVER);
-            timeFirstRecord = new DateTime (recordMesg.get(0).getFieldLongValue(REC_TIME));
+            timeFirstRecord = recordMesg.get(0).getFieldLongValue(REC_TIME);
 
             if (activityMesg.get(0).getFieldLongValue(ACT_TIME) == null) {
-                activityMesg.get(0).setFieldValue(ACT_TIME, timeFirstRecord.getTimestamp());
+                activityMesg.get(0).setFieldValue(ACT_TIME, timeFirstRecord);
             }
-            activityDateTimeUTC = new DateTime (activityMesg.get(0).getFieldLongValue(ACT_TIME));
+            activityDateTimeUTC = activityMesg.get(0).getFieldLongValue(ACT_TIME);
             if (activityMesg.get(0).getFieldLongValue(ACT_LOCTIME) == null) {
-                activityMesg.get(0).setFieldValue(ACT_LOCTIME, timeFirstRecord.getTimestamp());
+                activityMesg.get(0).setFieldValue(ACT_LOCTIME, timeFirstRecord);
             }
-            activityDateTimeLocal = new DateTime(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME));
-            diffMinutesLocalUTC = (activityDateTimeLocal.getTimestamp() - activityDateTimeUTC.getTimestamp()) / 60;
+            activityDateTimeLocal = activityMesg.get(0).getFieldLongValue(ACT_LOCTIME);
+            diffMinutesLocalUTC = (activityDateTimeLocal - activityDateTimeUTC) / 60;
             activityDateTimeLocalOrg = activityDateTimeLocal;
 
             if (!wktRecordMesg.isEmpty()) {
@@ -2986,7 +2986,7 @@ public class FitFilePerMesgType {
             numberOfLaps = lapMesg.size();
             
             timeFirstRecordOrg = timeFirstRecord;
-            timeLastRecord = new DateTime (recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
+            timeLastRecord = recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME);
             numberOfRecords = recordMesg.size();
 
             System.out.println("FIT file successfully read. Total records: " + numberOfRecords + " -- " + FitDateTime.toString(timeLastRecord,0));
@@ -3079,17 +3079,17 @@ public class FitFilePerMesgType {
         if (!recordMesg.isEmpty()) {
             Long firstRecTime = recordMesg.get(0).getFieldLongValue(REC_TIME);
             Long lastRecTime = recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME);
-            if (firstRecTime != null) timeFirstRecord = new DateTime(firstRecTime);
-            if (lastRecTime != null) timeLastRecord = new DateTime(lastRecTime);
+            if (firstRecTime != null) timeFirstRecord = firstRecTime;
+            if (lastRecTime != null) timeLastRecord = lastRecTime;
         }
 
         if (!activityMesg.isEmpty()) {
             Long actLocalTime = activityMesg.get(0).getFieldLongValue(ACT_LOCTIME);
-            if (actLocalTime != null) activityDateTimeLocal = new DateTime(actLocalTime);
+            if (actLocalTime != null) activityDateTimeLocal = actLocalTime;
         }
-        /* timeFirstRecord = new DateTime (recordMesg.get(0).getFieldLongValue(REC_TIME));
-        timeLastRecord = new DateTime (recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
-        activityDateTimeLocal = new DateTime(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME)); */
+        /* timeFirstRecord = recordMesg.get(0).getFieldLongValue(REC_TIME);
+        timeLastRecord = recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME);
+        activityDateTimeLocal = activityMesg.get(0).getFieldLongValue(ACT_LOCTIME); */
 
     }
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -3120,7 +3120,7 @@ public class FitFilePerMesgType {
 
             Long timeCreated = mesg.getFieldLongValue(FID_CTIME);
             if (timeCreated != null) {
-                System.out.print(" Time: " + FitDateTime.toString(new DateTime(timeCreated)));
+                System.out.print(" Time: " + FitDateTime.toString(timeCreated));
             }
 
             Integer manuVal = mesg.getFieldIntegerValue(FID_MANU);
@@ -3525,11 +3525,11 @@ public class FitFilePerMesgType {
             if (startTime != null || timestamp != null) {
                 if (startTime != null) {
                     System.out.print(" ActivityTime:");
-                    System.out.print(FitDateTime.toString(new DateTime(startTime), diffMinutesLocalUTC));
+                    System.out.print(FitDateTime.toString(startTime, diffMinutesLocalUTC));
                 }
                 if (timestamp != null) {
                     System.out.print(" - ");
-                    System.out.print(FitDateTime.toString(new DateTime(timestamp), diffMinutesLocalUTC));
+                    System.out.print(FitDateTime.toString(timestamp, diffMinutesLocalUTC));
                 }
             }
 
@@ -3631,10 +3631,10 @@ public class FitFilePerMesgType {
                 System.out.print("Lap:" + lapNo);
 
                 Long startTime = mesg.getFieldLongValue(LAP_STIME);
-                if (startTime != null) System.out.print(" StartTime: " + FitDateTime.toString(new DateTime(startTime), diffMinutesLocalUTC));
+                if (startTime != null) System.out.print(" StartTime: " + FitDateTime.toString(startTime, diffMinutesLocalUTC));
 
                 Long timestamp = mesg.getFieldLongValue(LAP_TIME);
-                if (timestamp != null) System.out.print(" Timestamp: " + FitDateTime.toString(new DateTime(timestamp), diffMinutesLocalUTC));
+                if (timestamp != null) System.out.print(" Timestamp: " + FitDateTime.toString(timestamp, diffMinutesLocalUTC));
 
                 Float totalTimer = mesg.getFieldFloatValue(LAP_TIMER);
                 if (totalTimer != null) System.out.print(" LapTime: " + totalTimer);
@@ -4243,7 +4243,7 @@ public class FitFilePerMesgType {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printRecordMesg (int ix1, int ix2) {
         for (i=ix1; i<=ix2; i++) {
-            System.out.print(FitDateTime.toString(new DateTime(recordMesg.get(i).getFieldLongValue(REC_TIME))));
+            System.out.print(FitDateTime.toString(recordMesg.get(i).getFieldLongValue(REC_TIME)));
             System.out.print(((recordMesg.get(i).getFieldLongValue(REC_LAT))));
             System.out.print(((recordMesg.get(i).getFieldLongValue(REC_LON))));
             System.out.println();

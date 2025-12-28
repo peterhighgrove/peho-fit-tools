@@ -8,6 +8,10 @@ mvn versions:revert
 mvn versions:commit
 mvn clean package
 
+// To compare fit files for regressionteests
+// Edit the ps1 file to 
+./comparefits.ps1
+
 java -jar .\jars\fit-ren-2.jar zip \Users\peter\Downloads
 java -jar .\jars\fit-ren-2.jar fit \Users\peter\Downloads logbook
 java -jar .\jars\fit-wkt-2.jar
