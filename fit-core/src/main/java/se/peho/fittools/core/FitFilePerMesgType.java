@@ -2436,6 +2436,19 @@ public class FitFilePerMesgType {
 
         for (Mesg record : recordMesg) {
             if (recordIx <= maxIxFixEmptyBeginning) {
+                // FIX SPEED
+                if (lookingInBeginningForEmptySpeed) {
+                    Float speed = record.getFieldFloatValue(REC_ESPEED);
+                    if (speed!=null && speed!=0f && speed!=1 && speed<100f) {
+                        System.out.println("========= FIXED Beginning SPEED, first value: " + speed + " @ " + recordIx);
+                        for (int i = recordIx-1; i >= 0; i--) {
+                            System.out.println("========= FIXING SPEED, value: " + recordMesg.get(i).getFieldValue(REC_ESPEED) + "->" + speed + " @" + i);
+                            recordMesg.get(i).setFieldValue(REC_ESPEED, speed);
+                            recordMesg.get(i).setFieldValue(REC_SPEED, speed);
+                        }
+                        lookingInBeginningForEmptySpeed = false;
+                    }
+                }
                 // FIX CADENCE
                 if (lookingInBeginningForEmptyCadence) {
                     Short cad = record.getFieldShortValue(REC_CAD);

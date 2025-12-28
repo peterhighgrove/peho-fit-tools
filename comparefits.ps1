@@ -6,8 +6,8 @@
 #$f1 = "2025-12-27-14-53-00-SkiErg-bike 2x(3-2-1min) 6.7km Friskis Orminge-mergedJava2min-4test.fit"
 #$f2 = "2025-12-27-14-53-00-SkiErg-bike 2x(3-2-1min) 6.7km Friskis Orminge-mergedJava2min.fit"
 # Regressiontest 3
-$f1 = "2025-12-01-17-13-19-Löpband 3x1!2min 3.0km gym jobbet-mergedJava4min-4test.fit"
-$f2 = "2025-12-01-17-13-19-Löpband 3x1!2min 3.0km gym jobbet-mergedJava4min.fit"
+$f1 = "2025-12-01-17-15-19-Löpband 3x1!2min 3.0km gym jobbet-mergedJava6min-4test.fit"
+$f2 = "2025-12-01-17-15-19-Löpband 3x1!2min 3.0km gym jobbet-mergedJava6min.fit"
 
 
 if ((Get-FileHash "$folder\$f1").Hash -eq (Get-FileHash "$folder\$f2").Hash) {
