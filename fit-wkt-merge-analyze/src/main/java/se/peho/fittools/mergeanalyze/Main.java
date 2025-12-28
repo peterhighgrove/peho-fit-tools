@@ -130,7 +130,7 @@ public class Main {
         watchFitFile.createFileSummary();
         //watchFitFile.printFileIdInfo();
         //watchFitFile.printDeviceInfo();
-        //watchFitFile.printWktInfo();
+        watchFitFile.printWktInfo();
         watchFitFile.printWktSessionInfo();
         watchFitFile.printWktStepInfo();
         //watchFitFile.printSessionInfo();
@@ -141,7 +141,7 @@ public class Main {
         //watchFitFile.printLapRecords0();
         //watchFitFile.printSecRecords0();
         //watchFitFile.printSecRecords();
-        watchFitFile.debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
+        //watchFitFile.debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
         watchFitFile.printSplitRecords();
         watchFitFile.printSplitSumRecords();
 
@@ -167,7 +167,7 @@ public class Main {
             // ================================
             // ELLIPTICAL
             // ================================
-            if (watchFitFile.isEllipticalFile()) {
+            if (watchFitFile.checkIfEllipticalFile()) {
                 System.out.println("======== isElliptical YES ==========");
                 if (conf.getExtraFilename().equals("")) {
                     conf.setExtraFilename("laps.txt");
@@ -191,6 +191,7 @@ public class Main {
 
                     //manualLapsFile.mergeLapDataInFitFile(watchFitFile);
                     watchFitFile.mergeLapDataFromTextFile(manualLapsFile);
+                    watchFitFile.calcLapSumFromRecordMesgElliptical();
                     watchFitFile.calcLapDataFromRecordMesgElliptical();
                     watchFitFile.setNewSportElliptical();
                 }
@@ -203,7 +204,7 @@ public class Main {
             // ================================
             // SKIERG
             // ================================
-            else if (watchFitFile.isSkiErgFile()) {
+            else if (watchFitFile.checkIfSkiErgFile()) {
                 System.out.println("======== isSkiErgFile YES ==========");
                 if (!conf.getExtraFilename().equals("")) {
                     //conf.setExtraFilename("c2.fit");
@@ -268,7 +269,7 @@ public class Main {
             // ================================
             // TREADMILL
             // ================================
-            else if (watchFitFile.isTreadmillFile()) {
+            else if (watchFitFile.checkIfTreadmillFile()) {
                 System.out.println("======== isTreadmillFile YES ==========");
                 if (conf.getExtraFilename().equals("")) {
                     conf.setExtraFilename("laps.txt");
@@ -292,6 +293,7 @@ public class Main {
 
                     //manualLapsFile.mergeLapDataInFitFile(watchFitFile);
                     watchFitFile.mergeLapDataFromTextFile(manualLapsFile);
+                    watchFitFile.calcLapSumFromRecordMesgElliptical();
                     watchFitFile.calcLapDataFromRecordMesgElliptical();
                     // NO NEW SportProfile watchFitFile.setNewSportElliptical();
                 }
@@ -347,6 +349,9 @@ public class Main {
         //watchFitFile.printDevDataId();
         //watchFitFile.printFieldDescr();
         watchFitFile.debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
+        watchFitFile.printWktInfo();
+        watchFitFile.printWktSessionInfo();
+        watchFitFile.printWktStepInfo();
         watchFitFile.printWriteLapSummery(conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (int)(conf.getTimeOffsetSec()/60) + "min-laps.txt");
     }
 

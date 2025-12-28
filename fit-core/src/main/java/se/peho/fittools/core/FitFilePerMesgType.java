@@ -18,6 +18,8 @@ import java.util.Iterator;
 import java.time.Duration;
 import java.time.Instant;
 
+import javax.annotation.processing.RoundEnvironment;
+
 import jdk.jfr.Description;
 
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -147,6 +149,17 @@ public class FitFilePerMesgType {
     Sport sport;
     SubSport subsport;
     String sportProfile;
+
+    private Boolean isSkiErg = false;
+    private Boolean isElliptical = false;
+    private Boolean isTreadmill = false;
+    public Boolean getIsSkiErg() { return isSkiErg; }
+    public Boolean getIsElliptical() { return isElliptical; }
+    public Boolean getIsTreadmill() { return isTreadmill; }
+    public void setIsSkiErg(Boolean isSkiErg) { this.isSkiErg = isSkiErg; }
+    public void setIsElliptical(Boolean isElliptical) { this.isElliptical = isElliptical; }
+    public void setIsTreadmill(Boolean isTreadmill) { this.isTreadmill = isTreadmill; }
+
     Float totalTimerTime; //ActivityMesg, excl pauses
     Float totalDistance;
     Float totalDistanceOrg;
@@ -162,6 +175,11 @@ public class FitFilePerMesgType {
     DateTime timeFirstRecordOrg;   // Original file
     DateTime timeLastRecord;
     int numberOfRecords;
+
+    Float activeTime = 0f;
+    Float restTime = 0f;
+    Float activeDist = 0f;
+    Float restDist = 0f;
 
     public String savedStrOrgFileInfo = "";
     //String savedStrLapsAllInfo = "";
@@ -257,20 +275,6 @@ public class FitFilePerMesgType {
 
     SimpleDateFormat sweDateTime = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 
-    int maxIxFixEmptyBeginning = 100;
-    int maxCadenceValue = 74;
-    boolean lookingInBeginningForEmptySpeed = true;
-    boolean lookingInBeginningForEmptyCadence = true;
-    boolean lookingInBeginningForEmptyPower = true;
-    boolean lookingInBeginningForEmptyStrokeLength = true;
-    boolean lookingInBeginningForEmptyDragFactor = true;
-    boolean lookingInBeginningForEmptyTrainingSession = true;
-    
-    Float activeTime = 0f;
-    Float restTime = 0f;
-    Float activeDist = 0f;
-    Float restDist = 0f;
-
     Float activeSumSpeed = 0f;
     Float activeSumCad = 0f;
     Float activeSumPower = 0f;
@@ -331,6 +335,8 @@ public class FitFilePerMesgType {
         private Float maxStrokeLen;
         private Float avgDragFactor;
         private Float maxDragFactor;
+        private Float speedLapSum;
+        private Float cadLapSum;
 
         public LapExtraMesg(int hrStart, int hrEnd, int hrMin, DateTime timeEnd, int lapNo, int recordIxStart, 
                 int recordIxEnd, Float stepLen, Float level, Float avgStrokeLen, Float maxStrokeLen, Float avgDragFactor, Float maxDragFactor) {
@@ -375,6 +381,10 @@ public class FitFilePerMesgType {
         public void setAvgDragFactor(Float avgDragFactor) { this.avgDragFactor = avgDragFactor; }
         public Float getMaxDragFactor() { return maxDragFactor; }
         public void setMaxDragFactor(Float maxDragFactor) { this.maxDragFactor = maxDragFactor; }
+        public Float getSpeedLapSum() { return speedLapSum; }
+        public void setSpeedLapSum(Float speedLapSum) { this.speedLapSum = speedLapSum; }
+        public Float getCadLapSum() { return cadLapSum; }
+        public void setCadLapSum(Float cadLapSum) { this.cadLapSum = cadLapSum; }
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -438,7 +448,10 @@ public class FitFilePerMesgType {
 
         System.out.println("----- INIT LapExtra Records for ALL MESG -----");
         for (Mesg record : lapMesg) {
-            lapExtraRecords.add(new LapExtraMesg(hrStart, hrEnd, hrMin, timeEnd, recordIxStart, recordIxEnd, lapNo, stepLen, level, avgStrokeLen, maxStrokeLen, avgDragFactor, maxDragFactor));
+            LapExtraMesg newLapExtra = new LapExtraMesg(hrStart, hrEnd, hrMin, timeEnd, recordIxStart, recordIxEnd, lapNo, stepLen, level, avgStrokeLen, maxStrokeLen, avgDragFactor, maxDragFactor);
+            newLapExtra.setSpeedLapSum(0f);
+            newLapExtra.setCadLapSum(0f);
+            lapExtraRecords.add(newLapExtra);
         }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -446,13 +459,25 @@ public class FitFilePerMesgType {
 
         System.out.println("---------> WKT COMMAND MADE!");
 
+        // Find The place to add WKT messages
+        //----------------------
+        int insertIx = 0;
+        for (Mesg mesg : allMesg) {
+            if (mesg.getNum() == MesgNum.RECORD) {
+                break;
+            }
+            insertIx++;
+        }
+
         // ADD wktRecord if EMPTY
         //----------------------
-        if (wktRecordMesg.isEmpty()) {
+        /* if (wktRecordMesg.isEmpty()) {
             Mesg wktRecord = new WorkoutMesg();
             wktRecordMesg.add(wktRecord);
+            allMesg.add(insertIx, wktRecord);
+            insertIx++;
             System.out.println("---------> NO wktRecord, ADDING!");
-        }
+        } */
 
         // ADD wktName if not empty in arguments
         //----------------------
@@ -462,18 +487,23 @@ public class FitFilePerMesgType {
 
         // ADD wktSession Record if EMPTY
         //----------------------
-        if (wktSessionMesg.isEmpty()) {
+        /* if (wktSessionMesg.isEmpty()) {
             Mesg wktSessionRecord = new WorkoutSessionMesg();
             wktSessionMesg.add(wktSessionRecord);
+            allMesg.add(insertIx, wktSessionRecord);
+            insertIx++;
             System.out.println("---------> NO wktSession, ADDING!");
-        }
+        } */
 
         // ADD wktStepRecords if EMPTY
         //----------------------
         if (wktStepMesg.isEmpty()) {
             for (Mesg lap : lapMesg) {
+                System.out.println("---------> Adding wktStep for lap!");
                 Mesg wktStepRecord = new WorkoutStepMesg();
                 wktStepMesg.add(wktStepRecord);
+                allMesg.add(insertIx, wktStepRecord);
+                insertIx++;
             }
             System.out.println("---------> NO wktSteps, ADDING!");
         }
@@ -530,12 +560,32 @@ public class FitFilePerMesgType {
                     }
                     break;
 
+                case "2warmupthenactive":
+                    if (((recordIx+1) % 2) == 0) {
+                        lap.setFieldValue(LAP_INTENSITY, (Intensity.RECOVERY));
+                    }
+                    if (((recordIx+1) % 2) == 1) {
+                        lap.setFieldValue(LAP_INTENSITY, (Intensity.ACTIVE));
+                    }
+                    if (recordIx == 0) {
+                        lap.setFieldValue(LAP_INTENSITY, Intensity.WARMUP);
+                    }
+                    if (recordIx == 1) {
+                        lap.setFieldValue(LAP_INTENSITY, Intensity.WARMUP);
+                    }
+                    if ((recordIx+1) == lapMesg.size()) {
+                        lap.setFieldValue(LAP_INTENSITY, Intensity.COOLDOWN);
+                    }
+                    break;
+
                 case "nochange":
                     break;
 
                 default:
                     System.out.println("==========> NO CORRRECT wkt command. Allowed: allActive, warmupThenActive, restThenActive, activeThenRest, noChange");
             }
+            System.out.println("---------> Lap: " + (recordIx+1) + " set to " + 
+                Intensity.getStringFromValue(Intensity.getByValue(lap.getFieldShortValue(LAP_INTENSITY))));
             recordIx++;
         }
 
@@ -556,6 +606,8 @@ public class FitFilePerMesgType {
         newProfileName = newProfileName.replace("Ellipt","Elliptical");
         newProfileName = newProfileName.replace("CT","Elliptical");
         newProfileName = newProfileName.replace("ct","Elliptical");
+
+        newProfileName = newProfileName.replace("Treadmill","Löpband");
 
         if (wktRecordMesg.isEmpty()) {
             System.out.println("========> NO wkt RECORDS");
@@ -802,25 +854,42 @@ public class FitFilePerMesgType {
         }
     } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public Boolean isSkiErgFile() {
+    public Boolean checkIfSkiErgFile() {
         //System.out.println("======== isSkiErgFile TEST ==========");
         Boolean isTrue = false;
         if (sportProfile.toLowerCase().contains("skierg")
             || sportProfile.toLowerCase().contains("row")
             ) {
                 isTrue = true;
-        }
+                setIsSkiErg(true);
+         }
         return isTrue;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public Boolean isTreadmillFile() {
+    public Boolean checkIfTreadmillFile() {
         //System.out.println("======== isSkiErgFile TEST ==========");
         Boolean isTrue = false;
         if (sportProfile.toLowerCase().contains("löpband") 
+            || sportProfile.toLowerCase().contains("pband")
             || sportProfile.toLowerCase().contains("mill")
             || sportProfile.toLowerCase().contains("tread")
             ) {
                 isTrue = true;
+                setIsTreadmill(true);
+        }
+        return isTrue;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public Boolean checkIfEllipticalFile() {
+        //System.out.println("======== isEllipticalFile TEST ==========");
+        Boolean isTrue = false;
+        if (sportProfile.toLowerCase().contains("ellipt")
+            || sportProfile.toLowerCase().contains("gymbike")
+            || sportProfile.toLowerCase().contains("spinbike")
+            || sportProfile.toLowerCase().contains("ct")
+            ) {
+                isTrue = true;
+                setIsElliptical(true);
         }
         return isTrue;
     }
@@ -920,6 +989,20 @@ public class FitFilePerMesgType {
         System.out.println("----- MERGE C2 CIQ DATA into ALL MESG -----");
         int c2RecordIx = 0;
         int recordIx = 0;
+
+        int maxIxFixEmptyBeginning = 100;
+        int maxCadenceValue = 74;
+        boolean lookingInBeginningForEmptySpeed = true;
+        boolean lookingInBeginningForEmptyCadence = true;
+        boolean lookingInBeginningForEmptyPower = true;
+        boolean lookingInBeginningForEmptyStrokeLength = true;
+        boolean lookingInBeginningForEmptyDragFactor = true;
+        boolean lookingInBeginningForEmptyTrainingSession = true;
+        
+        if (numberOfRecords < maxIxFixEmptyBeginning) {
+            maxIxFixEmptyBeginning = numberOfRecords - 1;
+        }
+
         for (Mesg record : recordMesg) {
 
             Float distFromDevField = 0f;
@@ -1042,20 +1125,18 @@ public class FitFilePerMesgType {
             }
             // =========== Fix EMPTY beginning of data ================
             // ========================================================
-            if (numberOfRecords < maxIxFixEmptyBeginning) {
-                maxIxFixEmptyBeginning = numberOfRecords - 1;
-            }
             if (recordIx <= maxIxFixEmptyBeginning) {
                 // FIX SPEED
                 if (lookingInBeginningForEmptySpeed) {
-                    Float speed = record.getFieldFloatValue(REC_SPEED);
+                    Float speed = record.getFieldFloatValue(REC_ESPEED);
                     if (speed != null && speed != 0f) {
-                        for (int i = recordIx; i >= 0; i--) {
+                        System.err.println("========= FIXED Beginning SPEED, first value: " + speed + " @ " + recordIx);
+                        for (int i = recordIx-1; i >= 0; i--) {
                             Mesg recordToFix = recordMesg.get(i);
+                            System.out.println("========= FIXING SPEED, value: " + recordToFix.getFieldFloatValue(REC_ESPEED) + "->" + speed + " @" + i);
                             recordToFix.setFieldValue(REC_SPEED, speed);
                             recordToFix.setFieldValue(REC_ESPEED, speed);
                         }
-                        System.err.println("========= FIXED Beginning SPEED, first value: " + speed + " @ " + recordIx);
                         lookingInBeginningForEmptySpeed = false;
                     }
                 }
@@ -1063,11 +1144,12 @@ public class FitFilePerMesgType {
                 if (lookingInBeginningForEmptyCadence) {
                     Short cad = record.getFieldShortValue(REC_CAD);
                     if (cad != null && cad != 0) {
+                        System.out.println("========= FIXED Beginning CADENCE, first value: " + cad + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
                             Mesg recordToFix = recordMesg.get(i);
+                            System.out.println("========= FIXING CADENCE, value: " + recordToFix.getFieldShortValue(REC_CAD) + "->" + cad + " @" + i);
                             recordToFix.setFieldValue(REC_CAD, cad);
                         }
-                        System.out.println("========= FIXED Beginning CADENCE, first value: " + cad + " @ " + recordIx);
                         lookingInBeginningForEmptyCadence = false;
                     }
                 }
@@ -1075,56 +1157,60 @@ public class FitFilePerMesgType {
                 if (lookingInBeginningForEmptyPower) {
                     Integer power = record.getFieldIntegerValue(REC_POW);
                     if (power != null && power != 0) {
+                        System.out.println("========= FIXED Beginning POWER, first value: " + power + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
                             Mesg recordToFix = recordMesg.get(i);
+                            System.out.println("========= FIXING POWER, value: " + recordToFix.getFieldIntegerValue(REC_POW) + "->" + power + " @" + i);
                             recordToFix.setFieldValue(REC_POW, power);
                         }
-                        System.out.println("========= FIXED Beginning POWER, first value: " + power + " @ " + recordIx);
                         lookingInBeginningForEmptyPower = false;
                     }
                 }
                 // FIX STROKE LENGTH
                 if (lookingInBeginningForEmptyStrokeLength) {
                     if ((strokeLengthFromDevField!=null && strokeLengthFromDevField!=0)) {
+                        System.out.println("========= FIXED Beginning STROKE LENGTH, first value: " + strokeLengthFromDevField + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
                             Mesg recordToFix = recordMesg.get(i);
                             for (DeveloperField field : recordToFix.getDeveloperFields()) {
                                 if ("StrokeLength".equals(field.getName())) {
+                                    System.out.println("========= FIXING STROKE LENGTH, value: " + field.getValue() + "->" + strokeLengthFromDevField + " @" + i);
                                     field.setValue(strokeLengthFromDevField);
                                 }
                             }
                         }
-                        System.out.println("========= FIXED Beginning STROKE LENGTH, first value: " + strokeLengthFromDevField + " @ " + recordIx);
                         lookingInBeginningForEmptyStrokeLength = false;
                     }
                 }
                 // FIX DRAG FACTOR
                 if (lookingInBeginningForEmptyDragFactor) {
                     if ((dragFactorFromDevField!=null && (dragFactorFromDevField!=1 && dragFactorFromDevField!=0))) {
+                        System.out.println("========= FIXED Beginning DRAG FACTOR, first value: " + dragFactorFromDevField + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
                             Mesg recordToFix = recordMesg.get(i);
                             for (DeveloperField field : recordToFix.getDeveloperFields()) {
                                 if ("DragFactor".equals(field.getName())) {
+                                    System.out.println("========= FIXING DRAG FACTOR, value: " + field.getValue() + "->" + dragFactorFromDevField + " @" + i);
                                     field.setValue(dragFactorFromDevField);
                                 }
                             }
                         }
-                        System.out.println("========= FIXED Beginning DRAG FACTOR, first value: " + dragFactorFromDevField + " @ " + recordIx);
                         lookingInBeginningForEmptyDragFactor = false;
                     }
                 }
                 // FIX TRAINING_SESSION
                 if (lookingInBeginningForEmptyTrainingSession) {
                     if ((trainingSessionFromDevField!=null && trainingSessionFromDevField!=1)) {
+                        System.out.println("========= FIXED Beginning TRAINING_SESSION, first value: " + trainingSessionFromDevField + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
                             Mesg recordToFix = recordMesg.get(i);
                             for (DeveloperField field : recordToFix.getDeveloperFields()) {
                                 if ("Training_session".equals(field.getName())) {
+                                    System.out.println("========= FIXING TRAINING_SESSION, value: " + field.getValue() + "->" + trainingSessionFromDevField + " @" + i);
                                     field.setValue(trainingSessionFromDevField);
                                 }
                             }
                         }
-                        System.out.println("========= FIXED Beginning TRAINING_SESSION, first value: " + trainingSessionFromDevField + " @ " + recordIx);
                         lookingInBeginningForEmptyTrainingSession = false;
                     }
                 }
@@ -1176,8 +1262,8 @@ public class FitFilePerMesgType {
 
             // =========== Fix GAPS fromC2 fitfile import =============
             // ========================================================
-            Short cad = record.getFieldShortValue(REC_CAD);
-            if (cad == null) {
+            Short cadFixGaps = record.getFieldShortValue(REC_CAD);
+            if (cadFixGaps == null) {
                 Short prevCad = recordIx > 0 ? recordMesg.get(recordIx-1).getFieldShortValue(REC_CAD) : null;
                 if (prevCad != null) {
                     record.setFieldValue(REC_CAD, prevCad);
@@ -1188,6 +1274,17 @@ public class FitFilePerMesgType {
                 Integer prevPow = recordIx > 0 ? recordMesg.get(recordIx-1).getFieldIntegerValue(REC_POW) : null;
                 if (prevPow != null) {
                     record.setFieldValue(REC_POW, prevPow);
+                }
+            }
+            // =========== Fix BAD PEAK/SPIKE data ==========
+            // ==============================================
+            if (recordIx>0) {
+                Short cadFixSpike = record.getFieldShortValue(REC_CAD);
+                Short cadLastFixSpike = recordMesg.get(recordIx-1).getFieldShortValue(REC_CAD);
+
+                if ((cadFixSpike > maxCadenceValue) || (((cadFixSpike - cadLastFixSpike) > 9) && (cadLastFixSpike > 45))) {
+                    System.out.println("=======>>> Fixed Cadence PEAK from: " + cadFixSpike + "->" + cadLastFixSpike);
+                    record.setFieldValue(REC_CAD, cadLastFixSpike);
                 }
             }
 
@@ -1309,6 +1406,15 @@ public class FitFilePerMesgType {
 
             // =========== Fix EMPTY beginning of data ================
             // ========================================================
+            int maxIxFixEmptyBeginning = 100;
+            int maxCadenceValue = 74;
+            boolean lookingInBeginningForEmptySpeed = true;
+            boolean lookingInBeginningForEmptyCadence = true;
+            boolean lookingInBeginningForEmptyPower = true;
+            boolean lookingInBeginningForEmptyStrokeLength = true;
+            boolean lookingInBeginningForEmptyDragFactor = true;
+            boolean lookingInBeginningForEmptyTrainingSession = true;
+            
             if (numberOfRecords < maxIxFixEmptyBeginning) {
                 maxIxFixEmptyBeginning = numberOfRecords - 1;
             }
@@ -1928,6 +2034,9 @@ public class FitFilePerMesgType {
         activeFakeSumSpeed = 0f;
         activeFakeSumCad = 0f;
         activeFakeSumPower = 0f;
+        
+        activeDist = 0f;
+        restDist = 0f;
 
         // Get first lap start time (safe)
         nextLapStartTime = lapMesg.get(0).getFieldLongValue(LAP_STIME);
@@ -2203,13 +2312,13 @@ public class FitFilePerMesgType {
     public void calcSplitRecordsBasedOnLaps() {
 
         Integer lapIx = 0;
-        Integer splitIx = 0;
+        Integer lapIxInSplitMesg = 0;
 
         for (Mesg lap : lapMesg) {
             for (int i = 0; i < splitMesg.size(); i++) {
-                splitIx = splitMesg.get(i).getFieldIntegerValue(67);
-                if (splitIx != null && splitIx.equals(lapIx)) {
-                    System.out.println("----- Link   SPLIT index " + splitIx + " to LAP index " + lapIx);
+                lapIxInSplitMesg = splitMesg.get(i).getFieldIntegerValue(67);
+                if (lapIxInSplitMesg != null && lapIxInSplitMesg.equals(lapIx)) {
+                    System.out.println("----- Link   SPLIT index " + lapIxInSplitMesg + " to LAP index " + lapIx);
                     break;
                 }
             }
@@ -2220,10 +2329,10 @@ public class FitFilePerMesgType {
             Integer lapPow = lap.getFieldIntegerValue(LAP_POW);
             Integer lapMaxPow = lap.getFieldIntegerValue(LAP_MPOW);
 
-            splitMesg.get(splitIx).setFieldValue(SPL_DIST, lapDist!= null ? lapDist : 0f);
-            splitMesg.get(splitIx).setFieldValue(SPL_SPEED, lapSpeed != null ? lapSpeed : 0f);
-            splitMesg.get(splitIx).setFieldValue(SPL_MSPEED, lapMaxSpeed != null ? lapMaxSpeed : 0f);
-            splitMesg.get(splitIx).setFieldValue(7, distAtLapStart != null ? distAtLapStart : 0f);
+            splitMesg.get(lapIxInSplitMesg).setFieldValue(SPL_DIST, lapDist!= null ? lapDist : 0f);
+            splitMesg.get(lapIxInSplitMesg).setFieldValue(SPL_SPEED, lapSpeed != null ? lapSpeed : 0f);
+            splitMesg.get(lapIxInSplitMesg).setFieldValue(SPL_MSPEED, lapMaxSpeed != null ? lapMaxSpeed : 0f);
+            splitMesg.get(lapIxInSplitMesg).setFieldValue(7, distAtLapStart != null ? distAtLapStart : 0f);
             
             /* splitMesg.get(splitIx).setFieldValue(40, lapPow != null ? lapPow : 0);
             splitMesg.get(splitIx).setFieldValue(41, lapMaxPow != null ? lapMaxPow : 0); */
@@ -2251,18 +2360,6 @@ public class FitFilePerMesgType {
         }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public Boolean isEllipticalFile() {
-        //System.out.println("======== isEllipticalFile TEST ==========");
-        Boolean isTrue = false;
-        if (sportProfile.toLowerCase().contains("ellipt")
-            || sportProfile.toLowerCase().contains("gymbike")
-            || sportProfile.toLowerCase().contains("spinbike")
-            || sportProfile.toLowerCase().contains("ct")) {
-                isTrue = true;
-        }
-        return isTrue;
-    }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public Boolean hasManualLapsFile(String manualLapsFilename) {
         Boolean isTrue = false;
         try {
@@ -2282,23 +2379,33 @@ public class FitFilePerMesgType {
     public void fixEmptyBeginningElliptical() {
         int recordIx = 0;
 
-        for (Mesg record : recordMesg) {
+        // =========== Fix EMPTY beginning of data =============
+        // 
+        // ========================================================
+        int maxIxFixEmptyBeginning = 100;
+        int maxCadenceValue = 74;
+        boolean lookingInBeginningForEmptySpeed = true;
+        boolean lookingInBeginningForEmptyCadence = true;
+        boolean lookingInBeginningForEmptyPower = true;
+        boolean lookingInBeginningForEmptyStrokeLength = true;
+        boolean lookingInBeginningForEmptyDragFactor = true;
+        boolean lookingInBeginningForEmptyTrainingSession = true;
+        
+        if (numberOfRecords < maxIxFixEmptyBeginning) {
+            maxIxFixEmptyBeginning = numberOfRecords - 1;
+        }
 
-            // =========== Fix EMPTY beginning of data =============
-            // 
-            // ========================================================
-            if (numberOfRecords < maxIxFixEmptyBeginning) {
-                maxIxFixEmptyBeginning = numberOfRecords - 1;
-            }
+        for (Mesg record : recordMesg) {
             if (recordIx <= maxIxFixEmptyBeginning) {
                 // FIX CADENCE
                 if (lookingInBeginningForEmptyCadence) {
                     Short cad = record.getFieldShortValue(REC_CAD);
                     if ((cad!=null && cad!=0 && cad>20)) {
+                        System.out.println("========= FIXED Beginning CADENCE, first real value: " + cad + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
+                            System.out.println("========= FIXING CADENCE, value: " + recordMesg.get(i).getFieldValue(REC_CAD) + "->" + cad + " @" + i);
                             recordMesg.get(i).setFieldValue(REC_CAD, cad);
                         }
-                        System.out.println("========= FIXED Beginning CADENCE, first value: " + cad + " @ " + recordIx);
                         lookingInBeginningForEmptyCadence = false;
                     }
                 }
@@ -2311,23 +2418,33 @@ public class FitFilePerMesgType {
     public void fixEmptyBeginningTreadmill() {
         int recordIx = 0;
 
-        for (Mesg record : recordMesg) {
+        // =========== Fix EMPTY beginning of data =============
+        // 
+        // ========================================================
+        int maxIxFixEmptyBeginning = 100;
+        int maxCadenceValue = 74;
+        boolean lookingInBeginningForEmptySpeed = true;
+        boolean lookingInBeginningForEmptyCadence = true;
+        boolean lookingInBeginningForEmptyPower = true;
+        boolean lookingInBeginningForEmptyStrokeLength = true;
+        boolean lookingInBeginningForEmptyDragFactor = true;
+        boolean lookingInBeginningForEmptyTrainingSession = true;
+        
+        if (numberOfRecords < maxIxFixEmptyBeginning) {
+            maxIxFixEmptyBeginning = numberOfRecords - 1;
+        }
 
-            // =========== Fix EMPTY beginning of data =============
-            // 
-            // ========================================================
-            if (numberOfRecords < maxIxFixEmptyBeginning) {
-                maxIxFixEmptyBeginning = numberOfRecords - 1;
-            }
+        for (Mesg record : recordMesg) {
             if (recordIx <= maxIxFixEmptyBeginning) {
                 // FIX CADENCE
                 if (lookingInBeginningForEmptyCadence) {
                     Short cad = record.getFieldShortValue(REC_CAD);
                     if (cad!=null && cad!=0 && cad!=1 && cad<100) {
+                        System.out.println("========= FIXED Beginning CADENCE, first value: " + cad + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
+                            System.out.println("========= FIXING CADENCE, value: " + recordMesg.get(i).getFieldValue(REC_CAD) + "->" + cad + " @" + i);
                             recordMesg.get(i).setFieldValue(REC_CAD, cad);
                         }
-                        System.out.println("========= FIXED Beginning CADENCE, first value: " + cad + " @ " + recordIx);
                         lookingInBeginningForEmptyCadence = false;
                     }
                 }
@@ -2335,10 +2452,11 @@ public class FitFilePerMesgType {
                 if (lookingInBeginningForEmptyPower) {
                     Integer power = record.getFieldIntegerValue(REC_POW);
                     if ((power!=null && power!=0)) {
+                        System.out.println("========= FIXED Beginning POWER, first value: " + power + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
+                            System.out.println("========= FIXING POWER, value: " + recordMesg.get(i).getFieldValue(REC_POW) + "->" + power + " @" + i);
                             recordMesg.get(i).setFieldValue(REC_POW, power);
                         }
-                        System.out.println("========= FIXED Beginning POWER, first value: " + power + " @ " + recordIx);
                         lookingInBeginningForEmptyPower = false;
                     }
                 }
@@ -2348,6 +2466,100 @@ public class FitFilePerMesgType {
         }
     }
 
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void calcLapSumFromRecordMesgElliptical() {
+        // Calculates LapSum's to be used in CalcLapDataFromRecordMesgElliptical
+        int recordIx = 0;
+        int lapIx = 0;
+        int lapNo = 1;
+        DateTime C2DateTime = null; // NOT NEEDED for Elliptical, need to be initilized
+        Float recordDist = 0f;
+        Float lapSumOfRecordDist = 0f;
+        Float sumOfRecordDist = 0f;
+        Float corrPerMeter = 0f;
+        Long currentTimeStamp = 0l;
+        Long nextLapStartTime = 0l;
+        Float currentLapTime = 0f;
+        String currentLapIntensity = "";
+        Long currentLapTimeEnd = 0l;
+
+        Float speedLapSum = 0f;
+        Float cadLapSum = 0f;
+
+        nextLapStartTime = lapMesg.get(0).getFieldLongValue(LAP_STIME);
+
+        for (Mesg record : recordMesg) {
+
+            //--------------
+            // Initiate secExtraRecords
+            secExtraRecords.add(new RecordExtraMesg(lapNo, C2DateTime));
+
+            //--------------
+            // IF LAP START
+            currentTimeStamp = record.getFieldLongValue(REC_TIME);
+            if ( currentTimeStamp.equals(nextLapStartTime) ) {
+                // Get LAP DATA to be used to find lap-start-end
+                Float lapTotalTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
+                currentLapTime = (lapTotalTimer == null) ? 0f : lapTotalTimer; // in sec
+
+                if (lapNo < numberOfLaps) {
+                    currentLapTimeEnd = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
+                    nextLapStartTime = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME);
+                } else {
+                    currentLapTimeEnd = timeLastRecord.getTimestamp();
+                }
+                // Save LAP END to table
+                lapExtraRecords.get(lapIx).timeEnd = new DateTime(currentLapTimeEnd);
+            }
+
+            //--------------
+            // FIX EMPTY CADENCE
+            Short cadFixEmpty = record.getFieldShortValue(REC_CAD);
+            if (cadFixEmpty == null) {
+                if (recordIx > 0) {
+                    Short cadPrevFixEmpty = recordMesg.get(recordIx-1).getFieldShortValue(REC_CAD);
+                    record.setFieldValue(REC_CAD, cadPrevFixEmpty != null ? cadPrevFixEmpty : (short) 60);
+                } else {
+                    record.setFieldValue(REC_CAD, (short) 60);
+                }
+            }
+
+            //--------------
+            // Calc LAP SUM SPEED or CADENCE
+            LapExtraMesg lapExtra = lapExtraRecords.get(lapIx);
+            if (getIsTreadmill() == true) {
+                // TREADMILL
+                Float speed = record.getFieldFloatValue(REC_ESPEED);
+                speedLapSum = lapExtra.getSpeedLapSum();
+                speedLapSum = speedLapSum + ((speed == null) ? 0f : speed);
+                lapExtra.setSpeedLapSum(speedLapSum);
+                //--System.out.println("RecordIx: " + recordIx + " Speed: " + speed + " SpeedLapSum: " + speedLapSum + " lapNo: " + lapNo);
+            } else {
+                // ELLIPTICAL   
+                Short cadCalcSum = record.getFieldShortValue(REC_CAD);
+                cadLapSum = (float) lapExtra.getCadLapSum();
+                cadLapSum = cadLapSum + ((cadCalcSum == null) ? 0 : cadCalcSum);
+                lapExtra.setCadLapSum(cadLapSum);
+            }
+
+            //--------------
+            // IF LAP END
+            if ( currentTimeStamp.equals(currentLapTimeEnd) ) {
+
+                // Save recordIx END
+                lapExtraRecords.get(lapIx).recordIxEnd = recordIx;
+                lapExtraRecords.get(lapIx).timeEnd = new DateTime((Long) record.getFieldLongValue(REC_TIME));
+
+                // INIT of Variables
+                /* sumOfRecordDist = sumOfRecordDist - lapSumOfRecordDist;
+                lapSumOfRecordDist = 0f; */
+                lapIx++;
+                lapNo++;
+            } // IF LAP END END
+            
+            recordIx++;
+        }
+    }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void calcLapDataFromRecordMesgElliptical() {
         int recordIx = 0;
@@ -2410,18 +2622,29 @@ public class FitFilePerMesgType {
             }
 
             //--------------
-            // Calculate DIST between RECORDS based on Cadence
+            // FIX EMPTY CADENCE
             Short cad = record.getFieldShortValue(REC_CAD);
             if (cad == null) {
-                // FIX EMPTY CADENCE
                 if (recordIx > 0) {
                     Short cadPrev = recordMesg.get(recordIx-1).getFieldShortValue(REC_CAD);
                     record.setFieldValue(REC_CAD, cadPrev != null ? cadPrev : (short) 60);
                 } else {
-                        record.setFieldValue(REC_CAD, (short) 60);
+                    record.setFieldValue(REC_CAD, (short) 60);
                 }
             }
-            recordDist = lapExtraRecords.get(lapIx).stepLen * cad / 60;
+            //--------------
+            // Calculate DIST between RECORDS based on Cadence
+            //recordDist = lapExtraRecords.get(lapIx).stepLen * cad / 60;
+            if (getIsTreadmill() == true) {
+                // TREADMILL
+                Float speed = record.getFieldFloatValue(REC_ESPEED);
+                Float speedLapSum = lapExtraRecords.get(lapIx).getSpeedLapSum();
+                recordDist = (speed == null) ? 0f : lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) * (speed / speedLapSum);
+                //--System.out.println("RecordIx: " + recordIx + " Speed: " + speed + " SpeedLapSum: " + speedLapSum + " Dist: " + recordDist + " lapNo: " + lapNo);
+            } else {
+                // ELLIPTICAL
+                recordDist = lapExtraRecords.get(lapIx).stepLen * cad / 60;
+            }
             lapSumOfRecordDist += recordDist;
             sumOfRecordDist += recordDist;
 
@@ -2460,7 +2683,7 @@ public class FitFilePerMesgType {
             //--------------
             // IF LAP END
             if ( currentTimeStamp.equals(currentLapTimeEnd) ) {
-                //System.out.println("LapEND lapIx: " + lapIx + " recordIxStart: " + lapExtraRecords.get(lapIx).recordIxStart + " recordIx: " + recordIx);
+                System.out.println("LapEND lapIx: " + lapIx + " recordIxStart: " + lapExtraRecords.get(lapIx).recordIxStart + " recordIx: " + recordIx);
 
                 // Save HR and recordIx END
                 lapExtraRecords.get(lapIx).hrEnd = record.getFieldShortValue(REC_HR);
@@ -2471,36 +2694,53 @@ public class FitFilePerMesgType {
                 // CORRECTION
                 // INIT of Variables
                 corrPerMeter = (lapSumOfRecordDist - lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST)) / lapSumOfRecordDist;
+                System.out.println("---- Before CORRECTION1 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
                 sumOfRecordDist = sumOfRecordDist - lapSumOfRecordDist;
+                System.out.println("---- Before CORRECTION2 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
                 lapSumOfRecordDist = 0f;
+                System.out.println("---- Before CORRECTION3 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
 
                 // CORRECTION RECAP LAP
                 for (int j=lapExtraRecords.get(lapIx).recordIxStart; j<=lapExtraRecords.get(lapIx).recordIxEnd; j++) {
+                    Mesg jRecord = recordMesg.get(j);
                     //System.out.println("   j:"+j+" lapix:"+lapIx);
-                    recordDist = lapExtraRecords.get(lapIx).stepLen * recordMesg.get(j).getFieldShortValue(REC_CAD) / 60;
+                    //recordDist = lapExtraRecords.get(lapIx).stepLen * recordMesg.get(j).getFieldShortValue(REC_CAD) / 60;
+                    //--------------
+                    // Calculate DIST between RECORDS based on Cadence
+                    //recordDist = lapExtraRecords.get(lapIx).stepLen * cad / 60;
+                    if (getIsTreadmill() == true) {
+                        // TREADMILL
+                        Float speed = jRecord.getFieldFloatValue(REC_ESPEED);
+                        Float speedLapSum = lapExtraRecords.get(lapIx).getSpeedLapSum();
+                        recordDist = (speed == null) ? 0f : lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) * (speed / speedLapSum);
+                        //--System.out.println("RecordIx: " + recordIx + " Speed: " + speed + " SpeedLapSum: " + speedLapSum + " Dist: " + recordDist + " lapNo: " + lapNo);
+                    } else {
+                        // ELLIPTICAL
+                        recordDist = lapExtraRecords.get(lapIx).stepLen * jRecord.getFieldShortValue(REC_CAD) / 60;
+                    }
                     recordDist = recordDist - recordDist * corrPerMeter;
                     lapSumOfRecordDist += recordDist;
                     sumOfRecordDist += recordDist;
-                    recordMesg.get(j).setFieldValue(REC_DIST, sumOfRecordDist);
+                    jRecord.setFieldValue(REC_DIST, sumOfRecordDist);
 
                     if (j>0) {
                         Float recDistPrev = recordMesg.get(j-1).getFieldFloatValue(REC_DIST);
                         if (recDistPrev == null) recDistPrev = 0f;
                         //--------------
                         // Calculate SPEED
-                        recordMesg.get(j).setFieldValue(REC_SPEED, (sumOfRecordDist - recDistPrev) / 1); // 1sec requirement
-                        recordMesg.get(j).setFieldValue(REC_ESPEED, (sumOfRecordDist - recDistPrev) / 1); // 1sec requirement
+                        Float newSpeed = (sumOfRecordDist - recDistPrev) / 1; // 1sec requirement
+                        jRecord.setFieldValue(REC_SPEED, newSpeed); // 1sec requirement
+                        jRecord.setFieldValue(REC_ESPEED, newSpeed); // 1sec requirement
 
                         //--------------
                         // Calculate LAP MAX
-                        Float recESpeed = recordMesg.get(j).getFieldFloatValue(REC_ESPEED);
-                        if(recESpeed == null) recESpeed = 0f;
+                        if(newSpeed == null) newSpeed = 0f;
                         Float lapEMSpeed = lapMesg.get(lapIx).getFieldFloatValue(LAP_EMSPEED);
                         if (lapEMSpeed == null) lapEMSpeed = 0f;
 
-                        if (recESpeed > lapEMSpeed) {
-                            lapMesg.get(lapIx).setFieldValue(LAP_MSPEED, recESpeed);
-                            lapMesg.get(lapIx).setFieldValue(LAP_EMSPEED, recESpeed);
+                        if (newSpeed > lapEMSpeed) {
+                            lapMesg.get(lapIx).setFieldValue(LAP_MSPEED, newSpeed);
+                            lapMesg.get(lapIx).setFieldValue(LAP_EMSPEED, newSpeed);
                             //System.out.println("-----recIx:"+recordIx+" lapIx:"+lapIx+" Sp:"+record.getEnhancedSpeed()+"m/s "+mps2kmph(record.getEnhancedSpeed())+"km/h");
                         }
                         //--------------
@@ -2508,13 +2748,19 @@ public class FitFilePerMesgType {
                         Float sesEMSpeed = sessionMesg.get(0).getFieldFloatValue(SES_EMSPEED);
                         if (sesEMSpeed == null) sesEMSpeed = 0f;
                         
-                        if (recESpeed > sesEMSpeed) {
-                            sessionMesg.get(0).setFieldValue(SES_MSPEED, recESpeed);
-                            sessionMesg.get(0).setFieldValue(SES_EMSPEED, recESpeed);
+                        if (newSpeed > sesEMSpeed) {
+                            sessionMesg.get(0).setFieldValue(SES_MSPEED, newSpeed);
+                            sessionMesg.get(0).setFieldValue(SES_EMSPEED, newSpeed);
                             //System.out.println("-----recIx:"+recordIx+" 0:"+0+" Sp:"+record.getEnhancedSpeed()+"m/s "+mps2kmph(record.getEnhancedSpeed())+"km/h");
                         }
                     }
+
                 }
+                System.out.println("---- After CORRECTION1 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
+
+                lapSumOfRecordDist = (float) Math.round(lapSumOfRecordDist);
+                sumOfRecordDist = (float) Math.round(sumOfRecordDist);
+                System.out.println("---- After CORRECTION2 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
 
                 //--------------
                 // Calculate ACTIVE LAP SUM & MAX
@@ -2777,7 +3023,7 @@ public class FitFilePerMesgType {
         }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    private void shiftFieldIfPresent(Mesg mesg, int fieldNum, int changeSeconds) {
+    private void shiftTimeFieldIfPresent(Mesg mesg, int fieldNum, int changeSeconds) {
         Long val = mesg.getFieldLongValue(fieldNum);
         if (val != null) {
             mesg.setFieldValue(fieldNum, val + changeSeconds);
@@ -2787,9 +3033,9 @@ public class FitFilePerMesgType {
                     ? mesg.getField(fieldNum).getName()
                     : "unknown";
 
-            if (mesg.getNum() != (MesgNum.RECORD)) System.out.println("Changed Mesg: " + MesgNum.getStringFromValue(mesg.getNum()) +
+            /* if (mesg.getNum() != (MesgNum.RECORD)) System.out.println("Changed Mesg: " + MesgNum.getStringFromValue(mesg.getNum()) +
                     " Field: " + fieldName + " (" + fieldNum + ") from " + val +
-                    " to " + (val + changeSeconds));
+                    " to " + (val + changeSeconds)); */
         }
     }
         
@@ -2801,30 +3047,30 @@ public class FitFilePerMesgType {
             String mesgName = MesgNum.getStringFromValue(mesgNum);
 
             // Always shift the main timestamp (field 253)
-            shiftFieldIfPresent(mesg, 253, changeSeconds);
+            shiftTimeFieldIfPresent(mesg, 253, changeSeconds);
 
             switch (mesgNum) {
                 case 140:
-                    shiftFieldIfPresent(mesg, 48, changeSeconds);
+                    shiftTimeFieldIfPresent(mesg, 48, changeSeconds);
                     break;
                 case MesgNum.FILE_ID:
-                    shiftFieldIfPresent(mesg, FID_CTIME, changeSeconds);
+                    shiftTimeFieldIfPresent(mesg, FID_CTIME, changeSeconds);
                     break;
                 case MesgNum.ACTIVITY:
-                    shiftFieldIfPresent(mesg, ACT_LOCTIME, changeSeconds);
+                    shiftTimeFieldIfPresent(mesg, ACT_LOCTIME, changeSeconds);
                     break;
                 case MesgNum.SESSION:
-                    shiftFieldIfPresent(mesg, SES_STIME, changeSeconds);
+                    shiftTimeFieldIfPresent(mesg, SES_STIME, changeSeconds);
                     break;
                 case MesgNum.LAP:
-                    shiftFieldIfPresent(mesg, LAP_STIME, changeSeconds);
+                    shiftTimeFieldIfPresent(mesg, LAP_STIME, changeSeconds);
                     break;
                 case MesgNum.SPLIT:
-                    shiftFieldIfPresent(mesg, SPL_STIME, changeSeconds);
-                    shiftFieldIfPresent(mesg, SPL_ETIME, changeSeconds);
+                    shiftTimeFieldIfPresent(mesg, SPL_STIME, changeSeconds);
+                    shiftTimeFieldIfPresent(mesg, SPL_ETIME, changeSeconds);
                     break;
                 case MesgNum.EVENT:
-                    shiftFieldIfPresent(mesg, EVE_STIME, changeSeconds);
+                    shiftTimeFieldIfPresent(mesg, EVE_STIME, changeSeconds);
                     break;
             }
         }
@@ -3517,7 +3763,7 @@ public class FitFilePerMesgType {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printLapAvgMaxSpeed (Float avgSpeed, Float maxSpeed) {
         if (avgSpeed != null) {
-            if (isSkiErgFile()) {
+            if (getIsSkiErg()) {
                 System.out.print("--Sp avg:" + PehoUtils.mps2minp500m(avgSpeed));
                 System.out.print(" max:" + PehoUtils.mps2minp500m(maxSpeed));
             } else {
@@ -3529,7 +3775,7 @@ public class FitFilePerMesgType {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printLapAvgSpeed (Float avgSpeed) {
         if (avgSpeed != null) {
-            if (isSkiErgFile()) {
+            if (getIsSkiErg()) {
                 System.out.print(" " + PehoUtils.mps2minp500m(avgSpeed) + "min/500m");
             } else {
                 System.out.print(" " + PehoUtils.mps2minpkm(avgSpeed) + "min/km");
@@ -3541,7 +3787,7 @@ public class FitFilePerMesgType {
     public String lapAvgSpeed (Float avgSpeed) {
         String tempString = "";
         if (avgSpeed != null) {
-            if (isSkiErgFile()) {
+            if (getIsSkiErg()) {
                 tempString += " " + PehoUtils.mps2minp500m(avgSpeed) + "min/500m";
             } else {
                 tempString += " " + PehoUtils.mps2minpkm(avgSpeed) + "min/km";
@@ -3554,7 +3800,7 @@ public class FitFilePerMesgType {
     public String lapEndSum2String (Float avgCad, Float avgSpeed, Float avgPower, Float dist) {
         String tempString = "";
         tempString += "avgCad: " + (int) Math.round(avgCad) + "spm";
-        if (isSkiErgFile()) {
+        if (getIsSkiErg()) {
             tempString += ", avgPace: " + PehoUtils.mps2minp500m(avgSpeed) + "min/500m";
             tempString += ", avgPow: " + (int) Math.round(avgPower) + "W";
         } else {
@@ -3823,25 +4069,31 @@ public class FitFilePerMesgType {
                 if ("ACTIVE".equals(intensity)) {
                     savedStrLapsActiveInfoShort += "Lap" + lapNo;
 
-                    if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
-                        if (isTreadmillFile()) {
+                    if (lapExtraRecords.get(i).level != null && !getIsSkiErg()) {
+                        if (getIsTreadmill()) {
                             savedStrLapsActiveInfoShort += " " + lapExtraRecords.get(i).level.intValue() + "%";
                         } else {
                             savedStrLapsActiveInfoShort += " lv" + lapExtraRecords.get(i).level.intValue();
                         }
                     }
 
+                    Integer hrMin = 0;
                     if (i > 0) {
-                        savedStrLapsActiveInfoShort += " HRmin" + lapExtraRecords.get(i - 1).hrMin;
+                        hrMin = lapExtraRecords.get(i - 1).hrMin;
+                        savedStrLapsActiveInfoShort += " HRmin" + hrMin;
                     } else {
                         savedStrLapsActiveInfoShort += " HR";
                     }
 
-                    savedStrLapsActiveInfoShort += ">st" + lapExtraRecords.get(i).hrStart;
+                    Integer hrStart = lapExtraRecords.get(i).hrStart;
+                    savedStrLapsActiveInfoShort += ">st" + hrStart;
+                    if ((hrStart - hrMin) > 20) {
+                        hrMin = hrStart;;
+                    }
 
                     Integer maxHr = record.getFieldIntegerValue(LAP_MHR);
                     if (maxHr != null) {
-                        savedStrLapsActiveInfoShort += "+" + (maxHr - lapExtraRecords.get(i).hrMin);
+                        savedStrLapsActiveInfoShort += "+" + (maxHr - hrMin);
                         savedStrLapsActiveInfoShort += "->max" + maxHr;
                     }
 
@@ -3859,7 +4111,7 @@ public class FitFilePerMesgType {
 
                     Float avgSpeed = record.getFieldFloatValue(LAP_ESPEED);
                     if (avgSpeed != null) {
-                        if (isSkiErgFile()) {
+                        if (getIsSkiErg()) {
                             savedStrLapsActiveInfoShort += " " + PehoUtils.sec2minSecLong(500 / avgSpeed) + "min/500m";
                         } else {
                             savedStrLapsActiveInfoShort += " " + PehoUtils.sec2minSecLong(1000 / avgSpeed) + "min/km";
@@ -3877,13 +4129,13 @@ public class FitFilePerMesgType {
                         savedStrLapsActiveInfoShort += " " + String.format("%.1fkm", dist / 1000);
                     }
 
-                    if (lapExtraRecords.get(i).avgDragFactor != null && isSkiErgFile()) {
+                    if (lapExtraRecords.get(i).avgDragFactor != null && getIsSkiErg()) {
                         savedStrLapsActiveInfoShort += " df" + Math.round(lapExtraRecords.get(i).avgDragFactor);
                     }
-                    if (lapExtraRecords.get(i).avgStrokeLen != null && isSkiErgFile()) {
+                    if (lapExtraRecords.get(i).avgStrokeLen != null && getIsSkiErg()) {
                         savedStrLapsActiveInfoShort += " sl" + lapExtraRecords.get(i).avgStrokeLen;
                     }
-                    if (lapExtraRecords.get(i).stepLen != null && !isSkiErgFile()) {
+                    if (lapExtraRecords.get(i).stepLen != null && !getIsSkiErg()) {
                         savedStrLapsActiveInfoShort += " step" + (int) (lapExtraRecords.get(i).stepLen * 100) + "cm";
                     }
 
@@ -3906,8 +4158,8 @@ public class FitFilePerMesgType {
                 if ("REST".equals(intensity) || "RECOVERY".equals(intensity)) {
                     savedStrLapsRestInfoShort += "Lap" + lapNo;
 
-                    if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
-                        if (isTreadmillFile()) {
+                    if (lapExtraRecords.get(i).level != null && !getIsSkiErg()) {
+                        if (getIsTreadmill()) {
                             savedStrLapsRestInfoShort += " " + lapExtraRecords.get(i).level.intValue() + "%";
                         } else {
                             savedStrLapsRestInfoShort += " lv" + lapExtraRecords.get(i).level.intValue();
@@ -3937,7 +4189,7 @@ public class FitFilePerMesgType {
 
                     Float avgSpeed = record.getFieldFloatValue(LAP_ESPEED);
                     if (avgSpeed != null) {
-                        if (isSkiErgFile()) {
+                        if (getIsSkiErg()) {
                             savedStrLapsRestInfoShort += " " + PehoUtils.sec2minSecLong(500 / avgSpeed) + "min/500m";
                         } else {
                             savedStrLapsRestInfoShort += " " + PehoUtils.sec2minSecLong(1000 / avgSpeed) + "min/km";
@@ -3955,7 +4207,7 @@ public class FitFilePerMesgType {
                         savedStrLapsRestInfoShort += " " + String.format("%.1fkm", dist / 1000);
                     }
 
-                    if (lapExtraRecords.get(i).stepLen != null && !isSkiErgFile()) {
+                    if (lapExtraRecords.get(i).stepLen != null && !getIsSkiErg()) {
                         savedStrLapsRestInfoShort += " step" + (int) (lapExtraRecords.get(i).stepLen * 100) + "cm";
                     }
 
@@ -4193,10 +4445,10 @@ public void printLapAllSummaryAllMesg2() {
         }
 
         // Level and step length (extra)
-        if (extra.level != null && !isSkiErgFile()) {
+        if (extra.level != null && !getIsSkiErg()) {
             sb.append(" lv").append(extra.level.intValue());
         }
-        if (extra.stepLen != null && !isSkiErgFile()) {
+        if (extra.stepLen != null && !getIsSkiErg()) {
             sb.append(" steplen").append((int)(extra.stepLen * 100)).append("cm");
         }
 
@@ -4275,6 +4527,7 @@ private int safeInt(Number n) {
 // Debug method to print lap and record details for verification
 //=============================================================================
 public void debugLapRecords(List<Mesg> lapMesgs, List<Mesg> recordMesgs) {
+    System.out.println("-------------------------------------------");
     System.out.println("----- L A P   R E C O R D   D E B U G -----");
     System.out.printf("Laps: %d  Records: %d%n%n", lapMesgs.size(), recordMesgs.size());
 

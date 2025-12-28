@@ -2,4 +2,4 @@ java -jar C:\Users\peter\Documents\Dev\peho-fit-tools\fit-zip-renamer\target\fit
 java -jar C:\Users\peter\Documents\Dev\peho-fit-tools\fit-zip-renamer\target\fit-zip-renamer-1.0.0.jar fit \Users\peter\Downloads logbook
 java -jar C:\Users\peter\Documents\Dev\peho-fit-tools\garmin-wkt-fit-merge-analyze\target\garmin-wkt-fit-merge-analyze-1.0.0.jar
 java -jar C:\Users\peter\Documents\Dev\peho-fit-tools\fit-wkt-merge-analyze\target\fit-wkt-merge-analyze-1.0.0.jar
-mvn clean package   
+mvn clean package
