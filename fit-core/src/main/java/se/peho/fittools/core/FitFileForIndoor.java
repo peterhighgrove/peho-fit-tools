@@ -24,7 +24,7 @@ import jdk.jfr.Description;
 
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-public class FitFilePerMesgType {
+public class FitFileForIndoor extends FitFile {
 
     public static final int FID_CTIME = FileIdMesg.TimeCreatedFieldNum; //long
     public static final int FID_MANU = FileIdMesg.ManufacturerFieldNum; //int
@@ -297,11 +297,11 @@ public class FitFilePerMesgType {
     int c2SyncSecondsC2File = 0; // for power, cadence
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public FitFilePerMesgType (int syncSecC2File, int syncSecLapDistCalc) {
+    public FitFileForIndoor (int syncSecC2File, int syncSecLapDistCalc) {
     	this.c2SyncSecondsC2File = syncSecC2File;
     	this.c2SyncSecondsLapDistCalc = syncSecLapDistCalc;
     }
-    public FitFilePerMesgType () {
+    public FitFileForIndoor () {
     	
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -977,7 +977,7 @@ public class FitFilePerMesgType {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void mergeC2CiqAndFitData(FitFilePerMesgType c2FitFile, int C2FitFileDistanceStartCorrection) {
+    public void mergeC2CiqAndFitData(FitFileForIndoor c2FitFile, int C2FitFileDistanceStartCorrection) {
         
 
         Long C2DateTime = null;
@@ -3106,7 +3106,7 @@ public class FitFilePerMesgType {
 
     }
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void createFileSummary() {
+    public void createFileSummaryIndoor() {
         savedStrOrgFileInfo += "--------------------------------------------------" + System.lineSeparator();
         savedStrOrgFileInfo += " --> Manufacturer:" + manufacturer + ", " + product + "(" + productNo + ")" + ", SW: v" + swVer + System.lineSeparator();
         savedStrOrgFileInfo += " --> Sport:"+ sport + ", SubSport:" + subsport + ", SportProfile:" + sportProfile + ", WktName:" + wktName + System.lineSeparator();

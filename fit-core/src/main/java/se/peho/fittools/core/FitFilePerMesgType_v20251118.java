@@ -1896,7 +1896,7 @@ public class FitFilePerMesgType_v20251118 {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void mergeC2CiqAndFitData(FitFilePerMesgType c2FitFile, int C2FitFileDistanceStartCorrection) {
+    public void mergeC2CiqAndFitData(FitFileForIndoor c2FitFile, int C2FitFileDistanceStartCorrection) {
         
         Float currentDist = 0f;
         Float currentDistBack1 = 0f;

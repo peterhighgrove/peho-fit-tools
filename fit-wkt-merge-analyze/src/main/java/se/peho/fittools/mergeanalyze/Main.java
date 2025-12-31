@@ -5,7 +5,7 @@ import java.util.Calendar;
 
 import se.peho.fittools.core.Conf;
 import se.peho.fittools.core.FitDateTime;
-import se.peho.fittools.core.FitFilePerMesgType;
+import se.peho.fittools.core.FitFileForIndoor;
 import se.peho.fittools.core.PehoUtils;
 import se.peho.fittools.core.TextLapFile;
  
@@ -118,7 +118,7 @@ public class Main {
             System.exit(0);
         } */
 
-        FitFilePerMesgType watchFitFile = new FitFilePerMesgType(conf.getC2SyncSecondsC2File(), conf.getC2SyncSecondsLapDistCalc());
+        FitFileForIndoor watchFitFile = new FitFileForIndoor(conf.getC2SyncSecondsC2File(), conf.getC2SyncSecondsLapDistCalc());
 
         /* if (conf.getCommand().toLowerCase().equals("fixpauses")) {
             watchFitFile.allMesgFlag = true;
@@ -127,7 +127,7 @@ public class Main {
         // READING FIT FILE
         watchFitFile.readFitFile (conf.getInputFilePath());
 
-        watchFitFile.createFileSummary();
+        watchFitFile.createFileSummaryIndoor();
         //watchFitFile.printFileIdInfo();
         //watchFitFile.printDeviceInfo();
         watchFitFile.printWktInfo();
@@ -216,11 +216,11 @@ public class Main {
                     watchFitFile.initLapExtraRecords();
 
                     System.out.println("======== HAS C2 FITFILE ==========");
-                    FitFilePerMesgType c2FitFile = new FitFilePerMesgType ();
+                    FitFileForIndoor c2FitFile = new FitFileForIndoor ();
 
                     c2FitFile.readFitFile (conf.getExtraFilename());
                     //c2FitFile.changeStartTime(conf.timeOffsetSec);
-                    c2FitFile.createFileSummary();
+                    c2FitFile.createFileSummaryIndoor();
                     //c2FitFile.printLapRecords0();
                     //c2FitFile.printSecRecords0();
 
@@ -333,7 +333,7 @@ public class Main {
             PehoUtils.renameFile(conf.getExtraFilename(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-manualLaps.txt");
         }
 
-        watchFitFile.createFileSummary();
+        watchFitFile.createFileSummaryIndoor();
         //watchFitFile.printLapRecords();
         //watchFitFile.printSecRecords2();
         //watchFitFile.printLapRecords0();
