@@ -31,6 +31,7 @@ import com.garmin.fit.WorkoutMesg;
 import com.garmin.fit.WorkoutMesgListener;
 
 import se.peho.fittools.core.FitDateTime;
+import se.peho.fittools.core.strings.*;
 
 public class Main {
 
@@ -119,17 +120,19 @@ public class Main {
             String baseName = formatBaseName(info);
 
             // --- Rename ZIP ---
-            String newZipName = formatZipFilename(baseName);
+            String newZipName = addSuffixZip(baseName);
             Path newZipPath = zipFile.toPath().resolveSibling(newZipName);
             Files.move(zipFile.toPath(), newZipPath, StandardCopyOption.REPLACE_EXISTING);
             System.out.println("  Renamed ZIP to: " + newZipName);
+            System.out.println("--------------------------------");
 
             // --- Rename FIT (optional) ---
             if (keepFit) {
-                String newFitName = formatFitFilename(baseName);
+                String newFitName = addSuffixFit(baseName);
                 Path newFitPath = fitFile.toPath().resolveSibling(newFitName);
                 Files.move(fitFile.toPath(), newFitPath, StandardCopyOption.REPLACE_EXISTING);
                 System.out.println("  Renamed FIT to: " + newFitName);
+                System.out.println("--------------------------------");
             } else {
                 fitFile.delete();
             }
@@ -201,12 +204,15 @@ public class Main {
             }
 
             String baseName = formatBaseName(info);
-            String newName = formatFitFilename(baseName);
+            System.out.println("  Formatted base name: " + baseName);
 
             // replace spaces and forbidden chars with safe alternatives
-            Path newPath = fitFile.toPath().resolveSibling(sanitizeFilename(newName));
+            String newName = new SanitizedFilename(addSuffixFit(baseName)).getName();
+
+            Path newPath = fitFile.toPath().resolveSibling(newName);
             Files.move(fitFile.toPath(), newPath, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("  Renamed to: " + sanitizeFilename(newName));
+            System.out.println("  Renamed to: " + newName);
+            System.out.println("--------------------------------");
         }
     }
 
@@ -215,36 +221,39 @@ public class Main {
     // ----------------------------------------------------------------
     private static String formatBaseName (ActivityInfo info) {
         return String.format(
-            "%s%s%s%s%s%s%s",
-            info.dateTime,
-            info.profile != null && !info.profile.isEmpty() ? "-" + info.profile : "",
-            info.workoutName != null && !info.workoutName.isEmpty() ? "-" + info.workoutName : "",
-            info.timer != null && !info.timer.isEmpty() ? "-" + info.timer : "",
-            info.distance != null && !info.distance.isEmpty() ? "-" + info.distance + "" : "",
-            info.product != null && !info.product.isEmpty() ? "-" + info.product : "",
-            info.swVer != null && !info.swVer.isEmpty() ? "-" + info.swVer : ""
+            "%s%s%s%s%s%s"
+            ,info.dateTime
+            ,info.profile != null && !info.profile.isEmpty() ? "-" + info.profile : ""
+            ,info.workoutName != null && !info.workoutName.isEmpty() ? "-" + info.workoutName : ""
+            ,info.timer != null && !info.timer.isEmpty() ? "-" + info.timer : ""
+            ,info.distance != null && !info.distance.isEmpty() ? "-" + info.distance + "" : ""
+            ,info.product != null && !info.product.isEmpty() ? "-" + info.product : ""
         );
     }
 
     // ----------------------------------------------------------------
     // FORMAT FIT FILENAME
     // ----------------------------------------------------------------
-    private static String formatFitFilename(String baseName) {
-        return baseName + "-garminfit.fit";
+    private static String addSuffixFit(String baseName) {
+        return baseName + "-renamed.fit";
     }
     
     // ----------------------------------------------------------------
     // FORMAT ZIP FILENAME
     // ----------------------------------------------------------------
-    private static String formatZipFilename(String baseName) {
-        return baseName + "-garminzip.zip";
+    private static String addSuffixZip(String baseName) {
+        return baseName + "-renamed.zip";
     }
     
     // ----------------------------------------------------------------
     // SANITIZE FILENAME
     // ----------------------------------------------------------------
     private static String sanitizeFilename(String name) {
-        return name.replaceAll("[\\\\/:*?\"<>|!]", "-");
+        return name
+            .replace("/", "_")
+            .replace(":", ".")
+            .replaceAll("[\\\\/:*?\"<>|!]", "-")
+            ;
     }
 
     // ----------------------------------------------------------------
@@ -253,22 +262,22 @@ public class Main {
     private static ActivityInfo readFitInfo(File fitFile) {
         final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         try {
-Decode decode = new Decode();
-MesgBroadcaster broadcaster = new MesgBroadcaster(decode);
+        Decode decode = new Decode();
+        MesgBroadcaster broadcaster = new MesgBroadcaster(decode);
 
-final List<ActivityMesg> activities   = new ArrayList<>();
-final List<SessionMesg> sessions      = new ArrayList<>();
-final List<DeviceInfoMesg> deviceInfos = new ArrayList<>();
-final List<FileIdMesg> fileIds         = new ArrayList<>();
-final List<WorkoutMesg> workouts       = new ArrayList<>();
+        final List<ActivityMesg> activities   = new ArrayList<>();
+        final List<SessionMesg> sessions      = new ArrayList<>();
+        final List<DeviceInfoMesg> deviceInfos = new ArrayList<>();
+        final List<FileIdMesg> fileIds         = new ArrayList<>();
+        final List<WorkoutMesg> workouts       = new ArrayList<>();
 
-// ActivityMesg
-broadcaster.addListener(new ActivityMesgListener() {
-    @Override
-    public void onMesg(ActivityMesg m) {
-        activities.add(m);
-    }
-});
+        // ActivityMesg
+        broadcaster.addListener(new ActivityMesgListener() {
+            @Override
+            public void onMesg(ActivityMesg m) {
+                activities.add(m);
+            }
+    });
 
 // SessionMesg
 broadcaster.addListener(new SessionMesgListener() {
@@ -315,6 +324,8 @@ try (FileInputStream in = new FileInputStream(fitFile)) {
     decode.read(in, broadcaster, broadcaster);
 }
 
+            // ActivityMesg
+            // --------------------------------
             ActivityMesg actMesg = activities.isEmpty() ? null : activities.get(0);
 
             // prefer ActivityMesg.localTimestamp if present
@@ -324,7 +335,6 @@ try (FileInputStream in = new FileInputStream(fitFile)) {
                 try {
                     Long localTs = actMesg.getLocalTimestamp();
                     if (localTs != null && localTs > 0) {
-                        long unixMs = (localTs + 631065600L) * 1000L; // Garmin epoch -> unix ms
                         dateTime = FitDateTime.toString(localTs);
                         //dateTime = DATE_FORMAT.format(new Date(unixMs));
                     }
@@ -333,6 +343,8 @@ try (FileInputStream in = new FileInputStream(fitFile)) {
                 }
             }
 
+            // SessionMesg
+            // --------------------------------
             SessionMesg sessMesg = sessions.isEmpty() ? null : sessions.get(0);
             
             // fallback to SessionMesg.startTime (UTC -> Date) if no local timestamp found
@@ -346,140 +358,57 @@ try (FileInputStream in = new FileInputStream(fitFile)) {
                 return null;
             }
 
-
             // profile: prefer sportProfileName, fallback to sport enum, else "unknown"
-            String profile;
-            if (sessMesg.getSportProfileName() != null) {
-                profile = sessMesg.getSportProfileName().toLowerCase();
-            } else if (sessMesg.getSport() != null) {
-                profile = sessMesg.getSport().toString().toLowerCase();
-                if (sessMesg.getSubSport() != null) {
-                    profile += "-" + sessMesg.getSubSport().toString().toLowerCase();
-                }
-            } else {
-                profile = null;
-            }
-            // sanitize profile (replace spaces)
-            profile = profile
-                .replace(",", ".")
-                .replace("elliptical-(bike)", "elliptical")
-                .replace("skierg-(bike)", "skierg")
-                .replace("fitness_equipment-", "")
-                ;
+            String profileName = new FormattedProfileName(
+                sessMesg.getSportProfileName()
+                , sessMesg.getSport()
+                , sessMesg.getSubSport()
+                ).getName();
 
             // --- Distance and Timer formatting ---
 
-            Float totalTimer = sessMesg.getTotalTimerTime(); // seconds
-            Float totalDist = sessMesg.getTotalDistance();   // meters
+            String timerDistStr = new FormattedTimerDistString(
+                sessMesg.getTotalTimerTime()
+                ,sessMesg.getTotalDistance()
+                ).get();
 
             // --- Timer as m.ss ---
-            long totalSeconds = (totalTimer != null) ? Math.round(totalTimer) : 0L;
-            long totalMinutes = totalSeconds / 60;
-            long seconds = totalSeconds % 60;
-            String timer = String.format("%d.%02dmin", totalMinutes, seconds)
-                .replace(",", ".")
-                .replace(".00", "")
-                ;
 
-            // --- Distance as km, trimmed, no trailing zeros or dot ---
-            double distanceKm = (totalDist != null) ? (totalDist / 1000.0) : 0.0;
-            String distanceStr = String.format("%.1fkm", distanceKm)
-                .replace(",", ".")
-                .replace(".0", "")
-                ; 
-
-            // --------------------------------
             // DeviceInfo
+            // --------------------------------
             DeviceInfoMesg devMesg = deviceInfos.isEmpty() ? null : deviceInfos.get(0);
-            String product = null;
-            String manuf = null;
-            String swVersion = null;
-            if (devMesg != null) {
-                Integer manufNo = devMesg.getManufacturer();
-                manuf = Manufacturer.getStringFromValue(manufNo != null ? manufNo : null);
-                Integer productNo = devMesg.getProduct();
-                product = GarminProduct.getStringFromValue(productNo != null ? productNo : null);
-
-                Float swVersionF = devMesg.getSoftwareVersion() != null ? devMesg.getSoftwareVersion() : null;
-                swVersion = swVersionF != null ? 
-                    String.format("v%.2f", devMesg.getSoftwareVersion())
-                    .replace(",", ".")
-                     : null;
-
-                // Could use manuf/product for something if needed
-                System.out.println("  Extracted info: DateTime=" + dateTime + ", Profile=" + profile + ", Distance=" + distanceStr + ", Timer=" + timer);
-                System.out.println("   From DevInfo Manufacturer: " + manuf + "(" + manufNo + ")"
-                    + ", Product: " + product + " (" + productNo + ")"
-                    + ", sw:" + swVersionF
-                    );
-            }
 
             // --------------------------------
             // FileIdInfo
             FileIdMesg fileIdMesg = fileIds.isEmpty() ? null : fileIds.get(0);
-            //String swVersion2 = fileIdMesg.get != null ? fileIdMesg.getSoftwareVersion().toString() : "unknown";
-            String product2 = null;
-            String manuf2 = null;
-            if (fileIdMesg != null) {
-                Integer manufNo2 = fileIdMesg.getManufacturer();
-                manuf2 = Manufacturer.getStringFromValue(manufNo2 != null ? manufNo2 : null);
-                Integer productNo2 = fileIdMesg.getProduct();
-                product2 = GarminProduct.getStringFromValue(productNo2 != null ? productNo2 : null);
 
-                
-                // Could use manuf/product for something if needed
-                System.out.println("    From FileId Manufacturer: " + manuf2 + "(" + manufNo2 + ")"
-                    + " Product: " + product2 + " (" + productNo2 + ")"
-                    );
-            }
+            String product = new FormattedProductName(
+                (devMesg != null ? devMesg.getManufacturer() : null)
+                ,(devMesg != null ? devMesg.getProduct() : null)
+                ,(fileIdMesg != null ? fileIdMesg.getManufacturer() : null)
+                ,(fileIdMesg != null ? fileIdMesg.getProduct() : null)
+                ,(devMesg != null ? devMesg.getSoftwareVersion() : null)
+                ).getName();
 
-            if (manuf.isEmpty()) {
-                manuf = manuf2;
-            }
-            if (manuf.equals("CONCEPT2")) {
-                product = "concept2";
-                swVersion = null;
-            }
-
-            if (product.isEmpty()) {
-                product = product2;
-            }
-
-            if (product.contains("EPIX_GEN2_PRO")) {
-                product = "epix2pro";
-            } else if (product.contains("EPIX_GEN2")) {
-                product = "epix2";
-            } else if (product.contains("FENIX6X")) {
-                product = "f6x";
-            }
-
+            System.out.println("  FormattedProductName='" + product + "'");
             // --------------------------------
-            // WorkoutMesg (for future use)
+            // WorkoutMesg
             WorkoutMesg workoutMesg = workouts.isEmpty() ? null : workouts.get(0);
-            String wktName = null;
-            if (workoutMesg != null) {
-                System.out.println("  Workout name: " + workoutMesg.getWktName());
-                wktName = workoutMesg.getWktName()
-                    .replace(",", ".")
-                    .replace("/", "_")
-                    .replace("Bike ", "")
-                    .replace("Run ", "")
-                    .replace("Styrka ", "")
-                    .replace(" (bike)", "")
-                    .replace("HR", "")
-                    ;
-            }
 
+            String wktName = new FormattedWorkoutName(
+                (workoutMesg != null ? workoutMesg.getWktName() : null)
+                ).getName();
+
+            if (wktName !=null && profileName.contains(wktName))
+                wktName = null;
 
             // --- Assign to info object ---
 
             ActivityInfo actInfo = new ActivityInfo();
-            actInfo.dateTime = (dateTime != null) ? dateTime : DATE_FORMAT.format(new Date()); // best-effort
-            actInfo.profile = profile;
-            actInfo.distance = distanceStr;
-            actInfo.timer = timer;
+            actInfo.dateTime = (dateTime != null) ? dateTime : DATE_FORMAT.format(new Date());
+            actInfo.profile = profileName != null && !product.isEmpty() ? profileName : null;
+            actInfo.timer = timerDistStr != null && !product.isEmpty() ? timerDistStr : null;
             actInfo.product = product != null && !product.isEmpty() ? product : null;
-            actInfo.swVer = swVersion != null && !swVersion.isEmpty() ? swVersion : null;
             actInfo.workoutName = wktName != null && !wktName.isEmpty() ? wktName : null;
 
             return actInfo;
@@ -500,7 +429,6 @@ try (FileInputStream in = new FileInputStream(fitFile)) {
         public String timer;
         public String distance;
         public String product;
-        public String swVer;
         public String workoutName;
     }
 }

@@ -13,35 +13,6 @@ public class FitDateTime {
     String tz = "+00:00";
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public static String toTimerString(Long timerValue) {
-        
-        // timerValue is seconds from start of activity, NOT garmin DateTime epoch
-
-        if (timerValue == null) {
-            return null;
-        }
-
-        long totalSeconds = timerValue;
-        if (totalSeconds < 0) {
-            return null; // invalid before epoch
-        }
-
-        long hours = totalSeconds / 3600;
-        long minutes = (totalSeconds % 3600) / 60;
-        long seconds = totalSeconds % 60;
-
-        if (hours > 0) {
-            // h:mm:ss h
-            return String.format("%d:%02d:%02d h", hours, minutes, seconds);
-        } else if (minutes > 0) {
-            // m:ss min
-            return String.format("%d:%02d min", minutes, seconds);
-        } else {
-            // s sec
-            return String.format("%d sec", seconds);
-        }
-    }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public FitDateTime(DateTime dateTimeValue, long offsetMinutes) {
         this.dateTimeValue = dateTimeValue;
         this.tz = offsetToTimeZoneString(offsetMinutes);
@@ -189,6 +160,35 @@ public class FitDateTime {
         long hours = offsetMinutes / 60;
         long minutes = Math.abs(offsetMinutes % 60);
         return String.format("%s%02d:%02d", offsetMinutes >= 0 ? "+" : "-", Math.abs(hours), minutes);
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public static String toTimerString(Long timerValue) {
+        
+        // timerValue is seconds from start of activity, NOT garmin DateTime epoch
+
+        if (timerValue == null) {
+            return null;
+        }
+
+        long totalSeconds = timerValue;
+        if (totalSeconds < 0) {
+            return null; // invalid before epoch
+        }
+
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+
+        if (hours > 0) {
+            // h:mm:ss h
+            return String.format("%d:%02d:%02d h", hours, minutes, seconds);
+        } else if (minutes > 0) {
+            // m:ss min
+            return String.format("%d:%02d min", minutes, seconds);
+        } else {
+            // s sec
+            return String.format("%d sec", seconds);
+        }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     static public String date2String(DateTime objectDateTime, long offsetMinutes) {
