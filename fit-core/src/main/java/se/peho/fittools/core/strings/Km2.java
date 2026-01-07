@@ -13,12 +13,16 @@ public class Km2 {
                 .replace(".00", "")
                 ; 
 
-        System.out.println("  Extracted info: Distance='" + distanceKm + "'"
-            + " => FormattedTimerDistString='" + km2 + "'"
+        System.out.println("  Extracted Distance:'" + distanceKm + "'"
+            + " => Formatted:'" + km2 + "'"
             );
     }
             
     public String get() {
         return km2;
+    }
+
+    public static String get(Float dist) {
+        return new Km2(dist).get();
     }
 }

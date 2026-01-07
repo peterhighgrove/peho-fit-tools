@@ -1,10 +1,10 @@
 package se.peho.fittools.core.strings;
 
-public class FormattedTimerDistString {
+public class TimerDistStr {
 
     private String formattedString = null;
 
-    public FormattedTimerDistString(Float timer, Float dist) {
+    public TimerDistStr(Float timer, Float dist) {
 
         String timerStr = new Hmmss(timer).get();
         String distanceStr = new Km1(dist).get();
@@ -17,14 +17,17 @@ public class FormattedTimerDistString {
             formattedString = distanceStr;
         }
 
-        System.out.println("  Extracted info: Timer='" + timerStr + "'"
+        System.out.println("  Extracted Timer:'" + timerStr + "'"
             + ", Distance='" + distanceStr + "'"
-            + " => FormattedTimerDistString='" + formattedString + "'"
+            + " => Formatted:'" + formattedString + "'"
             );
     }
             
     public String get() {
         return formattedString;
     }
-    
+
+    public static String get(Float timer, Float dist) {
+        return new TimerDistStr(timer, dist).get();
+    }
 }

@@ -1,9 +1,9 @@
 package se.peho.fittools.core.strings;
 
-public class FormattedWorkoutName {
+public class WorkoutStr {
     private String name = null;
 
-    public FormattedWorkoutName(String workoutName) {
+    public WorkoutStr(String workoutName) {
         if (workoutName != null && !workoutName.isEmpty()) {
 
             this.name = workoutName
@@ -20,8 +20,12 @@ public class FormattedWorkoutName {
         }
     }
             
-    public String getName() {
+    public String get() {
         return name;
+    }
+
+    public static String get(String workoutName) {
+        return new WorkoutStr(workoutName).get();
     }
     
 }

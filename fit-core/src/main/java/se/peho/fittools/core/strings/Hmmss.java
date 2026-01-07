@@ -32,12 +32,16 @@ public class Hmmss {
                 hmmss = secStr;
             }
 
-        System.out.println("  Extracted info: Timer='" + timer + "'"
-            + " => FormattedTimerDistString='" + hmmss + "'"
+        System.out.println("  Extracted Timer:'" + timer + "'"
+            + " => Formatted:'" + hmmss + "'"
             );
     }
             
     public String get() {
         return hmmss;
+    }
+
+    public static String get(Float timer) {
+        return new Hmmss(timer).get();
     }
 }
