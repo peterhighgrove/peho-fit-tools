@@ -29,11 +29,9 @@ import com.garmin.fit.WorkoutMesg;
 import com.garmin.fit.WorkoutMesgListener;
 
 import se.peho.fittools.core.strings.*;
+import se.peho.fittools.core.files.*;
 
 public class Main {
-
-    private List<Mesg> deviceInfoMesg = new ArrayList<>();
-
 
     public static void main(String[] args) throws Exception {
 
@@ -60,13 +58,13 @@ public class Main {
 
         switch (mode) {
             case "zip":
-                processZipFiles(folder, filter, false);
+                processFiles(folder, filter, false, "zip");
                 break;
             case "zipfit":
-                processZipFiles(folder, filter, true);
+                processFiles(folder, filter, true, "zip");
                 break;
             case "fit":
-                processFitFiles(folder, filter);
+                processFiles(folder, filter, false, "fit");
                 break;
             default:
                 System.out.println("Invalid mode. Use one of: zip, zipfit, fit (as first cli args)");
@@ -78,32 +76,62 @@ public class Main {
 
     // ----------------------------------------------------------------
     // ----------------------------------------------------------------
-    // ZIP FILES
+    // PROCESS FILES
     // ----------------------------------------------------------------
-    private static void processZipFiles(java.io.File folder, String filter, boolean keepFit) throws Exception {
-        final String filterCopy = filter;
-        java.io.File[] files = folder.listFiles((dir, name) -> {
-            if (!name.toLowerCase().endsWith(".zip")) return false;
-            if (filterCopy == null || filterCopy.isEmpty()) {
-                return name.matches("\\d+\\.zip");
-            } else {
-                return name.toLowerCase().contains(filterCopy.toLowerCase());
-            }
-        });
+    private static void processFiles(java.io.File folder, String filter, boolean keepFit, String ext) throws Exception {
 
-        if (files == null || files.length == 0) {
-            System.out.println("No matching ZIP files found.");
+        ext = "." + ext.toLowerCase();
+
+        File[] allFiles = folder.listFiles();
+        List<File> files = new ArrayList<>();
+
+        if (allFiles != null) {
+            for (File file : allFiles) {
+
+                String name = file.getName().toLowerCase();
+
+                // 1. Must be a .zip or .fit file
+                if (!name.endsWith(ext)) {
+                    continue;
+                }
+
+                // 2. No filter provided → digits only
+                if (filter == null || filter.isEmpty()) {
+                    if (name.matches("\\d+\\" + ext)) {
+                        files.add(file);
+                    }
+                }
+                // 3. Filter provided → name contains filter
+                else {
+                    if (name.contains(filter.toLowerCase())) {
+                        files.add(file);
+                    }
+                }
+            }
+        }
+
+        if (files == null || files.isEmpty()) {
+            System.out.println("No matching " + ext.toUpperCase() + " files found.");
             return;
         }
 
-        for (File zipFile : files) {
-            System.out.println("Processing: " + zipFile.getName());
 
-            // --- Extract .fit file from .zip ---
-            File fitFile = extractFitFile(zipFile);
-            if (fitFile == null) {
-                System.out.println("  No .fit file found inside.");
-                continue;
+        System.out.println("Found " + files.size() + " " + ext.toUpperCase() + " files to process.");
+
+        for (File theFile : files) {
+            System.out.println("Processing: " + theFile.getName());
+
+            File fitFile = null;
+            if (ext.equals(".zip")) {
+
+                // --- Extract .fit file from .zip ---
+                fitFile = TheFile.extractFit(theFile);
+                if (fitFile == null) {
+                    System.out.println("  No .fit file found inside.");
+                    continue;
+                }
+            } else {
+                fitFile = theFile;
             }
 
             // --- Read .fit file info ---
@@ -113,115 +141,25 @@ public class Main {
                 if (!keepFit) fitFile.delete();
                 continue;
             }
+            baseName = SanitizedFilename.get(baseName);
 
-            // --- Rename ZIP ---
-            String newZipName = addSuffixZip(baseName);
-            Path newZipPath = zipFile.toPath().resolveSibling(newZipName);
-            Files.move(zipFile.toPath(), newZipPath, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("  Renamed ZIP to: " + newZipName);
-            System.out.println("--------------------------------");
 
-            // --- Rename FIT (optional) ---
-            if (keepFit) {
-                String newFitName = addSuffixFit(baseName);
-                Path newFitPath = fitFile.toPath().resolveSibling(newFitName);
-                Files.move(fitFile.toPath(), newFitPath, StandardCopyOption.REPLACE_EXISTING);
-                System.out.println("  Renamed FIT to: " + newFitName);
-                System.out.println("--------------------------------");
-            } else {
-                fitFile.delete();
-            }
-        }
-    }
+            // --- Rename ORG FILE (zip or fit)---
+            TheFile.rename(theFile, baseName, "-renamed", ext);
 
-    // ----------------------------------------------------------------
-    // EXTRACT .FIT FILE FROM .ZIP
-    // ----------------------------------------------------------------
-    private static File extractFitFile(File zipFile) {
-        File outputFit = null;
+            if (ext.equals(".zip")) {
 
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
-            ZipEntry entry;
-            while ((entry = zis.getNextEntry()) != null) {
-                if (entry.getName().toLowerCase().endsWith(".fit")) {
-                    Path outputPath = new File(zipFile.getParentFile(), new File(entry.getName()).getName()).toPath();
-                    try (OutputStream os = Files.newOutputStream(outputPath)) {
-                        byte[] buffer = new byte[4096];
-                        int len;
-                        while ((len = zis.read(buffer)) > 0) {
-                            os.write(buffer, 0, len);
-                        }
-                    }
-                    outputFit = outputPath.toFile();
-                    break;
+                // --- Rename FIT IN ZIP (optional) ---
+                if (keepFit) {
+                    // .fit file directly
+                    TheFile.rename(fitFile, baseName, "-renamed", ".fit");
+                } else {
+                    fitFile.delete();
                 }
             }
-        } catch (IOException e) {
-            System.out.println("  Error extracting FIT: " + e.getMessage());
-        }
-
-        return outputFit;
-    }
-
-    // ----------------------------------------------------------------
-    // ----------------------------------------------------------------
-    // FIT FILES
-    // ----------------------------------------------------------------
-    private static void processFitFiles(java.io.File folder, String filter) throws Exception {
-        
-        final String filterCopy = filter;
-
-        File[] files = folder.listFiles((dir, name) -> {
-            if (!name.toLowerCase().endsWith(".fit")) return false;
-
-            if (filterCopy == null || filterCopy.isEmpty()) {
-                // No filter argument → only names that are numeric (like 20536941316.fit)
-                return name.matches("\\d+\\.fit");
-            } else {
-                // If filter argument provided → match substring (case-insensitive)
-                return name.toLowerCase().contains(filterCopy.toLowerCase());
-            }
-        });
-
-        if (files == null || files.length == 0) {
-            System.out.println("No matching FIT files found.");
-            return;
-        }
-
-        for (File fitFile : files) {
-            System.out.println("Processing: " + fitFile.getName());
-
-            // --- Read .fit file info ---
-            String baseName = readFitInfo(fitFile);
-            if (baseName == null) {
-                System.out.println("  Could not read FIT info.");
-                continue;
-            }
-
-            // replace spaces and forbidden chars with safe alternatives
-            String newName = new SanitizedFilename(addSuffixFit(baseName)).get();
-
-            Path newPath = fitFile.toPath().resolveSibling(newName);
-            Files.move(fitFile.toPath(), newPath, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("  Renamed to: " + newName);
-            System.out.println("--------------------------------");
         }
     }
 
-    // ----------------------------------------------------------------
-    // FORMAT FIT FILENAME
-    // ----------------------------------------------------------------
-    private static String addSuffixFit(String baseName) {
-        return baseName + "-renamed.fit";
-    }
-    
-    // ----------------------------------------------------------------
-    // FORMAT ZIP FILENAME
-    // ----------------------------------------------------------------
-    private static String addSuffixZip(String baseName) {
-        return baseName + "-renamed.zip";
-    }
-    
     // ----------------------------------------------------------------
     // READ GARMIN FIT FILE INFO
     // ----------------------------------------------------------------
