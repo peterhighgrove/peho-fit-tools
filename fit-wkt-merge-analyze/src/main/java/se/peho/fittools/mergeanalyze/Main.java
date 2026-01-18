@@ -8,6 +8,7 @@ import se.peho.fittools.core.FitDateTime;
 import se.peho.fittools.core.FitFileForIndoor;
 import se.peho.fittools.core.PehoUtils;
 import se.peho.fittools.core.TextLapFile;
+import se.peho.fittools.core.strings.SanitizedFilename;
  
 public class Main {
 
@@ -119,6 +120,7 @@ public class Main {
         } */
 
         FitFileForIndoor watchFitFile = new FitFileForIndoor(conf.getC2SyncSecondsC2File(), conf.getC2SyncSecondsLapDistCalc());
+        FitFileForIndoor c2FitFile = new FitFileForIndoor ();
 
         /* if (conf.getCommand().toLowerCase().equals("fixpauses")) {
             watchFitFile.allMesgFlag = true;
@@ -216,10 +218,9 @@ public class Main {
                     watchFitFile.initLapExtraRecords();
 
                     System.out.println("======== HAS C2 FITFILE ==========");
-                    FitFileForIndoor c2FitFile = new FitFileForIndoor ();
 
                     c2FitFile.readFitFile (conf.getExtraFilename());
-                    //c2FitFile.changeStartTime(conf.timeOffsetSec);
+                    c2FitFile.changeStartTime((int) (watchFitFile.activityDateTimeLocalOrg - c2FitFile.activityDateTimeLocalOrg));
                     c2FitFile.createFileSummaryIndoor();
                     //c2FitFile.printLapRecords0();
                     //c2FitFile.printSecRecords0();
@@ -314,23 +315,22 @@ public class Main {
 
         //watchFitFile.renameDevFieldName();
         
-        String orgDateTime = FitDateTime.toString(watchFitFile.activityDateTimeLocalOrg);
-        String newDateTime = FitDateTime.toString(watchFitFile.activityDateTimeLocal);
-
-        String outputFilenameBase = "";
-        outputFilenameBase = watchFitFile.getFilenameAndSetNewSportProfileName(conf.getProfileNameSuffix(), outputFilePath);
-        outputFilePath = conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (int)(conf.getTimeOffsetSec()/60) + "min.fit";
+        String outputFilenameBaseOrgTime = conf.getFilePathPrefix() + new SanitizedFilename(watchFitFile.getFileNameBaseOrgTime() + "-" + conf.getProfileNameSuffix()).get();
+        String outputFilenameBaseNewTime = conf.getFilePathPrefix() + new SanitizedFilename(watchFitFile.getFileNameBaseNewTime() + "-" + conf.getProfileNameSuffix()).get();
+        String outputFilenameBaseNewTimeExtra = conf.getFilePathPrefix() + new SanitizedFilename(c2FitFile.getFileNameBaseNewTime() + "-" + conf.getProfileNameSuffix()).get();
+        System.out.println("---> Output filename base org time: " + outputFilenameBaseOrgTime);
+        System.out.println("---> Output filename base new time: " + outputFilenameBaseNewTime);
         
-        watchFitFile.encodeNewFit(outputFilePath, encodeWorkoutRecords);
+        watchFitFile.encodeNewFit(outputFilenameBaseNewTime + "-merged" + (int)(conf.getTimeOffsetSec()/60) + "min.fit", encodeWorkoutRecords);
         
-        PehoUtils.renameFile(conf.getInputFilePath(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-watch.fit");
+        PehoUtils.renameFile(conf.getInputFilePath(), outputFilenameBaseOrgTime + "-org.fit");
         
         if (hasC2Fit) {
-            PehoUtils.renameFile(conf.getExtraFilename(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-c2.fit");
+            PehoUtils.renameFile(conf.getExtraFilename(), outputFilenameBaseNewTimeExtra + "-org.fit");
         }
 
         if (hasManualLapsTxt) {
-            PehoUtils.renameFile(conf.getExtraFilename(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-manualLaps.txt");
+            PehoUtils.renameFile(conf.getExtraFilename(), outputFilenameBaseOrgTime + "-manualLaps.txt");
         }
 
         watchFitFile.createFileSummaryIndoor();
@@ -352,7 +352,7 @@ public class Main {
         watchFitFile.printWktInfo();
         watchFitFile.printWktSessionInfo();
         watchFitFile.printWktStepInfo();
-        watchFitFile.printWriteLapSummery(conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (int)(conf.getTimeOffsetSec()/60) + "min-laps.txt");
+        watchFitFile.printWriteLapSummery(outputFilenameBaseNewTime + "-merged" + (int)(conf.getTimeOffsetSec()/60) + "min-laps.txt");
     }
 
 }
