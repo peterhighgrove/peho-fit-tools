@@ -5,8 +5,8 @@ $dest = Join-Path $root "jars"
 # -------------------------------
 # 1. Run Maven commands
 # -------------------------------
-Write-Host "=== Setting new version to 2.8 ==="
-mvn versions:set "-DnewVersion=2.8"
+Write-Host "=== Setting new version to 2.9 ==="
+mvn versions:set "-DnewVersion=2.9"
 
 Write-Host "=== Committing version changes ==="
 mvn versions:commit

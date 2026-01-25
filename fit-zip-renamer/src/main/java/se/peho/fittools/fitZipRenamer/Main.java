@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -263,47 +264,63 @@ public class Main {
             }
 
             // profile: prefer sportProfileName, fallback to sport enum, else "unknown"
-            String profileName = ProfileStr.get(
+            String profileName = new ProfileStr(
                 sessMesg.getSportProfileName()
                 , sessMesg.getSport()
                 , sessMesg.getSubSport()
-                );
+                ).get();
             // --- Distance and Timer formatting ---
 
+            Float totalTimerTime = sessMesg.getTotalTimerTime();
+            Float totalDistance  = sessMesg.getTotalDistance();
+            String timerStr = new Hmmss(totalTimerTime).get();
             String distTimerStr = new DistTimerStr(
-                sessMesg.getTotalDistance()
-                ,sessMesg.getTotalTimerTime()
+                totalDistance
+                ,totalTimerTime
                 ).get();
 
             // DeviceInfo
             // --------------------------------
             DeviceInfoMesg devMesg = deviceInfos.isEmpty() ? null : deviceInfos.get(0);
 
-            String product = ProductStr.get(
+            String product = new ProductStr(
                 (devMesg != null ? devMesg.getManufacturer() : null)
                 ,(devMesg != null ? devMesg.getProduct() : null)
                 ,(devMesg != null ? devMesg.getSoftwareVersion() : null)
-                );
+                ).get();
 
             // --------------------------------
             // WorkoutMesg
             WorkoutMesg workoutMesg = workouts.isEmpty() ? null : workouts.get(0);
 
-            String wktName = WorkoutStr.get(
+            String wktName = new WorkoutStr(
                 (workoutMesg != null ? workoutMesg.getWktName() : null)
-                );
+                ).get();
 
             if (wktName !=null && profileName.contains(wktName))
                 wktName = null;
 
-            // --- Assign to info object ---
+            String newFilebaseStr = "";
 
-            return FileBaseStr.get((dateTime != null) ? dateTime : DATE_FORMAT.format(new Date())
-                , profileName != null && !product.isEmpty() ? profileName : null
-                , wktName != null && !wktName.isEmpty() ? wktName : null
-                , distTimerStr != null && !product.isEmpty() ? distTimerStr : null
+            if (profileName.contains("km")) {
+                newFilebaseStr = new FileBaseStr(
+                dateTime != null && !dateTime.isEmpty() ? dateTime : "unknown"
+                , profileName != null && !profileName.isEmpty() ? profileName.trim() : null
+                , null
+                , timerStr != null && !timerStr.isEmpty() ? timerStr : null
                 , product != null && !product.isEmpty() ? product : null
-                );
+                ).get();
+            } else {
+                newFilebaseStr = new FileBaseStr(
+                dateTime != null && !dateTime.isEmpty() ? dateTime : "unknown"
+                , profileName != null && !profileName.isEmpty() ? profileName : null
+                , wktName != null && !wktName.isEmpty() ? wktName : null
+                , distTimerStr != null && !distTimerStr.isEmpty() ? distTimerStr : null
+                , product != null && !product.isEmpty() ? product : null
+                ).get();
+            }
+
+            return newFilebaseStr;
 
         } catch (Exception e) {
             System.out.println("  Error reading FIT: " + e.getMessage());
