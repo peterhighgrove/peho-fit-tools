@@ -122,6 +122,8 @@ public class Main {
         FitFileForIndoor watchFitFile = new FitFileForIndoor(conf.getC2SyncSecondsC2File(), conf.getC2SyncSecondsLapDistCalc());
         FitFileForIndoor c2FitFile = new FitFileForIndoor ();
 
+        watchFitFile.setActivityNamnSuffix(conf.getProfileNameSuffix());
+
         /* if (conf.getCommand().toLowerCase().equals("fixpauses")) {
             watchFitFile.allMesgFlag = true;
         } */
@@ -220,7 +222,7 @@ public class Main {
                     System.out.println("======== HAS C2 FITFILE ==========");
 
                     c2FitFile.readFitFile (conf.getExtraFilename());
-                    c2FitFile.changeStartTime((int) (watchFitFile.activityDateTimeLocalOrg - c2FitFile.activityDateTimeLocalOrg));
+                    c2FitFile.changeStartTime((int) (watchFitFile.getActivityDateTimeLocalOrg() - c2FitFile.getActivityDateTimeLocalOrg()));
                     c2FitFile.createFileSummaryIndoor();
                     //c2FitFile.printLapRecords0();
                     //c2FitFile.printSecRecords0();
@@ -315,14 +317,21 @@ public class Main {
 
         //watchFitFile.renameDevFieldName();
         
-        String outputFilenameBaseOrgTime = conf.getFilePathPrefix() + new SanitizedFilename(watchFitFile.getFileNameBaseOrgTime() + "-" + conf.getProfileNameSuffix()).get();
-        String outputFilenameBaseNewTime = conf.getFilePathPrefix() + new SanitizedFilename(watchFitFile.getFileNameBaseNewTime() + "-" + conf.getProfileNameSuffix()).get();
-        String outputFilenameBaseNewTimeExtra = conf.getFilePathPrefix() + new SanitizedFilename(c2FitFile.getFileNameBaseNewTime() + "-" + conf.getProfileNameSuffix()).get();
+        String outputFilenameBaseOrgTime = conf.getFilePathPrefix() + new SanitizedFilename(watchFitFile.getFileNameBaseOrgTime()).get();
+        String outputFilenameBaseNewTime = conf.getFilePathPrefix() + new SanitizedFilename(watchFitFile.getFileNameBaseNewTime()).get();
         System.out.println("---> Output filename base org time: " + outputFilenameBaseOrgTime);
-        System.out.println("---> Output filename base new time: " + outputFilenameBaseNewTime);
-        
+
+        String outputFilenameBaseNewTimeExtra = "";
+        if (hasC2Fit) {
+            outputFilenameBaseNewTimeExtra = conf.getFilePathPrefix() + new SanitizedFilename(c2FitFile.getFileNameBaseNewTime()).get();
+            System.out.println("---> Output filename base new time: " + outputFilenameBaseNewTime);
+        }
+
+        watchFitFile.setNewSportProfileName();
+
         watchFitFile.encodeNewFit(outputFilenameBaseNewTime + "-merged" + (int)(conf.getTimeOffsetSec()/60) + "min.fit", encodeWorkoutRecords);
         
+
         PehoUtils.renameFile(conf.getInputFilePath(), outputFilenameBaseOrgTime + "-org.fit");
         
         if (hasC2Fit) {

@@ -270,10 +270,10 @@ public class Main {
                 );
             // --- Distance and Timer formatting ---
 
-            String timerDistStr = TimerDistStr.get(
-                sessMesg.getTotalTimerTime()
-                ,sessMesg.getTotalDistance()
-                );
+            String distTimerStr = new DistTimerStr(
+                sessMesg.getTotalDistance()
+                ,sessMesg.getTotalTimerTime()
+                ).get();
 
             // DeviceInfo
             // --------------------------------
@@ -298,11 +298,10 @@ public class Main {
 
             // --- Assign to info object ---
 
-            return FileBaseStr.get(
-                (dateTime != null) ? dateTime : DATE_FORMAT.format(new Date())
+            return FileBaseStr.get((dateTime != null) ? dateTime : DATE_FORMAT.format(new Date())
                 , profileName != null && !product.isEmpty() ? profileName : null
                 , wktName != null && !wktName.isEmpty() ? wktName : null
-                , timerDistStr != null && !product.isEmpty() ? timerDistStr : null
+                , distTimerStr != null && !product.isEmpty() ? distTimerStr : null
                 , product != null && !product.isEmpty() ? product : null
                 );
 

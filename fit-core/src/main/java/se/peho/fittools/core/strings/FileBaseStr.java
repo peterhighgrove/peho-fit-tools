@@ -1,5 +1,9 @@
 package se.peho.fittools.core.strings;
 
+import com.garmin.fit.SessionMesg;
+
+import se.peho.fittools.core.FitFileForIndoor;
+
 public class FileBaseStr {
     private String baseName = null;
 
@@ -12,6 +16,18 @@ public class FileBaseStr {
 
             System.out.println("    => Formatted base name: " + baseName);
 
+    }
+            
+    public FileBaseStr(String dateTime, String profile, String workoutName, String timerDist, String product, String suffix) {
+        this.baseName = dateTime
+            + (profile != null && !profile.isEmpty() ? "-" + profile : "")
+            + (workoutName != null && !workoutName.isEmpty() ? "-" + workoutName : "")
+            + (timerDist != null && !timerDist.isEmpty() ? "-" + timerDist : "")
+            + (suffix != null && !suffix.isEmpty() ? "-" + suffix : "")
+            + (product != null && !product.isEmpty() ? "-" + product : "") 
+            ;
+
+            System.out.println("    => Formatted base name: " + baseName);
     }
             
     public String get() {

@@ -137,20 +137,51 @@ public class FitFileForIndoor extends FitFile {
     public static final int SP_SUBSPORT = SportMesg.SubSportFieldNum;
     public static final int SP_NAME = SportMesg.NameFieldNum; //string
 
-    Integer manufacturerNo;
-    String manufacturer;
-    Integer productNo;
-    String product = "";
-    Float swVer;
-    public Long activityDateTimeUTC;  // Original file
-    public Long activityDateTimeLocal; // Original file
-    public Long activityDateTimeLocalOrg; // Original file
-    Long diffMinutesLocalUTC;
+    private Integer manufacturerNo;
+    private String manufacturer;
+    private Integer productNr;
+    private String product = "";
+    private Float swVer;
+    private Long activityDateTimeUTC;  // Original file
+    private Long activityDateTimeLocal; // Original file
+    private Long activityDateTimeLocalOrg; // Original file
+    private Long diffMinutesLocalUTC;
 
-    String wktName;
-    Sport sport;
-    SubSport subsport;
-    String sportProfile;
+    public Integer getManufacturerNo() { return manufacturerNo; }
+    public void setManufacturerNo(Integer manufacturerNo) { this.manufacturerNo = manufacturerNo; }
+    public String getManufacturer() { return manufacturer; }
+    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
+    public Integer getProductNr() { return productNr; }
+    public void setProductNr(Integer productNr) { this.productNr = productNr; }
+    public String getProduct() { return product; }
+    public void setProduct(String product) { this.product = product; }
+    public Float getSwVer() { return swVer; }
+    public void setSwVer(Float swVer) { this.swVer = swVer; }
+    public Long getActivityDateTimeUTC() { return activityDateTimeUTC; }
+    public void setActivityDateTimeUTC(Long activityDateTimeUTC) { this.activityDateTimeUTC = activityDateTimeUTC; }
+    public Long getActivityDateTimeLocal() { return activityDateTimeLocal; }
+    public void setActivityDateTimeLocal(Long activityDateTimeLocal) { this.activityDateTimeLocal = activityDateTimeLocal; }
+    public Long getActivityDateTimeLocalOrg() { return activityDateTimeLocalOrg; }
+    public void setActivityDateTimeLocalOrg(Long activityDateTimeLocalOrg) { this.activityDateTimeLocalOrg = activityDateTimeLocalOrg; }
+    public Long getDiffMinutesLocalUTC() { return diffMinutesLocalUTC; }
+    public void setDiffMinutesLocalUTC(Long diffMinutesLocalUTC) { this.diffMinutesLocalUTC = diffMinutesLocalUTC; }
+
+    private String wktName;
+    private Sport sport;
+    private SubSport subsport;
+    private String sportProfile;
+    public String getWktName() { return wktName; }
+    public void setWktName(String wktName) { this.wktName = wktName; }
+    public Sport getSport() { return sport; }
+    public void setSport(Sport sport) { this.sport = sport; }
+    public SubSport getSubsport() { return subsport; }
+    public void setSubsport(SubSport subsport) { this.subsport = subsport; }
+    public String getSportProfile() { return sportProfile; }
+    public void setSportProfile(String sportProfile) { this.sportProfile = sportProfile; }
+
+    private String activityNamnSuffix;
+    public String getActivityNamnSuffix() { return activityNamnSuffix; }
+    public void setActivityNamnSuffix(String activityNamnSuffix) { this.activityNamnSuffix = activityNamnSuffix; }
 
     private Boolean isSkiErg = false;
     private Boolean isElliptical = false;
@@ -672,7 +703,7 @@ public class FitFileForIndoor extends FitFile {
                                     new DTstr(activityDateTimeLocal).get(),
                                     sportProfile, 
                                     wktName, 
-                                    new TimerDistStr(totalTimerTime, totalDistance).get(), 
+                                    new DistTimerStr(totalDistance, totalTimerTime).get(), 
                                     product
                                 ).get();
 
@@ -685,32 +716,59 @@ public class FitFileForIndoor extends FitFile {
         System.out.println("        DateTimeLocal: " + new DTstr(activityDateTimeLocal).get());
         System.out.println("        SportProfile : " + new ProfileStr(sportProfile, sport, subsport).get());
         System.out.println("        WktName      : " + new WorkoutStr(wktName).get());
-        System.out.println("        TimerDist    : " + new TimerDistStr(totalTimerTime, totalDistance).get());
-        System.out.println("        Product      : " + new ProductStr(manufacturerNo, productNo, swVer).get());
+        System.out.println("        TimerDist    : " + new DistTimerStr(totalDistance, totalTimerTime).get());
+        System.out.println("        Product      : " + new ProductStr(manufacturerNo, productNr, swVer).get());
+        System.out.println("        Suffix      : " + activityNamnSuffix);
         return new FileBaseStr(
                     new DTstr(activityDateTimeLocal).get(),
                     new ProfileStr(sportProfile, sport, subsport).get(),
                     new WorkoutStr(wktName).get(),
-                    new TimerDistStr(totalTimerTime, totalDistance).get(), 
-                    new ProductStr(manufacturerNo, productNo, swVer).get()
+                    new DistTimerStr(totalDistance, totalTimerTime).get(), 
+                    new ProductStr(manufacturerNo, productNr, swVer).get(),
+                    activityNamnSuffix
                 ).get();
     }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String getFileNameBaseOrgTime() {
         System.out.println("----> Org FilenameBase: ");
         System.out.println("        DateTimeLocal: " + new DTstr(activityDateTimeLocalOrg).get());
         System.out.println("        SportProfile : " + new ProfileStr(sportProfile, sport, subsport).get());
         System.out.println("        WktName      : " + new WorkoutStr(wktName).get());
-        System.out.println("        TimerDist    : " + new TimerDistStr(totalTimerTime, totalDistance).get());
-        System.out.println("        Product      : " + new ProductStr(manufacturerNo, productNo, swVer).get());
+        System.out.println("        TimerDist    : " + new DistTimerStr(totalDistance, totalTimerTime).get());
+        System.out.println("        Product      : " + new ProductStr(manufacturerNo, productNr, swVer).get());
+        System.out.println("        Suffix      : " + activityNamnSuffix);
         return new FileBaseStr(
                     new DTstr(activityDateTimeLocalOrg).get(),
                     new ProfileStr(sportProfile, sport, subsport).get(),
                     new WorkoutStr(wktName).get(),
-                    new TimerDistStr(totalTimerTime, totalDistance).get(),
-                    new ProductStr(manufacturerNo, productNo, swVer).get()
+                    new DistTimerStr(totalDistance, totalTimerTime).get(),
+                    new ProductStr(manufacturerNo, productNr, swVer).get(),
+                    activityNamnSuffix
                 ).get();
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public String getActivityNameStr() {
+        System.out.println("----> New ProfileBaseStr: ");
+        System.out.println("        SportProfile : " + new ProfileStr(sportProfile, sport, subsport).get());
+        System.out.println("        WktName      : " + new WorkoutStr(wktName).get());
+        System.out.println("        Dist    : " + new Km1(totalDistance).get());
+        System.out.println("        Suffix      : " + activityNamnSuffix);
+        return new NewProfileStr(
+                    new ProfileStr(sportProfile, sport, subsport).get(),
+                    new WorkoutStr(wktName).get(),
+                    new Km1(totalDistance).get(),
+                    activityNamnSuffix
+                ).get();
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void setNewSportProfileName() {
+        String newActivityName = getActivityNameStr();
+        // Set sport profile name in the first session message
+        Mesg session = sessionMesg.get(0);
+        session.setFieldValue(SES_PROFILE, newActivityName);
+        setSportProfile(newActivityName);
+    }
+        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     /* public void addDevFieldDescr() {
         byte[] appId = new byte[]{
             0x1, 0x1, 0x2, 0x3,
@@ -2999,7 +3057,7 @@ public class FitFileForIndoor extends FitFile {
                 manufacturer = Manufacturer.getStringFromValue(manufacturerNo);
                 if (manufacturer == "GARMIN") {
                     if (fileIdMesg.get(0).getFieldIntegerValue(FID_MANU) != null) {
-                        productNo = fileIdMesg.get(0).getFieldIntegerValue(FID_PROD);
+                        productNr = fileIdMesg.get(0).getFieldIntegerValue(FID_PROD);
                         product = GarminProduct.getStringFromValue(fileIdMesg.get(0).getFieldIntegerValue(FID_PROD));
                     }
                 }
@@ -3162,7 +3220,7 @@ public class FitFileForIndoor extends FitFile {
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void createFileSummaryIndoor() {
         savedStrOrgFileInfo += "--------------------------------------------------" + System.lineSeparator();
-        savedStrOrgFileInfo += " --> Manufacturer:" + manufacturer + ", " + product + "(" + productNo + ")" + ", SW: v" + swVer + System.lineSeparator();
+        savedStrOrgFileInfo += " --> Manufacturer:" + manufacturer + ", " + product + "(" + productNr + ")" + ", SW: v" + swVer + System.lineSeparator();
         savedStrOrgFileInfo += " --> Sport:"+ sport + ", SubSport:" + subsport + ", SportProfile:" + sportProfile + ", WktName:" + wktName + System.lineSeparator();
         savedStrOrgFileInfo += " --> Org activity dateTime Local:" + FitDateTime.toString(activityDateTimeLocalOrg) + System.lineSeparator();
         savedStrOrgFileInfo += " --> New activity dateTime Local:" + FitDateTime.toString(activityDateTimeLocal) + System.lineSeparator();
