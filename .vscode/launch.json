@@ -1,0 +1,40 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Run WktMergeAnalyze",
+      "request": "launch",
+      "mainClass": "se.peho.fittools.mergeanalyze.Main",
+      "projectName": "fit-wkt-merge-analyze",
+      //"args": "arg1 arg2"
+    },
+    {
+      "type": "java",
+      "name": "Run FixGpsActivities",
+      "request": "launch",
+      "mainClass": "se.peho.fittools.gpsfix.Main",
+      "projectName": "fit-fix-gps-activities",
+      //"args": "2025-10-03-Cassis_East.zip"
+    },
+    {
+      "type": "java",
+      "name": "Run fitZipRenamer",
+      "request": "launch",
+      "mainClass": "se.peho.fittools.fitZipRenamer.Main",
+      "projectName": "fit-zip-renamer",
+      //"args": "fit \"C:\\Users\\peter\\OneDrive\\Dokument Peter OneDrive\\Träning\\ActivityFiles\\Peter activities\" \"2026-01-03-13-06-42-SkiErg-bike 3x(3-2-1min) 10.0km Friskis Orminge-c2\""
+      //"args": "zipfit \"C:\\Users\\peter\\Downloads\" \"2025-10-03-Cassis_East\""
+      //"args": "zip \"C:\\Users\\peter\\Downloads\""
+      "args": "zip \"C:\\Users\\peter\\Downloads\" \"2026-01-11-13-25-50-SkiErg-4x(2-1min)-21.04min-0km-garmin-e2pro-v25.08-renamed\""
+    },
+    {
+      "type": "java",
+      "name": "Run garminWktFitMergeAnalyze",
+      "request": "launch",
+      "mainClass": "se.peho.fittools.garminWktFitMergeAnalyze.Main",
+      "projectName": "garmin-wkt-fit-merge-analyze",
+      //"args": ""
+    }
+  ]
+}
