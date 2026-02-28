@@ -23,6 +23,7 @@ jars/
 # VS Code
 # ---------------------------
 .vscode/
+!.vscode/launch.json
 
 # ---------------------------
 # IntelliJ IDEA
