@@ -7,7 +7,7 @@ public class SanitizedFilename {
     private static String sanitizeFilename(String name) {
 
         String filename = name
-            .replace("/", "_")
+            .replace("/", "+")
             .replace(":", ".")
             .replaceAll("[\\\\/:*?\"<>|!]", "-")
             ;

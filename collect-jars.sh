@@ -10,8 +10,8 @@ dest="$root/jars"
 # -------------------------------
 # 1. Run Maven commands
 # -------------------------------
-echo "=== Setting new version to 2.10 ==="
-mvn versions:set -DnewVersion=2.10
+echo "=== Setting new version to 2.11 ==="
+mvn versions:set -DnewVersion=2.11
 
 echo "=== Committing version changes ==="
 mvn versions:commit
