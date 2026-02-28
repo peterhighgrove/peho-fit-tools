@@ -13,6 +13,7 @@ public class WorkoutStr {
                 .replace("Styrka ", "")
                 .replace(" (bike)", "")
                 .replace("HR", "")
+                .replace(" + ", "+")
                 ;
             System.out.println("  Extracted info: WorkoutName=" + workoutName
                 + " => FormattedWorkoutName='" + name + "'"
