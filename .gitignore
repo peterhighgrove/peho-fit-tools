@@ -1,0 +1,58 @@
+# ---------------------------
+# My project files
+# ---------------------------
+*conf.txt
+#*gitignore
+
+# ---------------------------
+# Maven
+# ---------------------------
+target/
+jars/
+
+# ---------------------------
+# Maven Wrapper
+# ---------------------------
+# Keep the wrapper scripts and .mvn folder
+!mvnw
+!mvnw.cmd
+!.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+
+# ---------------------------
+# VS Code
+# ---------------------------
+.vscode/*
+!.vscode/launch.json
+
+# ---------------------------
+# IntelliJ IDEA
+# ---------------------------
+.idea/
+*.iml
+*.iws
+
+# ---------------------------
+# Eclipse
+# ---------------------------
+.classpath
+.project
+.settings/
+
+# ---------------------------
+# Logs
+# ---------------------------
+*.log
+
+# ---------------------------
+# OS junk
+# ---------------------------
+.DS_Store
+Thumbs.db
+
+# ---------------------------
+# Backup / temp files
+# ---------------------------
+*.swp
+*.bak
+*~
