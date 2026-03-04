@@ -13,7 +13,7 @@ public class ProductStr {
         String manuf = Manufacturer.getStringFromValue(manufNo);
         String product = GarminProduct.getStringFromValue(productNo);
 
-        System.out.println("  Extracted From DevInfo Manufacturer: " + manuf + "(" + manufNo + ")"
+        if (StringsDebug.enabled) System.out.println("  Extracted From DevInfo Manufacturer: " + manuf + "(" + manufNo + ")"
             + ", Product: " + product + "(" + productNo + ")"
             + ", sw:" + swVersionNo
             );
@@ -44,11 +44,13 @@ public class ProductStr {
             + (swVersion != null && !swVersion.isEmpty() ? ("-" + swVersion) : "")
             ;
 
-        System.out.print("    => Before combining: Manufacturer: " + manuf + "(" + manufNo + ")"
-            + ", Product: " + product + "(" + productNo + ")"
-            + ", sw:" + swVersion
-            );
-        System.out.println(" => Formatted:'" + formattedProductString + "'");
+        if (StringsDebug.enabled) {
+            System.out.print("    => Before combining: Manufacturer: " + manuf + "(" + manufNo + ")"
+                + ", Product: " + product + "(" + productNo + ")"
+                + ", sw:" + swVersion
+                );
+            System.out.println(" => Formatted:'" + formattedProductString + "'");
+        }
 
         nameStr = formattedProductString;
     }
@@ -60,7 +62,7 @@ public class ProductStr {
         String manuf = Manufacturer.getStringFromValue(manufNo);
         String product = GarminProduct.getStringFromValue(productNo);
 
-        System.out.println("  Extracted From DevInfo Manufacturer: " + manuf + "(" + manufNo + ")"
+        if (StringsDebug.enabled) System.out.println("  Extracted From DevInfo Manufacturer: " + manuf + "(" + manufNo + ")"
             + ", Product: " + product + "(" + productNo + ")"
             + ", sw:" + swVersionNo
             );
@@ -70,7 +72,7 @@ public class ProductStr {
         String manuf2 = Manufacturer.getStringFromValue(manufNo2);
         String product2 = GarminProduct.getStringFromValue(productNo2);
 
-        System.out.println("                  From FileId Manufacturer: " + manuf2 + "(" + manufNo2 + ")"
+        if (StringsDebug.enabled) System.out.println("                  From FileId Manufacturer: " + manuf2 + "(" + manufNo2 + ")"
             + " Product: " + product2 + "(" + productNo2 + ")"
             );
 
@@ -106,11 +108,13 @@ public class ProductStr {
             + (swVersion != null && !swVersion.isEmpty() ? ("-" + swVersion) : "")
             ;
 
-        System.out.print("    => Before combining: Manufacturer: " + manuf + "(" + manufNo + ")"
-            + ", Product: " + product + "(" + productNo + ")"
-            + ", sw:" + swVersion
-            );
-        System.out.println(" => Formatted:'" + formattedProductString + "'");
+        if (StringsDebug.enabled) {
+            System.out.print("    => Before combining: Manufacturer: " + manuf + "(" + manufNo + ")"
+                + ", Product: " + product + "(" + productNo + ")"
+                + ", sw:" + swVersion
+                );
+            System.out.println(" => Formatted:'" + formattedProductString + "'");
+        }
 
         nameStr = formattedProductString;
     }

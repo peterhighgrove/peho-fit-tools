@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import se.peho.fittools.core.Conf;
-import se.peho.fittools.core.FitDateTime;
 import se.peho.fittools.core.FitFileForIndoor;
 import se.peho.fittools.core.PehoUtils;
 import se.peho.fittools.core.TextLapFile;
@@ -16,8 +15,6 @@ public class Main {
         SimpleDateFormat sweDateTime = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         System.out.println(" ========================= START OF PROGRAM fit-wkt-merge-analyze / mergeanalyze ===========================" + sweDateTime.format(Calendar.getInstance().getTime()));
         
-        
-        //int conf.Integer.parseInt( = 1; // 1 = winter time in swe, used for string conv to filename
         boolean hasC2Fit = false;
         boolean hasManualLapsTxt = false;
         boolean encodeWorkoutRecords = true;
@@ -28,105 +25,16 @@ public class Main {
         
         System.out.println("ArgsLen: " + args.length);
 
-        /*if (args.length < 4) {
-            System.out.println("============= NO ARGS =============");
-            System.out.println("------------- USES ONLY CONF FILE ------");
-        }
-        if (args.length == 4) {
-            System.out.println("============= 1 ARGS ============= ");
-            conf.setInputFilePath(args[0]);
-            conf.setProfileNameSuffix("");
-            conf.setTimeOffsetSec(3); // 3 seconds (if you mean minutes, use 3 * 60)        }
-        }
-        if (args.length == 5) {
-            System.out.println("============= 2 ARGS ============= ");
-            conf.setInputFilePath(args[0]);
-            conf.setProfileNameSuffix(args[1]);
-            conf.setTimeOffsetSec(3); // 3 minutes in seconds (should be 3 * 60 if minutes)
-        }
-
-        if (args.length == 6) {
-            System.out.println("============= 3 ARGS ============= ");
-            conf.setInputFilePath(args[0]);
-            conf.setProfileNameSuffix(args[1]);
-            conf.setTimeOffsetSec(Integer.parseInt(args[2]) * 60); // 3 minutes in seconds
-        }
-
-        if (args.length == 7) {
-            System.out.println("============= 4 ARGS ============= ");
-            conf.setInputFilePath(args[0]);
-            conf.setProfileNameSuffix(args[1]);
-            conf.setTimeOffsetSec(Integer.parseInt(args[2]) * 60);
-            conf.setExtraFilename(args[3]);
-        }
-
-        if (args.length == 9 || args.length == 10) {
-            System.out.println("============= 6-7 ARGS ============= ");
-            conf.setInputFilePath(args[0]);
-            conf.setProfileNameSuffix(args[1]);
-            conf.setTimeOffsetSec(Integer.parseInt(args[2]) * 60);
-            conf.setExtraFilename(args[3]);
-
-            conf.setCommand(args[4]);
-            System.out.println("============= " + conf.getCommand() + " " + args[5]);
-
-            if (conf.getCommand().toLowerCase().equals("corr")) {
-                conf.setC2FitFileDistanceStartCorrection(Integer.valueOf(args[5]));
-
-            } else if (conf.getCommand().toLowerCase().equals("wkt")) {
-                conf.setStartWithWktStep(args[5]);
-                conf.setNewWktName(args[6]);
-            }
-        }
-
-        /* System.out.println("+++++++++++++++++++++++++++++++++++");
-        System.out.println("filePathPrefix: " + conf.getFilePathPrefix());
-        System.out.println("profileNameSuffix: " + conf.getProfileNameSuffix());
-        System.out.println("inputFilePath: " + conf.getInputFilePath());
-        System.out.println("extraFilename: " + conf.getExtraFilename());
-        System.out.println("timeOffsetSec: " + conf.getTimeOffsetSec());
-        System.out.println("command: " + conf.getCommand());
-        System.out.println("startWithWktStep: " + conf.getStartWithWktStep());
-        System.out.println("newWktName: " + conf.getNewWktName());
-        System.out.println("C2FitFileDistanceStartCorrection: " + conf.getC2FitFileDistanceStartCorrection());
-        System.out.println("useManualC2SyncSeconds: " + conf.getUseManualC2SyncSeconds());
-        System.out.println("c2SyncSecondsC2File: " + conf.getC2SyncSecondsC2File());
-        System.out.println("c2SyncSecondsLapDistCalc: " + conf.getC2SyncSecondsLapDistCalc());
-        System.out.println("+++++++++++++++++++++++++++++++++++");
-
-        System.out.println("Input file path: " + conf.getInputFilePath()); */
-
         // ================================
         // START
         // ================================
 
-        // Use getters/setters instead of direct field access:
-        // conf.setInputFilePath(conf.getFilePathPrefix() + conf.getInputFilePath());
-        // conf.setInputFilePath(PehoUtils.checkFile(conf.getInputFilePath()));
-
-        /* if (conf.getCommand().toLowerCase().equals("sportprofile")) {
-            SportProfileFitFile sportsFile = new SportProfileFitFile();
-
-            // Use getter for filePathPrefix and extraFilename
-            sportsFile.readFitFileExtra(conf.getFilePathPrefix() + conf.getExtraFilename());
-
-            sportsFile.mesgSave();
-            sportsFile.readFitFile(conf.getInputFilePath());
-            sportsFile.mesgInsert();
-            sportsFile.mesgPrinter();
-            sportsFile.encodeNewFit(conf.getFilePathPrefix() + "SettingsNew.fit");
-
-            System.exit(0);
-        } */
-
         FitFileForIndoor watchFitFile = new FitFileForIndoor(conf.getC2SyncSecondsC2File(), conf.getC2SyncSecondsLapDistCalc());
         FitFileForIndoor c2FitFile = new FitFileForIndoor ();
+        watchFitFile.setDebugFlags(conf);
+        c2FitFile.setDebugFlags(conf);
 
         watchFitFile.setActivityNamnSuffix(conf.getProfileNameSuffix());
-
-        /* if (conf.getCommand().toLowerCase().equals("fixpauses")) {
-            watchFitFile.allMesgFlag = true;
-        } */
 
         // READING FIT FILE
         watchFitFile.readFitFile (conf.getInputFilePath());
@@ -134,20 +42,19 @@ public class Main {
         watchFitFile.createFileSummaryIndoor();
         //watchFitFile.printFileIdInfo();
         //watchFitFile.printDeviceInfo();
-        watchFitFile.printWktInfo();
-        watchFitFile.printWktSessionInfo();
-        watchFitFile.printWktStepInfo();
+        if (conf.isDebugWkt()) watchFitFile.printWktInfo();
+        if (conf.isDebugWkt()) watchFitFile.printWktSessionInfo();
+        if (conf.isDebugWkt()) watchFitFile.printWktStepInfo();
         //watchFitFile.printSessionInfo();
-        //watchFitFile.printDevDataId();
-        //watchFitFile.printFieldDescr();
-        //watchFitFile.printDevFieldDescr();
+        if (conf.isDebugDevFields()) watchFitFile.printDevDataId();
+        if (conf.isDebugDevFields()) watchFitFile.printFieldDescr();
         //watchFitFile.printCourse();
-        //watchFitFile.printLapRecords0();
+        if (conf.isDebugLaps()) watchFitFile.printLapRecords0();
         //watchFitFile.printSecRecords0();
         //watchFitFile.printSecRecords();
-        //watchFitFile.debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
-        watchFitFile.printSplitRecords();
-        watchFitFile.printSplitSumRecords();
+        if (conf.isDebugLaps()) watchFitFile.debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
+        //watchFitFile.printSplitRecords();
+        //watchFitFile.printSplitSumRecords();
 
         // STOP program after print methods if INFO COMMAND
         if (conf.getCommand().toLowerCase().equals("info")) {
@@ -173,10 +80,6 @@ public class Main {
             // ================================
             if (watchFitFile.checkIfEllipticalFile()) {
                 System.out.println("======== isElliptical YES ==========");
-                if (conf.getExtraFilename().equals("")) {
-                    conf.setExtraFilename("laps.txt");
-                }
-                conf.setExtraFilename(conf.getFilePathPrefix() + conf.getExtraFilename());
 
                 hasManualLapsTxt = watchFitFile.hasManualLapsFile(conf.getExtraFilename());
                 if (hasManualLapsTxt) {
@@ -209,12 +112,9 @@ public class Main {
             // SKIERG
             // ================================
             else if (watchFitFile.checkIfSkiErgFile()) {
+
                 System.out.println("======== isSkiErgFile YES ==========");
-                if (!conf.getExtraFilename().equals("")) {
-                    //conf.setExtraFilename("c2.fit");
-                    conf.setExtraFilename(conf.getFilePathPrefix() + conf.getExtraFilename());
-                    conf.setExtraFilename(PehoUtils.checkFile(conf.getExtraFilename()));
-                }
+
                 hasC2Fit = watchFitFile.hasC2FitFile(conf.getExtraFilename());
                 if (hasC2Fit) {
                     watchFitFile.initLapExtraRecords();
@@ -223,8 +123,10 @@ public class Main {
 
                     c2FitFile.readFitFile (conf.getExtraFilename());
                     c2FitFile.changeStartTime((int) (watchFitFile.getActivityDateTimeLocalOrg() - c2FitFile.getActivityDateTimeLocalOrg()));
+                    
                     c2FitFile.createFileSummaryIndoor();
-                    //c2FitFile.printLapRecords0();
+                    
+                    if (conf.isDebugLaps()) c2FitFile.printLapRecords0();
                     //c2FitFile.printSecRecords0();
 
                     //watchFitFile.addDevFieldDescr();
@@ -274,10 +176,6 @@ public class Main {
             // ================================
             else if (watchFitFile.checkIfTreadmillFile()) {
                 System.out.println("======== isTreadmillFile YES ==========");
-                if (conf.getExtraFilename().equals("")) {
-                    conf.setExtraFilename("laps.txt");
-                }
-                conf.setExtraFilename(conf.getFilePathPrefix() + conf.getExtraFilename());
 
                 hasManualLapsTxt = watchFitFile.hasManualLapsFile(conf.getExtraFilename());
                 if (hasManualLapsTxt) {
@@ -343,24 +241,21 @@ public class Main {
         }
 
         watchFitFile.createFileSummaryIndoor();
-        //watchFitFile.printLapRecords();
         //watchFitFile.printSecRecords2();
-        //watchFitFile.printLapRecords0();
-        //watchFitFile.printLapRecords();
-        watchFitFile.printSplitRecords();
-        watchFitFile.printSplitSumRecords();
+        if (conf.isDebugLaps()) watchFitFile.printLapRecords();
+        if (conf.isDebugSplit()) watchFitFile.printSplitRecords();
+        if (conf.isDebugSplit()) watchFitFile.printSplitSumRecords();
 
-        //watchFitFile.printLapAllSummaryAllMesg2();
+        if (conf.isDebugLaps()) watchFitFile.printLapAllSummaryAllMesg2();
 
-        //watchFitFile.printLapLongSummery();
+        if (conf.isDebugLaps()) watchFitFile.printLapLongSummery();
         //watchFitFile.printCourse();
-        //watchFitFile.printDevFieldDescr();
-        //watchFitFile.printDevDataId();
-        //watchFitFile.printFieldDescr();
-        watchFitFile.debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
-        watchFitFile.printWktInfo();
-        watchFitFile.printWktSessionInfo();
-        watchFitFile.printWktStepInfo();
+        if (conf.isDebugDevFields()) watchFitFile.printDevDataId();
+        if (conf.isDebugDevFields()) watchFitFile.printFieldDescr();
+        if (conf.isDebugLaps()) watchFitFile.debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
+        if (conf.isDebugWkt()) watchFitFile.printWktInfo();
+        if (conf.isDebugWkt()) watchFitFile.printWktSessionInfo();
+        if (conf.isDebugWkt()) watchFitFile.printWktStepInfo();
         watchFitFile.printWriteLapSummery(outputFilenameBaseNewTime + "-merged" + (int)(conf.getTimeOffsetSec()/60) + "min-laps.txt");
     }
 

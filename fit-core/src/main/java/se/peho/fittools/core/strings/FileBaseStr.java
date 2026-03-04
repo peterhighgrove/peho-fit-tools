@@ -14,7 +14,7 @@ public class FileBaseStr {
             + (timerDist != null && !timerDist.isEmpty() ? "-" + timerDist : "")
             + (product != null && !product.isEmpty() ? "-" + product : "");
 
-            System.out.println("    => Formatted base name: " + baseName);
+            if (StringsDebug.enabled) System.out.println("    => Formatted base name: " + baseName);
 
     }
             
@@ -27,7 +27,7 @@ public class FileBaseStr {
             + (product != null && !product.isEmpty() ? "-" + product : "") 
             ;
 
-            System.out.println("    => Formatted base name: " + baseName);
+            if (StringsDebug.enabled) System.out.println("    => Formatted base name: " + baseName);
     }
             
     public String get() {

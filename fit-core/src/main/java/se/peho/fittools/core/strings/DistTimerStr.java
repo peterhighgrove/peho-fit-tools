@@ -17,7 +17,7 @@ public class DistTimerStr {
             formattedString = timerStr;
         }
 
-        System.out.println("  Extracted Distance:'" + distanceStr + "'"
+        if (StringsDebug.enabled) System.out.println("  Extracted Distance:'" + distanceStr + "'"
             + ", Timer='" + timerStr + "'"
             + " => Formatted:'" + formattedString + "'"
             );

@@ -13,7 +13,7 @@ public class Km2 {
                 .replace(".00", "")
                 ; 
 
-        System.out.println("  Extracted Distance:'" + distanceKm + "'"
+        if (StringsDebug.enabled) System.out.println("  Extracted Distance:'" + distanceKm + "'"
             + " => Formatted:'" + km2 + "'"
             );
     }

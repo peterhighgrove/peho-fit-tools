@@ -4188,7 +4188,7 @@ public class FitFile {
         }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printLapLongSummary() {
+    public void printLapLongSummery() {
         System.out.println();
         System.out.println("================================================");
         System.out.println("====LAPS IN FILE (lap3-LapLongSummary)");
@@ -4521,7 +4521,7 @@ public class FitFile {
         printSplitSummary();
         printLapRecords0();
         printLapAllSummary();
-        printLapLongSummary();
+        printLapLongSummery();
         System.out.print(createLapSummery());
         //printSecRecords0();
         printSessionInfo();

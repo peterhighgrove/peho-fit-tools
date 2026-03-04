@@ -15,7 +15,7 @@ public class WorkoutStr {
                 .replace("HR", "")
                 .replace(" + ", "+")
                 ;
-            System.out.println("  Extracted info: WorkoutName=" + workoutName
+            if (StringsDebug.enabled) System.out.println("  Extracted info: WorkoutName=" + workoutName
                 + " => FormattedWorkoutName='" + name + "'"
                 );
         }

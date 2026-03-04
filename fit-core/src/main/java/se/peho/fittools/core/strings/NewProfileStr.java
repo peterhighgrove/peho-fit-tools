@@ -10,7 +10,7 @@ public class NewProfileStr {
             + (dist != null && !dist.isEmpty() ? " " + dist : "")
             ;
 
-            System.out.println("    => Formatted new profile name: " + baseName);
+            if (StringsDebug.enabled) System.out.println("    => Formatted new profile name: " + baseName);
 
     }
             
@@ -22,7 +22,7 @@ public class NewProfileStr {
             + (suffix != null && !suffix.isEmpty() ? " " + suffix : "")
             ;
 
-            System.out.println("    => Formatted new profile name: " + baseName);
+            if (StringsDebug.enabled) System.out.println("    => Formatted new profile name: " + baseName);
 
     }
             

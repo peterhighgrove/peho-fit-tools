@@ -49,7 +49,7 @@ public class PehoUtils {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public static void renameFile(String oldName, String newName) {
         if (oldName.equals(newName)) {
-        	System.out.println("===FILE ALREADY CORRECT NAME: "+oldName);
+        	System.out.println("------> FILE ALREADY CORRECT NAME: "+oldName);
         	return ;
         }
     	File oldNameFile = new File(oldName);
@@ -60,25 +60,25 @@ public class PehoUtils {
                 Files.move(Paths.get(newName), Paths.get(newName + "-backup"), StandardCopyOption.REPLACE_EXISTING);
             } catch (Exception e) {
                 e.printStackTrace();
-                System.out.println("============== RENAME BACKUP UNSUCCESSFUL from:" + newName + " to:" + newName + "-backup");
+                System.out.println("------> RENAME BACKUP UNSUCCESSFUL from:" + newName + " to:" + newName + "-backup");
             }
-            System.out.println("============== RENAME BACKUP SUCCESS from:" + newName + " to:" + newName + "-backup");
+            System.out.println("------> RENAME BACKUP SUCCESS from:" + newName + " to:" + newName + "-backup");
     	}
 		
         try {
             Files.move(Paths.get(oldName), Paths.get(newName), StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("============== RENAME SRC FILE UNSUCCESSFUL from:" + oldName + " to:" + newName);
+            System.out.println("------> RENAME SRC FILE UNSUCCESSFUL from:" + oldName + " to:" + newName);
         }
-        System.out.println("============== RENAME SRC FILE SUCCESS from:" + oldName + " to:" + newName);
+        System.out.println("------> RENAME SRC FILE SUCCESS from:" + oldName + " to:" + newName);
     }
     	
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public static String checkFile(String fitFilePath) {
         File newFitFile = new File(fitFilePath);
-        System.out.println("=========> FILE: " + fitFilePath);
-        System.out.println("=========> EXTENSION: " + getFileExtension(newFitFile));
+        System.out.println("------> FILE: " + fitFilePath);
+        System.out.println("------> EXTENSION: " + getFileExtension(newFitFile));
         if (getFileExtension(newFitFile).equals("zip")) {
             fitFilePath = unzip(newFitFile);
             newFitFile = new File(fitFilePath);
@@ -121,7 +121,7 @@ public class PehoUtils {
             while ((entry = zis.getNextEntry()) != null) {
                 File newFile = new File(destDir, entry.getName());
                 unzippedFile = newFile.getPath();
-                System.out.println("=========> FILENAME IN ZIP: " + unzippedFile);
+                System.out.println("------> FILENAME IN ZIP: " + unzippedFile);
 
                 if (entry.isDirectory()) {
                     newFile.mkdirs();

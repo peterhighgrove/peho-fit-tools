@@ -7,7 +7,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.mergeanalyze.Main",
       "projectName": "fit-wkt-merge-analyze",
-      //"args": "arg1 arg2"
+      "args": "hemma 3 \"aaa t2.zip\" \"bbb t2.zip\""
     },
     {
       "type": "java",

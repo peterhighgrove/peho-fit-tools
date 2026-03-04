@@ -32,7 +32,7 @@ public class Hmmss {
                 hmmss = secStr;
             }
 
-        System.out.println("  Extracted Timer:'" + timer + "'"
+        if (StringsDebug.enabled) System.out.println("  Extracted Timer:'" + timer + "'"
             + " => Formatted:'" + hmmss + "'"
             );
     }

@@ -329,6 +329,12 @@ public class FitFileForIndoor extends FitFile {
     int c2SyncSecondsLapDistCalc = 0; // for distance, speed
     int c2SyncSecondsC2File = 0; // for power, cadence
 
+    boolean debugLaps      = false;
+    boolean debugFixData   = false;
+    boolean debugSync      = false;
+    boolean debugSplit     = false;
+    boolean debugDevFields = false;
+
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public FitFileForIndoor (int syncSecC2File, int syncSecLapDistCalc) {
     	this.c2SyncSecondsC2File = syncSecC2File;
@@ -336,6 +342,22 @@ public class FitFileForIndoor extends FitFile {
     }
     public FitFileForIndoor () {
     	
+    }
+
+    /** Apply debug flags from Conf to this instance. Call right after construction. */
+    public void setDebugFlags(Conf conf) {
+        this.debugLaps      = conf.isDebugLaps();
+        this.debugFixData   = conf.isDebugFixData();
+        this.debugSync      = conf.isDebugSync();
+        this.debugSplit     = conf.isDebugSplit();
+        this.debugDevFields = conf.isDebugDevFields();
+        if (conf.isDebug()) {
+            System.out.println("[FitFileForIndoor] debugLaps=" + debugLaps
+                + "  debugFixData=" + debugFixData
+                + "  debugSync=" + debugSync
+                + "  debugSplit=" + debugSplit
+                + "  debugDevFields=" + debugDevFields);
+        }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     class RecordExtraMesg {
@@ -712,13 +734,13 @@ public class FitFileForIndoor extends FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String getFileNameBaseNewTime() {
-        System.out.println("----> New FilenameBase: ");
-        System.out.println("        DateTimeLocal: " + new DTstr(activityDateTimeLocal).get());
-        System.out.println("        SportProfile : " + new ProfileStr(sportProfile, sport, subsport).get());
-        System.out.println("        WktName      : " + new WorkoutStr(wktName).get());
-        System.out.println("        TimerDist    : " + new DistTimerStr(totalDistance, totalTimerTime).get());
-        System.out.println("        Product      : " + new ProductStr(manufacturerNo, productNr, swVer).get());
-        System.out.println("        Suffix      : " + activityNamnSuffix);
+        if (StringsDebug.enabled) System.out.println("----> New FilenameBase: ");
+        if (StringsDebug.enabled) System.out.println("        DateTimeLocal: " + new DTstr(activityDateTimeLocal).get());
+        if (StringsDebug.enabled) System.out.println("        SportProfile : " + new ProfileStr(sportProfile, sport, subsport).get());
+        if (StringsDebug.enabled) System.out.println("        WktName      : " + new WorkoutStr(wktName).get());
+        if (StringsDebug.enabled) System.out.println("        TimerDist    : " + new DistTimerStr(totalDistance, totalTimerTime).get());
+        if (StringsDebug.enabled) System.out.println("        Product      : " + new ProductStr(manufacturerNo, productNr, swVer).get());
+        if (StringsDebug.enabled) System.out.println("        Suffix      : " + activityNamnSuffix);
         return new FileBaseStr(
                     new DTstr(activityDateTimeLocal).get(),
                     new ProfileStr(sportProfile, sport, subsport).get(),
@@ -730,13 +752,13 @@ public class FitFileForIndoor extends FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String getFileNameBaseOrgTime() {
-        System.out.println("----> Org FilenameBase: ");
-        System.out.println("        DateTimeLocal: " + new DTstr(activityDateTimeLocalOrg).get());
-        System.out.println("        SportProfile : " + new ProfileStr(sportProfile, sport, subsport).get());
-        System.out.println("        WktName      : " + new WorkoutStr(wktName).get());
-        System.out.println("        TimerDist    : " + new DistTimerStr(totalDistance, totalTimerTime).get());
-        System.out.println("        Product      : " + new ProductStr(manufacturerNo, productNr, swVer).get());
-        System.out.println("        Suffix      : " + activityNamnSuffix);
+        if (StringsDebug.enabled) System.out.println("----> Org FilenameBase: ");
+        if (StringsDebug.enabled) System.out.println("        DateTimeLocal: " + new DTstr(activityDateTimeLocalOrg).get());
+        if (StringsDebug.enabled) System.out.println("        SportProfile : " + new ProfileStr(sportProfile, sport, subsport).get());
+        if (StringsDebug.enabled) System.out.println("        WktName      : " + new WorkoutStr(wktName).get());
+        if (StringsDebug.enabled) System.out.println("        TimerDist    : " + new DistTimerStr(totalDistance, totalTimerTime).get());
+        if (StringsDebug.enabled) System.out.println("        Product      : " + new ProductStr(manufacturerNo, productNr, swVer).get());
+        if (StringsDebug.enabled) System.out.println("        Suffix      : " + activityNamnSuffix);
         return new FileBaseStr(
                     new DTstr(activityDateTimeLocalOrg).get(),
                     new ProfileStr(sportProfile, sport, subsport).get(),
@@ -748,11 +770,11 @@ public class FitFileForIndoor extends FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String getActivityNameStr() {
-        System.out.println("----> New ProfileBaseStr: ");
-        System.out.println("        SportProfile : " + new ProfileStr(sportProfile, sport, subsport).get());
-        System.out.println("        WktName      : " + new WorkoutStr(wktName).get());
-        System.out.println("        Dist    : " + new Km1(totalDistance).get());
-        System.out.println("        Suffix      : " + activityNamnSuffix);
+        if (StringsDebug.enabled) System.out.println("----> New ProfileBaseStr: ");
+        if (StringsDebug.enabled) System.out.println("        SportProfile : " + new ProfileStr(sportProfile, sport, subsport).get());
+        if (StringsDebug.enabled) System.out.println("        WktName      : " + new WorkoutStr(wktName).get());
+        if (StringsDebug.enabled) System.out.println("        Dist    : " + new Km1(totalDistance).get());
+        if (StringsDebug.enabled) System.out.println("        Suffix      : " + activityNamnSuffix);
         return new NewProfileStr(
                     new ProfileStr(sportProfile, sport, subsport).get(),
                     new WorkoutStr(wktName).get(),
@@ -820,8 +842,8 @@ public class FitFileForIndoor extends FitFile {
             String devAppToModify,
             List<Integer> devFieldsToRemove) {
 
-        System.out.println("----- REMOVE DEV FIELDS for ALL MESG -----");
-        System.out.println("--- No of Dev Fields: " + fieldDescrMesg.size());
+        if (debugDevFields) System.out.println("----- REMOVE DEV FIELDS for ALL MESG -----");
+        if (debugDevFields) System.out.println("--- No of Dev Fields: " + fieldDescrMesg.size());
 
         // --- Step 1: find developer_data_index for this app
         Short devIndex = null;
@@ -840,13 +862,13 @@ public class FitFileForIndoor extends FitFile {
                     String appIdHex = bytesToHex(appIdBytes).toLowerCase();
                     String targetId = devAppToModify.toLowerCase().replace("-", "");
 
-                    System.out.println("   AppId (hex): " + appIdHex);
-                    System.out.println("   Compare to  : " + targetId);
+                    if (debugDevFields) System.out.println("   AppId (hex): " + appIdHex);
+                    if (debugDevFields) System.out.println("   Compare to  : " + targetId);
 
                     // Compare the App IDs
                     if (appIdHex.equals(targetId)) {
                         devIndex = devId.getDeveloperDataIndex();
-                        System.out.println("Match! Developer index for app: " + devIndex);
+                        if (debugDevFields) System.out.println("Match! Developer index for app: " + devIndex);
                         break; // Stop when matched
                     }
                 }
@@ -854,7 +876,7 @@ public class FitFileForIndoor extends FitFile {
         }
 
         if (devIndex == null) {
-            System.out.println("No developer data found for app " + devAppToModify);
+            if (debugDevFields) System.out.println("No developer data found for app " + devAppToModify);
             return;
         }
 
@@ -868,7 +890,7 @@ public class FitFileForIndoor extends FitFile {
                 if (f.getDeveloperDataIndex() == devIndex &&
                         devFieldsToRemove.contains((int) f.getFieldDefinitionNumber())) {
 
-                    System.out.println("Removing dev field def #" + f.getFieldDefinitionNumber() +
+                    if (debugDevFields) System.out.println("Removing dev field def #" + f.getFieldDefinitionNumber() +
                             " for app index " + devIndex);
                     it.remove();
                 }
@@ -883,7 +905,7 @@ public class FitFileForIndoor extends FitFile {
         }
         numberOfDevFields = fieldDescrMesg.size();
 
-        System.out.println("--- Remaining dev fields: " + numberOfDevFields);
+        if (debugDevFields) System.out.println("--- Remaining dev fields: " + numberOfDevFields);
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -896,8 +918,8 @@ public class FitFileForIndoor extends FitFile {
             devFieldsToRemove
         );
 
-        System.out.println("--- No of Dev Fields: " + numberOfDevFields);
-        System.out.println("--------------------------------------------------");
+        if (debugDevFields) System.out.println("--- No of Dev Fields: " + numberOfDevFields);
+        if (debugDevFields) System.out.println("--------------------------------------------------");
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     /* public void addDeveloperfields() {
@@ -1241,10 +1263,10 @@ public class FitFileForIndoor extends FitFile {
                 if (lookingInBeginningForEmptySpeed) {
                     Float speed = record.getFieldFloatValue(REC_ESPEED);
                     if (speed != null && speed != 0f) {
-                        System.err.println("========= FIXED Beginning SPEED, first value: " + speed + " @ " + recordIx);
+                        if (debugFixData) System.out.println("========= FIXED Beginning SPEED, first value: " + speed + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
                             Mesg recordToFix = recordMesg.get(i);
-                            System.out.println("========= FIXING SPEED, value: " + recordToFix.getFieldFloatValue(REC_ESPEED) + "->" + speed + " @" + i);
+                            if (debugFixData) System.out.println("========= FIXING SPEED, value: " + recordToFix.getFieldFloatValue(REC_ESPEED) + "->" + speed + " @" + i);
                             recordToFix.setFieldValue(REC_SPEED, speed);
                             recordToFix.setFieldValue(REC_ESPEED, speed);
                         }
@@ -1254,11 +1276,12 @@ public class FitFileForIndoor extends FitFile {
                 // FIX CADENCE
                 if (lookingInBeginningForEmptyCadence) {
                     Short cad = record.getFieldShortValue(REC_CAD);
+                    if (cad == null) cad=0;
                     if (cad != null && cad != 0) {
-                        System.out.println("========= FIXED Beginning CADENCE, first value: " + cad + " @ " + recordIx);
+                        if (debugFixData) System.out.println("========= FIXED Beginning CADENCE, first value: " + cad + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
                             Mesg recordToFix = recordMesg.get(i);
-                            System.out.println("========= FIXING CADENCE, value: " + recordToFix.getFieldShortValue(REC_CAD) + "->" + cad + " @" + i);
+                            if (debugFixData) System.out.println("========= FIXING CADENCE, value: " + recordToFix.getFieldShortValue(REC_CAD) + "->" + cad + " @" + i);
                             recordToFix.setFieldValue(REC_CAD, cad);
                         }
                         lookingInBeginningForEmptyCadence = false;
@@ -1268,10 +1291,10 @@ public class FitFileForIndoor extends FitFile {
                 if (lookingInBeginningForEmptyPower) {
                     Integer power = record.getFieldIntegerValue(REC_POW);
                     if (power != null && power != 0) {
-                        System.out.println("========= FIXED Beginning POWER, first value: " + power + " @ " + recordIx);
+                        if (debugFixData) System.out.println("========= FIXED Beginning POWER, first value: " + power + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
                             Mesg recordToFix = recordMesg.get(i);
-                            System.out.println("========= FIXING POWER, value: " + recordToFix.getFieldIntegerValue(REC_POW) + "->" + power + " @" + i);
+                            if (debugFixData) System.out.println("========= FIXING POWER, value: " + recordToFix.getFieldIntegerValue(REC_POW) + "->" + power + " @" + i);
                             recordToFix.setFieldValue(REC_POW, power);
                         }
                         lookingInBeginningForEmptyPower = false;
@@ -1280,12 +1303,12 @@ public class FitFileForIndoor extends FitFile {
                 // FIX STROKE LENGTH
                 if (lookingInBeginningForEmptyStrokeLength) {
                     if ((strokeLengthFromDevField!=null && strokeLengthFromDevField!=0)) {
-                        System.out.println("========= FIXED Beginning STROKE LENGTH, first value: " + strokeLengthFromDevField + " @ " + recordIx);
+                        if (debugFixData) System.out.println("========= FIXED Beginning STROKE LENGTH, first value: " + strokeLengthFromDevField + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
                             Mesg recordToFix = recordMesg.get(i);
                             for (DeveloperField field : recordToFix.getDeveloperFields()) {
                                 if ("StrokeLength".equals(field.getName())) {
-                                    System.out.println("========= FIXING STROKE LENGTH, value: " + field.getValue() + "->" + strokeLengthFromDevField + " @" + i);
+                                    if (debugFixData) System.out.println("========= FIXING STROKE LENGTH, value: " + field.getValue() + "->" + strokeLengthFromDevField + " @" + i);
                                     field.setValue(strokeLengthFromDevField);
                                 }
                             }
@@ -1296,12 +1319,12 @@ public class FitFileForIndoor extends FitFile {
                 // FIX DRAG FACTOR
                 if (lookingInBeginningForEmptyDragFactor) {
                     if ((dragFactorFromDevField!=null && (dragFactorFromDevField!=1 && dragFactorFromDevField!=0))) {
-                        System.out.println("========= FIXED Beginning DRAG FACTOR, first value: " + dragFactorFromDevField + " @ " + recordIx);
+                        if (debugFixData) System.out.println("========= FIXED Beginning DRAG FACTOR, first value: " + dragFactorFromDevField + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
                             Mesg recordToFix = recordMesg.get(i);
                             for (DeveloperField field : recordToFix.getDeveloperFields()) {
                                 if ("DragFactor".equals(field.getName())) {
-                                    System.out.println("========= FIXING DRAG FACTOR, value: " + field.getValue() + "->" + dragFactorFromDevField + " @" + i);
+                                    if (debugFixData) System.out.println("========= FIXING DRAG FACTOR, value: " + field.getValue() + "->" + dragFactorFromDevField + " @" + i);
                                     field.setValue(dragFactorFromDevField);
                                 }
                             }
@@ -1312,12 +1335,12 @@ public class FitFileForIndoor extends FitFile {
                 // FIX TRAINING_SESSION
                 if (lookingInBeginningForEmptyTrainingSession) {
                     if ((trainingSessionFromDevField!=null && trainingSessionFromDevField!=1)) {
-                        System.out.println("========= FIXED Beginning TRAINING_SESSION, first value: " + trainingSessionFromDevField + " @ " + recordIx);
+                        if (debugFixData) System.out.println("========= FIXED Beginning TRAINING_SESSION, first value: " + trainingSessionFromDevField + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
                             Mesg recordToFix = recordMesg.get(i);
                             for (DeveloperField field : recordToFix.getDeveloperFields()) {
                                 if ("Training_session".equals(field.getName())) {
-                                    System.out.println("========= FIXING TRAINING_SESSION, value: " + field.getValue() + "->" + trainingSessionFromDevField + " @" + i);
+                                    if (debugFixData) System.out.println("========= FIXING TRAINING_SESSION, value: " + field.getValue() + "->" + trainingSessionFromDevField + " @" + i);
                                     field.setValue(trainingSessionFromDevField);
                                 }
                             }
@@ -1394,7 +1417,7 @@ public class FitFileForIndoor extends FitFile {
                 Short cadLastFixSpike = recordMesg.get(recordIx-1).getFieldShortValue(REC_CAD);
 
                 if ((cadFixSpike > maxCadenceValue) || (((cadFixSpike - cadLastFixSpike) > 9) && (cadLastFixSpike > 45))) {
-                    System.out.println("=======>>> Fixed Cadence PEAK from: " + cadFixSpike + "->" + cadLastFixSpike);
+                    if (debugFixData) System.out.println("=======>>> Fixed Cadence PEAK from: " + cadFixSpike + "->" + cadLastFixSpike);
                     record.setFieldValue(REC_CAD, cadLastFixSpike);
                 }
             }
@@ -1539,7 +1562,7 @@ public class FitFileForIndoor extends FitFile {
                             recordToFix.setFieldValue(REC_SPEED, speed);
                             recordToFix.setFieldValue(REC_ESPEED, speed);
                         }
-                        System.out.println("========= FIXED Beginning SPEED, first value: " + speed + " @ " + recordIx);
+                        if (debugFixData) System.out.println("========= FIXED Beginning SPEED, first value: " + speed + " @ " + recordIx);
                         lookingInBeginningForEmptySpeed = false;
                     }
                 }
@@ -1550,7 +1573,7 @@ public class FitFileForIndoor extends FitFile {
                             Mesg recordToFix = recordMesg.get(i);
                             recordToFix.setFieldValue(REC_CADENCE, record.getCadence());
                         }
-                        System.out.println("========= FIXED Beginning CADENCE, first value: " + record.getCadence() + " @ " + recordIx);
+                        if (debugFixData) System.out.println("========= FIXED Beginning CADENCE, first value: " + record.getCadence() + " @ " + recordIx);
                         lookingInBeginningForEmptyCadence = false;
                     }
                 }
@@ -1561,7 +1584,7 @@ public class FitFileForIndoor extends FitFile {
                             Mesg recordToFix = recordMesg.get(i);
                             recordToFix.setFieldValue(REC_POWER, record.getPower());
                         }
-                        System.out.println("========= FIXED Beginning POWER, first value: " + record.getPower() + " @ " + recordIx);
+                        if (debugFixData) System.out.println("========= FIXED Beginning POWER, first value: " + record.getPower() + " @ " + recordIx);
                         lookingInBeginningForEmptyPower = false;
                     }
                 }
@@ -1576,7 +1599,7 @@ public class FitFileForIndoor extends FitFile {
                                 }
                             }
                         }
-                        System.out.println("========= FIXED Beginning STROKE LENGTH, first value: " + strokeLengthFromDevField + " @ " + recordIx);
+                        if (debugFixData) System.out.println("========= FIXED Beginning STROKE LENGTH, first value: " + strokeLengthFromDevField + " @ " + recordIx);
                         lookingInBeginningForEmptyStrokeLength = false;
                     }
                 }
@@ -1591,7 +1614,7 @@ public class FitFileForIndoor extends FitFile {
                                 }
                             }
                         }
-                        System.out.println("========= FIXED Beginning DRAG FACTOR, first value: " + dragFactorFromDevField + " @ " + recordIx);
+                        if (debugFixData) System.out.println("========= FIXED Beginning DRAG FACTOR, first value: " + dragFactorFromDevField + " @ " + recordIx);
                         lookingInBeginningForEmptyDragFactor = false;
                     }
                 }
@@ -1606,7 +1629,7 @@ public class FitFileForIndoor extends FitFile {
                                 }
                             }
                         }
-                        System.out.println("========= FIXED Beginning TRAINING_SESSION, first value: " + currentTrainingSession + " @ " + recordIx);
+                        if (debugFixData) System.out.println("========= FIXED Beginning TRAINING_SESSION, first value: " + currentTrainingSession + " @ " + recordIx);
                         lookingInBeginningForEmptyTrainingSession = false;
                     }
                 }
@@ -1923,7 +1946,7 @@ public class FitFileForIndoor extends FitFile {
                     }
                     lapMesg.get(lapIx).setFieldValue(LAP_SPEED, avgSpeedVal);
                     lapMesg.get(lapIx).setFieldValue(LAP_ESPEED, avgSpeedVal);
-                    System.out.println("Lap " + lapNo + " Distance: " + lapTotalDistance 
+                    if (debugLaps) System.out.println("Lap " + lapNo + " Distance: " + lapTotalDistance 
                     + ", Timer: " + lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER) 
                     + ", AvgSpeed: " + lapMesg.get(lapIx).getFieldFloatValue(LAP_SPEED) 
                     + ", avgEnhanced: " + lapMesg.get(lapIx).getFieldFloatValue(LAP_ESPEED));
@@ -2052,7 +2075,7 @@ public class FitFileForIndoor extends FitFile {
                 lastActiveFakeSumPower = activeFakeSumPower;
             }
 
-            System.out.println("_____ i: " + i + " MAXsp: " + activeFakeSumSpeed + " cad: " + activeFakeSumCad + " pow: " + activeFakeSumPower);
+            if (debugLaps) System.out.println("_____ i: " + i + " MAXsp: " + activeFakeSumSpeed + " cad: " + activeFakeSumCad + " pow: " + activeFakeSumPower);
 
         }
 
@@ -2429,7 +2452,7 @@ public class FitFileForIndoor extends FitFile {
             for (int i = 0; i < splitMesg.size(); i++) {
                 lapIxInSplitMesg = splitMesg.get(i).getFieldIntegerValue(67);
                 if (lapIxInSplitMesg != null && lapIxInSplitMesg.equals(lapIx)) {
-                    System.out.println("----- Link   SPLIT index " + lapIxInSplitMesg + " to LAP index " + lapIx);
+                    if (debugSplit) System.out.println("----- Link   SPLIT index " + lapIxInSplitMesg + " to LAP index " + lapIx);
                     break;
                 }
             }
@@ -2512,9 +2535,9 @@ public class FitFileForIndoor extends FitFile {
                 if (lookingInBeginningForEmptyCadence) {
                     Short cad = record.getFieldShortValue(REC_CAD);
                     if ((cad!=null && cad!=0 && cad>20)) {
-                        System.out.println("========= FIXED Beginning CADENCE, first real value: " + cad + " @ " + recordIx);
+                        if (debugFixData) System.out.println("========= FIXED Beginning CADENCE, first real value: " + cad + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
-                            System.out.println("========= FIXING CADENCE, value: " + recordMesg.get(i).getFieldValue(REC_CAD) + "->" + cad + " @" + i);
+                            if (debugFixData) System.out.println("========= FIXING CADENCE, value: " + recordMesg.get(i).getFieldValue(REC_CAD) + "->" + cad + " @" + i);
                             recordMesg.get(i).setFieldValue(REC_CAD, cad);
                         }
                         lookingInBeginningForEmptyCadence = false;
@@ -2551,9 +2574,9 @@ public class FitFileForIndoor extends FitFile {
                 if (lookingInBeginningForEmptySpeed) {
                     Float speed = record.getFieldFloatValue(REC_ESPEED);
                     if (speed!=null && speed!=0f && speed!=1 && speed<100f) {
-                        System.out.println("========= FIXED Beginning SPEED, first value: " + speed + " @ " + recordIx);
+                        if (debugFixData) System.out.println("========= FIXED Beginning SPEED, first value: " + speed + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
-                            System.out.println("========= FIXING SPEED, value: " + recordMesg.get(i).getFieldValue(REC_ESPEED) + "->" + speed + " @" + i);
+                            if (debugFixData) System.out.println("========= FIXING SPEED, value: " + recordMesg.get(i).getFieldValue(REC_ESPEED) + "->" + speed + " @" + i);
                             recordMesg.get(i).setFieldValue(REC_ESPEED, speed);
                             recordMesg.get(i).setFieldValue(REC_SPEED, speed);
                         }
@@ -2564,9 +2587,9 @@ public class FitFileForIndoor extends FitFile {
                 if (lookingInBeginningForEmptyCadence) {
                     Short cad = record.getFieldShortValue(REC_CAD);
                     if (cad!=null && cad!=0 && cad!=1 && cad<100) {
-                        System.out.println("========= FIXED Beginning CADENCE, first value: " + cad + " @ " + recordIx);
+                        if (debugFixData) System.out.println("========= FIXED Beginning CADENCE, first value: " + cad + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
-                            System.out.println("========= FIXING CADENCE, value: " + recordMesg.get(i).getFieldValue(REC_CAD) + "->" + cad + " @" + i);
+                            if (debugFixData) System.out.println("========= FIXING CADENCE, value: " + recordMesg.get(i).getFieldValue(REC_CAD) + "->" + cad + " @" + i);
                             recordMesg.get(i).setFieldValue(REC_CAD, cad);
                         }
                         lookingInBeginningForEmptyCadence = false;
@@ -2576,9 +2599,9 @@ public class FitFileForIndoor extends FitFile {
                 if (lookingInBeginningForEmptyPower) {
                     Integer power = record.getFieldIntegerValue(REC_POW);
                     if ((power!=null && power!=0)) {
-                        System.out.println("========= FIXED Beginning POWER, first value: " + power + " @ " + recordIx);
+                        if (debugFixData) System.out.println("========= FIXED Beginning POWER, first value: " + power + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
-                            System.out.println("========= FIXING POWER, value: " + recordMesg.get(i).getFieldValue(REC_POW) + "->" + power + " @" + i);
+                            if (debugFixData) System.out.println("========= FIXING POWER, value: " + recordMesg.get(i).getFieldValue(REC_POW) + "->" + power + " @" + i);
                             recordMesg.get(i).setFieldValue(REC_POW, power);
                         }
                         lookingInBeginningForEmptyPower = false;
@@ -2807,7 +2830,7 @@ public class FitFileForIndoor extends FitFile {
             //--------------
             // IF LAP END
             if ( currentTimeStamp.equals(currentLapTimeEnd) ) {
-                System.out.println("LapEND lapIx: " + lapIx + " recordIxStart: " + lapExtraRecords.get(lapIx).recordIxStart + " recordIx: " + recordIx);
+                if (debugLaps) System.out.println("LapEND lapIx: " + lapIx + " recordIxStart: " + lapExtraRecords.get(lapIx).recordIxStart + " recordIx: " + recordIx);
 
                 // Save HR and recordIx END
                 lapExtraRecords.get(lapIx).hrEnd = record.getFieldShortValue(REC_HR);
@@ -2818,11 +2841,11 @@ public class FitFileForIndoor extends FitFile {
                 // CORRECTION
                 // INIT of Variables
                 corrPerMeter = (lapSumOfRecordDist - lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST)) / lapSumOfRecordDist;
-                System.out.println("---- Before CORRECTION1 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
+                if (debugLaps) System.out.println("---- Before CORRECTION1 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
                 sumOfRecordDist = sumOfRecordDist - lapSumOfRecordDist;
-                System.out.println("---- Before CORRECTION2 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
+                if (debugLaps) System.out.println("---- Before CORRECTION2 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
                 lapSumOfRecordDist = 0f;
-                System.out.println("---- Before CORRECTION3 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
+                if (debugLaps) System.out.println("---- Before CORRECTION3 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
 
                 // CORRECTION RECAP LAP
                 for (int j=lapExtraRecords.get(lapIx).recordIxStart; j<=lapExtraRecords.get(lapIx).recordIxEnd; j++) {
@@ -2880,11 +2903,11 @@ public class FitFileForIndoor extends FitFile {
                     }
 
                 }
-                System.out.println("---- After CORRECTION1 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
+                if (debugLaps) System.out.println("---- After CORRECTION1 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
 
                 lapSumOfRecordDist = (float) Math.round(lapSumOfRecordDist);
                 sumOfRecordDist = (float) Math.round(sumOfRecordDist);
-                System.out.println("---- After CORRECTION2 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
+                if (debugLaps) System.out.println("---- After CORRECTION2 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
 
                 //--------------
                 // Calculate ACTIVE LAP SUM & MAX
@@ -4033,7 +4056,7 @@ public class FitFileForIndoor extends FitFile {
         }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printLapLongSummary() {
+    public void printLapLongSummery() {
         System.out.println();
         System.out.println("================================================");
         System.out.println("====LAPS IN FILE (lap3-LapLongSummary)");

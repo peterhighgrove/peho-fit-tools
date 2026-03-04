@@ -22,7 +22,7 @@ public class ProfileStr {
                     ;
             }
         }
-        System.out.println("  Extracted info: Profile=" + profileName
+        if (StringsDebug.enabled) System.out.println("  Extracted info: Profile=" + profileName
             + ", Sport=" + sport.toString()
             + ", SubSport=" + subSport.toString()
             + " => FormattedProfileName='" + name + "'"

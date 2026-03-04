@@ -1,17 +1,25 @@
 #!/bin/bash
 set -e
+# ---- Validate argument count ----
+if [[ $# -lt 1 || $# -gt 1 ]]; then
+    echo "Usage: $0 <version>"
+    exit 1
+fi
 
 # -------------------------------
 # 0. Set project root and destination folder
 # -------------------------------
+
 root=$(pwd)
 dest="$root/jars"
+dest2="$HOME/Downloads"
+dest3="$HOME/Nextcloud/dev/jars"
 
 # -------------------------------
 # 1. Run Maven commands
 # -------------------------------
-echo "=== Setting new version to 2.11 ==="
-mvn versions:set -DnewVersion=2.11
+echo "=== Setting new version to $1 ==="
+mvn versions:set -DnewVersion=$1
 
 echo "=== Committing version changes ==="
 mvn versions:commit
@@ -23,6 +31,8 @@ mvn clean package
 # 2. Ensure destination folder exists
 # -------------------------------
 mkdir -p "$dest"
+mkdir -p "$dest2"
+mkdir -p "$dest3"
 
 # -------------------------------
 # 3. Define rename map
@@ -61,6 +71,8 @@ find "$root" -type f -path "*/target/*.jar" \
     fi
 
     cp -f "$jar" "$dest/$newName"
+    cp -f "$jar" "$dest2/$newName"
+    cp -f "$jar" "$dest3/$newName"
     echo "Copied $jar -> $newName"
 
 done

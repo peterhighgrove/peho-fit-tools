@@ -27,7 +27,7 @@ public class DTstr {
         long unixDateTime = garminLocalDate + FIT_EPOCH_OFFSET;
         Instant instantDateTime = Instant.ofEpochSecond(unixDateTime);
         String DT = DateTimeFormatter.ofPattern(formatPattern).withZone(ZoneOffset.of(tz)).format(instantDateTime);
-        System.out.println("  Extracted DateTime:'" + garminLocalDate + "'" + " => Formatted:'" + DT + "'");
+        if (StringsDebug.enabled) System.out.println("  Extracted DateTime:'" + garminLocalDate + "'" + " => Formatted:'" + DT + "'");
         
         return DT;
     }
