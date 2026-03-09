@@ -3033,7 +3033,7 @@ public class FitFile {
     public Boolean isSkiErgFile() {
         //System.out.println("======== isSkiErgFile TEST ==========");
         Boolean isTrue = false;
-        if (sportProfile.toLowerCase().contains("skierg")
+        if (sportProfile != null && sportProfile.toLowerCase().contains("skierg")
             ) {
                 isTrue = true;
         }
@@ -3043,7 +3043,7 @@ public class FitFile {
     public Boolean isTreadmillFile() {
         //System.out.println("======== isSkiErgFile TEST ==========");
         Boolean isTrue = false;
-        if (sportProfile.toLowerCase().contains("löpband") 
+        if (sportProfile != null && sportProfile.toLowerCase().contains("löpband") 
             || sportProfile.contains("treadmill")
             ) {
                 isTrue = true;
@@ -3054,7 +3054,7 @@ public class FitFile {
     public Boolean isEllipticalFile() {
         //System.out.println("======== isEllipticalFile TEST ==========");
         Boolean isTrue = false;
-        if (sportProfile.toLowerCase().contains("ellipt")
+        if (sportProfile != null && sportProfile.toLowerCase().contains("ellipt")
             || sportProfile.toLowerCase().contains("gymbike")
             || sportProfile.toLowerCase().contains("spinbike")
             || sportProfile.toLowerCase().contains("ct")) {

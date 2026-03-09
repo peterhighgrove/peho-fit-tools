@@ -15,7 +15,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      //"args": "2025-10-03-Cassis_East.zip"
+      "args": "\"Bruksvallarna Solskensspåret\" 2"
     },
     {
       "type": "java",
