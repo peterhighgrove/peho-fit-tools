@@ -26,7 +26,10 @@ public class FitFile {
     public static final int DINFO_SWVER = DeviceInfoMesg.SoftwareVersionFieldNum; //float
     public static final int ACT_TIME = ActivityMesg.TimestampFieldNum; //long
     public static final int ACT_LOCTIME = ActivityMesg.LocalTimestampFieldNum; //long
+    public static final int DEVID_APPID = DeveloperDataIdMesg.ApplicationIdFieldNum; //enum
     public static final int WKT_NAME = WorkoutMesg.WktNameFieldNum; //long
+    public static final int WKT_SPORT = WorkoutMesg.SportFieldNum; //long
+    public static final int WKT_SUBSPORT = WorkoutMesg.SubSportFieldNum; //long
     public static final int SES_TIME = SessionMesg.TimestampFieldNum; //long
     public static final int SES_STIME = SessionMesg.StartTimeFieldNum; //long
     public static final int SES_PROFILE = SessionMesg.SportProfileNameFieldNum; //string
@@ -34,9 +37,16 @@ public class FitFile {
     public static final int SES_SUBSPORT = SessionMesg.SubSportFieldNum; //short -> .getByValue -> SubSport
     public static final int SES_TIMER = SessionMesg.TotalTimerTimeFieldNum; //float
     public static final int SES_ETIMER = SessionMesg.TotalElapsedTimeFieldNum; //float
+    public static final int SES_MTIMER = SessionMesg.TotalMovingTimeFieldNum; //float
     public static final int SES_DIST = SessionMesg.TotalDistanceFieldNum; //float
     public static final int SES_SPEED = SessionMesg.AvgSpeedFieldNum; //float
+    public static final int SES_MSPEED = SessionMesg.MaxSpeedFieldNum; //float
     public static final int SES_ESPEED = SessionMesg.EnhancedAvgSpeedFieldNum; //float
+    public static final int SES_EMSPEED = SessionMesg.EnhancedMaxSpeedFieldNum; //float
+    public static final int SES_CAD = SessionMesg.AvgCadenceFieldNum; //short
+    public static final int SES_MCAD = SessionMesg.MaxCadenceFieldNum; //short
+    public static final int SES_POW = SessionMesg.AvgPowerFieldNum; //int
+    public static final int SES_MPOW = SessionMesg.MaxPowerFieldNum; //int
     public static final int EVE_TIME = EventMesg.TimestampFieldNum; //long
     public static final int EVE_STIME = EventMesg.StartTimestampFieldNum; //long
     public static final int EVE_EVENT = EventMesg.EventFieldNum; //long
@@ -48,17 +58,35 @@ public class FitFile {
     public static final int SPL_TIMER = SplitMesg.TotalTimerTimeFieldNum; // float
     public static final int SPL_DIST = SplitMesg.TotalDistanceFieldNum; // float
     public static final int SPL_SPEED = SplitMesg.AvgSpeedFieldNum; // float
-    public static final int SPL_ASC = SplitMesg.TotalAscentFieldNum; // int
-    public static final int SPL_DESC = SplitMesg.TotalDescentFieldNum; // int
-    public static final int SPL_START_LAT = SplitMesg.StartPositionLatFieldNum; // int (semicircles)
-    public static final int SPL_START_LON = SplitMesg.StartPositionLongFieldNum; // int (semicircles)
-    public static final int SPL_END_LAT = SplitMesg.EndPositionLatFieldNum; // int (semicircles)
-    public static final int SPL_END_LON = SplitMesg.EndPositionLongFieldNum; // int (semicircles)
     public static final int SPL_MSPEED = SplitMesg.MaxSpeedFieldNum; // float
     public static final int SPL_VSPEED = SplitMesg.AvgVertSpeedFieldNum; // float
+    public static final int SPL_SELE = SplitMesg.StartElevationFieldNum; // int
+    public static final int SPL_ASC = SplitMesg.TotalAscentFieldNum; // int
+    public static final int SPL_DESC = SplitMesg.TotalDescentFieldNum; // int
+    // public static final int SPL_START_LAT = SplitMesg.StartPositionLatFieldNum; // int (semicircles)
+    // public static final int SPL_START_LON = SplitMesg.StartPositionLongFieldNum; // int (semicircles)
+    // public static final int SPL_END_LAT = SplitMesg.EndPositionLatFieldNum; // int (semicircles)
+    // public static final int SPL_END_LON = SplitMesg.EndPositionLongFieldNum; // int (semicircles)
+    public static final int SPL_SLAT = SplitMesg.StartPositionLatFieldNum; // int (semicircles)
+    public static final int SPL_SLON = SplitMesg.StartPositionLongFieldNum; // int (semicircles)
+    public static final int SPL_ELAT = SplitMesg.EndPositionLatFieldNum; // int (semicircles)
+    public static final int SPL_ELON = SplitMesg.EndPositionLongFieldNum; // int (semicircles)
+    public static final int SPL_ETIMER = SplitMesg.TotalElapsedTimeFieldNum; // float
+    public static final int SPL_MTIMER = SplitMesg.TotalMovingTimeFieldNum; // float
     public static final int SPL_TOTAL_CALORIES = SplitMesg.TotalCaloriesFieldNum; // int
     public static final int SPL_START_ELEVATION = SplitMesg.StartElevationFieldNum; // int
     public static final int SPL_TOTAL_MOVING_TIME = SplitMesg.TotalMovingTimeFieldNum; // float
+    public static final int SPL_CAL = SplitMesg.TotalCaloriesFieldNum; // int
+    public static final int SPLSUM_TIMER = SplitSummaryMesg.TotalTimerTimeFieldNum; // float
+    public static final int SPLSUM_MTIMER = SplitSummaryMesg.TotalMovingTimeFieldNum; // float
+    public static final int SPLSUM_DIST = SplitSummaryMesg.TotalDistanceFieldNum; // float
+    public static final int SPLSUM_SPEED = SplitSummaryMesg.AvgSpeedFieldNum; // float
+    public static final int SPLSUM_MSPEED = SplitSummaryMesg.MaxSpeedFieldNum; // float
+    public static final int SPLSUM_VSPEED = SplitSummaryMesg.AvgVertSpeedFieldNum; // float
+    public static final int SPLSUM_ASC = SplitSummaryMesg.TotalAscentFieldNum; // int
+    public static final int SPLSUM_DESC = SplitSummaryMesg.TotalDescentFieldNum; // int
+    public static final int SPLSUM_CAL = SplitSummaryMesg.TotalCaloriesFieldNum; // int
+    public static final int SPLSUM_TYPE = SplitSummaryMesg.SplitTypeFieldNum; // enum
     public static final int LAP_TIME = LapMesg.TimestampFieldNum; //long
     public static final int LAP_STIME = LapMesg.StartTimeFieldNum; //long
     public static final int LAP_TIMER = LapMesg.TotalTimerTimeFieldNum; //float
@@ -89,16 +117,24 @@ public class FitFile {
     public static final int LAP_TEMP = LapMesg.AvgTemperatureFieldNum; // byte
     public static final int LAP_MTEMP = LapMesg.MaxTemperatureFieldNum; // byte
     public static final int LAP_MINTEMP = LapMesg.MinTemperatureFieldNum; // byte
+    public static final int LAP_SPORT = LapMesg.SportFieldNum; //short -> .getByValue -> Sport
+    public static final int LAP_SUBSPORT = LapMesg.SubSportFieldNum; //short -> .getByValue -> SubSport
     public static final int REC_TIME = RecordMesg.TimestampFieldNum; //long
     public static final int REC_DIST = RecordMesg.DistanceFieldNum; //float
     public static final int REC_HR = RecordMesg.HeartRateFieldNum; //int
     public static final int REC_SPEED = RecordMesg.SpeedFieldNum; //float
     public static final int REC_ESPEED = RecordMesg.EnhancedSpeedFieldNum; //float
+    public static final int REC_CAD = RecordMesg.CadenceFieldNum; //int
     public static final int REC_POW = RecordMesg.PowerFieldNum; //int
     public static final int REC_LAT = RecordMesg.PositionLatFieldNum; //int
     public static final int REC_LON = RecordMesg.PositionLongFieldNum; //int
     public static final int REC_EALT = RecordMesg.EnhancedAltitudeFieldNum; //float
+    public static final int SP_SPORT = SportMesg.SportFieldNum; //short -> .getByValue -> Sport
+    public static final int SP_SUBSPORT = SportMesg.SubSportFieldNum;
+    public static final int SP_NAME = SportMesg.NameFieldNum; //string
 
+
+    private Integer manufacturerNo;
     private String manufacturer;
     private int productNo;
     private String product = "";
@@ -229,6 +265,9 @@ public class FitFile {
 
     public Float getTotalDistanceOrg() { return totalDistanceOrg; }
     public void setTotalDistanceOrg(Float totalDistanceOrg) { this.totalDistanceOrg = totalDistanceOrg; }
+
+    public Integer getManufacturerNo() { return manufacturerNo; }
+    public void setManufacturerNo(Integer manufacturerNo) { this.manufacturerNo = manufacturerNo; }
 
     public String getManufacturer() { return manufacturer; }
     public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }

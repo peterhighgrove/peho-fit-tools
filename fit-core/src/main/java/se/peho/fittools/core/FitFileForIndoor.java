@@ -27,6 +27,7 @@ import se.peho.fittools.core.strings.*;
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 public class FitFileForIndoor extends FitFile {
 
+    /*
     public static final int FID_CTIME = FileIdMesg.TimeCreatedFieldNum; //long
     public static final int FID_MANU = FileIdMesg.ManufacturerFieldNum; //int
     public static final int FID_PROD = FileIdMesg.ProductFieldNum; //int
@@ -89,8 +90,6 @@ public class FitFileForIndoor extends FitFile {
     public static final int SPLSUM_DESC = SplitSummaryMesg.TotalDescentFieldNum; // int
     public static final int SPLSUM_CAL = SplitSummaryMesg.TotalCaloriesFieldNum; // int
     public static final int SPLSUM_TYPE = SplitSummaryMesg.SplitTypeFieldNum; // enum
-
-
     public static final int LAP_TIME = LapMesg.TimestampFieldNum; //long
     public static final int LAP_STIME = LapMesg.StartTimeFieldNum; //long
     public static final int LAP_TIMER = LapMesg.TotalTimerTimeFieldNum; //float
@@ -136,29 +135,26 @@ public class FitFileForIndoor extends FitFile {
     public static final int SP_SPORT = SportMesg.SportFieldNum; //short -> .getByValue -> Sport
     public static final int SP_SUBSPORT = SportMesg.SubSportFieldNum;
     public static final int SP_NAME = SportMesg.NameFieldNum; //string
+    */
 
-    private Integer manufacturerNo;
-    private String manufacturer;
-    private Integer productNr;
-    private String product = "";
-    private Float swVer;
-    private Long activityDateTimeUTC;  // Original file
+    //private Integer manufacturerNo;
+    //private String manufacturer;
+    // private Integer productNr;
+    // private String product = "";
+    // private Float swVer;
+    // private Long activityDateTimeUTC;  // Original file
     private Long activityDateTimeLocal; // Original file
     private Long activityDateTimeLocalOrg; // Original file
     private Long diffMinutesLocalUTC;
 
-    public Integer getManufacturerNo() { return manufacturerNo; }
-    public void setManufacturerNo(Integer manufacturerNo) { this.manufacturerNo = manufacturerNo; }
-    public String getManufacturer() { return manufacturer; }
-    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
-    public Integer getProductNr() { return productNr; }
-    public void setProductNr(Integer productNr) { this.productNr = productNr; }
-    public String getProduct() { return product; }
-    public void setProduct(String product) { this.product = product; }
-    public Float getSwVer() { return swVer; }
-    public void setSwVer(Float swVer) { this.swVer = swVer; }
-    public Long getActivityDateTimeUTC() { return activityDateTimeUTC; }
-    public void setActivityDateTimeUTC(Long activityDateTimeUTC) { this.activityDateTimeUTC = activityDateTimeUTC; }
+    // public Integer getProductNr() { return productNr; }
+    // public void setProductNr(Integer productNr) { this.productNr = productNr; }
+    // public String getProduct() { return product; }
+    // public void setProduct(String product) { this.product = product; }
+    // public Float getSwVer() { return swVer; }
+    // public void setSwVer(Float swVer) { this.swVer = swVer; }
+    // public Long getActivityDateTimeUTC() { return activityDateTimeUTC; }
+    // public void setActivityDateTimeUTC(Long activityDateTimeUTC) { this.activityDateTimeUTC = activityDateTimeUTC; }
     public Long getActivityDateTimeLocal() { return activityDateTimeLocal; }
     public void setActivityDateTimeLocal(Long activityDateTimeLocal) { this.activityDateTimeLocal = activityDateTimeLocal; }
     public Long getActivityDateTimeLocalOrg() { return activityDateTimeLocalOrg; }
@@ -726,7 +722,7 @@ public class FitFileForIndoor extends FitFile {
                                     sportProfile, 
                                     wktName, 
                                     new DistTimerStr(totalDistance, totalTimerTime).get(), 
-                                    product
+                                    getProduct()
                                 ).get();
 
 
@@ -739,14 +735,14 @@ public class FitFileForIndoor extends FitFile {
         if (StringsDebug.enabled) System.out.println("        SportProfile : " + new ProfileStr(sportProfile, sport, subsport).get());
         if (StringsDebug.enabled) System.out.println("        WktName      : " + new WorkoutStr(wktName).get());
         if (StringsDebug.enabled) System.out.println("        TimerDist    : " + new DistTimerStr(totalDistance, totalTimerTime).get());
-        if (StringsDebug.enabled) System.out.println("        Product      : " + new ProductStr(manufacturerNo, productNr, swVer).get());
+        if (StringsDebug.enabled) System.out.println("        Product      : " + new ProductStr(getManufacturerNo(), getProductNo(), getSwVer()).get());
         if (StringsDebug.enabled) System.out.println("        Suffix      : " + activityNamnSuffix);
         return new FileBaseStr(
                     new DTstr(activityDateTimeLocal).get(),
                     new ProfileStr(sportProfile, sport, subsport).get(),
                     new WorkoutStr(wktName).get(),
                     new DistTimerStr(totalDistance, totalTimerTime).get(), 
-                    new ProductStr(manufacturerNo, productNr, swVer).get(),
+                    new ProductStr(getManufacturerNo(), getProductNo(), getSwVer()).get(),
                     activityNamnSuffix
                 ).get();
     }
@@ -757,14 +753,14 @@ public class FitFileForIndoor extends FitFile {
         if (StringsDebug.enabled) System.out.println("        SportProfile : " + new ProfileStr(sportProfile, sport, subsport).get());
         if (StringsDebug.enabled) System.out.println("        WktName      : " + new WorkoutStr(wktName).get());
         if (StringsDebug.enabled) System.out.println("        TimerDist    : " + new DistTimerStr(totalDistance, totalTimerTime).get());
-        if (StringsDebug.enabled) System.out.println("        Product      : " + new ProductStr(manufacturerNo, productNr, swVer).get());
+        if (StringsDebug.enabled) System.out.println("        Product      : " + new ProductStr(getManufacturerNo(), getProductNo(), getSwVer()).get());
         if (StringsDebug.enabled) System.out.println("        Suffix      : " + activityNamnSuffix);
         return new FileBaseStr(
                     new DTstr(activityDateTimeLocalOrg).get(),
                     new ProfileStr(sportProfile, sport, subsport).get(),
                     new WorkoutStr(wktName).get(),
                     new DistTimerStr(totalDistance, totalTimerTime).get(),
-                    new ProductStr(manufacturerNo, productNr, swVer).get(),
+                    new ProductStr(getManufacturerNo(), getProductNo(), getSwVer()).get(),
                     activityNamnSuffix
                 ).get();
     }
@@ -3076,28 +3072,28 @@ public class FitFileForIndoor extends FitFile {
             }
 
             if (fileIdMesg.get(0).getFieldIntegerValue(FID_MANU) != null) {
-                manufacturerNo = fileIdMesg.get(0).getFieldIntegerValue(FID_MANU);
-                manufacturer = Manufacturer.getStringFromValue(manufacturerNo);
-                if (manufacturer == "GARMIN") {
+                setManufacturerNo(fileIdMesg.get(0).getFieldIntegerValue(FID_MANU));
+                setManufacturer(Manufacturer.getStringFromValue(getManufacturerNo()));
+                if (getManufacturer() == "GARMIN") {
                     if (fileIdMesg.get(0).getFieldIntegerValue(FID_MANU) != null) {
-                        productNr = fileIdMesg.get(0).getFieldIntegerValue(FID_PROD);
-                        product = GarminProduct.getStringFromValue(fileIdMesg.get(0).getFieldIntegerValue(FID_PROD));
+                        setProductNo(fileIdMesg.get(0).getFieldIntegerValue(FID_PROD));
+                        setProduct(GarminProduct.getStringFromValue(fileIdMesg.get(0).getFieldIntegerValue(FID_PROD)));
                     }
                 }
             }
 
-            swVer = deviceInfoMesg.get(0).getFieldFloatValue(DINFO_SWVER);
+            setSwVer(deviceInfoMesg.get(0).getFieldFloatValue(DINFO_SWVER));
             timeFirstRecord = recordMesg.get(0).getFieldLongValue(REC_TIME);
 
             if (activityMesg.get(0).getFieldLongValue(ACT_TIME) == null) {
                 activityMesg.get(0).setFieldValue(ACT_TIME, timeFirstRecord);
             }
-            activityDateTimeUTC = activityMesg.get(0).getFieldLongValue(ACT_TIME);
+            setActivityDateTimeUTC(activityMesg.get(0).getFieldLongValue(ACT_TIME));
             if (activityMesg.get(0).getFieldLongValue(ACT_LOCTIME) == null) {
                 activityMesg.get(0).setFieldValue(ACT_LOCTIME, timeFirstRecord);
             }
             activityDateTimeLocal = activityMesg.get(0).getFieldLongValue(ACT_LOCTIME);
-            diffMinutesLocalUTC = (activityDateTimeLocal - activityDateTimeUTC) / 60;
+            diffMinutesLocalUTC = (activityDateTimeLocal - getActivityDateTimeUTC()) / 60;
             activityDateTimeLocalOrg = activityDateTimeLocal;
 
             if (!wktRecordMesg.isEmpty()) {
@@ -3243,11 +3239,11 @@ public class FitFileForIndoor extends FitFile {
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void createFileSummaryIndoor() {
         savedStrOrgFileInfo += "--------------------------------------------------" + System.lineSeparator();
-        savedStrOrgFileInfo += " --> Manufacturer:" + manufacturer + ", " + product + "(" + productNr + ")" + ", SW: v" + swVer + System.lineSeparator();
+        savedStrOrgFileInfo += " --> Manufacturer:" + getManufacturer() + ", " + getProduct() + "(" + getProductNo() + ")" + ", SW: v" + getSwVer() + System.lineSeparator();
         savedStrOrgFileInfo += " --> Sport:"+ sport + ", SubSport:" + subsport + ", SportProfile:" + sportProfile + ", WktName:" + wktName + System.lineSeparator();
         savedStrOrgFileInfo += " --> Org activity dateTime Local:" + FitDateTime.toString(activityDateTimeLocalOrg) + System.lineSeparator();
         savedStrOrgFileInfo += " --> New activity dateTime Local:" + FitDateTime.toString(activityDateTimeLocal) + System.lineSeparator();
-        savedStrOrgFileInfo += " --> Org activity DateTime UTC:  " + FitDateTime.toString(activityDateTimeUTC) + System.lineSeparator();
+        savedStrOrgFileInfo += " --> Org activity DateTime UTC:  " + FitDateTime.toString(getActivityDateTimeUTC()) + System.lineSeparator();
         savedStrOrgFileInfo += " --> timeZone:                   " + FitDateTime.offsetToTimeZoneString(diffMinutesLocalUTC) + System.lineSeparator();
         savedStrOrgFileInfo += " --> Org start datetime UTC:     " + FitDateTime.toString(timeFirstRecordOrg) + System.lineSeparator();
         savedStrOrgFileInfo += " --> New start datetime UTC:     " + FitDateTime.toString(timeFirstRecord) + System.lineSeparator();
@@ -3257,7 +3253,7 @@ public class FitFileForIndoor extends FitFile {
 
     }
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printFileIdInfo() {
+    /* public void printFileIdInfo() {
         int i = 0;
         System.out.println();
         System.out.println("==================================================");
@@ -3314,9 +3310,9 @@ public class FitFileForIndoor extends FitFile {
             }
         }
         System.out.println("--------------------------------------------------");
-    }
+    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printDeviceInfo() {
+    /* public void printDeviceInfo() {
         int i = 0;
         String manu = "";
         System.out.println();
@@ -3365,7 +3361,7 @@ public class FitFileForIndoor extends FitFile {
             System.out.println();
         }
         System.out.println("--------------------------------------------------");
-    }
+    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printWktInfo() {
         int i = 0;
