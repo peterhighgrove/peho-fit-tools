@@ -1,5 +1,6 @@
 package se.peho.fittools.core;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
@@ -188,6 +189,33 @@ public class FitDateTime {
         } else {
             // s sec
             return String.format("%d sec", seconds);
+        }
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    /**
+     * Parse a datetime string (yyyy-MM-dd-HH-mm-ss or yyyy-MM-dd-HH:mm:ss)
+     * and convert it to Garmin FIT DateTime (seconds since FIT epoch).
+     *
+     * @param dateTimeString input string with either '-' or ':' separators
+     * @return fit-timestamp (UTC) or null if invalid/nullable/before epoch
+     */
+    static public Long parseFitDateTime(String dateTimeString) {
+        if (dateTimeString == null) {
+            return null;
+        }
+        // normalize so both hyphen and colon variants work
+        String norm = dateTimeString.replace(':', '-');
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
+        try {
+            LocalDateTime ldt = LocalDateTime.parse(norm, fmt);
+            long unix = ldt.toEpochSecond(ZoneOffset.UTC);
+            long fit = unix - FIT_EPOCH_OFFSET;
+            if (fit < 0) {
+                return null;
+            }
+            return fit;
+        } catch (Exception ex) {
+            return null;
         }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

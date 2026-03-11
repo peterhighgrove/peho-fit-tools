@@ -13,7 +13,7 @@ public class ActivityChangeTime implements Command {
     public String getKey() { return "at"; }
 
     @Override
-    public String getDescription() { return "Chenge Activity time"; }
+    public String getDescription() { return "Change Activity time"; }
 
     @Override
     public String getCategory() { return "Info"; }
@@ -31,6 +31,14 @@ public class ActivityChangeTime implements Command {
             yesToChange = InputHelper.askForString("Do want to change ACTIVITY time to FIRST record time (y/n)", sc);
             if (yesToChange == null) return;
             if (yesToChange.toLowerCase().equals("y")) watchFitFile.changeActivityTimeUTCandLocalToFirstTimeRecordDiff();
+            
+            yesToChange = InputHelper.askForString("Do want to change ACTIVITY UTC time to a specific time (yyyy-mm-dd-hh-mm-ss / n)", sc);
+            if (yesToChange == null) return;
+            if (yesToChange.length() == 19) watchFitFile.changeActivityTimeUTCToDateString(yesToChange);
+            
+            yesToChange = InputHelper.askForString("Do want to change ACTIVITY LOCAL time to FIRST record time (yyyy-mm-dd-hh-mm-ss / n)", sc);
+            if (yesToChange == null) return;
+            if (yesToChange.length() == 19) watchFitFile.changeActivityTimeLocalToDateString(yesToChange);
             
             watchFitFile.printSessionTimes();
             yesToChange = InputHelper.askForString("Do want to change SESSION time to FIRST record time (y/n)", sc);

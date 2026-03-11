@@ -15,9 +15,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      //"args": "\"Bruksvallarna Solskensspåret\" 2 \"2026-03-09-13-14-52-XC Classic Ski-8km-27.49min-garmin-e2pro-v26.03-FFtoolsCombined.fit\""
-      "args": "\"Bruksvallarna Solskensspåret\" 2 \"2026-03-09-13-14-52-XC Classic Ski-8km-27.49min-garmin-e2pro-v26.03-FFtoolsCombined-FFviewerFixed.fit\""
-      //"args": "\"Bruksvallarna Solskensspåret\" 2 \"2026-03-09-13-14-52-XC Classic Ski-8km-27.49min-garmin-e2pro-v26.03-renamed.zip\""
+      "args": "\"Bruksvallarna-Andersborg+ ToR\" 6 \"2026-03-09-09-40-18-Bruksvallarna-Andersborg+ ToR 25.1km-watch.fit\""
     },
     {
       "type": "java",
@@ -25,7 +23,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.fitZipRenamer.Main",
       "projectName": "fit-zip-renamer",
-      //"args": "fit \"C:\\Users\\peter\\OneDrive\\Dokument Peter OneDrive\\Träning\\ActivityFiles\\Peter activities\" \"2026-01-03-13-06-42-SkiErg-bike 3x(3-2-1min) 10.0km Friskis Orminge-c2\""
+      //"args": "fit \"C:\\Users\\peter\\Andersborg+ ToReDrive\\Dokument Peter OneDrive\\Träning\\ActivityFiles\\Peter activities\" \"2026-01-03-13-06-42-SkiErg-bike 3x(3-2-1min) 10.0km Friskis Orminge-c2\""
       //"args": "zipfit \"C:\\Users\\peter\\Downloads\" \"2025-10-03-Cassis_East\""
       //"args": "zip \"C:\\Users\\peter\\Downloads\""
       "args": "zip \"C:\\Users\\peter\\Downloads\" \"2026-01-11-13-25-50-SkiErg-4x(2-1min)-21.04min-0km-garmin-e2pro-v25.08-renamed\""
