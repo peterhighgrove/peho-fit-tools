@@ -1,6 +1,8 @@
 package  se.peho.fittools.core;
 import com.garmin.fit.*;
 
+import se.peho.fittools.core.strings.Hmmss;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -3346,6 +3348,258 @@ public class FitFile {
         //setChangedStartTimeBySec(getChangedStartTimeBySec() + changeSeconds);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void changeActivityTimeUTCandLocalToFirstTimeRecordDiff() {
+        System.out.println("======== changeActivityTimeUTCandLocalToFirstTimeRecordDiff START ==========");
+        Long timeToChange;
+        Long diffFirstRecordTime = 0L;
+        clearTempUpdateLogg();
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        appendTempUpdateLoggLn("Changing ACTIVITY time to first record time:");
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        for (Mesg mesg : allMesg) {
+            switch (mesg.getNum()) {
+                case MesgNum.ACTIVITY:
+                    timeToChange = mesg.getFieldLongValue(ACT_TIME);
+                    if (timeToChange != null) {
+                        diffFirstRecordTime = getTimeFirstRecord() - timeToChange;
+                        appendTempUpdateLoggLn("Changing ActivityUTC:   "
+                         + FitDateTime.toString(timeToChange) + " to "
+                         + FitDateTime.toString(timeToChange + diffFirstRecordTime));
+                        mesg.setFieldValue(ACT_TIME, timeToChange + diffFirstRecordTime);
+                    }
+                    timeToChange = mesg.getFieldLongValue(ACT_LOCTIME);
+                    if (timeToChange != null) {
+                        appendTempUpdateLoggLn("Changing ActivityLocal: "
+                         + FitDateTime.toString(timeToChange) + " to "
+                         + FitDateTime.toString(timeToChange + diffFirstRecordTime));
+                        mesg.setFieldValue(ACT_LOCTIME, timeToChange + diffFirstRecordTime);
+                        appendTempUpdateLoggLn("--------------------------------------------------");
+                    }
+                    break;
+            }
+        }
+        setActivityDateTimeUTC(activityMesg.get(0).getFieldLongValue(ACT_TIME));
+        setActivityDateTimeLocal(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME));
+        System.out.print(getTempUpdateLogg());
+        appendUpdateLogg(getTempUpdateLogg());
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void changeSessionTimeToFirstTimeRecordDiff() {
+        Long timeToChange;
+        Long diffFirstRecordTime = 0L;
+        clearTempUpdateLogg();
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        appendTempUpdateLoggLn("Changing SESSION time to first record time:");
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        for (Mesg mesg : allMesg) {
+            switch (mesg.getNum()) {
+                case MesgNum.SESSION:
+                    timeToChange = mesg.getFieldLongValue(SES_TIME);
+                    if (timeToChange != null) {
+                        diffFirstRecordTime = getTimeFirstRecord() - timeToChange;
+                        appendTempUpdateLoggLn("Changing SessionTimeTC:   "
+                         + FitDateTime.toString(timeToChange) + " to "
+                         + FitDateTime.toString(timeToChange + diffFirstRecordTime));
+                        mesg.setFieldValue(SES_TIME, timeToChange + diffFirstRecordTime);
+                        appendTempUpdateLoggLn("--------------------------------------------------");
+                    }
+                    break;
+            }
+        }
+        System.out.print(getTempUpdateLogg());
+        appendUpdateLogg(getTempUpdateLogg());
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void changeSessionStartTimeToFirstTimeRecordDiff() {
+        Long timeToChange;
+        Long diffFirstRecordTime = 0L;
+        clearTempUpdateLogg();
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        appendTempUpdateLoggLn("Changing SESSION START time to first record time:");
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        for (Mesg mesg : allMesg) {
+            switch (mesg.getNum()) {
+                case MesgNum.SESSION:
+                    timeToChange = mesg.getFieldLongValue(SES_STIME);
+                    if (timeToChange != null) {
+                        diffFirstRecordTime = getTimeFirstRecord() - timeToChange;
+                        appendTempUpdateLoggLn("Changing SessionTimeTC:   "
+                         + FitDateTime.toString(timeToChange) + " to "
+                         + FitDateTime.toString(timeToChange + diffFirstRecordTime));
+                        mesg.setFieldValue(SES_TIME, timeToChange + diffFirstRecordTime);
+                        appendTempUpdateLoggLn("--------------------------------------------------");
+                    }
+                    break;
+            }
+        }
+        System.out.print(getTempUpdateLogg());
+        appendUpdateLogg(getTempUpdateLogg());
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public String printActivitySessionTimes() {
+        Long timeToChange;
+        clearTempUpdateLogg();
+
+        appendTempUpdateLoggLn("==================================================");
+        appendTempUpdateLoggLn("Activity times saved when reading file:");
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        appendTempUpdateLoggLn(" Activity dateTime Local:" + FitDateTime.toString(getActivityDateTimeLocal()));
+        appendTempUpdateLoggLn(" Activity dateTime UTC:  " + FitDateTime.toString(getActivityDateTimeUTC()));
+        appendTempUpdateLoggLn(" First record time UTC:  " + FitDateTime.toString(getTimeFirstRecord()));
+        appendTempUpdateLoggLn(" Last record time UTC:   " + FitDateTime.toString(getTimeLastRecord()));
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        appendTempUpdateLoggLn("Activity times again now:");
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        for (Mesg mesg : allMesg) {
+            switch (mesg.getNum()) {
+                case MesgNum.ACTIVITY:
+                    timeToChange = mesg.getFieldLongValue(ACT_LOCTIME);
+                    if (timeToChange != null) {
+                        appendTempUpdateLoggLn(" ActivityLocal:          " + FitDateTime.toString(timeToChange));
+                    }
+                    timeToChange = mesg.getFieldLongValue(ACT_TIME);
+                    if (timeToChange != null) {
+                        appendTempUpdateLoggLn(" ActivityUTC:            " + FitDateTime.toString(timeToChange));
+                    }
+                    break;
+                case MesgNum.FILE_ID:
+                    timeToChange = mesg.getFieldLongValue(FID_CTIME);
+                    if (timeToChange != null) {
+                        appendTempUpdateLoggLn(" FileId:                 " + FitDateTime.toString(timeToChange));
+                    }
+                    break;
+                case MesgNum.SESSION:
+                    timeToChange = mesg.getFieldLongValue(SES_TIME);
+                    if (timeToChange != null) {
+                        appendTempUpdateLoggLn(" Session:                " + FitDateTime.toString(timeToChange));
+                    }
+                    timeToChange = mesg.getFieldLongValue(SES_STIME);
+                    if (timeToChange != null) {
+                        appendTempUpdateLoggLn(" SessionStart:           " + FitDateTime.toString(timeToChange));
+                    }
+                    break;
+            }
+        }
+            
+        appendTempUpdateLoggLn("--------------------------------------------------");
+
+        System.out.println(getTempUpdateLogg());
+        return (getTempUpdateLogg());
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public String printActivityTimes() {
+        Long timeToChange;
+        Long diffFirstRecordTime = 0L;
+        
+        clearTempUpdateLogg();
+
+        appendTempUpdateLoggLn("==================================================");
+        appendTempUpdateLoggLn("RECORD times saved when reading file:");
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        appendTempUpdateLoggLn(" First record time UTC: " + FitDateTime.toString(getTimeFirstRecord()));
+        appendTempUpdateLoggLn(" Last record time UTC : " + FitDateTime.toString(getTimeLastRecord()));
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        appendTempUpdateLoggLn("ACTIVITY times:");
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        for (Mesg mesg : allMesg) {
+            switch (mesg.getNum()) {
+                case MesgNum.ACTIVITY:
+                    timeToChange = mesg.getFieldLongValue(ACT_TIME);
+                    if (timeToChange != null) {
+                        appendTempUpdateLoggLn(" ACTIVITY TIME UTC    : " + FitDateTime.toString(timeToChange));
+                        diffFirstRecordTime = getTimeFirstRecord() - timeToChange;
+                        appendTempUpdateLoggLn(" First record DIFF    : " + 
+                            new Hmmss(diffFirstRecordTime).get());
+                        appendTempUpdateLoggLn(" Proposed new time    : " + FitDateTime.toString(timeToChange + diffFirstRecordTime));
+                        appendTempUpdateLoggLn("--------------------------------------------------");
+                    }
+                    timeToChange = mesg.getFieldLongValue(ACT_LOCTIME);
+                    if (timeToChange != null) {
+                        appendTempUpdateLoggLn(" ACTIVITY TIME LOCAL  : " + FitDateTime.toString(timeToChange));
+                        appendTempUpdateLoggLn(" First record DIFF    : " + 
+                            new Hmmss(diffFirstRecordTime).get());
+                        appendTempUpdateLoggLn(" Proposed new time    : " + FitDateTime.toString(timeToChange + diffFirstRecordTime));
+                        appendTempUpdateLoggLn("--------------------------------------------------");
+                    }
+                    break;
+            }
+        }
+            
+
+        System.out.println(getTempUpdateLogg());
+        return (getTempUpdateLogg());
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public String printSessionTimes() {
+        Long timeToChange;
+        Long diffFirstRecordSessionTime = 0L;
+        
+        clearTempUpdateLogg();
+
+        appendTempUpdateLoggLn("==================================================");
+        appendTempUpdateLoggLn("RECORD times saved when reading file:");
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        appendTempUpdateLoggLn(" First record time UTC: " + FitDateTime.toString(getTimeFirstRecord()));
+        appendTempUpdateLoggLn(" Last record time UTC : " + FitDateTime.toString(getTimeLastRecord()));
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        appendTempUpdateLoggLn("SESSION times:");
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        for (Mesg mesg : allMesg) {
+            switch (mesg.getNum()) {
+                case MesgNum.SESSION:
+                    timeToChange = mesg.getFieldLongValue(SES_TIME);
+                    if (timeToChange != null) {
+                        appendTempUpdateLoggLn(" Session time UTC     : " + FitDateTime.toString(timeToChange));
+                        diffFirstRecordSessionTime = getTimeFirstRecord() - timeToChange;
+                        appendTempUpdateLoggLn(" First record DIFF    : " + 
+                            new Hmmss(diffFirstRecordSessionTime).get());
+                        appendTempUpdateLoggLn(" Proposed new time    : " + FitDateTime.toString(timeToChange + diffFirstRecordSessionTime));
+                        appendTempUpdateLoggLn("--------------------------------------------------");
+                    }
+                    break;
+            }
+        }
+            
+
+        System.out.println(getTempUpdateLogg());
+        return (getTempUpdateLogg());
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public String printSessionStartTimes() {
+        Long timeToChange;
+        Long diffFirstRecordSessionTime = 0L;
+        
+        clearTempUpdateLogg();
+
+        appendTempUpdateLoggLn("==================================================");
+        appendTempUpdateLoggLn("RECORD times saved when reading file:");
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        appendTempUpdateLoggLn(" First record time UTC: " + FitDateTime.toString(getTimeFirstRecord()));
+        appendTempUpdateLoggLn(" Last record time UTC : " + FitDateTime.toString(getTimeLastRecord()));
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        appendTempUpdateLoggLn("SESSION START times:");
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        for (Mesg mesg : allMesg) {
+            switch (mesg.getNum()) {
+                case MesgNum.SESSION:
+                    timeToChange = mesg.getFieldLongValue(SES_STIME);
+                    if (timeToChange != null) {
+                        appendTempUpdateLoggLn(" Session START UTC    : " + FitDateTime.toString(timeToChange));
+                        diffFirstRecordSessionTime = getTimeFirstRecord() - timeToChange;
+                        appendTempUpdateLoggLn(" First record DIFF    : " + 
+                            new Hmmss(diffFirstRecordSessionTime).get());
+                        appendTempUpdateLoggLn(" Proposed new time    : " + FitDateTime.toString(timeToChange + diffFirstRecordSessionTime));
+                        appendTempUpdateLoggLn("--------------------------------------------------");
+                    }
+                    break;
+            }
+        }
+            
+
+        System.out.println(getTempUpdateLogg());
+        return (getTempUpdateLogg());
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String createFileSummary() {
         String tempFileInfo = "";
         tempFileInfo += "--------------------------------------------------" + System.lineSeparator();
@@ -4541,6 +4795,14 @@ public class FitFile {
         tempString += createFileSummary();
         tempString += createLapSummery();
         return tempString;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void printActivityTimeInfo() {
+        System.out.println("================================================");
+        System.out.println("Activity time info:");
+        System.out.println("================================================");
+        System.out.print(createFileSummary());
+        printSessionInfo();
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printDetailedFileInfo() {

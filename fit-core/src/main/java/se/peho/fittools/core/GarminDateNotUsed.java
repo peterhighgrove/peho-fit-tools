@@ -11,7 +11,7 @@ public class GarminDateNotUsed {
 
     public GarminDateNotUsed(DateTime time, int hours) {
         objectDateTime = time;
-        objectHoursToAdd = hours;
+        objectHoursToAdd = hours; 
     }
 
     public String date2String() {

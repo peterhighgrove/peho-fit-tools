@@ -15,7 +15,9 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"Bruksvallarna Solskensspåret\" 2"
+      //"args": "\"Bruksvallarna Solskensspåret\" 2 \"2026-03-09-13-14-52-XC Classic Ski-8km-27.49min-garmin-e2pro-v26.03-FFtoolsCombined.fit\""
+      "args": "\"Bruksvallarna Solskensspåret\" 2 \"2026-03-09-13-14-52-XC Classic Ski-8km-27.49min-garmin-e2pro-v26.03-FFtoolsCombined-FFviewerFixed.fit\""
+      //"args": "\"Bruksvallarna Solskensspåret\" 2 \"2026-03-09-13-14-52-XC Classic Ski-8km-27.49min-garmin-e2pro-v26.03-renamed.zip\""
     },
     {
       "type": "java",
