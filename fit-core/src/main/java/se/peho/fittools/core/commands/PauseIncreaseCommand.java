@@ -12,7 +12,7 @@ public class PauseIncreaseCommand implements Command {
     public String getKey() { return "pinc"; }
 
     @Override
-    public String getDescription() { return "Increase a pause"; }
+    public String getDescription() { return "Increase a pause when forgot to stop timer at once"; }
 
     @Override
     public String getCategory() { return "Pauses"; }
@@ -20,7 +20,6 @@ public class PauseIncreaseCommand implements Command {
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
         while (true) {
-            watchFitFile.printPauseList("", 0);
             System.out.println();
             Integer pauseNo = InputHelper.askForNumber("Enter pause number to increase", sc);
             if (pauseNo == null) return;
@@ -48,7 +47,6 @@ public class PauseIncreaseCommand implements Command {
             watchFitFile.createTimerList();
             watchFitFile.createPauseList();
             watchFitFile.createGapList();
-            watchFitFile.printPauseList("", 0);
             break;
         }
     }

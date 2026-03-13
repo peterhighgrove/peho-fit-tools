@@ -28,6 +28,7 @@ public class FitFile {
     public static final int DINFO_SWVER = DeviceInfoMesg.SoftwareVersionFieldNum; //float
     public static final int ACT_TIME = ActivityMesg.TimestampFieldNum; //long
     public static final int ACT_LOCTIME = ActivityMesg.LocalTimestampFieldNum; //long
+    public static final int ACT_TIMER = ActivityMesg.TotalTimerTimeFieldNum; //long
     public static final int DEVID_APPID = DeveloperDataIdMesg.ApplicationIdFieldNum; //enum
     public static final int WKT_NAME = WorkoutMesg.WktNameFieldNum; //long
     public static final int WKT_SPORT = WorkoutMesg.SportFieldNum; //long
@@ -1244,13 +1245,15 @@ public class FitFile {
     
     public Boolean checkForPausesAndGivePrintedResultBasedOnTime(Long fromTime, Long toTime) {
 
+        toTime--; // make it exclusive, so that pause starting exactly at toTime is not included
+
         Boolean isPauses = false;
         CheckForPausesResult result = checkForPausesByTime(fromTime, toTime);
 
         if (result.hasCompletePauses() || result.hasUnmatchedStart() || result.hasUnmatchedEnd()) {
             isPauses = true;
             System.out.println();
-            System.out.println("==XX> There is at least one PAUSE between start and stop.");
+            System.out.println("==XX> There is at least one PAUSE between start "+FitDateTime.toString(fromTime)+" and stop "+FitDateTime.toString(toTime)+".");
             System.out.println("==XX> You need to DELETE PAUSES to proceeed.");
 
             if (result.hasCompletePauses()) {
@@ -2615,6 +2618,8 @@ public class FitFile {
         //----------------------
         totalTimerTime -= (float) secondsToPutIntoPause;
         sessionMesg.get(0).setFieldValue(SES_TIMER, totalTimerTime);
+        sessionMesg.get(0).setFieldValue(SES_MTIMER, sessionMesg.get(0).getFieldFloatValue(SES_ETIMER) - secondsToPutIntoPause);
+        activityMesg.get(0).setFieldValue(ACT_TIMER, totalTimerTime);
         //elapsedTimerTime -= (float) secondsToPutIntoPause;
         //sessionMesg.get(0).setFieldValue(SES_ETIMER, elapsedTimerTime);
 

@@ -24,8 +24,8 @@ mvn versions:set -DnewVersion=$1
 echo "=== Committing version changes ==="
 mvn versions:commit
 
-echo "=== Clean and package all modules ==="
-mvn clean package
+echo "=== Clean and install all modules ==="
+mvn clean install
 
 # -------------------------------
 # 2. Ensure destination folder exists
