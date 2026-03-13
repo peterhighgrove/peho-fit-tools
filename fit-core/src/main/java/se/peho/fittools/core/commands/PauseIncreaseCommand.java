@@ -12,7 +12,7 @@ public class PauseIncreaseCommand implements Command {
     public String getKey() { return "pinc"; }
 
     @Override
-    public String getDescription() { return "Increase a pause when forgot to stop timer at once"; }
+    public String getDescription() { return "Increase a pause when forgot to stop timer when stopped moving."; }
 
     @Override
     public String getCategory() { return "Pauses"; }
@@ -32,13 +32,14 @@ public class PauseIncreaseCommand implements Command {
             if (secs == null) return;
 
             Long newPauseStartTime = watchFitFile.getPauseList().get(pauseNo - 1).getTimeStart() - secs;
-            Long oldPauseStartTime = watchFitFile.getPauseList().get(pauseNo - 1).getTimeStart() - 1; // make it exclusive, so that pause starting exactly at oldPauseStartTime is not included
+            Long oldPauseStartTime = watchFitFile.getPauseList().get(pauseNo - 1).getTimeStart(); 
 
             if (watchFitFile.checkForLapStartsBetweenTimeValues(newPauseStartTime, oldPauseStartTime)) {
                 return;
             }
 
-            if (watchFitFile.checkForPausesAndGivePrintedResultBasedOnTime(newPauseStartTime, oldPauseStartTime)) {
+            if (watchFitFile.checkForPausesAndGivePrintedResultBasedOnTime(newPauseStartTime, (oldPauseStartTime-1))) {
+                // make it exclusive (-1), so that pause starting exactly at oldPauseStartTime is not included
                 return;
             }
 
