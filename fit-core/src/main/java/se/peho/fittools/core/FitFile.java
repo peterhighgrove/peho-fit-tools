@@ -1245,8 +1245,6 @@ public class FitFile {
     
     public Boolean checkForPausesAndGivePrintedResultBasedOnTime(Long fromTime, Long toTime) {
 
-        toTime--; // make it exclusive, so that pause starting exactly at toTime is not included
-
         Boolean isPauses = false;
         CheckForPausesResult result = checkForPausesByTime(fromTime, toTime);
 

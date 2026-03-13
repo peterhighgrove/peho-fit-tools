@@ -32,7 +32,7 @@ public class PauseIncreaseCommand implements Command {
             if (secs == null) return;
 
             Long newPauseStartTime = watchFitFile.getPauseList().get(pauseNo - 1).getTimeStart() - secs;
-            Long oldPauseStartTime = watchFitFile.getPauseList().get(pauseNo - 1).getTimeStart();
+            Long oldPauseStartTime = watchFitFile.getPauseList().get(pauseNo - 1).getTimeStart() - 1; // make it exclusive, so that pause starting exactly at oldPauseStartTime is not included
 
             if (watchFitFile.checkForLapStartsBetweenTimeValues(newPauseStartTime, oldPauseStartTime)) {
                 return;
