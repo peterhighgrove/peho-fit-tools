@@ -887,6 +887,13 @@ public class FitFile {
      * Output columns:
      * TYPE No   timerStart->timerEnd      timeStart -> timeEnd                 dur(s)   distStart->distStop (Δm)   altStart->altStop (Δm)   note
      *
+     * low-movement detection (forward) uses a sliding window of the given size and treats
+     * <code>thresholdMeters</code> as the **maximum** accumulated distance inside the window.
+     *
+     * When evaluating pauses, only <code>thresholdMeters</code> is used as a distance goal: the code
+     * walks records backwards from each pause start until at least that many metres have been
+     * covered and reports how much time before the pause the threshold was reached.
+     *
      * Duration printed in seconds. Timer printed as min:sec (no "(sec)" suffix).
      */
     public void printCombinedStopsPausesLowMovement(int windowSize, double thresholdMeters) {
@@ -995,6 +1002,7 @@ public class FitFile {
             idx++; if (idx == windowSize) idx = 0;
 
             if (count == windowSize) {
+                // thresholdMeters is the **maximum** distance for low movement
                 if (sum < thresholdMeters) {
                     if (!inLow) {
                         inLow = true;
@@ -1065,8 +1073,66 @@ public class FitFile {
             combined.add(e);
         }
 
-        // ---------- Add pauses ----------
+        // ---------- Add pauses and compute time where distance before pause reaches threshold ----------
         for (PauseMesg p : pauseRecords) {
+            Long pauseStartTime = p.getTimeStart();
+            int pauseStartRecIdx = p.getIxStart();
+
+            if (pauseStartTime != null && pauseStartRecIdx > 0) {
+                double backSum = 0.0;
+                Long thresholdTime = null;
+                int thresholdRecIdx = -1;
+                Float thresholdDist = null;
+
+                // accumulate backward until sum >= thresholdMeters
+                for (int i = pauseStartRecIdx - 1; i >= 0; i--) {
+                    Mesg rec = recordMesg.get(i);
+                    Float distF = rec.getFieldFloatValue(REC_DIST);
+                    if (distF == null) continue;
+
+                    double delta = 0.0;
+                    if (i + 1 < recordMesg.size()) {
+                        Mesg nextRec = recordMesg.get(i + 1);
+                        Float nextDistF = nextRec.getFieldFloatValue(REC_DIST);
+                        if (nextDistF != null) {
+                            delta = nextDistF - distF;
+                            if (delta < 0) delta = 0;
+                        }
+                    }
+
+                    backSum += delta;
+                    if (backSum >= thresholdMeters) {
+                        thresholdTime = rec.getFieldLongValue(REC_TIME);
+                        thresholdRecIdx = i;
+                        thresholdDist = distF;
+                        break;
+                    }
+                }
+
+                if (thresholdTime != null) {
+                    // span from the moment the threshold distance was reached up to the pause start
+                    long durBefore = pauseStartTime - thresholdTime;
+                    if (durBefore > windowSize) {
+                        CombinedEntry e = new CombinedEntry(CombinedEntry.Type.LOW);
+                        e.no = -1;
+                        e.startTime = thresholdTime;
+                        e.endTime = pauseStartTime;
+                        e.startTimer = findTimerBasedOnTime(thresholdTime);
+                        e.endTimer = findTimerBasedOnTime(pauseStartTime);
+                        e.note = String.format("BEFORE PAUSE #%d: %.2fm in %ds", p.getNo(), thresholdMeters, durBefore);
+
+                        // record distances for the entry
+                        e.distStart = thresholdDist;
+                        // distStop can use distance just before pause
+                        Mesg stopRec = recordMesg.get(pauseStartRecIdx - 1);
+                        e.distStop = stopRec != null ? stopRec.getFieldFloatValue(REC_DIST) : null;
+                        combined.add(e);
+                    }
+                }
+                // if thresholdTime was null or duration not exceeding windowSize, no low entry is printed
+            }
+
+            // Then add the pause itself
             CombinedEntry e = new CombinedEntry(CombinedEntry.Type.PAUSE);
             e.no = p.getNo();
             e.startTime = p.getTimeStart();
@@ -1105,13 +1171,17 @@ public class FitFile {
         });
 
         // ---------- Print ----------
-        System.out.println("TYPE.No   timer           time                 dur   distance              altitude           note");
-        System.out.println("-------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("TYPE.No   timer(total)     timer(elapsed)     time                 dur   distance              altitude           note");
+        System.out.println("---------------------------------------------------------------------------------------------------------------------------");
 
         int lowSeq = 0;
         for (CombinedEntry ce : combined) {
-            String tStartTimer = ce.startTimer != null ? PehoUtils.sec2minSecShort(ce.startTimer) : "N/A";
-            String tEndTimer = ce.endTimer != null ? PehoUtils.sec2minSecShort(ce.endTimer) : "N/A";
+            String tStartTimer = ce.startTimer != null ? new Hmmss(ce.startTimer).get().replace("h","").replace("min","") : "N/A";
+            String tEndTimer = ce.endTimer != null ? new Hmmss(ce.endTimer).get().replace("h","").replace("min","") : "N/A";
+            String tStartElapsed = (ce.startTime != null && getTimeFirstRecord() != null)
+                    ? new Hmmss(ce.startTime - getTimeFirstRecord()).get().replace("h", "").replace("min", "") : "N/A";
+            String tEndElapsed = (ce.endTime != null && getTimeFirstRecord() != null)
+                    ? new Hmmss(ce.endTime - getTimeFirstRecord()).get().replace("h", "").replace("min", "") : "N/A";
             String tStartTime = ce.startTime != null ? FitDateTime.toStringTime(ce.startTime, diffMinutesLocalUTC) : "unknown";
             String tEndTime = ce.endTime != null ? FitDateTime.toStringTime(ce.endTime, diffMinutesLocalUTC) : "unknown";
 
@@ -1154,9 +1224,10 @@ public class FitFile {
                 typeNo = "GAP." + ce.no;
             }
 
-            System.out.println(String.format("%-9s %-15s %-20s %-5s %-21s %-18s %s",
+            System.out.println(String.format("%-9s %-16s %-16s %-20s %-5s %-21s %-18s %s",
                     typeNo,
                     (tStartTimer + "->" + tEndTimer),
+                    (tStartElapsed + "->" + tEndElapsed),
                     (tStartTime + "->" + tEndTime),
                     durStr,
                     distStr,
@@ -1167,7 +1238,6 @@ public class FitFile {
         System.out.println("-------------------------------------------------------------------------------------------------------------------------");
     }
 // ...existing code...
-
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

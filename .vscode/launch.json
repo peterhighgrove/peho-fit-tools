@@ -15,7 +15,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"Bruksvallarna-Andersborg+ ToR\" 6 \"2026-03-09-09-40-18-Bruksvallarna-Andersborg+ ToR 25.1km-watch.fit\""
+      "args": "\"\" 2 \"2026-03-12-10-03-11-XC Classic Ski-24.3km-1.55.54h-garmin-e2pro-v26.04-renamed.zip\""
     },
     {
       "type": "java",
