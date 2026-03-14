@@ -13,7 +13,7 @@ public class PauseShortenCommand implements Command {
     public String getKey() { return "ps"; }
 
     @Override
-    public String getDescription() { return "Shorten a pause when forgot to resume the timer."; }
+    public String getDescription() { return "SHORTEN a PAUSE when forgot to resume the timer."; }
 
     @Override
     public String getCategory() { return "Pauses"; }

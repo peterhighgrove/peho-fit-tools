@@ -50,6 +50,7 @@ public class FitFile {
     public static final int SES_MCAD = SessionMesg.MaxCadenceFieldNum; //short
     public static final int SES_POW = SessionMesg.AvgPowerFieldNum; //int
     public static final int SES_MPOW = SessionMesg.MaxPowerFieldNum; //int
+    public static final int SES_LAPS = SessionMesg.NumLapsFieldNum; //int
     public static final int EVE_TIME = EventMesg.TimestampFieldNum; //long
     public static final int EVE_STIME = EventMesg.StartTimestampFieldNum; //long
     public static final int EVE_EVENT = EventMesg.EventFieldNum; //long
@@ -2008,6 +2009,277 @@ public class FitFile {
         }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+    public void addActivityFromAnotherFile(FitFile fileToAdd) {
+        updateLogg += "Adding activity from another file" + System.lineSeparator();
+
+        // Find the last STOP_ALL event in this file (to insert after)
+        int insertIndex = -1;
+        Long lastStopAllTime = null;
+        for (int i = 0; i < allMesg.size(); i++) {
+            Mesg mesg = allMesg.get(i);
+            if (mesg.getNum() == MesgNum.EVENT
+                    && mesg.getFieldValue(EVE_TYPE) != null
+                    && mesg.getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())
+                    && mesg.getFieldValue(EVE_EVENT) != null
+                    && Event.getByValue(mesg.getFieldShortValue(EVE_EVENT)).equals(Event.TIMER)) {
+                insertIndex = i + 1;
+                lastStopAllTime = mesg.getFieldLongValue(EVE_TIME);
+            }
+        }
+        if (insertIndex < 0) {
+            updateLogg += "No STOP_ALL event found in base file; appending to end." + System.lineSeparator();
+            insertIndex = allMesg.size();
+        }
+
+        // Find the segment to add: from first START event to last STOP_ALL event in the file to add
+        int startIx = -1;
+        int stopIx = -1;
+        Long firstStartTime = null;
+        for (int i = 0; i < fileToAdd.allMesg.size(); i++) {
+            Mesg mesg = fileToAdd.allMesg.get(i);
+            if (mesg.getNum() != MesgNum.EVENT) continue;
+            Short rawEvent = mesg.getFieldShortValue(EVE_EVENT);
+            Short rawType = mesg.getFieldShortValue(EVE_TYPE);
+            if (rawEvent == null || rawType == null) continue;
+            Event event = Event.getByValue(rawEvent);
+            EventType type = EventType.getByValue(rawType);
+
+            if (event.equals(Event.TIMER) && type.equals(EventType.START) && startIx < 0) {
+                startIx = i;
+                firstStartTime = mesg.getFieldLongValue(EVE_TIME);
+            }
+            if (event.equals(Event.TIMER) && type.equals(EventType.STOP_ALL)) {
+                stopIx = i;
+            }
+        }
+
+        if (startIx < 0 || stopIx < 0 || stopIx < startIx) {
+            updateLogg += "Could not find a valid START/STOP_ALL segment in file to add. No changes made." + System.lineSeparator();
+            return;
+        }
+
+        // Collect lap segment from fileToAdd: LAP messages and TIME_IN_ZONE messages that directly follow them
+        List<Mesg> lapSegment = new ArrayList<>();
+        for (int i = 0; i < fileToAdd.allMesg.size(); i++) {
+            Mesg mesg = fileToAdd.allMesg.get(i);
+            if (mesg.getNum() == MesgNum.LAP) {
+                lapSegment.add(new Mesg(mesg));
+                // Check if the next message is TIME_IN_ZONE (216)
+                if (i + 1 < fileToAdd.allMesg.size() && fileToAdd.allMesg.get(i + 1).getNum() == 216) {
+                    lapSegment.add(new Mesg(fileToAdd.allMesg.get(i + 1)));
+                    i++; // Skip the TIME_IN_ZONE message in the loop
+                }
+            }
+        }
+
+        // Update message index for LAP messages in lapSegment
+        int maxMessageIndex = 0;
+        for (Mesg mesg : allMesg) {
+            Integer index = mesg.getFieldIntegerValue(254);
+            if (index != null && index > maxMessageIndex) {
+                maxMessageIndex = index;
+            }
+        }
+        int nextMessageIndex = maxMessageIndex + 1;
+        for (Mesg mesg : lapSegment) {
+            mesg.setFieldValue(254, nextMessageIndex);
+            nextMessageIndex++;
+        }
+
+        // Find insertion index for laps in this file: after the last LAP or TIME_IN_ZONE message
+        int lapInsertIndex = 0;
+        for (int i = 0; i < allMesg.size(); i++) {
+            Mesg mesg = allMesg.get(i);
+            if (mesg.getNum() == MesgNum.LAP || mesg.getNum() == 216) {
+                lapInsertIndex = i + 1;
+            }
+        }
+
+        // Insert lap segment
+        for (Mesg mesg : lapSegment) {
+            allMesg.add(lapInsertIndex, mesg);
+            lapInsertIndex++;
+        }
+        updateLogg += "Inserted " + lapSegment.size() + " lap-related messages from second file." + System.lineSeparator();
+
+        // Adjust insertIndex for activity segment since we inserted laps
+        insertIndex += lapSegment.size();
+
+        Long pauseSeconds = 0L;
+        // Calculate pause between activities
+        if (lastStopAllTime != null && firstStartTime != null) {
+            pauseSeconds = firstStartTime - lastStopAllTime;
+            updateLogg += "Pause between activities: " + PehoUtils.sec2minSecLong(pauseSeconds) + System.lineSeparator();
+        }
+
+        // Calculate elevation difference
+        Float lastAltThis = null;
+        if (!recordMesg.isEmpty()) {
+            lastAltThis = recordMesg.get(recordMesg.size() - 1).getFieldFloatValue(REC_EALT);
+        }
+        Float firstAltSegment = null;
+        for (int i = startIx; i <= stopIx; i++) {
+            Mesg mesg = fileToAdd.allMesg.get(i);
+            if (mesg.getNum() == MesgNum.RECORD) {
+                firstAltSegment = mesg.getFieldFloatValue(REC_EALT);
+                break;
+            }
+        }
+        Float elevationDiff = 0f;
+        if (lastAltThis != null && firstAltSegment != null) {
+            elevationDiff = lastAltThis - firstAltSegment;
+            updateLogg += "Elevation difference: " + elevationDiff + "m (last of first file: " + lastAltThis + "m, first of second file: " + firstAltSegment + "m)" + System.lineSeparator();
+            System.out.println("Elevation difference: " + elevationDiff + "m (last of first file: " + lastAltThis + "m, first of second file: " + firstAltSegment + "m)" + System.lineSeparator());
+        } else {
+            updateLogg += "Elevation difference could not be calculated (missing data)." + System.lineSeparator();
+            System.out.println("Elevation difference could not be calculated (missing data).");
+        }
+
+        // Insert the segment into this file (keep original order, no time changes)
+        List<Mesg> segment = new ArrayList<>();
+        for (int i = startIx; i <= stopIx; i++) {
+            Mesg mesg = new Mesg(fileToAdd.allMesg.get(i));
+            if (mesg.getNum() == MesgNum.RECORD && elevationDiff != 0f) {
+                Float alt = mesg.getFieldFloatValue(REC_EALT);
+                if (alt != null) {
+                    mesg.setFieldValue(REC_EALT, alt + elevationDiff);
+                }
+            }
+            segment.add(mesg);
+        }
+
+        // Update message index for segment messages
+        for (Mesg mesg : segment) {
+            mesg.setFieldValue(254, nextMessageIndex);
+            nextMessageIndex++;
+        }
+
+        for (Mesg mesg : segment) {
+            allMesg.add(insertIndex, mesg);
+            insertIndex++;
+        }
+
+        // Rebuild internal message lists so they reflect the appended segment
+        rebuildMessageListsFromAllMesg();
+
+        // Update number of laps field
+        this.numberOfLaps = lapMesg.size();
+
+        // Update overall metadata
+        this.timeFirstRecord = Math.min(this.timeFirstRecord, fileToAdd.timeFirstRecord);
+        this.timeLastRecord = Math.max(this.timeLastRecord, fileToAdd.timeLastRecord);
+        this.totalTimerTime += fileToAdd.totalTimerTime;
+        this.totalDistance += fileToAdd.totalDistance;
+
+        if (!sessionMesg.isEmpty()) {
+            System.out.println("Updating session and activity messages with new totals");
+            System.out.println("TotalTimerTime:" + PehoUtils.sec2minSecLong(totalTimerTime));
+            System.out.println("TotalDistance:" + totalDistance);
+            System.out.println("TotalElapsedTimer first file:" + PehoUtils.sec2minSecLong(sessionMesg.get(0).getFieldLongValue(SES_ETIMER)));
+            System.out.println("TotalElapsedTimer second file:" + PehoUtils.sec2minSecLong(fileToAdd.sessionMesg.get(0).getFieldLongValue(SES_ETIMER)));
+            if (sessionMesg.get(0).getFieldLongValue(SES_MTIMER) == null) {
+                sessionMesg.get(0).setFieldValue(SES_MTIMER, 0L);
+            }
+            if (fileToAdd.sessionMesg.get(0).getFieldLongValue(SES_MTIMER) == null) {
+                fileToAdd.sessionMesg.get(0).setFieldValue(SES_MTIMER, 0L);
+            }
+            System.out.println("TotalMovingTimer first file:" + PehoUtils.sec2minSecLong(sessionMesg.get(0).getFieldLongValue(SES_MTIMER)));
+            System.out.println("TotalMovingTimer second file:" + PehoUtils.sec2minSecLong(fileToAdd.sessionMesg.get(0).getFieldLongValue(SES_MTIMER)));
+            sessionMesg.get(0).setFieldValue(SES_DIST, totalDistance);
+            sessionMesg.get(0).setFieldValue(SES_TIMER, totalTimerTime);
+            sessionMesg.get(0).setFieldValue(SES_ETIMER,
+                    sessionMesg.get(0).getFieldLongValue(SES_ETIMER)
+                    + fileToAdd.sessionMesg.get(0).getFieldLongValue(SES_ETIMER) 
+                    + pauseSeconds);
+            sessionMesg.get(0).setFieldValue(SES_MTIMER, 
+                    sessionMesg.get(0).getFieldLongValue(SES_MTIMER)
+                    + fileToAdd.sessionMesg.get(0).getFieldLongValue(SES_MTIMER));
+            activityMesg.get(0).setFieldValue(ACT_TIMER, totalTimerTime);
+            if (totalTimerTime > 0) {
+                Float avg = totalDistance / totalTimerTime;
+                sessionMesg.get(0).setFieldValue(SES_SPEED, avg);
+                sessionMesg.get(0).setFieldValue(SES_ESPEED, avg);
+            }
+
+            // Update number of laps
+            int secondFileLaps = 0;
+            for (Mesg m : lapSegment) {
+                if (m.getNum() == MesgNum.LAP) {
+                    secondFileLaps++;
+                }
+            }
+            Integer currentLaps = sessionMesg.get(0).getFieldIntegerValue(SES_LAPS);
+            if (currentLaps == null) currentLaps = 0;
+            int totalLaps = currentLaps + secondFileLaps;
+            sessionMesg.get(0).setFieldValue(SES_LAPS, totalLaps);
+        }
+
+        // Recalculate pause list for the combined activity
+        //createPauseList();
+    }
+
+    private void rebuildMessageListsFromAllMesg() {
+        // Keep ordering from allMesg, but rebuild per-type caches
+        fileIdMesg.clear();
+        deviceInfoMesg.clear();
+        wktSessionMesg.clear();
+        wktStepMesg.clear();
+        wktRecordMesg.clear();
+        activityMesg.clear();
+        sessionMesg.clear();
+        splitMesg.clear();
+        lapMesg.clear();
+        eventMesg.clear();
+        eventTimerMesg.clear();
+        recordMesg.clear();
+
+        for (Mesg mesg : allMesg) {
+            switch (mesg.getNum()) {
+                case MesgNum.FILE_ID:
+                    fileIdMesg.add(mesg);
+                    break;
+                case MesgNum.DEVICE_INFO:
+                    deviceInfoMesg.add(mesg);
+                    break;
+                case MesgNum.WORKOUT_SESSION:
+                    wktSessionMesg.add(mesg);
+                    break;
+                case MesgNum.WORKOUT_STEP:
+                    wktStepMesg.add(mesg);
+                    break;
+                case MesgNum.WORKOUT:
+                    wktRecordMesg.add(mesg);
+                    break;
+                case MesgNum.ACTIVITY:
+                    activityMesg.add(mesg);
+                    break;
+                case MesgNum.SESSION:
+                    sessionMesg.add(mesg);
+                    break;
+                case MesgNum.SPLIT:
+                    splitMesg.add(mesg);
+                    break;
+                case MesgNum.LAP:
+                    lapMesg.add(mesg);
+                    break;
+                case MesgNum.EVENT:
+                    eventMesg.add(mesg);
+                    Short rawEvent = mesg.getFieldShortValue(EVE_EVENT);
+                    if (rawEvent != null && Event.getByValue(rawEvent).equals(Event.TIMER)) {
+                        eventTimerMesg.add(mesg);
+                    }
+                    break;
+                case MesgNum.RECORD:
+                    recordMesg.add(mesg);
+                    break;
+                default:
+                    // Ignore other types
+                    break;
+            }
+        }
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void addRecordAtStart(Long timeToIncrease, double[] coords) {
         // Parsing GPS input data
         // ----------------------
@@ -2616,7 +2888,7 @@ public class FitFile {
         //----------------------
         totalTimerTime -= (float) secondsToPutIntoPause;
         sessionMesg.get(0).setFieldValue(SES_TIMER, totalTimerTime);
-        sessionMesg.get(0).setFieldValue(SES_MTIMER, sessionMesg.get(0).getFieldFloatValue(SES_ETIMER) - secondsToPutIntoPause);
+        sessionMesg.get(0).setFieldValue(SES_MTIMER, sessionMesg.get(0).getFieldFloatValue(SES_MTIMER) - secondsToPutIntoPause);
         activityMesg.get(0).setFieldValue(ACT_TIMER, totalTimerTime);
         //elapsedTimerTime -= (float) secondsToPutIntoPause;
         //sessionMesg.get(0).setFieldValue(SES_ETIMER, elapsedTimerTime);
@@ -2974,6 +3246,8 @@ public class FitFile {
         //----------------------
         totalTimerTime += (float) pauseToShorten.getTimePause() - newPauseTime;
         sessionMesg.get(0).setFieldValue(SES_TIMER, (totalTimerTime));
+        //sessionMesg.get(0).setFieldValue(SES_MTIMER, (float) (sessionMesg.get(0).getFieldFloatValue(SES_MTIMER) + pauseToShorten.getTimePause() - newPauseTime));
+        activityMesg.get(0).setFieldValue(ACT_TIMER, totalTimerTime);
         //elapsedTimerTime += (float) pauseToShorten.getTimePause() - newPauseTime;
         //sessionMesg.get(0).setFieldValue(SES_ETIMER, elapsedTimerTime);
 

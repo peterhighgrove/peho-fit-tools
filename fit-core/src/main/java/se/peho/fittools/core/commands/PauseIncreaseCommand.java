@@ -12,7 +12,7 @@ public class PauseIncreaseCommand implements Command {
     public String getKey() { return "pinc"; }
 
     @Override
-    public String getDescription() { return "Increase a pause when forgot to stop timer when stopped moving."; }
+    public String getDescription() { return "INCREASE a PAUSE when forgot to stop timer when paused."; }
 
     @Override
     public String getCategory() { return "Pauses"; }

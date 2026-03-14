@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import se.peho.fittools.core.commands.FileInfoShowDetailedCommand;
+import se.peho.fittools.core.commands.ActivityAddAnother;
 import se.peho.fittools.core.commands.ActivityChangeTime;
 import se.peho.fittools.core.commands.GapAddGpsCommand;
 import se.peho.fittools.core.commands.GapTimerCreateCommand;
@@ -76,6 +77,7 @@ public class MenuRunner {
             new StopPrintCommand(),
             new FileInfoShowDetailedCommand(),
             new ActivityChangeTime(),
+            new ActivityAddAnother(),
             new SaveChangeStartTimeExitCommand(conf)
         };
 
