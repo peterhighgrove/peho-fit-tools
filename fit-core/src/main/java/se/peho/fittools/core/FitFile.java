@@ -2011,7 +2011,8 @@ public class FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
     public void addActivityFromAnotherFile(FitFile fileToAdd) {
-        updateLogg += "Adding activity from another file" + System.lineSeparator();
+        clearTempUpdateLogg();
+        appendTempUpdateLoggLn("Adding activity from another file");
 
         // Find the last STOP_ALL event in this file (to insert after)
         int insertIndex = -1;
@@ -2028,7 +2029,7 @@ public class FitFile {
             }
         }
         if (insertIndex < 0) {
-            updateLogg += "No STOP_ALL event found in base file; appending to end." + System.lineSeparator();
+            appendTempUpdateLoggLn("No STOP_ALL event found in base file; appending to end.");
             insertIndex = allMesg.size();
         }
 
@@ -2055,7 +2056,7 @@ public class FitFile {
         }
 
         if (startIx < 0 || stopIx < 0 || stopIx < startIx) {
-            updateLogg += "Could not find a valid START/STOP_ALL segment in file to add. No changes made." + System.lineSeparator();
+            appendTempUpdateLoggLn("Could not find a valid START/STOP_ALL segment in file to add. No changes made.");
             return;
         }
 
@@ -2101,7 +2102,8 @@ public class FitFile {
             allMesg.add(lapInsertIndex, mesg);
             lapInsertIndex++;
         }
-        updateLogg += "Inserted " + lapSegment.size() + " lap-related messages from second file." + System.lineSeparator();
+        appendTempUpdateLoggLn("Inserted " + lapSegment.size() + " lap-related messages from second file." + System.lineSeparator()
+            + "Lap messages inserted at index: " + (lapInsertIndex - lapSegment.size()) + " to " + (lapInsertIndex - 1) + ".");
 
         // Adjust insertIndex for activity segment since we inserted laps
         insertIndex += lapSegment.size();
@@ -2110,7 +2112,9 @@ public class FitFile {
         // Calculate pause between activities
         if (lastStopAllTime != null && firstStartTime != null) {
             pauseSeconds = firstStartTime - lastStopAllTime;
-            updateLogg += "Pause between activities: " + PehoUtils.sec2minSecLong(pauseSeconds) + System.lineSeparator();
+            appendTempUpdateLoggLn("Pause between activities: " + PehoUtils.sec2minSecLong(pauseSeconds) + System.lineSeparator()
+                + "Last STOP_ALL time in first file: " + FitDateTime.toString(lastStopAllTime, diffMinutesLocalUTC) + System.lineSeparator()
+                + "First START time in second file: " + FitDateTime.toString(firstStartTime, diffMinutesLocalUTC));
         }
 
         // Calculate elevation difference
@@ -2129,11 +2133,9 @@ public class FitFile {
         Float elevationDiff = 0f;
         if (lastAltThis != null && firstAltSegment != null) {
             elevationDiff = lastAltThis - firstAltSegment;
-            updateLogg += "Elevation difference: " + elevationDiff + "m (last of first file: " + lastAltThis + "m, first of second file: " + firstAltSegment + "m)" + System.lineSeparator();
-            System.out.println("Elevation difference: " + elevationDiff + "m (last of first file: " + lastAltThis + "m, first of second file: " + firstAltSegment + "m)" + System.lineSeparator());
+            appendTempUpdateLoggLn("Elevation difference: " + elevationDiff + "m (last of first file: " + lastAltThis + "m, first of second file: " + firstAltSegment + "m)" + System.lineSeparator());
         } else {
-            updateLogg += "Elevation difference could not be calculated (missing data)." + System.lineSeparator();
-            System.out.println("Elevation difference could not be calculated (missing data).");
+            appendTempUpdateLoggLn("Elevation difference could not be calculated (missing data).");
         }
 
         // Insert the segment into this file (keep original order, no time changes)
@@ -2173,28 +2175,26 @@ public class FitFile {
         this.totalDistance += fileToAdd.totalDistance;
 
         if (!sessionMesg.isEmpty()) {
-            System.out.println("Updating session and activity messages with new totals");
-            System.out.println("TotalTimerTime:" + PehoUtils.sec2minSecLong(totalTimerTime));
-            System.out.println("TotalDistance:" + totalDistance);
-            System.out.println("TotalElapsedTimer first file:" + PehoUtils.sec2minSecLong(sessionMesg.get(0).getFieldLongValue(SES_ETIMER)));
-            System.out.println("TotalElapsedTimer second file:" + PehoUtils.sec2minSecLong(fileToAdd.sessionMesg.get(0).getFieldLongValue(SES_ETIMER)));
-            if (sessionMesg.get(0).getFieldLongValue(SES_MTIMER) == null) {
-                sessionMesg.get(0).setFieldValue(SES_MTIMER, 0L);
-            }
-            if (fileToAdd.sessionMesg.get(0).getFieldLongValue(SES_MTIMER) == null) {
-                fileToAdd.sessionMesg.get(0).setFieldValue(SES_MTIMER, 0L);
-            }
-            System.out.println("TotalMovingTimer first file:" + PehoUtils.sec2minSecLong(sessionMesg.get(0).getFieldLongValue(SES_MTIMER)));
-            System.out.println("TotalMovingTimer second file:" + PehoUtils.sec2minSecLong(fileToAdd.sessionMesg.get(0).getFieldLongValue(SES_MTIMER)));
+            appendTempUpdateLoggLn("Updating session and activity messages with new totals");
+            appendTempUpdateLoggLn("TotalTimerTime:" + PehoUtils.sec2minSecLong(totalTimerTime));
+            appendTempUpdateLoggLn("TotalDistance:" + totalDistance);
+            appendTempUpdateLoggLn("TotalElapsedTimer first file:" + PehoUtils.sec2minSecLong(sessionMesg.get(0).getFieldLongValue(SES_ETIMER)));
+            appendTempUpdateLoggLn("TotalElapsedTimer second file:" + PehoUtils.sec2minSecLong(fileToAdd.sessionMesg.get(0).getFieldLongValue(SES_ETIMER)));
             sessionMesg.get(0).setFieldValue(SES_DIST, totalDistance);
             sessionMesg.get(0).setFieldValue(SES_TIMER, totalTimerTime);
+
             sessionMesg.get(0).setFieldValue(SES_ETIMER,
                     sessionMesg.get(0).getFieldLongValue(SES_ETIMER)
                     + fileToAdd.sessionMesg.get(0).getFieldLongValue(SES_ETIMER) 
                     + pauseSeconds);
-            sessionMesg.get(0).setFieldValue(SES_MTIMER, 
-                    sessionMesg.get(0).getFieldLongValue(SES_MTIMER)
-                    + fileToAdd.sessionMesg.get(0).getFieldLongValue(SES_MTIMER));
+
+            if (sessionMesg.get(0).getFieldLongValue(SES_MTIMER) != null 
+                    || fileToAdd.sessionMesg.get(0).getFieldLongValue(SES_MTIMER) != null) {
+                sessionMesg.get(0).setFieldValue(SES_MTIMER, 
+                        sessionMesg.get(0).getFieldLongValue(SES_MTIMER)
+                        + fileToAdd.sessionMesg.get(0).getFieldLongValue(SES_MTIMER));
+            }
+
             activityMesg.get(0).setFieldValue(ACT_TIMER, totalTimerTime);
             if (totalTimerTime > 0) {
                 Float avg = totalDistance / totalTimerTime;
@@ -2214,9 +2214,8 @@ public class FitFile {
             int totalLaps = currentLaps + secondFileLaps;
             sessionMesg.get(0).setFieldValue(SES_LAPS, totalLaps);
         }
-
-        // Recalculate pause list for the combined activity
-        //createPauseList();
+        System.out.println(getTempUpdateLogg());
+        appendUpdateLogg(getTempUpdateLogg());
     }
 
     private void rebuildMessageListsFromAllMesg() {

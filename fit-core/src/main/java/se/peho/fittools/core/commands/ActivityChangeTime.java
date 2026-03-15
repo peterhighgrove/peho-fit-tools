@@ -16,7 +16,7 @@ public class ActivityChangeTime implements Command {
     public String getDescription() { return "Change Activity time"; }
 
     @Override
-    public String getCategory() { return "Info"; }
+    public String getCategory() { return "Activity"; }
 
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {

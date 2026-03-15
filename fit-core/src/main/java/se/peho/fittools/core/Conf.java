@@ -26,6 +26,9 @@ public class Conf {
 	int c2SyncSecondsC2File = 0;
 	int c2SyncSecondsLapDistCalc = 0;
     Set<String> debugFlags = new HashSet<>();
+
+    // When true, skip resolving extraFilename (bbb.*) so it is not required
+    private final boolean skipExtraFilename;
 	
     // Getters and setters
 
@@ -75,6 +78,11 @@ public class Conf {
     public boolean isDebugStrings()      { return debugFlags.contains("debug") || debugFlags.contains("debugstrings"); }
 
     public Conf(String[] args) {
+        this(args, false);
+    }
+
+    public Conf(String[] args, boolean skipExtraFilename) {
+        this.skipExtraFilename = skipExtraFilename;
 
         // ================================================================
         // STEP 0: Strip --debug* options from the front of args.
@@ -98,7 +106,7 @@ public class Conf {
             // filePathPrefix = current working directory
             // ================================================================
             System.out.println("============= ARGS (" + args.length + ") =============");
-            filePathPrefix = resolveDownloadsFolder() + File.separator;
+            filePathPrefix = PehoUtils.resolveDownloadsFolder() + File.separator;
 
             if (args.length >= 1) setProfileNameSuffix(args[0]);
             if (args.length >= 2) {
@@ -134,7 +142,7 @@ public class Conf {
                 System.out.println("------> No configuration file found.");
                 System.out.println("Using default values:");
                 System.out.println("+++++++++++++++++++++++++++++++++++");
-                String defaultPath = resolveDownloadsFolder();
+                String defaultPath = PehoUtils.resolveDownloadsFolder();
                 System.out.println("filePathPrefix: "    + defaultPath + File.separator + "  (Downloads if exists, else current path)");
                 System.out.println("profileNameSuffix: " + "gym jobbet");
                 System.out.println("timeOffsetSec: "     + "120 sec (2 minutes)");
@@ -187,7 +195,7 @@ public class Conf {
 
         // If filePathPrefix is still empty, default to Downloads (if it exists) or current working directory
         if (filePathPrefix.isEmpty()) {
-            String downloadsFolder = resolveDownloadsFolder();
+            String downloadsFolder = PehoUtils.resolveDownloadsFolder();
             if (!downloadsFolder.equals(System.getProperty("user.dir"))) {
                 filePathPrefix = downloadsFolder;
                 System.out.println("------> filePathPrefix not set, defaulting to Downloads: " + filePathPrefix);
@@ -212,11 +220,16 @@ public class Conf {
 
         // ================================================================
         // STEP 5: Resolve extraFilename – fallback to bbb.zip / bbb.fit / bbb.txt
+        // (optional depending on constructor flag)
         // ================================================================
-        String resolvedExtra = extraFilename.isEmpty() || new File(extraFilename).isAbsolute()
-                ? extraFilename
-                : filePathPrefix + extraFilename;
-        extraFilename = resolveValidFile(resolvedExtra, new String[]{"bbb.zip", "bbb.fit", "bbb.txt"}, "extraFilename");
+        if (!skipExtraFilename) {
+            String resolvedExtra = extraFilename.isEmpty() || new File(extraFilename).isAbsolute()
+                    ? extraFilename
+                    : filePathPrefix + extraFilename;
+            extraFilename = resolveValidFile(resolvedExtra, new String[]{"bbb.zip", "bbb.fit", "bbb.txt"}, "extraFilename");
+        } else {
+            extraFilename = ""; // do not require an extra file
+        }
 
         // ================================================================
         // STEP 6: Default timeOffsetSec → 2 minutes
@@ -258,49 +271,18 @@ public class Conf {
     // the resolved (and possibly unzipped) path, or exits if nothing found.
     // ================================================================
     private String resolveValidFile(String path, String[] fallbacks, String fieldName) {
-        // Try the primary path
-        if (!path.isEmpty()) {
-            String resolved = extractIfNeeded(path);
-            if (resolved != null) return resolved;
+        String resolved = PehoUtils.resolveValidFile(path, fallbacks, filePathPrefix);
+        if (resolved == null) {
+            System.out.println("**********************");
+            System.out.println("ERROR: No valid file found for [" + fieldName + "].");
+            System.out.println("  Primary path tried : " + (path.isEmpty() ? "(empty)" : path));
+            System.out.println("  Fallbacks tried in : " + filePathPrefix);
+            for (String fb : fallbacks) System.out.println("    - " + fb);
+            System.out.println("**********************");
+            printCliUsage();
+            System.exit(1);
         }
-        // Try fallback candidates in filePathPrefix directory
-        for (String fallback : fallbacks) {
-            String fallbackPath = filePathPrefix + fallback;
-            if (new File(fallbackPath).isFile()) {
-                System.out.println("------> " + fieldName + " not found at \"" + path + "\", using fallback: " + fallbackPath);
-                String resolved = extractIfNeeded(fallbackPath);
-                if (resolved != null) return resolved;
-            }
-        }
-        System.out.println("**********************");
-        System.out.println("ERROR: No valid file found for [" + fieldName + "].");
-        System.out.println("  Primary path tried : " + (path.isEmpty() ? "(empty)" : path));
-        System.out.println("  Fallbacks tried in : " + filePathPrefix);
-        for (String fb : fallbacks) System.out.println("    - " + fb);
-        System.out.println("**********************");
-        printCliUsage();
-        System.exit(1);
-        return null;
-    }
-
-    // ================================================================
-    // Returns the Downloads folder path based on path existence.
-    // Falls back to the current working directory if not found.
-    //   Android : /storage/emulated/0/Download  (checked by path, not OS detection,
-    //             since Termux JVM lacks android.os.Build on its classpath)
-    //   Windows : ~/Downloads
-    //   Linux   : ~/Downloads
-    // ================================================================
-    private static String resolveDownloadsFolder() {
-        // Android (including Termux): check by path existence, not class detection
-        String androidPath = "/storage/emulated/0/Download";
-        if (new File(androidPath).isDirectory()) return androidPath;
-
-        // Windows / Linux
-        String downloadsPath = System.getProperty("user.home") + File.separator + "Downloads";
-        if (new File(downloadsPath).isDirectory()) return downloadsPath;
-
-        return System.getProperty("user.dir"); // ultimate fallback
+        return resolved;
     }
 
     // ================================================================
@@ -325,39 +307,6 @@ public class Conf {
         System.out.println("  profileNameSuffix, timeOffsetMin, command, startWithWktStep, newWktName,");
         System.out.println("  C2FitFileDistanceStartCorrection, useManualC2SyncSeconds,");
         System.out.println("  c2SyncSecondsC2File, c2SyncSecondsLapDistCalc, hoursToAdd.");
-    }
-
-    // ================================================================
-    // Returns the usable file path for 'path':
-    //   - non-zip: returned as-is if the file exists, null otherwise.
-    //   - zip: extracted, then renamed to <zipBaseName>.<innerExt> so
-    //     that two different zips never collide on the same output file.
-    // ================================================================
-    private String extractIfNeeded(String path) {
-        File f = new File(path);
-        if (!f.exists() || !f.isFile()) return null;
-
-        if (PehoUtils.getFileExtension(f).equals("zip")) {
-            String extracted = PehoUtils.unzip(f);
-            if (extracted == null || extracted.isEmpty()) return null;
-
-            File extractedFile = new File(extracted);
-            // Build target name: <zip-base-name>.<inner-extension>
-            // e.g. aaa.zip containing foo.fit  →  aaa.fit
-            String zipBase   = f.getName().replaceAll("(?i)\\.zip$", "");
-            String innerExt  = PehoUtils.getFileExtension(extractedFile);
-            File   target    = new File(f.getParent(), zipBase + "." + innerExt);
-
-            if (!extractedFile.getAbsolutePath().equals(target.getAbsolutePath())) {
-                if (!extractedFile.renameTo(target)) {
-                    System.out.println("WARNING: could not rename " + extractedFile + " → " + target + ", using original name.");
-                    return extractedFile.getPath();
-                }
-            }
-            System.out.println("------> UNZIPPED: " + f.getName() + " → " + target.getName());
-            return target.getPath();
-        }
-        return path;
     }
 
 } //class Conf

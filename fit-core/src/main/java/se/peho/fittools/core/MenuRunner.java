@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import se.peho.fittools.core.commands.FileInfoShowDetailedCommand;
+import se.peho.fittools.core.commands.ActivityInfoShowDetailedCommand;
 import se.peho.fittools.core.commands.ActivityAddAnother;
 import se.peho.fittools.core.commands.ActivityChangeTime;
 import se.peho.fittools.core.commands.GapAddGpsCommand;
@@ -50,6 +50,9 @@ public class MenuRunner {
     private void registerCommands() {
 
         Command[] cmds = {
+            new ActivityInfoShowDetailedCommand(),
+            new ActivityChangeTime(),
+            new ActivityAddAnother(),
             new GapShowListCommand(),
             new GapShowListFilteredCommand(),
             new GapAddGpsCommand(),
@@ -75,9 +78,6 @@ public class MenuRunner {
             new RecStartCommand(),
             new WktShowCommand(),
             new StopPrintCommand(),
-            new FileInfoShowDetailedCommand(),
-            new ActivityChangeTime(),
-            new ActivityAddAnother(),
             new SaveChangeStartTimeExitCommand(conf)
         };
 

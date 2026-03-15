@@ -121,8 +121,9 @@ public class PehoUtils {
             while ((entry = zis.getNextEntry()) != null) {
                 File newFile = new File(destDir, entry.getName());
                 unzippedFile = newFile.getPath();
-                System.out.println("------> FILENAME IN ZIP: " + unzippedFile);
-
+                System.out.println("------> folder: " + destDirectory);
+                System.out.println("------> ZIP   : " + zipFile.getName());
+                System.out.println("------> IN ZIP: " + unzippedFile);
                 if (entry.isDirectory()) {
                     newFile.mkdirs();
                 } else {
@@ -166,6 +167,112 @@ public class PehoUtils {
     public static String m2km2(Float speed) {
         String speedStr = String.valueOf(Float.valueOf(Math.round(speed / 1000f *100))/100);
         return speedStr;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public static String unzipQuietly(File zipFile) {
+        if (!zipFile.exists() || !zipFile.isFile()) {
+            return null;
+        }
+
+        String destDirectory = zipFile.getParent(); // Extract to same directory
+        String unzippedFile = "";
+        File destDir = new File(destDirectory);
+
+        try (FileInputStream fis = new FileInputStream(zipFile);
+             ZipInputStream zis = new ZipInputStream(fis)) {
+
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                File newFile = new File(destDir, entry.getName());
+                unzippedFile = newFile.getPath();
+                System.out.println("------> folder: " + destDirectory);
+                System.out.println("------> ZIP   : " + zipFile.getName());
+                System.out.println("------> IN ZIP: " + unzippedFile);
+
+                if (entry.isDirectory()) {
+                    newFile.mkdirs();
+                } else {
+                    new File(newFile.getParent()).mkdirs(); // Ensure parent exists
+                    try (FileOutputStream fos = new FileOutputStream(newFile)) {
+                        byte[] buffer = new byte[1024];
+                        int len;
+                        while ((len = zis.read(buffer)) > 0) {
+                            fos.write(buffer, 0, len);
+                        }
+                    }
+                }
+                zis.closeEntry();
+            }
+        } catch (IOException e) {
+            return null;
+        }
+
+        return unzippedFile;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public static String extractIfNeeded(String path) {
+        File f = new File(path);
+        if (!f.exists() || !f.isFile()) return null;
+
+        if (getFileExtension(f).equals("zip")) {
+            String extracted = unzipQuietly(f);
+            if (extracted == null || extracted.isEmpty()) return null;
+
+            File extractedFile = new File(extracted);
+            // Build target name: <zip-base-name>.<inner-extension>
+            // e.g. aaa.zip containing foo.fit  →  aaa.fit
+            String zipBase   = f.getName().replaceAll("(?i)\\.zip$", "");
+            String innerExt  = getFileExtension(extractedFile);
+            File   target    = new File(f.getParent(), zipBase + "." + innerExt);
+
+            if (!extractedFile.getAbsolutePath().equals(target.getAbsolutePath())) {
+                if (!extractedFile.renameTo(target)) {
+                    System.out.println("WARNING: could not rename " + extractedFile + " → " + target + ", using original name.");
+                    return extractedFile.getPath();
+                }
+            }
+            System.out.println("------> UNZIPPED: " + f.getName() + " → " + extractedFile.getName() + " → " + target.getName());
+            return target.getPath();
+        }
+        return path;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public static String resolveValidFile(String path, String[] fallbacks, String prefix) {
+        // Try the primary path
+        if (!path.isEmpty()) {
+            String resolved = extractIfNeeded(path);
+            if (resolved != null) return resolved;
+        }
+        // Try fallback candidates in prefix directory
+        for (String fallback : fallbacks) {
+            String fallbackPath = new File(prefix, fallback).getPath();
+            if (new File(fallbackPath).isFile()) {
+                System.out.println("------> " + path + " not found at \"" + path + "\", using fallback: " + fallbackPath);
+                String resolved = extractIfNeeded(fallbackPath);
+                if (resolved != null) return resolved;
+            }
+        }
+        return null; // not found
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    // ================================================================
+    // Returns the Downloads folder path based on path existence.
+    // Falls back to the current working directory if not found.
+    //   Android : /storage/emulated/0/Download  (checked by path, not OS detection,
+    //             since Termux JVM lacks android.os.Build on its classpath)
+    //   Windows : ~/Downloads
+    //   Linux   : ~/Downloads
+    // ================================================================
+    public static String resolveDownloadsFolder() {
+        // Android (including Termux): check by path existence, not class detection
+        String androidPath = "/storage/emulated/0/Download";
+        if (new File(androidPath).isDirectory()) return androidPath;
+
+        // Windows / Linux
+        String downloadsPath = System.getProperty("user.home") + File.separator + "Downloads";
+        if (new File(downloadsPath).isDirectory()) return downloadsPath;
+
+        return System.getProperty("user.dir"); // ultimate fallback
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public static String mps2minpkm(Float speed) {

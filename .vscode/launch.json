@@ -7,7 +7,8 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.mergeanalyze.Main",
       "projectName": "fit-wkt-merge-analyze",
-      "args": "hemma 3 \"aaa t2.zip\" \"bbb t2.zip\""
+      //"args": "TESTET2026-03-15 3 \"aaa t2.zip\" \"bbb t2.zip\""
+      "args": "APAN026-03-15 4 \"2025-12-01-17-09-19-Löpband-3x1+2min-3km-17.07min-TESTET2026-03-15-garmin-e2pro-v23.41-org.fit\" \"2025-12-01-17-09-19-Löpband-3x1+2min-3km-17.07min-TESTET2026-03-15-garmin-e2pro-v23.41-manualLaps.txt\""
     },
     {
       "type": "java",

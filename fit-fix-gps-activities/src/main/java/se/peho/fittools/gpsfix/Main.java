@@ -11,7 +11,7 @@ public class Main {
         System.out.println("ArgsLen: " + args.length);
 
         // Reading CONF FILE
-        Conf conf = new Conf(args);
+        Conf conf = new Conf(args, true); // skipExtraFilename = true to not require an extra file
         
         // ================================
         // START
