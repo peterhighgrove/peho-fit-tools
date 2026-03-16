@@ -1313,7 +1313,9 @@ public class FitFile {
         totalTimerTime += (float) pause.getTimePause();
         appendTempUpdateLoggLn(" to " + totalTimerTime + "s");
 
-        sessionMesg.get(0).setFieldValue(SES_TIMER, (totalTimerTime));
+        sessionMesg.get(0).setFieldValue(SES_TIMER, totalTimerTime);
+        activityMesg.get(0).setFieldValue(ACT_TIMER, totalTimerTime);
+
         //elapsedTimerTime += (float) pause.getTimePause() - newPauseTime;
         //sessionMesg.get(0).setFieldValue(SES_ETIMER, elapsedTimerTime);
 
@@ -1356,11 +1358,12 @@ public class FitFile {
 
         // Updating SESSION DATA
         //----------------------
-        appendTempUpdateLogg("Decreasing SESSION_TIMER from " + totalTimerTime);
+        appendTempUpdateLogg("Decreasing SESSION_TIMER from " + getTotalTimerTime());
         totalTimerTime -= (float) gap.getTimeGap();
-        appendTempUpdateLoggLn(" to " + totalTimerTime + "s");
+        appendTempUpdateLoggLn(" to " + getTotalTimerTime() + "s");
 
-        sessionMesg.get(0).setFieldValue(SES_TIMER, (totalTimerTime));
+        sessionMesg.get(0).setFieldValue(SES_TIMER, getTotalTimerTime());
+        activityMesg.get(0).setFieldValue(ACT_TIMER, getTotalTimerTime());
         //elapsedTimerTime -= (float) gap.getTimePause();
         //sessionMesg.get(0).setFieldValue(SES_ETIMER, elapsedTimerTime);
 
@@ -1372,7 +1375,7 @@ public class FitFile {
         sessionMesg.get(0).setFieldValue(SES_DIST, (totalDistance));
 
         appendTempUpdateLogg("Decreasing SESSION_SPEED from " + avgSpeed + " / " + PehoUtils.mps2minpkm(avgSpeed));
-        avgSpeed = totalDistance / totalTimerTime;
+        avgSpeed = totalDistance / getTotalTimerTime();
         appendTempUpdateLoggLn(" to " + avgSpeed + "m/s" + " / " + PehoUtils.mps2minpkm(avgSpeed) + "min/km");
 
         sessionMesg.get(0).setFieldValue(SES_SPEED, (avgSpeed));
@@ -2171,7 +2174,7 @@ public class FitFile {
         // Update overall metadata
         this.timeFirstRecord = Math.min(this.timeFirstRecord, fileToAdd.timeFirstRecord);
         this.timeLastRecord = Math.max(this.timeLastRecord, fileToAdd.timeLastRecord);
-        this.totalTimerTime += fileToAdd.totalTimerTime;
+        this.totalTimerTime += fileToAdd.getTotalTimerTime();
         this.totalDistance += fileToAdd.totalDistance;
 
         if (!sessionMesg.isEmpty()) {
@@ -2181,7 +2184,8 @@ public class FitFile {
             appendTempUpdateLoggLn("TotalElapsedTimer first file:" + PehoUtils.sec2minSecLong(sessionMesg.get(0).getFieldLongValue(SES_ETIMER)));
             appendTempUpdateLoggLn("TotalElapsedTimer second file:" + PehoUtils.sec2minSecLong(fileToAdd.sessionMesg.get(0).getFieldLongValue(SES_ETIMER)));
             sessionMesg.get(0).setFieldValue(SES_DIST, totalDistance);
-            sessionMesg.get(0).setFieldValue(SES_TIMER, totalTimerTime);
+            sessionMesg.get(0).setFieldValue(SES_TIMER, getTotalTimerTime());
+            activityMesg.get(0).setFieldValue(ACT_TIMER, getTotalTimerTime());
 
             sessionMesg.get(0).setFieldValue(SES_ETIMER,
                     sessionMesg.get(0).getFieldLongValue(SES_ETIMER)
@@ -2195,9 +2199,8 @@ public class FitFile {
                         + fileToAdd.sessionMesg.get(0).getFieldLongValue(SES_MTIMER));
             }
 
-            activityMesg.get(0).setFieldValue(ACT_TIMER, totalTimerTime);
             if (totalTimerTime > 0) {
-                Float avg = totalDistance / totalTimerTime;
+                Float avg = totalDistance / getTotalTimerTime();
                 sessionMesg.get(0).setFieldValue(SES_SPEED, avg);
                 sessionMesg.get(0).setFieldValue(SES_ESPEED, avg);
             }
@@ -2400,6 +2403,7 @@ public class FitFile {
         //----------------------
         // Updating ACTIVITY DATA
         //----------------------
+        activityMesg.get(0).setFieldValue(ACT_TIMER, getTotalTimerTime());
         setActivityDateTimeUTC(getActivityDateTimeUTC() - timeToIncrease);
         setActivityDateTimeLocal(getActivityDateTimeLocal() - timeToIncrease);
         activityMesg.get(0).setFieldValue(ACT_TIME, getActivityDateTimeUTC());
@@ -2529,13 +2533,13 @@ public class FitFile {
         //lapMesg.get(gapToChange.ixLap).setFieldValue(LAP_TIMER, (lapTime + pauseToShorten.timePause - newPauseTime));
         //lapMesg.get(gapToChange.ixLap).setFieldValue(LAP_ETIMER, (lapTime + pauseToShorten.timePause - newPauseTime));
         lapMesg.get(gapToChange.ixLap).setFieldValue(LAP_DIST, lapDist);
-        lapMesg.get(gapToChange.ixLap).setFieldValue(LAP_SPEED, (lapDist / lapTime));
-        lapMesg.get(gapToChange.ixLap).setFieldValue(LAP_ESPEED, (lapDist / lapTime));
+        lapMesg.get(gapToChange.ixLap).setFieldValue(LAP_SPEED, lapDist / lapTime);
+        lapMesg.get(gapToChange.ixLap).setFieldValue(LAP_ESPEED, lapDist / lapTime);
 
         // Updating SESSION DATA
         //----------------------
         //totalTimerTime += (float) gapToChange.timeGap - newPauseTime;
-        //sessionMesg.get(0).setFieldValue(SES_TIMER, totalTimerTime);
+        //sessionMesg.get(0).setFieldValue(SES_TIMER, getTotalTimerTime());
         //elapsedTimerTime += (float) gapToChange.timeGap - newPauseTime;
         //sessionMesg.get(0).setFieldValue(SES_ETIMER, elapsedTimerTime);
 
@@ -2886,9 +2890,12 @@ public class FitFile {
         // Updating SESSION DATA
         //----------------------
         totalTimerTime -= (float) secondsToPutIntoPause;
-        sessionMesg.get(0).setFieldValue(SES_TIMER, totalTimerTime);
-        sessionMesg.get(0).setFieldValue(SES_MTIMER, sessionMesg.get(0).getFieldFloatValue(SES_MTIMER) - secondsToPutIntoPause);
-        activityMesg.get(0).setFieldValue(ACT_TIMER, totalTimerTime);
+        sessionMesg.get(0).setFieldValue(SES_TIMER, getTotalTimerTime());
+        activityMesg.get(0).setFieldValue(ACT_TIMER, getTotalTimerTime());
+        Float sesMTimer = sessionMesg.get(0).getFieldFloatValue(SES_MTIMER);
+        if (sesMTimer != null) {
+            sessionMesg.get(0).setFieldValue(SES_MTIMER, sesMTimer - secondsToPutIntoPause);
+        }
         //elapsedTimerTime -= (float) secondsToPutIntoPause;
         //sessionMesg.get(0).setFieldValue(SES_ETIMER, elapsedTimerTime);
 
@@ -2896,10 +2903,9 @@ public class FitFile {
         totalDistance = recordMesg.get(numberOfRecords-1).getFieldFloatValue(RecordMesg.DistanceFieldNum);
         sessionMesg.get(0).setFieldValue(SES_DIST, totalDistance);
 
-        avgSpeed = totalDistance / totalTimerTime;
+        avgSpeed = totalDistance / getTotalTimerTime();
         sessionMesg.get(0).setFieldValue(SES_SPEED, avgSpeed);
         sessionMesg.get(0).setFieldValue(SES_ESPEED, avgSpeed);
-
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -3235,27 +3241,27 @@ public class FitFile {
         //------------------
         Float lapTime = lapMesg.get(pauseToShorten.getIxLap()).getFieldFloatValue(LAP_TIMER) + pauseToShorten.getTimePause() - newPauseTime;
         Float lapDist = lapMesg.get(pauseToShorten.getIxLap()).getFieldFloatValue(LAP_DIST) + pauseToShorten.getDistPause();
-        lapMesg.get(pauseToShorten.getIxLap()).setFieldValue(LAP_TIMER, (lapTime));
-        //lapMesg.get(pauseToShorten.getIxLap()).setFieldValue(LAP_ETIMER, (lapTime));
-        lapMesg.get(pauseToShorten.getIxLap()).setFieldValue(LAP_DIST, (lapDist));
-        lapMesg.get(pauseToShorten.getIxLap()).setFieldValue(LAP_SPEED, (lapDist / lapTime));
-        lapMesg.get(pauseToShorten.getIxLap()).setFieldValue(LAP_ESPEED, (lapDist / lapTime));
+        lapMesg.get(pauseToShorten.getIxLap()).setFieldValue(LAP_TIMER, lapTime);
+        //lapMesg.get(pauseToShorten.getIxLap()).setFieldValue(LAP_ETIMER, lapTime);
+        lapMesg.get(pauseToShorten.getIxLap()).setFieldValue(LAP_DIST, lapDist);
+        lapMesg.get(pauseToShorten.getIxLap()).setFieldValue(LAP_SPEED, lapDist / lapTime);
+        lapMesg.get(pauseToShorten.getIxLap()).setFieldValue(LAP_ESPEED, lapDist / lapTime);
 
         // Updating SESSION DATA
         //----------------------
         totalTimerTime += (float) pauseToShorten.getTimePause() - newPauseTime;
-        sessionMesg.get(0).setFieldValue(SES_TIMER, (totalTimerTime));
+        sessionMesg.get(0).setFieldValue(SES_TIMER, getTotalTimerTime());
+        activityMesg.get(0).setFieldValue(ACT_TIMER, getTotalTimerTime());
         //sessionMesg.get(0).setFieldValue(SES_MTIMER, (float) (sessionMesg.get(0).getFieldFloatValue(SES_MTIMER) + pauseToShorten.getTimePause() - newPauseTime));
-        activityMesg.get(0).setFieldValue(ACT_TIMER, totalTimerTime);
         //elapsedTimerTime += (float) pauseToShorten.getTimePause() - newPauseTime;
         //sessionMesg.get(0).setFieldValue(SES_ETIMER, elapsedTimerTime);
 
         totalDistance = recordMesg.get(numberOfRecords-1).getFieldFloatValue(RecordMesg.DistanceFieldNum);
-        sessionMesg.get(0).setFieldValue(SES_DIST, (totalDistance));
+        sessionMesg.get(0).setFieldValue(SES_DIST, totalDistance);
 
-        avgSpeed = totalDistance / totalTimerTime;
-        sessionMesg.get(0).setFieldValue(SES_SPEED, (avgSpeed));
-        sessionMesg.get(0).setFieldValue(SES_ESPEED, (avgSpeed));
+        avgSpeed = totalDistance / getTotalTimerTime();
+        sessionMesg.get(0).setFieldValue(SES_SPEED, avgSpeed);
+        sessionMesg.get(0).setFieldValue(SES_ESPEED, avgSpeed);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 /*     public void initLapExtraRecords() {
