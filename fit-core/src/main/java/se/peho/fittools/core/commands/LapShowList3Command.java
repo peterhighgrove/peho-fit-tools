@@ -18,6 +18,6 @@ public class LapShowList3Command implements Command {
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
 
-        watchFitFile.printLapLongSummery();
+        watchFitFile.getLapReportGenerator().printLapLongSummery();
     }
 }

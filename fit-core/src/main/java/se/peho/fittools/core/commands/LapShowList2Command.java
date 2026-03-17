@@ -18,6 +18,6 @@ public class LapShowList2Command implements Command {
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
 
-        watchFitFile.printLapRecords();
+        watchFitFile.getLapReportGenerator().printLapRecords();
     }
 }

@@ -92,6 +92,7 @@ public class FitFile {
     public static final int SPLSUM_CAL = SplitSummaryMesg.TotalCaloriesFieldNum; // int
     public static final int SPLSUM_TYPE = SplitSummaryMesg.SplitTypeFieldNum; // enum
     public static final int LAP_TIME = LapMesg.TimestampFieldNum; //long
+    public static final int LAP_IX = LapMesg.MessageIndexFieldNum; //int
     public static final int LAP_STIME = LapMesg.StartTimeFieldNum; //long
     public static final int LAP_TIMER = LapMesg.TotalTimerTimeFieldNum; //float
     public static final int LAP_ETIMER = LapMesg.TotalElapsedTimeFieldNum; //float
@@ -346,6 +347,17 @@ public class FitFile {
     public List<Mesg> getEventMesg() { return eventMesg; }
     public List<Mesg> getEventTimerMesg() { return eventTimerMesg; }
     public List<Mesg> getRecordMesg() { return recordMesg; }
+
+    public Float getActiveAvgCad() { return activeAvgCad; }
+    public Float getActiveAvgSpeed() { return activeAvgSpeed; }
+    public Float getActiveAvgPower() { return activeAvgPower; }
+    public Float getActiveDist() { return activeDist; }
+    public Float getRestAvgCad() { return restAvgCad; }
+    public Float getRestAvgSpeed() { return restAvgSpeed; }
+    public Float getRestAvgPower() { return restAvgPower; }
+    public Float getRestDist() { return restDist; }
+
+    public LapReportGenerator getLapReportGenerator() { return new LapReportGenerator(this); }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public class GapMesg {
@@ -3161,6 +3173,16 @@ public class FitFile {
         }
 
         numberOfLaps -= (toLap - fromLap);
+
+        // Update LAP_IX for remaining laps
+        for (int i = 0; i < lapMesg.size(); i++) {
+            lapMesg.get(i).setFieldValue(LAP_IX, i);
+        }
+
+        // Update SES_LAPS
+        if (!sessionMesg.isEmpty()) {
+            sessionMesg.get(0).setFieldValue(SES_LAPS, numberOfLaps);
+        }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void shortenPause(int pauseNo, Long newPauseTime) {
@@ -4603,58 +4625,6 @@ public class FitFile {
         System.out.println("---- END SPLITS ----");
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-    public void printLapRecords0 () {
-        int i = 0;
-        int lapNo = 1;
-        try {
-        System.out.println();
-        System.out.println("================================================");
-        System.out.println("====LAPS IN FILE (lap1)");
-            for (Mesg mesg : lapMesg) {
-                System.out.print("Lap:" + lapNo);
-
-                Long startTime = mesg.getFieldLongValue(LAP_STIME);
-                if (startTime != null) System.out.print(" StartTime: " + FitDateTime.toString(new DateTime(startTime), diffMinutesLocalUTC));
-
-                Long timestamp = mesg.getFieldLongValue(LAP_TIME);
-                if (timestamp != null) System.out.print(" Timestamp: " + FitDateTime.toString(new DateTime(timestamp), diffMinutesLocalUTC));
-
-                Float totalTimer = mesg.getFieldFloatValue(LAP_TIMER);
-                if (totalTimer != null) System.out.print(" LapTime: " + totalTimer);
-
-                Float totalDistance = mesg.getFieldFloatValue(LAP_DIST);
-                if (totalDistance != null) System.out.print(" LapDist: " + totalDistance);
-
-                Float avgSpeed = mesg.getFieldFloatValue(LAP_SPEED);
-                if (avgSpeed != null) System.out.print(" LapSpeed: " + avgSpeed);
-
-                Float enhAvgSpeed = mesg.getFieldFloatValue(LAP_ESPEED);
-                if (enhAvgSpeed != null) System.out.print(" LapEnhSpeed: " + enhAvgSpeed);
-
-                Short avgCadence = mesg.getFieldShortValue(LapMesg.AvgCadenceFieldNum);
-                if (avgCadence != null) System.out.print(" LapCad: " + avgCadence);
-
-                Short avgRunningCad = mesg.getFieldShortValue(LapMesg.AvgCadenceFieldNum, 0, Profile.SubFields.LAP_MESG_AVG_CADENCE_FIELD_AVG_RUNNING_CADENCE);
-                if (avgRunningCad != null) System.out.print(" LapRunningCad: " + avgRunningCad);
-
-                Long intensity = mesg.getFieldLongValue(LapMesg.IntensityFieldNum);
-                if (intensity != null) System.out.print(" WktIntensity: " + PehoUtils.getLabel(Intensity.class, intensity));
-
-                Integer wktStepIx = mesg.getFieldIntegerValue(LapMesg.WktStepIndexFieldNum);
-                if (wktStepIx != null) System.out.print(" LapWktStepIx: " + wktStepIx);
-
-                System.out.println();
-                i++;
-                lapNo++;
-            }
-        System.out.println("------------------------------------------------");
-        }
-        catch (FitRuntimeException e) {
-            System.out.println("LAP ERROR!!!!");
-        }
-    }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printLapRecord(int ix) {
         Mesg lapRecord = lapMesg.get(ix);
         int lapNo = ix + 1;
@@ -5231,10 +5201,10 @@ public class FitFile {
         printFieldDescr();
         printCourse();
         printSplitSummary();
-        printLapRecords0();
-        printLapAllSummary();
-        printLapLongSummery();
-        System.out.print(createLapSummery());
+        getLapReportGenerator().printLapRecords0();
+        getLapReportGenerator().printLapAllSummary();
+        getLapReportGenerator().printLapLongSummery();
+        System.out.print(getLapReportGenerator().createLapSummery());
         //printSecRecords0();
         printSessionInfo();
 

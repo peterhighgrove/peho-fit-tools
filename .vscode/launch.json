@@ -16,7 +16,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"TESTtjohoo\" 16 \"2026-03-14-12-26-20-XC Classic Ski-21.4km-2.06.54h-garmin-e2pro-v26.04-renamed.zip\""
+      "args": "\"LapTESTtjohoo\" 17 \"2026-03-14-12-26-20-XC Classic Ski-21.4km-2.06.54h-garmin-e2pro-v26.04-renamed.zip\""
     },
     {
       "type": "java",
