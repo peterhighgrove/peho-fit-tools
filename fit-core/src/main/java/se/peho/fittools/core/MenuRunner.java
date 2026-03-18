@@ -117,6 +117,10 @@ public class MenuRunner {
             } else if (choice.equals("m")) {
                 printFullMenu();
                 choice = sc.nextLine().trim(); // read new choice after showing menu
+                if (choice.equals("x")) {
+                    System.out.println("Nothing done. Exiting.");
+                    break;
+                }
             }
 
             Command cmd = commands.get(choice);
