@@ -31,21 +31,7 @@ public class PauseTimerDelCommand implements Command {
                 continue;
             }
 
-            watchFitFile.clearTempUpdateLogg();
-            watchFitFile.appendTempUpdateLoggLn("-------------------------");
-            watchFitFile.appendTempUpdateLoggLn("Deleting TIMER events in pause " + pauseNo + " to create a GAP");
-            watchFitFile.appendTempUpdateLoggLn("-------------------------");
-
-            Long pauseStart = watchFitFile.getPauseList().get(pauseNo - 1).getTimeStart();
-            Long pauseStop = watchFitFile.getPauseList().get(pauseNo - 1).getTimeStop();
-
-            watchFitFile.deleteEvents(pauseStart, pauseStop, Event.TIMER, EventType.INVALID);
-            watchFitFile.appendTempUpdateLoggLn("==>> Deleted Timer events between " + FitDateTime.toString(pauseStart, watchFitFile.getDiffMinutesLocalUTC()) + " and " + FitDateTime.toStringTime(pauseStop, watchFitFile.getDiffMinutesLocalUTC()) + " (inclusive).");
-
-            watchFitFile.updateActivityInfoWhenDeletingPauseToGap(pauseNo - 1);
-
-            System.out.println(watchFitFile.getTempUpdateLogg());
-            watchFitFile.appendUpdateLogg(watchFitFile.getTempUpdateLogg());
+            watchFitFile.getPauseFix().pauseToGap(pauseNo);
 
             watchFitFile.createTimerList();
             watchFitFile.createPauseList();
