@@ -55,7 +55,7 @@ public class LapMergeCommand implements Command {
                 continue;
             }
 
-            watchFitFile.mergeLaps(firstLapToBeMerged, lastLapToBeMerged);
+            watchFitFile.LapMerge(firstLapToBeMerged, lastLapToBeMerged);
 
             watchFitFile.createTimerList();
             watchFitFile.createPauseList();
