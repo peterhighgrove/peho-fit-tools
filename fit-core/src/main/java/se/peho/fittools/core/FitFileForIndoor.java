@@ -984,7 +984,8 @@ public class FitFileForIndoor extends FitFile {
     } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public Boolean checkIfSkiErgFile() {
-        //System.out.println("======== isSkiErgFile TEST ==========");
+        System.out.println("======== isSkiErgFile TEST ==========");
+        System.out.println("   SportProfile: " + sportProfile);
         Boolean isTrue = false;
         if (sportProfile.toLowerCase().contains("skierg")
             || sportProfile.toLowerCase().contains("row")
@@ -996,7 +997,8 @@ public class FitFileForIndoor extends FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public Boolean checkIfTreadmillFile() {
-        //System.out.println("======== isSkiErgFile TEST ==========");
+        System.out.println("======== isTreadmillFile TEST ==========");
+        System.out.println("   SportProfile: " + sportProfile);
         Boolean isTrue = false;
         if (sportProfile.toLowerCase().contains("löpband") 
             || sportProfile.toLowerCase().contains("pband")
@@ -1010,7 +1012,8 @@ public class FitFileForIndoor extends FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public Boolean checkIfEllipticalFile() {
-        //System.out.println("======== isEllipticalFile TEST ==========");
+        System.out.println("======== isEllipticalFile TEST ==========");
+        System.out.println("   SportProfile: " + sportProfile);
         Boolean isTrue = false;
         if (sportProfile.toLowerCase().contains("ellipt")
             || sportProfile.toLowerCase().contains("gymbike")
