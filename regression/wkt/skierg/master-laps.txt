@@ -1,0 +1,35 @@
+--------------------------------------------------
+ --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v25.11
+ --> Sport:CYCLING, SubSport:INDOOR_CYCLING, SportProfile:SkiErg-bike, WktName:Bike 6-5-4/2-3-2-1/1min
+ --> Org activity dateTime Local:2026-02-14-15-11-11
+ --> New activity dateTime Local:2026-02-14-15-11-11
+ --> Org activity DateTime UTC:  2026-02-14-14-11-11
+ --> timeZone:                   +01:00
+ --> Org start datetime UTC:     2026-02-14-14-11-11
+ --> New start datetime UTC:     2026-02-14-14-11-11
+--------------------------------------------------
+--------------------------------------------------
+ --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v25.11
+ --> Sport:CYCLING, SubSport:INDOOR_CYCLING, SportProfile: SkiErg 6-5-4/2-3-2-1/1min 10.2km Friskis Orminge, WktName:Bike 6-5-4/2-3-2-1/1min
+ --> Org activity dateTime Local:2026-02-14-15-11-11
+ --> New activity dateTime Local:2026-02-14-15-13-11
+ --> Org activity DateTime UTC:  2026-02-14-14-11-11
+ --> timeZone:                   +01:00
+ --> Org start datetime UTC:     2026-02-14-14-11-11
+ --> New start datetime UTC:     2026-02-14-14-13-11
+--------------------------------------------------
+---- ACTIVE LAPS ----
+Lap2 HRmin67>st113+17->max130 end130 6min 51spm 2:19min/500m 131W 1.3km df102 sl0.73
+Lap4 HRmin108>st111+27->max135 end134 5min 52spm 2:17min/500m 134W 1.1km df102 sl0.72
+Lap6 HRmin113>st119+28->max141 end139 4min 55spm 2:15min/500m 143W 0.9km df101 sl0.7
+Lap8 HRmin117>st124+25->max142 end142 3min 55spm 2:13min/500m 152W 0.7km df101 sl0.72
+Lap10 HRmin127>st128+20->max147 end147 2min 56spm 2:10min/500m 161W 0.5km df101 sl0.74
+Lap12 HRmin130>st131+14->max144 end143 1min 57spm 2:08min/500m 165W 0.2km df101 sl0.75
+avgCad: 53spm, avgPace: 2:15min/500m, avgPow: 141W, sumDist: 4.7km
+---- REST LAPS ----
+Lap3 HRst130>max130-22->min108 end111 2min 48spm 2:42min/500m 86W 0.4km
+Lap5 HRst134>max134-21->min113 end118 2min 49spm 2:49min/500m 76W 0.4km
+Lap7 HRst139>max139-22->min117 end124 2min 51spm 2:47min/500m 79W 0.4km
+Lap9 HRst142>max142-15->min127 end127 1min 47spm 2:37min/500m 89W 0.2km
+Lap11 HRst147>max147-17->min130 end131 1min 49spm 2:46min/500m 81W 0.2km
+avgCad: 49spm, avgPace: 2:44min/500m, avgPow: 82W, sumDist: 1.5km

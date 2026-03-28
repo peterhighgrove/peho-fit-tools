@@ -1,0 +1,35 @@
+--------------------------------------------------
+ --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v25.03
+ --> Sport:CYCLING, SubSport:INDOOR_CYCLING, SportProfile:Elliptical, WktName:Bike 2x(3-2-1min)
+ --> Org activity dateTime Local:2025-12-30-16-31-30
+ --> New activity dateTime Local:2025-12-30-16-31-30
+ --> Org activity DateTime UTC:  2025-12-30-15-31-30
+ --> timeZone:                   +01:00
+ --> Org start datetime UTC:     2025-12-30-15-31-30
+ --> New start datetime UTC:     2025-12-30-15-31-30
+--------------------------------------------------
+--------------------------------------------------
+ --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v25.03
+ --> Sport:CYCLING, SubSport:INDOOR_CYCLING, SportProfile: Elliptical 2x(3-2-1min) 7.1km Friskis Orminge, WktName:Bike 2x(3-2-1min)
+ --> Org activity dateTime Local:2025-12-30-16-31-30
+ --> New activity dateTime Local:2025-12-30-16-33-30
+ --> Org activity DateTime UTC:  2025-12-30-15-31-30
+ --> timeZone:                   +01:00
+ --> Org start datetime UTC:     2025-12-30-15-31-30
+ --> New start datetime UTC:     2025-12-30-15-33-30
+--------------------------------------------------
+---- ACTIVE LAPS ----
+Lap2 lv10 HRmin72>st122+13->max135 end135 3min 79spm 4:17min/km 14.0km/h 0.7km step295cm
+Lap4 lv10 HRmin125>st127+11->max136 end136 2min 79spm 4:15min/km 14.1km/h 0.5km step297cm
+Lap6 lv11 HRmin122>st123+15->max137 end137 1min 81spm 4:00min/km 15.0km/h 0.3km step308cm
+Lap8 lv10 HRmin119>st121+19->max138 end137 3min 78spm 4:21min/km 13.8km/h 0.7km step294cm
+Lap10 lv10 HRmin130>st130+12->max142 end141 2min 83spm 4:05min/km 14.7km/h 0.5km step295cm
+Lap12 lv11 HRmin129>st132+13->max142 end142 1min 84spm 4:00min/km 15.0km/h 0.3km step297cm
+avgCad: 80spm, avgPace: 4:13min/km, avgSp: 14.2km/h, sumDist: 2.8km
+---- REST LAPS ----
+Lap3 lv8 HRst135>max135-10->min125 end126 1min 72spm 5:16min/km 11.4km/h 0.2km step263cm
+Lap5 lv8 HRst136>max136-14->min122 end123 1min 68spm 5:33min/km 10.8km/h 0.2km step264cm
+Lap7 lv8 HRst137>max138-19->min119 end122 2min 67spm 5:33min/km 10.8km/h 0.4km step268cm
+Lap9 lv8 HRst138>max138-8->min130 end130 1min 71spm 5:00min/km 12.0km/h 0.2km step281cm
+Lap11 lv8 HRst142>max142-13->min129 end132 1min 66spm 5:33min/km 10.8km/h 0.2km step272cm
+avgCad: 69spm, avgPace: 5:24min/km, avgSp: 11.1km/h, sumDist: 1.1km

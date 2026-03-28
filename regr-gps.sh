@@ -7,6 +7,8 @@ set -uo pipefail
 #   <case>/
 #     input.fit | input.zip      # required, source file copied to run dir as aaa.<ext>
 #     master.fit                 # required, expected output for binary compare
+#     master-after.txt           # required unless --bless
+#     master-log.txt             # required unless --bless
 #     inputs.txt                 # required, scripted console input (one entry per line)
 #     conf.txt                   # optional, if missing a deterministic conf is generated
 #
@@ -32,7 +34,9 @@ Options:
 
 Case requirements per folder:
   input.fit OR input.zip
-    master.fit (required unless --bless)
+        master.fit (required unless --bless)
+        master-after.txt (required unless --bless)
+        master-log.txt (required unless --bless)
   inputs.txt
   conf.txt (optional)
 EOF
@@ -102,10 +106,20 @@ validate_case_files() {
     local in_fit="$case_dir/input.fit"
     local in_zip="$case_dir/input.zip"
     local master="$case_dir/master.fit"
+    local master_after="$case_dir/master-after.txt"
+    local master_log="$case_dir/master-log.txt"
     local inputs="$case_dir/inputs.txt"
 
     if [[ ! -f "$master" && "$BLESS" != "true" ]]; then
         echo "missing master.fit"
+        return 1
+    fi
+    if [[ ! -f "$master_after" && "$BLESS" != "true" ]]; then
+        echo "missing master-after.txt"
+        return 1
+    fi
+    if [[ ! -f "$master_log" && "$BLESS" != "true" ]]; then
+        echo "missing master-log.txt"
         return 1
     fi
     if [[ ! -f "$inputs" ]]; then
@@ -128,6 +142,8 @@ run_case() {
     local in_fit="$case_dir/input.fit"
     local in_zip="$case_dir/input.zip"
     local master="$case_dir/master.fit"
+    local master_after="$case_dir/master-after.txt"
+    local master_log="$case_dir/master-log.txt"
     local inputs="$case_dir/inputs.txt"
     local conf="$case_dir/conf.txt"
 
@@ -187,33 +203,77 @@ EOF
     fi
 
     local new_fit
+    local new_after
+    local new_log
     new_fit="$(find "$run_dir" -maxdepth 1 -type f -name '*-mergedJava*min.fit' | sort | tail -n 1)"
+    new_after="$(find "$run_dir" -maxdepth 1 -type f -name '*-after.txt' | sort | tail -n 1)"
+    new_log="$(find "$run_dir" -maxdepth 1 -type f -name '*-log.txt' | sort | tail -n 1)"
 
     if [[ -z "$new_fit" || ! -f "$new_fit" ]]; then
         echo "[FAIL] $case_name (no merged output fit found)"
         echo "       log: $log_file"
         return 1
     fi
+    if [[ -z "$new_after" || ! -f "$new_after" ]]; then
+        echo "[FAIL] $case_name (no -after.txt output found)"
+        echo "       log: $log_file"
+        return 1
+    fi
+    if [[ -z "$new_log" || ! -f "$new_log" ]]; then
+        echo "[FAIL] $case_name (no -log.txt output found)"
+        echo "       log: $log_file"
+        return 1
+    fi
 
     if [[ "$BLESS" == "true" ]]; then
         cp -f "$new_fit" "$master"
+        cp -f "$new_after" "$master_after"
+        cp -f "$new_log" "$master_log"
         echo "[PASS] $case_name (blessed master.fit)"
         return 0
     fi
 
-    if cmp -s "$new_fit" "$master"; then
+    local case_ok=true
+
+    if ! cmp -s "$new_fit" "$master"; then
+        case_ok=false
+        echo "[FAIL] $case_name (fit differs)"
+        echo "       new:    $new_fit"
+        echo "       master: $master"
+        if command -v sha256sum >/dev/null 2>&1; then
+            echo "       hashes:"
+            sha256sum "$new_fit" "$master" | sed 's/^/         /'
+        fi
+    fi
+
+    if ! cmp -s "$new_after" "$master_after"; then
+        case_ok=false
+        echo "[FAIL] $case_name (-after.txt differs)"
+        echo "       new:    $new_after"
+        echo "       master: $master_after"
+        if command -v sha256sum >/dev/null 2>&1; then
+            echo "       hashes:"
+            sha256sum "$new_after" "$master_after" | sed 's/^/         /'
+        fi
+    fi
+
+    if ! cmp -s "$new_log" "$master_log"; then
+        case_ok=false
+        echo "[FAIL] $case_name (-log.txt differs)"
+        echo "       new:    $new_log"
+        echo "       master: $master_log"
+        if command -v sha256sum >/dev/null 2>&1; then
+            echo "       hashes:"
+            sha256sum "$new_log" "$master_log" | sed 's/^/         /'
+        fi
+    fi
+
+    if [[ "$case_ok" == "true" ]]; then
         echo "[PASS] $case_name"
         return 0
     fi
 
-    echo "[FAIL] $case_name (fit differs)"
-    echo "       new:    $new_fit"
-    echo "       master: $master"
-    if command -v sha256sum >/dev/null 2>&1; then
-        echo "       hashes:"
-        sha256sum "$new_fit" "$master" | sed 's/^/         /'
-    fi
-    echo "       log: $log_file"
+    echo "       run log: $log_file"
     return 1
 }
 
