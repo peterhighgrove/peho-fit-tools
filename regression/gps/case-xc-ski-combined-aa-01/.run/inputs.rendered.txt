@@ -1,6 +1,0 @@
-m
-aa
-/home/hoglund/dev/peho-fit-tools/regression/gps/case-xc-ski-combined-aa-01/.run/add.zip
-save
-3
-Bruksvallarna

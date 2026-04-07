@@ -1,0 +1,11 @@
+start
+59.34934, 18.09934
+1
+recdel
+1
+25
+fill
+save
+3
+Lill-Jans och Fiskartorpets elljus
+

@@ -16,7 +16,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"LapTESTtjohoo\" 17 \"2026-03-14-12-26-20-XC Classic Ski-21.4km-2.06.54h-garmin-e2pro-v26.04-renamed.zip\""
+      "args": "\"Lill-Jans och Fiskartorpets elljus\" 9 \"2025-09-17-17-06-21-Lill-Jans och Fiskartorpets elljus 8.3km-watch.fit\""
     },
     {
       "type": "java",
