@@ -1,6 +1,0 @@
-m
-aa
-{{RUN_DIR}}/add.zip
-save
-3
-Bruksvallarna

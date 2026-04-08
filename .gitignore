@@ -2,6 +2,7 @@
 # My project files
 # ---------------------------
 *conf.txt
+regression/
 .run/
 lap-results*
 #*gitignore
