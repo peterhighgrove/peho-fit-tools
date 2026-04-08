@@ -1,0 +1,35 @@
+==================================================
+New file info AFTER update:
+==================================================
+--------------------------------------------------
+ --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v23.18
+ --> Sport:RUNNING, SubSport:GENERIC, SportProfile:Run, WktName:null
+ --> Org activity dateTime Local:2025-09-17-17-06-21
+ --> New activity dateTime Local:2025-09-17-17-15-20
+ --> Org activity DateTime UTC:  2025-09-17-15-06-20
+ --> timeZone:                   +02:00
+ --> Org start datetime UTC:     2025-09-17-15-06-21
+ --> New start datetime UTC:     2025-09-17-15-15-20
+--------------------------------------------------
+---- ACTIVE LAPS ----
+Lap3 HR->max137 1:27min 87spm 4:46min/km 12.6km/h 340W 0.3km
+Lap5 HR->max136 0:31min 87spm 4:45min/km 12.6km/h 232W 0.1km
+Lap7 HR->max140 0:50min 86spm 4:33min/km 13.2km/h 317W 0.2km
+Lap9 HR->max142 1:09min 87spm 4:33min/km 13.2km/h 313W 0.3km
+Lap11 HR->max140 0:27min 86spm 4:15min/km 14.1km/h 251W 0.1km
+Lap13 HR->max143 1:31min 86spm 4:31min/km 13.3km/h 316W 0.3km
+Lap15 HR->max145 0:57min 88spm 4:04min/km 14.8km/h 336W 0.2km
+Lap17 HR->max148 1:59min 87spm 4:23min/km 13.7km/h 322W 0.5km
+avgCad: 0spm, avgPace: 2147483647:2147483647min/km, avgSp: 0.0km/h, sumDist: 0.0km
+---- REST LAPS ----
+Lap4 HRst?->max141 3:21min 85spm 5:44min/km 10.5km/h 303W 0.6km
+Lap6 HRst?->max139 1:57min 84spm 5:50min/km 10.3km/h 317W 0.3km
+Lap8 HRst?->max145 4:02min 83spm 5:43min/km 10.5km/h 292W 0.7km
+Lap10 HRst?->max143 0:48min 83spm 5:40min/km 10.6km/h 313W 0.1km
+Lap12 HRst?->max142 3:26min 83spm 5:43min/km 10.5km/h 293W 0.6km
+Lap14 HRst?->max145 3:19min 83spm 6:09min/km 9.8km/h 301W 0.5km
+Lap16 HRst?->max145 0:37min 83spm 6:15min/km 9.6km/h 334W 0.1km
+Lap18 HRst?->max148 5:08min 84spm 5:08min/km 11.7km/h 284W 1.0km
+Lap19 HRst?->max144 2:15min 85spm 4:55min/km 12.2km/h 314W 0.5km
+avgCad: 0spm, avgPace: 2147483647:2147483647min/km, avgSp: 0.0km/h, sumDist: 0.0km
+==================================================

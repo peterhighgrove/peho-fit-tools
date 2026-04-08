@@ -2371,6 +2371,43 @@ public class FitFile {
 
         int ixInRecordMesgStart = findIxInRecordMesgBasedOnTime(fromTime);
         int ixInRecordMesgStop = findIxInRecordMesgBasedOnTime(toTime);
+        Float distDiffToApply = null;
+
+        Mesg startRecord = recordMesg.get(ixInRecordMesgStart - 1);
+        Mesg stopRecord = recordMesg.get(ixInRecordMesgStop);
+        Float startRecordDist = startRecord.getFieldFloatValue(REC_DIST);
+        Float stopRecordDist = stopRecord.getFieldFloatValue(REC_DIST);
+        Integer startLat = startRecord.getFieldIntegerValue(REC_LAT);
+        Integer startLon = startRecord.getFieldIntegerValue(REC_LON);
+        Integer stopLat = stopRecord.getFieldIntegerValue(REC_LAT);
+        Integer stopLon = stopRecord.getFieldIntegerValue(REC_LON);
+
+        if (startRecordDist != null && stopRecordDist != null && startLat != null && startLon != null && stopLat != null && stopLon != null) {
+            float originalDistFromRecords = stopRecordDist - startRecordDist;
+            double geoUtilsDist = GeoUtils.distCalc(startLat, startLon, stopLat, stopLon);
+            double diff = geoUtilsDist - originalDistFromRecords;
+            distDiffToApply = (float) diff;
+
+            System.out.printf(
+                "===> Dist start-stop ix %d-%d: recordDist=%.2fm, geoDist=%.2fm, diff=%.2fm%n",
+                ixInRecordMesgStart - 1,
+                ixInRecordMesgStop,
+                originalDistFromRecords,
+                geoUtilsDist,
+                diff
+            );
+        } else {
+            System.out.printf(
+                "===> Dist start-stop ix %d-%d: cannot calculate (missing record distance and/or GPS fields)%n",
+                ixInRecordMesgStart - 1,
+                ixInRecordMesgStop
+            );
+        }
+
+        if (distDiffToApply != null) {
+            addDistToRecords(ixInRecordMesgStop, distDiffToApply);
+        }
+
         int numberOfRecordsToDelete = ixInRecordMesgStop - ixInRecordMesgStart + 1;
         int ixInRecordMesgToDelete = ixInRecordMesgStart;
 
@@ -2387,12 +2424,14 @@ public class FitFile {
         setNumberOfRecords(recordMesg.size());
 
         appendTempUpdateLogg("===> Input values: " + FitDateTime.toTimerString(fromTimer) + ", " + FitDateTime.toTimerString(toTimer) + System.lineSeparator());
+        appendTempUpdateLogg("===> Adjusted record distances from ix " + ixInRecordMesgStop + " with diff " + String.format("%.2f", distDiffToApply) + "m" + System.lineSeparator());
         appendTempUpdateLogg("===> RecordMesgIx to delete from-to: " + ixInRecordMesgStart + " - " + ixInRecordMesgStop + System.lineSeparator());
         appendTempUpdateLogg("===> AllMesgIx to delete from: " + ixInAllMesgStart + " and number of records: " + numberOfRecordsToDelete + System.lineSeparator());
         appendTempUpdateLogg("===> Deleting records to create gap of " + FitDateTime.toTimerString(toTimer-fromTimer+3) //+3 because to and from should be included
              + ", from " + FitDateTime.toTimerString(fromTimer) + " into the activity" + System.lineSeparator());
         appendTempUpdateLogg("===> Deleting records from " + FitDateTime.toString(fromTime,0)
              + " to " + FitDateTime.toString(toTime,0) + System.lineSeparator());
+
         appendUpdateLogg(getTempUpdateLogg());
         System.out.print(getTempUpdateLogg());
 
