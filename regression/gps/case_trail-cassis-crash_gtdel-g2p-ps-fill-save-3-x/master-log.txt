@@ -1,0 +1,42 @@
+START - Deleting events
+------------------------------
+Input values to delete events between 2025-10-02-13-50-58 and 2025-10-02-13-56-24
+Event to delete: TIMER
+Event type to delete: INVALID
+Found matching EVENT to delete in allMesg: TIMERSTART @ix:19023
+-------------------------
+Creating timer events in GAP to create a PAUSE
+For GAP no: 1
+-------------------------
+Event Type is a STOP_ALL. Insert of Event record will be AFTER data record with the same time.Data record was found at wanted event time.
+Created event @ix: 18698
+-------------------------
+Creating timer events in GAP to create a PAUSE
+For GAP no: 1
+-------------------------
+Event Type is a STOP_ALL. Insert of Event record will be AFTER data record with the same time.Data record was found at wanted event time.
+Created event @ix: 18698
+Event Type is NOT STOP_ALL. Insert of Event record will be BEFORE data record with the same time.Data record was found at wanted event time.
+Created event @ix: 19036
+-------------------------
+Creating timer events in GAP to create a PAUSE
+For GAP no: 1
+-------------------------
+Event Type is a STOP_ALL. Insert of Event record will be AFTER data record with the same time.Data record was found at wanted event time.
+Created event @ix: 18698
+Event Type is NOT STOP_ALL. Insert of Event record will be BEFORE data record with the same time.Data record was found at wanted event time.
+Created event @ix: 19036
+==>> Created Timer events between 2025-10-02-13-50-58 and 2025-10-02-13-56-24 (inclusive).
+Decreasing LAP_TIMER for lap 5 from 585.585 to 259.58502s
+Decreasing LAP_DIST for lap 5 from 558.01 to 558.01m
+Decreasing SESSION_TIMER from 9530.912 to 9204.912s
+Decreasing SESSION_DIST from 15220.45 to 15220.45m
+Decreasing SESSION_SPEED from 1.597 / 10:26 to 1.6535139m/s / 10:05min/km
+
+PAUSE - SHORTEN, forgot to resume timer after pause
+--------------------------------------------
+Shortened pause no: 30
+-- Pause decreased from 326sec to 300sec
+-->new speed:5:52min/km / 10.233km/h dist:73.906555m gap dist start:5208.94m end:5282.8467m gap time end-start:26s
+Filling gaps with 1sec records
+-- GapNo: 1, dist: 73.91016m, time: 26sec, @Dist: 5208.94-5282.85m, time: 2025-10-02-13-55-58

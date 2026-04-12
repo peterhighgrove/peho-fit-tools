@@ -1,0 +1,25 @@
+
+PAUSE - SHORTEN, forgot to resume timer after pause
+--------------------------------------------
+Shortened pause no: 6
+-- Pause decreased from 130sec to 7sec
+-->new speed:8:27min/km / 7.107km/h dist:242.83244m gap dist start:2928.63m end:3171.4624m gap time end-start:123s
+
+PAUSE - SHORTEN, forgot to resume timer after pause
+--------------------------------------------
+Shortened pause no: 15
+-- Pause decreased from 289sec to 220sec
+-->new speed:2:33min/km / 23.461km/h dist:449.6699m gap dist start:7329.7m end:7779.37m gap time end-start:69s
+-------------------------
+Deleting records to create a GAP
+-------------------------
+===> Input values: 31:53 min, 33:32 min
+===> Adjusted record distances from ix 1900 with diff -3.41m
+===> RecordMesgIx to delete from-to: 1801 - 1900
+===> AllMesgIx to delete from: 7001 and number of records: 100
+===> Deleting records to create gap of 1:42 min, from 31:53 min into the activity
+===> Deleting records from 2026-03-08-14-25-56 to 2026-03-08-14-27-35
+Filling gaps with 1sec records
+-- GapNo: 1, dist: 242.83008m, time: 123sec, @Dist: 2928.63-3171.46m, time: 2026-03-08-15-09-53
+-- GapNo: 2, dist: 2.790039m, time: 100sec, @Dist: 4950.14-4952.93m, time: 2026-03-08-15-25-55
+-- GapNo: 3, dist: 449.66992m, time: 69sec, @Dist: 7326.29-7775.96m, time: 2026-03-08-15-52-24

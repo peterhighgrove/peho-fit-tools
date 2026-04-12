@@ -1,0 +1,4 @@
+filePathPrefix ./
+inputFilePath aaa.fit
+profileNameSuffix Friskis Orminge
+timeOffsetMin 3

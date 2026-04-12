@@ -1,0 +1,165 @@
+
+PAUSE - SHORTEN, forgot to resume timer after pause
+--------------------------------------------
+Shortened pause no: 1
+-- Pause decreased from 123sec to 30sec
+-->new speed:3:06min/km / 19.386km/h dist:500.7943m gap dist start:165.97m end:666.7643m gap time end-start:93s
+
+PAUSE - SHORTEN, forgot to resume timer after pause
+--------------------------------------------
+Shortened pause no: 4
+-- Pause decreased from 419sec to 65sec
+-->new speed:19:56min/km / 3.01km/h dist:295.93826m gap dist start:2282.28m end:2578.2183m gap time end-start:354s
+----------------------------
+-- Adding GPS point in gap: 1
+   New gap coordinates: 63.089754, 13.756968
+    Decimal Degrees: Lat 63.08975400, Lon 13.75696800
+    Garmin Semicircles: Lat 752690084, Lon 164127021
+    Back to Decimal: Lat 63.08975402, Lon 13.75696798
+   >>> ix start-stop:64-65
+   >>> Calc old dist:501m
+   >>> Garmin old Dist/Time509.63998m / 1:33sec
+   >>> Dist/Time to new point:94m / 17sec
+   >>> Pace to new point:3:01min/km
+   >>> Dist/Time from new point:407m / 76sec
+   >>> Pace to from point:3:07min/km
+   >>> Dist change:-9m
+----------------------------
+-- Adding GPS point in gap: 2
+   New gap coordinates: 63.089407, 13.757042
+    Decimal Degrees: Lat 63.08940700, Lon 13.75704200
+    Garmin Semicircles: Lat 752685944, Lon 164127904
+    Back to Decimal: Lat 63.08940701, Lon 13.75704199
+   >>> ix start-stop:65-66
+   >>> Calc old dist:407m
+   >>> Garmin old Dist/Time406.67004m / 1:16sec
+   >>> Dist/Time to new point:39m / 7sec
+   >>> Pace to new point:3:01min/km
+   >>> Dist/Time from new point:373m / 69sec
+   >>> Pace to from point:3:05min/km
+   >>> Dist change:5m
+----------------------------
+-- Adding GPS point in gap: 3
+   New gap coordinates: 63.08835, 13.758773
+    Decimal Degrees: Lat 63.08835000, Lon 13.75877300
+    Garmin Semicircles: Lat 752673333, Lon 164148556
+    Back to Decimal: Lat 63.08834997, Lon 13.75877302
+   >>> ix start-stop:66-67
+   >>> Calc old dist:373m
+   >>> Garmin old Dist/Time373.19m / 1:09sec
+   >>> Dist/Time to new point:146m / 27sec
+   >>> Pace to new point:3:05min/km
+   >>> Dist/Time from new point:227m / 42sec
+   >>> Pace to from point:3:05min/km
+   >>> Dist change:0m
+----------------------------
+-- Adding GPS point in gap: 4
+   New gap coordinates: 63.087736, 13.759326
+    Decimal Degrees: Lat 63.08773600, Lon 13.75932600
+    Garmin Semicircles: Lat 752666008, Lon 164155153
+    Back to Decimal: Lat 63.08773600, Lon 13.75932598
+   >>> ix start-stop:67-68
+   >>> Calc old dist:227m
+   >>> Garmin old Dist/Time226.91003m / 0:42sec
+   >>> Dist/Time to new point:74m / 13sec
+   >>> Pace to new point:2:56min/km
+   >>> Dist/Time from new point:157m / 29sec
+   >>> Pace to from point:3:05min/km
+   >>> Dist change:4m
+----------------------------
+-- Adding GPS point in gap: 6
+   New gap coordinates: 63.091559, 13.780519
+    Decimal Degrees: Lat 63.09155900, Lon 13.78051900
+    Garmin Semicircles: Lat 752711618, Lon 164407996
+    Back to Decimal: Lat 63.09155898, Lon 13.78051903
+   >>> ix start-stop:555-556
+   >>> Calc old dist:296m
+   >>> Garmin old Dist/Time300.02002m / 5:54sec
+   >>> Dist/Time to new point:43m / 51sec
+   >>> Pace to new point:19:32min/km
+   >>> Dist/Time from new point:253m / 303sec
+   >>> Pace to from point:19:59min/km
+   >>> Dist change:-4m
+----------------------------
+-- Adding GPS point in gap: 7
+   New gap coordinates: 63.091049, 13.781442
+    Decimal Degrees: Lat 63.09104900, Lon 13.78144200
+    Garmin Semicircles: Lat 752705534, Lon 164419007
+    Back to Decimal: Lat 63.09104903, Lon 13.78144196
+   >>> ix start-stop:556-557
+   >>> Calc old dist:253m
+   >>> Garmin old Dist/Time253.47998m / 5:04sec
+   >>> Dist/Time to new point:73m / 82sec
+   >>> Pace to new point:18:39min/km
+   >>> Dist/Time from new point:197m / 222sec
+   >>> Pace to from point:18:47min/km
+   >>> Dist change:17m
+----------------------------
+-- Adding GPS point in gap: 8
+   New gap coordinates: 63.090707, 13.781442
+    Decimal Degrees: Lat 63.09070700, Lon 13.78144200
+    Garmin Semicircles: Lat 752701453, Lon 164419007
+    Back to Decimal: Lat 63.09070696, Lon 13.78144196
+   >>> ix start-stop:557-558
+   >>> Calc old dist:197m
+   >>> Garmin old Dist/Time196.98999m / 3:42sec
+   >>> Dist/Time to new point:38m / 43sec
+   >>> Pace to new point:18:24min/km
+   >>> Dist/Time from new point:159m / 179sec
+   >>> Pace to from point:18:50min/km
+   >>> Dist change:0m
+----------------------------
+-- Adding GPS point in gap: 9
+   New gap coordinates: 63.090352, 13.781726
+    Decimal Degrees: Lat 63.09035200, Lon 13.78172600
+    Garmin Semicircles: Lat 752697218, Lon 164422396
+    Back to Decimal: Lat 63.09035199, Lon 13.78172603
+   >>> ix start-stop:558-559
+   >>> Calc old dist:159m
+   >>> Garmin old Dist/Time159.27002m / 3:00sec
+   >>> Dist/Time to new point:42m / 46sec
+   >>> Pace to new point:17:52min/km
+   >>> Dist/Time from new point:124m / 134sec
+   >>> Pace to from point:18:10min/km
+   >>> Dist change:7m
+----------------------------
+-- Adding GPS point in gap: 10
+   New gap coordinates: 63.089981, 13.781227
+    Decimal Degrees: Lat 63.08998100, Lon 13.78122700
+    Garmin Semicircles: Lat 752692792, Lon 164416442
+    Back to Decimal: Lat 63.08998100, Lon 13.78122697
+   >>> ix start-stop:559-560
+   >>> Calc old dist:124m
+   >>> Garmin old Dist/Time123.8501m / 2:15sec
+   >>> Dist/Time to new point:48m / 52sec
+   >>> Pace to new point:17:36min/km
+   >>> Dist/Time from new point:78m / 83sec
+   >>> Pace to from point:17:59min/km
+   >>> Dist change:2m
+----------------------------
+-- Adding GPS point in gap: 11
+   New gap coordinates: 63.089352, 13.781434
+    Decimal Degrees: Lat 63.08935200, Lon 13.78143400
+    Garmin Semicircles: Lat 752685288, Lon 164418912
+    Back to Decimal: Lat 63.08935203, Lon 13.78143400
+   >>> ix start-stop:560-561
+   >>> Calc old dist:78m
+   >>> Garmin old Dist/Time77.84009m / 1:24sec
+   >>> Dist/Time to new point:71m / 63sec
+   >>> Pace to new point:14:51min/km
+   >>> Dist/Time from new point:23m / 21sec
+   >>> Pace to from point:14:55min/km
+   >>> Dist change:16m
+Filling gaps with 1sec records
+-- GapNo: 1, dist: 94.139984m, time: 17sec, @Dist: 165.97-260.11m, time: 2026-04-06-10-09-51
+-- GapNo: 2, dist: 38.77002m, time: 7sec, @Dist: 260.11-298.88m, time: 2026-04-06-10-10-08
+-- GapNo: 3, dist: 146.29999m, time: 27sec, @Dist: 298.88-445.18m, time: 2026-04-06-10-10-15
+-- GapNo: 4, dist: 73.72998m, time: 13sec, @Dist: 445.18-518.91m, time: 2026-04-06-10-10-42
+-- GapNo: 5, dist: 157.12006m, time: 29sec, @Dist: 518.91-676.03m, time: 2026-04-06-10-10-55
+-- GapNo: 6, dist: 42.650146m, time: 50sec, @Dist: 2282.7-2325.35m, time: 2026-04-06-10-21-31
+-- GapNo: 7, dist: 73.299805m, time: 82sec, @Dist: 2325.35-2398.65m, time: 2026-04-06-10-22-21
+-- GapNo: 8, dist: 38.04004m, time: 42sec, @Dist: 2398.65-2436.69m, time: 2026-04-06-10-23-43
+-- GapNo: 9, dist: 41.97998m, time: 45sec, @Dist: 2436.69-2478.67m, time: 2026-04-06-10-24-25
+-- GapNo: 10, dist: 48.30005m, time: 51sec, @Dist: 2478.67-2526.97m, time: 2026-04-06-10-25-10
+-- GapNo: 11, dist: 70.70996m, time: 63sec, @Dist: 2526.97-2597.68m, time: 2026-04-06-10-26-01
+-- GapNo: 12, dist: 23.46997m, time: 21sec, @Dist: 2597.68-2621.15m, time: 2026-04-06-10-27-04

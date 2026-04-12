@@ -1,0 +1,38 @@
+==================================================
+New file info AFTER update:
+==================================================
+--------------------------------------------------
+ --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v26.03
+ --> Sport:CROSS_COUNTRY_SKIING, SubSport:GENERIC, SportProfile:XC Classic Ski, WktName:null
+ --> Org activity dateTime Local:2026-03-08-14-46-10
+ --> New activity dateTime Local:2026-03-08-14-48-10
+ --> Org activity DateTime UTC:  2026-03-08-13-46-10
+ --> timeZone:                   +01:00
+ --> Org start datetime UTC:     2026-03-08-13-46-10
+ --> New start datetime UTC:     2026-03-08-13-48-10
+--------------------------------------------------
+---- ACTIVE LAPS ----
+Lap1 HR->max143 6:54min 6:54min/km 8.7km/h 1.0km
+Lap2 HR->max143 6:52min 6:52min/km 8.7km/h 1.0km
+Lap3 HR->max142 8:26min 6:47min/km 8.8km/h 1.2km
+Lap4 HR->max150 5:41min 5:41min/km 10.6km/h 1.0km
+Lap5 HR->max145 6:55min 6:55min/km 8.7km/h 1.0km
+Lap6 HR->max137 4:27min 4:27min/km 13.5km/h 1.0km
+Lap7 HR->max143 4:45min 4:45min/km 12.6km/h 1.0km
+Lap8 HR->max144 4:25min 3:03min/km 19.7km/h 1.4km
+Lap9 HR->max147 7:32min 7:32min/km 8.0km/h 1.0km
+Lap10 HR->max144 5:42min 5:42min/km 10.5km/h 1.0km
+Lap11 HR->max146 4:41min 4:41min/km 12.8km/h 1.0km
+Lap12 HR->max146 5:30min 5:30min/km 10.9km/h 1.0km
+Lap13 HR->max139 5:09min 5:09min/km 11.6km/h 1.0km
+Lap14 HR->max138 5:14min 5:14min/km 11.5km/h 1.0km
+Lap15 HR->max138 4:09min 4:09min/km 14.4km/h 1.0km
+Lap16 HR->max133 3min 3:00min/km 20.0km/h 1.0km
+Lap17 HR->max130 2:29min 2:29min/km 24.2km/h 1.0km
+Lap18 HR->max111 1:57min 1:57min/km 30.7km/h 1.0km
+Lap19 HR->max123 1:49min 2:46min/km 21.7km/h 0.7km
+Lap20 HR->max126 1:14min 5:48min/km 10.4km/h 0.2km
+avgCad: 0spm, avgPace: 2147483647:2147483647min/km, avgSp: 0.0km/h, sumDist: 0.0km
+---- REST LAPS ----
+avgCad: 0spm, avgPace: 2147483647:2147483647min/km, avgSp: 0.0km/h, sumDist: 0.0km
+==================================================

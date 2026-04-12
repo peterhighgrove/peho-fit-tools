@@ -1,0 +1,12 @@
+Merged laps: 1 to 3
+-- New lap 2 time: 26:09 min, dist: 3000 m
+-- Deleting lap ix:0 time:2026-04-11-12-12-34
+-- Deleting lap ix:1 time:2026-04-11-12-12-34
+Merged laps: 2 to 4
+-- New lap 3 time: 14:22 min, dist: 2192 m
+-- Deleting lap ix:1 time:2026-04-11-12-43-42
+-- Deleting lap ix:2 time:2026-04-11-12-43-42
+PAUSE - INCREASE, forgot to stop before
+---------------------------------------
+Increased pause no: 4
+-- Pause increased with 70sec to 1:16min

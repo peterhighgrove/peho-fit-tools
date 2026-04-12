@@ -1,0 +1,8 @@
+PAUSE - INCREASE, forgot to stop before
+---------------------------------------
+Increased pause no: 7
+-- Pause increased with 50sec to 2:51min
+PAUSE - INCREASE, forgot to stop before
+---------------------------------------
+Increased pause no: 11
+-- Pause increased with 40sec to 1:31min
