@@ -11,7 +11,8 @@ Arguments:
 
 The script finds lap result files matching *laps*.txt, sorts them in reverse
 filename order, prints each filename between dashes, and then prints the
-ACTIVE/REST lap sections to both console and a new output file.
+ACTIVE/REST lap sections to both console and a new output file in
+~/Downloads/lap-result/ (or ~/Download/lap-result/ when that is the local convention).
 EOF
 }
 
@@ -74,6 +75,17 @@ extract_lap_sections() {
     ' "$file_path"
 }
 
+resolve_output_dir() {
+    local output_dir="$HOME/Downloads/lap-result"
+
+    if [[ ! -d "$HOME/Downloads" && -d "$HOME/Download" ]]; then
+        output_dir="$HOME/Download/lap-result"
+    fi
+
+    mkdir -p "$output_dir"
+    printf '%s\n' "$output_dir"
+}
+
 main() {
     if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
         print_usage
@@ -94,10 +106,11 @@ main() {
         exit 2
     fi
 
-    local timestamp safe_search output_file
+    local timestamp safe_search output_dir output_file
     timestamp="$(date +%Y%m%d-%H%M%S)"
     safe_search="$(sanitize_name "${search_string:-all}")"
-    output_file="$PWD/lap-results-${safe_search}-${timestamp}.txt"
+    output_dir="$(resolve_output_dir)"
+    output_file="$output_dir/lap-results-${safe_search}-${timestamp}.txt"
 
     local -a matched_files=()
     while IFS= read -r file_path; do

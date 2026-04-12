@@ -179,6 +179,8 @@ EOF
         ! -name 'input.fit' \
         ! -name 'input.zip' \
         ! -name 'master.fit' \
+        ! -name 'master-after.txt' \
+        ! -name 'master-log.txt' \
         ! -name 'inputs.txt' \
         ! -name 'conf.txt' \
         ! -name 'README*')
@@ -206,8 +208,8 @@ EOF
     local new_after
     local new_log
     new_fit="$(find "$run_dir" -maxdepth 1 -type f -name '*-mergedJava*min.fit' | sort | tail -n 1)"
-    new_after="$(find "$run_dir" -maxdepth 1 -type f -name '*-after.txt' | sort | tail -n 1)"
-    new_log="$(find "$run_dir" -maxdepth 1 -type f -name '*-log.txt' | sort | tail -n 1)"
+    new_after="$(find "$run_dir" -maxdepth 1 -type f -name '*-after.txt' ! -name 'master-after.txt' | sort | tail -n 1)"
+    new_log="$(find "$run_dir" -maxdepth 1 -type f -name '*-log.txt' ! -name 'master-log.txt' | sort | tail -n 1)"
 
     if [[ -z "$new_fit" || ! -f "$new_fit" ]]; then
         echo "[FAIL] $case_name (no merged output fit found)"

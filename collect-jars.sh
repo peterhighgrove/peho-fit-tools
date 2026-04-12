@@ -12,7 +12,7 @@ fi
 
 root=$(pwd)
 dest="$root/jars"
-dest2="$HOME/Downloads"
+dest2="$HOME/Downloads/jars"
 dest3="$HOME/Nextcloud/dev/jars"
 
 # -------------------------------

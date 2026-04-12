@@ -1,7 +1,0 @@
-m
-pinc
-1
-8
-save
-3
-Friskis Orminge
