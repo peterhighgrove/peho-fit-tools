@@ -145,26 +145,31 @@ public class PehoUtils {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public static String mps2kmph3(Float speed) {
+        if (speed == null) return "-";
         Float newSpeed = ((float) Math.round(speed * 3600f / 1000f *1000)/1000);
         return "" + newSpeed;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public static String mps2kmph2(Float speed) {
+        if (speed == null) return "-";
         Float newSpeed = ((float) Math.round(speed * 3600f / 1000f *100)/100);
         return "" + newSpeed;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public static String mps2kmph1(Float speed) {
+        if (speed == null) return "-";
         Float newSpeed = ((float) Math.round(speed * 3600f / 1000f *10)/10);
         return "" + newSpeed;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public static String m2km1(Float speed) {
+        if (speed == null) return "-";
         String speedStr = String.valueOf(Float.valueOf(Math.round(speed / 1000f *10))/10);
         return speedStr;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public static String m2km2(Float speed) {
+        if (speed == null) return "-";
         String speedStr = String.valueOf(Float.valueOf(Math.round(speed / 1000f *100))/100);
         return speedStr;
     }
@@ -277,7 +282,7 @@ public class PehoUtils {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public static String mps2minpkm(Float speed) {
         String speedStr = "";
-        if (speed.equals(0)) {
+        if (speed == null || speed.equals(0)) {
             speedStr = "-";
         } else {
             speedStr = sec2minSecLong(1 / (speed / 1000f));
@@ -287,7 +292,7 @@ public class PehoUtils {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public static String mps2minp500m(Float speed) {
         String speedStr = "";
-        if (speed.equals(0)) {
+        if (speed == null || speed.equals(0)) {
             speedStr = "-";
         } else {
             speedStr = sec2minSecLong(1 / (speed / 1000f) / 2f);

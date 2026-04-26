@@ -60,6 +60,7 @@ public class FitFile {
     public static final int SPL_MESSAGE_INDEX = SplitMesg.MessageIndexFieldNum; // int
     public static final int SPL_TYPE = SplitMesg.SplitTypeFieldNum; // enum
     public static final int SPL_TIMER = SplitMesg.TotalTimerTimeFieldNum; // float
+    public static final int SPL_SDIST = 7; // float
     public static final int SPL_DIST = SplitMesg.TotalDistanceFieldNum; // float
     public static final int SPL_SPEED = SplitMesg.AvgSpeedFieldNum; // float
     public static final int SPL_MSPEED = SplitMesg.MaxSpeedFieldNum; // float
@@ -606,6 +607,11 @@ public class FitFile {
     } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void addDistToRecords(int fromRecordIx, Float distToAdd) {
+        Float fromDist = null;
+        if (fromRecordIx >= 0 && fromRecordIx < getNumberOfRecords()) {
+            fromDist = recordMesg.get(fromRecordIx).getFieldFloatValue(REC_DIST);
+        }
+
         Float recordDist;
         //  +1 cause not to update 3 new records
         int ix = 0;
@@ -613,6 +619,197 @@ public class FitFile {
             recordDist = recordMesg.get(ix).getFieldFloatValue(REC_DIST);
             recordMesg.get(ix).setFieldValue(REC_DIST, (recordDist + distToAdd));
         }
+
+        /* for (int lapIdx = 0; lapIdx < lapMesg.size(); lapIdx++) {
+            Mesg lap = lapMesg.get(lapIdx);
+            System.out.println("LAP " + lapIdx
+                    + " ix=" + lap.getFieldIntegerValue(LAP_IX)
+                    + " dist=" + PehoUtils.m2km2(lap.getFieldFloatValue(LAP_DIST))
+                    + " avgSpd=" + PehoUtils.mps2minpkm(lap.getFieldFloatValue(LAP_SPEED))
+                    + " enhAvgSpd=" + PehoUtils.mps2minpkm(lap.getFieldFloatValue(LAP_ESPEED)));
+        } */
+
+        // Update the lap that contains fromRecordIx
+        if (fromRecordIx < getNumberOfRecords() && !lapMesg.isEmpty()) {
+            Long fromRecordTime = recordMesg.get(fromRecordIx).getFieldLongValue(REC_TIME);
+            int affectedLapIx = 0;
+            for (int lapIdx = 0; lapIdx < lapMesg.size(); lapIdx++) {
+                Long lapSTime = lapMesg.get(lapIdx).getFieldLongValue(LAP_STIME);
+                if (lapSTime != null && fromRecordTime != null && lapSTime <= fromRecordTime) {
+                    affectedLapIx = lapIdx;
+                } else {
+                    break;
+                }
+            }
+            Float lapDist = lapMesg.get(affectedLapIx).getFieldFloatValue(LAP_DIST);
+            Float newLapDist = lapDist + distToAdd;
+            Float lapTimer = lapMesg.get(affectedLapIx).getFieldFloatValue(LAP_TIMER);
+            lapMesg.get(affectedLapIx).setFieldValue(LAP_DIST, newLapDist);
+            //lapMesg.get(affectedLapIx).setFieldValue(LAP_SPEED, newLapDist / lapTimer);
+            lapMesg.get(affectedLapIx).setFieldValue(LAP_ESPEED, newLapDist / lapTimer);
+            appendTempUpdateLogg("Updating LAP Ix: " + affectedLapIx + " DIST from " + lapDist);
+            appendTempUpdateLoggLn(" to " + newLapDist + "m, speed: " + PehoUtils.mps2minpkm(newLapDist / lapTimer) + "min/km");
+        }
+
+        /* System.out.println("FromDist: " + PehoUtils.m2km2(fromDist) + ", distToAdd: " + PehoUtils.m2km2(distToAdd));
+        for (int lapIdx = 0; lapIdx < lapMesg.size(); lapIdx++) {
+            Mesg lap = lapMesg.get(lapIdx);
+            System.out.println("LAP " + lapIdx
+                    + " ix=" + lap.getFieldIntegerValue(LAP_IX)
+                    + " dist=" + PehoUtils.m2km2(lap.getFieldFloatValue(LAP_DIST))
+                    + " avgSpd=" + PehoUtils.mps2minpkm(lap.getFieldFloatValue(LAP_SPEED))
+                    + " enhAvgSpd=" + PehoUtils.mps2minpkm(lap.getFieldFloatValue(LAP_ESPEED)));
+        } */
+
+        // Update split distances using fromDist reference:
+        // 1) if fromDist is inside split [startDist, totalDist], update totalDist.
+        // 2) if split startDist is after fromDist, shift startDist.
+        if (fromDist != null) {
+            //int splitStartDistFieldNum = -1;
+            int updatedSplitTotals = 0;
+            int updatedSplitStarts = 0;
+            int updatedSplitSummaries = 0;
+
+            // Read split summaries and group by split type for easier access when updating summaries.
+            // ------------------------------------------------------------------
+            java.util.Map<Short, java.util.List<Mesg>> splitSummaryByType = new java.util.HashMap<>();
+            for (Mesg mesg : allMesg) {
+                if (mesg.getNum() == MesgNum.SPLIT_SUMMARY) {
+                    Short summaryType = mesg.getFieldShortValue(SPLSUM_TYPE);
+                    if (summaryType != null) {
+                        splitSummaryByType.computeIfAbsent(summaryType, k -> new java.util.ArrayList<>()).add(mesg);
+                    }
+                }
+            }
+            java.util.Map<Short, Integer> splitTypeOccurrence = new java.util.HashMap<>();
+
+            /* for (Mesg split : splitMesg) {
+                Short splitType = split.getFieldShortValue(SPL_TYPE);
+                System.out.println("SPLIT"
+                        + " startTime=" + FitDateTime.toStringTime(split.getFieldLongValue(SPL_STIME), diffMinutesLocalUTC)
+                        + " totalTime=" + FitDateTime.toTimerString(split.getFieldLongValue(SPL_TIMER))
+                        + " startDist=" + PehoUtils.m2km2(split.getFieldFloatValue(SPL_SDIST)/100)
+                        + " totalDist=" + PehoUtils.m2km2(split.getFieldFloatValue(SPL_DIST))
+                    + " type=" + splitType + "(" + (splitType != null ? SplitType.getByValue(splitType) : "unknown") + ")"
+                    );
+            } */
+
+            for (Mesg split : splitMesg) {
+                /* if (splitStartDistFieldNum < 0) {
+                    for (Field field : split.getFields()) {
+                        if (field != null && field.getName() != null) {
+                            String normalized = field.getName().replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+                            //System.out.println("Checking split field: " + field.getName() + " normalized: " + normalized);
+                            if (normalized.contains("start") && normalized.contains("dist")) {
+                                splitStartDistFieldNum = field.getNum();
+                                break;
+                            }
+                        }
+                    }
+                } */
+
+                Float splitStartDist = split.getFieldFloatValue(SPL_SDIST) / 100;
+                /* Float splitStartDist = null;
+                 if (splitStartDistFieldNum >= 0) {
+                    Object startDistObj = split.getFieldValue(splitStartDistFieldNum);
+                    if (startDistObj instanceof Number) {
+                        splitStartDist = ((Number) startDistObj).floatValue();
+                    }
+                } */
+
+                Float splitTotalDist = split.getFieldFloatValue(SPL_DIST);
+                /* Float splitTotalDist = null;
+                Object splitTotalDistObj = split.getFieldValue(SPL_DIST);
+                if (splitTotalDistObj instanceof Number) {
+                    splitTotalDist = ((Number) splitTotalDistObj).floatValue();
+                } */
+
+
+                Short splitType = split.getFieldShortValue(SPL_TYPE);
+                if (splitType != null) {
+                    splitTypeOccurrence.putIfAbsent(splitType, 0);
+                }
+
+                // When split total distance is affected by the distance addition, update total distance and corresponding split summary. 
+                // ------------------------------------------------------------------
+                if (splitStartDist != null && splitTotalDist != null
+                        && fromDist >= splitStartDist && fromDist <= (splitStartDist + splitTotalDist)) {
+                    Float newSplitTotalDist = splitTotalDist + distToAdd;
+                    Float splitTimer = split.getFieldFloatValue(SPL_TIMER);
+
+                    split.setFieldValue(SPL_DIST, newSplitTotalDist);
+                    split.setFieldValue(SPL_SPEED, newSplitTotalDist / splitTimer);
+                    appendTempUpdateLogg("Updating SPLIT w start dist " + splitStartDist + " DIST from " + splitTotalDist);
+                    appendTempUpdateLoggLn(" to " + newSplitTotalDist + "m, speed: " 
+                        + PehoUtils.mps2minpkm(newSplitTotalDist / splitTimer) + "min/km"
+                        + " type=" + (splitType != null ? SplitType.getByValue(splitType) : "unknown") + "(" + splitType + ")");
+
+                    updatedSplitTotals++;
+
+                    if (splitType != null) {
+                        int occurrenceIx = splitTypeOccurrence.getOrDefault(splitType, 0);
+                        java.util.List<Mesg> summaries = splitSummaryByType.get(splitType);
+                        if (summaries != null && occurrenceIx < summaries.size()) {
+                            Mesg summaryMesg = summaries.get(occurrenceIx);
+                            Float summaryDist = summaryMesg.getFieldFloatValue(SPLSUM_DIST);
+                            Float newSummaryDist = summaryDist + distToAdd;
+                            Float summaryTimer = summaryMesg.getFieldFloatValue(SPLSUM_TIMER);
+
+                            summaryMesg.setFieldValue(SPLSUM_DIST, newSummaryDist);
+                            summaryMesg.setFieldValue(SPLSUM_SPEED, newSummaryDist / summaryTimer);
+                            updatedSplitSummaries++;
+                            appendTempUpdateLogg("Updating SPLITSUM w type " + splitType + " DIST from " + summaryDist);
+                            appendTempUpdateLoggLn(" to " + newSummaryDist + "m, speed: " 
+                                + PehoUtils.mps2minpkm(newSummaryDist / summaryTimer) + "min/km");
+                        }
+                        splitTypeOccurrence.put(splitType, occurrenceIx + 1);
+                    }
+                }
+
+                // When split start distance is affected by the distance addition.
+                // When split start is after fromDist, shift start distance.
+                // ------------------------------------------------------------------
+                if (splitStartDist != null && splitStartDist > fromDist) {
+                    split.setFieldValue(SPL_SDIST, (splitStartDist + distToAdd) * 100);
+                    updatedSplitStarts++;
+                }
+            } // end forloop split 
+
+            appendTempUpdateLoggLn("Split updates: "
+                    + "totalUpdated=" + updatedSplitTotals
+                    + ", summaryUpdated=" + updatedSplitSummaries
+                    + ", startShifted=" + updatedSplitStarts);
+        } // end if fromDist != null
+
+        /* for (Mesg split : splitMesg) {
+            Short splitType = split.getFieldShortValue(SPL_TYPE);
+            System.out.println("SPLIT"
+                    + " startTime=" + FitDateTime.toStringTime(split.getFieldLongValue(SPL_STIME), diffMinutesLocalUTC)
+                    + " totalTime=" + FitDateTime.toTimerString(split.getFieldLongValue(SPL_TIMER))
+                    + " startDist=" + PehoUtils.m2km2(split.getFieldFloatValue(SPL_SDIST)/100)
+                    + " totalDist=" + PehoUtils.m2km2(split.getFieldFloatValue(SPL_DIST))
+                + " type=" + splitType + "(" + (splitType != null ? SplitType.getByValue(splitType) : "unknown") + ")"
+                );
+        } */
+
+        // Update session total distance and average speed
+        // ------------------------------------------------------------------
+        Float oldTotalDist = getTotalDistance();
+        setTotalDistance(oldTotalDist + distToAdd);
+        sessionMesg.get(0).setFieldValue(SES_DIST, getTotalDistance());
+
+        Float oldAvgSpeed = getAvgSpeed();
+        setAvgSpeed(getTotalDistance() / getTotalTimerTime());
+        sessionMesg.get(0).setFieldValue(SES_SPEED, getAvgSpeed());
+        sessionMesg.get(0).setFieldValue(SES_ESPEED, getAvgSpeed());
+
+        appendTempUpdateLogg("Increasing SESSION_DIST from " + oldTotalDist + "m");
+        appendTempUpdateLoggLn(" to " + getTotalDistance() + "m");
+
+        appendTempUpdateLogg("Increasing SESSION_SPEED from " + oldAvgSpeed + "m/s" 
+            + " / " + PehoUtils.mps2minpkm(oldAvgSpeed) + "min/km");
+        appendTempUpdateLoggLn(" to " + getAvgSpeed() + "m/s" 
+            + " / " + PehoUtils.mps2minpkm(getAvgSpeed()) + "min/km");
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public Long getLastTimerInTimerList() {
@@ -1310,17 +1507,9 @@ public class FitFile {
         appendTempUpdateLogg("Increasing LAP_TIMER for lap " + pause.getIxLap() + " from " + lapTime);
         lapTime += pause.getTimePause();
         appendTempUpdateLoggLn(" to " + lapTime + "s");
-
-        Float lapDist = lapMesg.get(pause.getIxLap()).getFieldFloatValue(LAP_DIST);
-        appendTempUpdateLogg("Increasing LAP_DIST for lap " + pause.getIxLap() + " from " + lapDist);
-        lapDist += pause.getDistPause();
-        appendTempUpdateLoggLn(" to " + lapDist + "m");
         
         lapMesg.get(pause.getIxLap()).setFieldValue(LAP_TIMER, (lapTime));
         //lapMesg.get(pause.getIxLap()).setFieldValue(LAP_ETIMER, (lapTime));
-        lapMesg.get(pause.getIxLap()).setFieldValue(LAP_DIST, (lapDist));
-        lapMesg.get(pause.getIxLap()).setFieldValue(LAP_SPEED, (lapDist / lapTime));
-        lapMesg.get(pause.getIxLap()).setFieldValue(LAP_ESPEED, (lapDist / lapTime));
 
         // Updating SESSION DATA
         //----------------------
@@ -1334,17 +1523,6 @@ public class FitFile {
         //elapsedTimerTime += (float) pause.getTimePause() - newPauseTime;
         //sessionMesg.get(0).setFieldValue(SES_ETIMER, elapsedTimerTime);
 
-        appendTempUpdateLogg("Increasing SESSION_DIST from " + totalDistance);
-        totalDistance = recordMesg.get(numberOfRecords-1).getFieldFloatValue(REC_DIST);
-        appendTempUpdateLoggLn(" to " + totalDistance + "m");
-
-        sessionMesg.get(0).setFieldValue(SES_DIST, (totalDistance));
-
-        appendTempUpdateLogg("Increasing SESSION_SPEED from " + avgSpeed + " / " + PehoUtils.mps2minpkm(avgSpeed));
-        avgSpeed = totalDistance / totalTimerTime;
-        appendTempUpdateLoggLn(" to " + avgSpeed + "m/s" + " / " + PehoUtils.mps2minpkm(avgSpeed) + "min/km");
-        sessionMesg.get(0).setFieldValue(SES_SPEED, (avgSpeed));
-        sessionMesg.get(0).setFieldValue(SES_ESPEED, (avgSpeed));
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void updateActivityInfoWhenDeletingGapToPause(int gapIndex) {
@@ -1361,15 +1539,8 @@ public class FitFile {
         Float lapTime = lapMesg.get(gap.getIxLap()).getFieldFloatValue(LAP_TIMER) - gap.getTimeGap();
         appendTempUpdateLoggLn(" to " + lapTime + "s");
 
-        appendTempUpdateLogg("Decreasing LAP_DIST for lap " + gap.getIxLap() + " from " + lapMesg.get(gap.getIxLap()).getFieldFloatValue(LAP_DIST));
-        Float lapDist = lapMesg.get(gap.getIxLap()).getFieldFloatValue(LAP_DIST) - gap.getDistGap();
-        appendTempUpdateLoggLn(" to " + lapDist + "m");
-
         lapMesg.get(gap.getIxLap()).setFieldValue(LAP_TIMER, (lapTime));
         //lapMesg.get(gap.getIxLap()).setFieldValue(LAP_ETIMER, (lapTime));
-        lapMesg.get(gap.getIxLap()).setFieldValue(LAP_DIST, (lapDist));
-        lapMesg.get(gap.getIxLap()).setFieldValue(LAP_SPEED, (lapDist / lapTime));
-        lapMesg.get(gap.getIxLap()).setFieldValue(LAP_ESPEED, (lapDist / lapTime));
 
         // Updating SESSION DATA
         //----------------------
@@ -1382,19 +1553,6 @@ public class FitFile {
         //elapsedTimerTime -= (float) gap.getTimePause();
         //sessionMesg.get(0).setFieldValue(SES_ETIMER, elapsedTimerTime);
 
-
-        appendTempUpdateLogg("Decreasing SESSION_DIST from " + totalDistance);
-        totalDistance = recordMesg.get(numberOfRecords-1).getFieldFloatValue(REC_DIST);
-        appendTempUpdateLoggLn(" to " + totalDistance + "m");
-        
-        sessionMesg.get(0).setFieldValue(SES_DIST, (totalDistance));
-
-        appendTempUpdateLogg("Decreasing SESSION_SPEED from " + avgSpeed + " / " + PehoUtils.mps2minpkm(avgSpeed));
-        avgSpeed = totalDistance / getTotalTimerTime();
-        appendTempUpdateLoggLn(" to " + avgSpeed + "m/s" + " / " + PehoUtils.mps2minpkm(avgSpeed) + "min/km");
-
-        sessionMesg.get(0).setFieldValue(SES_SPEED, (avgSpeed));
-        sessionMesg.get(0).setFieldValue(SES_ESPEED, (avgSpeed));
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public record CheckForPausesResult(
@@ -2319,12 +2477,8 @@ public class FitFile {
 
         Float lapTimer = lapMesg.get(0).getFieldFloatValue(LAP_TIMER) + timeToIncrease;
         Float lapETimer = lapMesg.get(0).getFieldFloatValue(LAP_ETIMER) + timeToIncrease;
-        Float lapDist = (float) (lapMesg.get(0).getFieldFloatValue(LAP_DIST) + distFromNew);
         lapMesg.get(0).setFieldValue(LAP_TIMER, lapTimer);
         lapMesg.get(0).setFieldValue(LAP_ETIMER, lapETimer);
-        lapMesg.get(0).setFieldValue(LAP_DIST, lapDist);
-        lapMesg.get(0).setFieldValue(LAP_SPEED, (lapDist / lapTimer));
-        lapMesg.get(0).setFieldValue(LAP_ESPEED, (lapDist / lapTimer));
 
         //----------------------
         // Updating SESSION DATA
@@ -2337,13 +2491,6 @@ public class FitFile {
         setTotalTimerTime(getTotalTimerTime() + timeToIncrease);
         sessionMesg.get(0).setFieldValue(SES_TIMER, getTotalTimerTime());
         sessionMesg.get(0).setFieldValue(SES_ETIMER, sessionMesg.get(0).getFieldFloatValue(SES_ETIMER) + timeToIncrease);
-
-        setTotalDistance(recordMesg.get(getNumberOfRecords() - 1).getFieldFloatValue(RecordMesg.DistanceFieldNum));
-        sessionMesg.get(0).setFieldValue(SES_DIST, getTotalDistance());
-
-        setAvgSpeed(getTotalDistance() / getTotalTimerTime());
-        sessionMesg.get(0).setFieldValue(SES_SPEED, getAvgSpeed());
-        sessionMesg.get(0).setFieldValue(SES_ESPEED, getAvgSpeed());
 
         //----------------------
         // Updating ACTIVITY DATA
@@ -2510,16 +2657,6 @@ public class FitFile {
         recordMesg.add(gapToChange.ixStop, newGapRecord);
         numberOfRecords++;
 
-        // Updating LAP DATA
-        //------------------
-        Float lapTime = lapMesg.get(gapToChange.ixLap).getFieldFloatValue(LAP_TIMER);
-        Float lapDist = lapMesg.get(gapToChange.ixLap).getFieldFloatValue(LAP_DIST) + newTotalDistChange;
-        //lapMesg.get(gapToChange.ixLap).setFieldValue(LAP_TIMER, (lapTime + pauseToShorten.timePause - newPauseTime));
-        //lapMesg.get(gapToChange.ixLap).setFieldValue(LAP_ETIMER, (lapTime + pauseToShorten.timePause - newPauseTime));
-        lapMesg.get(gapToChange.ixLap).setFieldValue(LAP_DIST, lapDist);
-        lapMesg.get(gapToChange.ixLap).setFieldValue(LAP_SPEED, lapDist / lapTime);
-        lapMesg.get(gapToChange.ixLap).setFieldValue(LAP_ESPEED, lapDist / lapTime);
-
         // Updating SESSION DATA
         //----------------------
         //totalTimerTime += (float) gapToChange.timeGap - newPauseTime;
@@ -2527,12 +2664,6 @@ public class FitFile {
         //elapsedTimerTime += (float) gapToChange.timeGap - newPauseTime;
         //sessionMesg.get(0).setFieldValue(SES_ETIMER, elapsedTimerTime);
 
-        totalDistance = recordMesg.get(numberOfRecords-1).getFieldFloatValue(RecordMesg.DistanceFieldNum);
-        sessionMesg.get(0).setFieldValue(SES_DIST, totalDistance);
-
-        avgSpeed = totalDistance / totalTimerTime;
-        sessionMesg.get(0).setFieldValue(SES_SPEED, avgSpeed);
-        sessionMesg.get(0).setFieldValue(SES_ESPEED, avgSpeed);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printEvents(Long eventTimeStartToPrint, Long eventTimeEndToPrint, Event eventToPrint, EventType eventTypeToPrint) {
@@ -4057,6 +4188,8 @@ public class FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printSplitSummary() {
         int i = 0;
+        int summaryCount = 0;
+        Float maxSummaryDistance = null;
         System.out.println();
         System.out.println("==================================================");
         System.out.println("SPLITS IN FILE");
@@ -4073,10 +4206,10 @@ public class FitFile {
             }
 
             Long startTime = mesg.getFieldLongValue(SPL_STIME);
-            if (startTime != null) System.out.print(" Time:" + FitDateTime.toString(startTime, diffMinutesLocalUTC));
+            if (startTime != null) System.out.print(" Time:" + FitDateTime.toStringTime(startTime, diffMinutesLocalUTC));
 
             Long endTime = mesg.getFieldLongValue(SPL_ETIME);
-            if (endTime != null) System.out.print("->" + FitDateTime.toString(endTime, diffMinutesLocalUTC));
+            if (endTime != null) System.out.print("->" + FitDateTime.toStringTime(endTime, diffMinutesLocalUTC));
 
             Float totalTimer = mesg.getFieldFloatValue(SPL_TIMER);
             if (totalTimer != null)  System.out.print(" SplTime:" + PehoUtils.sec2minSecLong(totalTimer) + "min");
@@ -4116,6 +4249,39 @@ public class FitFile {
 
             System.out.println();
             i++;
+        }
+        System.out.println("---- SPLIT SUMMARIES ----");
+        for (Mesg mesg : allMesg) {
+            if (mesg.getNum() != MesgNum.SPLIT_SUMMARY) {
+                continue;
+            }
+
+            summaryCount++;
+            System.out.print("SummaryNo:" + summaryCount);
+
+            Short splitSummaryType = mesg.getFieldShortValue(SPLSUM_TYPE);
+            if (splitSummaryType != null) {
+                System.out.print(" Type:" + SplitType.getByValue(splitSummaryType));
+            }
+
+            Float summaryDistance = mesg.getFieldFloatValue(SPLSUM_DIST);
+            if (summaryDistance != null) {
+                System.out.print(" TotalDist:" + PehoUtils.m2km2(summaryDistance) + "km");
+                if (maxSummaryDistance == null || summaryDistance > maxSummaryDistance) {
+                    maxSummaryDistance = summaryDistance;
+                }
+            }
+
+            Float summaryAvgSpeed = mesg.getFieldFloatValue(SPLSUM_SPEED);
+            if (summaryAvgSpeed != null) {
+                System.out.print(" AvgSpeed:" + String.format("%.2f", summaryAvgSpeed) + "m/s");
+            }
+
+            System.out.println();
+        }
+
+        if (maxSummaryDistance != null) {
+            System.out.println("Max split distance: " + PehoUtils.m2km2(maxSummaryDistance) + "km");
         }
         System.out.println("---- END SPLITS ----");
     }

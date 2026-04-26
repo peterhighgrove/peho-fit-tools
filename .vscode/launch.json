@@ -16,7 +16,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"Lill-Jans och Fiskartorpets elljus\" 9 \"2025-09-17-17-06-21-Lill-Jans och Fiskartorpets elljus 8.3km-watch.fit\""
+      "args": "\"Himlaberget\" 2 \"aaa.zip\""
     },
     {
       "type": "java",
@@ -36,6 +36,44 @@
       "mainClass": "se.peho.fittools.garminWktFitMergeAnalyze.Main",
       "projectName": "garmin-wkt-fit-merge-analyze",
       //"args": ""
+    },
+    {
+      "type": "node-terminal",
+      "name": "Regr GPS (Run)",
+      "request": "launch",
+      "command": "cd \"${workspaceFolder}\" && ./regr-gps.sh --version ${input:fitToolsVersion}"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Regr GPS (Bless)",
+      "request": "launch",
+      "command": "cd \"${workspaceFolder}\" && ./regr-gps.sh --version ${input:fitToolsVersion} --bless"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Regr GPS (Run - Current Source Build)",
+      "request": "launch",
+      "command": "cd \"${workspaceFolder}\" && ./mvnw -q -pl fit-fix-gps-activities -am package && JAR=$(ls -1t fit-fix-gps-activities/target/*.jar | grep -v 'original-' | head -n 1) && JAR=$(realpath \"$JAR\") && ./regr-gps.sh --jar \"$JAR\""
+    },
+    {
+      "type": "node-terminal",
+      "name": "Regr WKT (Run All)",
+      "request": "launch",
+      "command": "cd \"${workspaceFolder}\" && ./regr-wkt.sh --version ${input:fitToolsVersion}"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Regr WKT (Bless All)",
+      "request": "launch",
+      "command": "cd \"${workspaceFolder}\" && ./regr-wkt.sh --version ${input:fitToolsVersion} --bless"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "fitToolsVersion",
+      "type": "promptString",
+      "description": "fit-tools version (e.g. 2.30)",
+      "default": "2.30"
     }
   ]
 }

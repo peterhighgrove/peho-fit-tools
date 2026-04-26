@@ -1,0 +1,9 @@
+-------------------------
+Deleting records to create a GAP
+-------------------------
+===> Input values: 14:00 min, 20:00 min
+===> Adjusted record distances from ix 1202 with diff -642.26m
+===> RecordMesgIx to delete from-to: 842 - 1202
+===> AllMesgIx to delete from: 2805 and number of records: 361
+===> Deleting records to create gap of 6:03 min, from 14:00 min into the activity
+===> Deleting records from 2026-04-12-10-32-02 to 2026-04-12-10-38-02

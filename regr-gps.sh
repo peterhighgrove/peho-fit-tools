@@ -239,6 +239,7 @@ EOF
 
     if ! cmp -s "$new_fit" "$master"; then
         case_ok=false
+        echo "======= (FIT differs) ====================================="
         echo "[FAIL] $case_name (fit differs)"
         echo "       new:    $new_fit"
         echo "       master: $master"
@@ -246,10 +247,12 @@ EOF
             echo "       hashes:"
             sha256sum "$new_fit" "$master" | sed 's/^/         /'
         fi
+        echo "--------------------------------------------"
     fi
 
     if ! cmp -s "$new_after" "$master_after"; then
         case_ok=false
+        echo "======= (-AFTER.TXT differs) ====================================="
         echo "[FAIL] $case_name (-after.txt differs)"
         echo "       new:    $new_after"
         echo "       master: $master_after"
@@ -257,10 +260,12 @@ EOF
             echo "       hashes:"
             sha256sum "$new_after" "$master_after" | sed 's/^/         /'
         fi
+        echo "--------------------------------------------"
     fi
 
     if ! cmp -s "$new_log" "$master_log"; then
         case_ok=false
+        echo "======= (-LOG.TXT differs) ====================================="
         echo "[FAIL] $case_name (-log.txt differs)"
         echo "       new:    $new_log"
         echo "       master: $master_log"
@@ -268,6 +273,7 @@ EOF
             echo "       hashes:"
             sha256sum "$new_log" "$master_log" | sed 's/^/         /'
         fi
+        echo "--------------------------------------------"
     fi
 
     if [[ "$case_ok" == "true" ]]; then
@@ -276,6 +282,7 @@ EOF
     fi
 
     echo "       run log: $log_file"
+    echo "--------------------------------------------"
     return 1
 }
 

@@ -98,12 +98,6 @@ public class PauseFix {
         //fitFile.elapsedTimerTime += (float) pauseToShorten.getTimePause() - newPauseTime;
         //fitFile.sessionMesg.get(0).setFieldValue(FitFile.SES_ETIMER, fitFile.elapsedTimerTime);
 
-        fitFile.setTotalDistance(fitFile.getRecordMesg().get(fitFile.getNumberOfRecords()-1).getFieldFloatValue(RecordMesg.DistanceFieldNum));
-        fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_DIST, fitFile.getTotalDistance());
-
-        fitFile.setAvgSpeed(fitFile.getTotalDistance() / fitFile.getTotalTimerTime());
-        fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_SPEED, fitFile.getAvgSpeed());
-        fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_ESPEED, fitFile.getAvgSpeed());
     }
 
     public void pauseIncrease(int pauseNo, Long secondsToPutIntoPause) {
