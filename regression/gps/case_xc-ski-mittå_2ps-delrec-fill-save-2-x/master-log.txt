@@ -13,6 +13,10 @@ Shortened pause no: 15
 -------------------------
 Deleting records to create a GAP
 -------------------------
+Updating LAP Ix: 4 DIST from 1000.0 to 996.5854m, speed: 6:56min/km
+Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
+Increasing SESSION_DIST from 19562.762m to 19559.348m
+Increasing SESSION_SPEED from 3.406326m/s / 4:54min/km to 3.3652992m/s / 4:57min/km
 ===> Input values: 31:53 min, 33:32 min
 ===> Adjusted record distances from ix 1900 with diff -3.41m
 ===> RecordMesgIx to delete from-to: 1801 - 1900

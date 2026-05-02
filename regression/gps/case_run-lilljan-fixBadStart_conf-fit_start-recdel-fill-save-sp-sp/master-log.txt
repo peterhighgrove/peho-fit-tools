@@ -18,6 +18,14 @@ Act time Loc:2025-09-17-17-06-20
 -------------------------
 Deleting records to create a GAP
 -------------------------
+Updating LAP Ix: 0 DIST from 1060.41 to 1006.3116m, speed: 5:03min/km
+Updating SPLIT w start dist 0.0 DIST from 459.65 to 405.55154m, speed: 5:00min/km type=RWD_RUN(17)
+Updating SPLITSUM w type 17 DIST from 8335.72 to 8281.621m, speed: 5:16min/km
+Updating SPLIT w start dist 0.0 DIST from 1894.47 to 1840.3715m, speed: 5:24min/km type=INTERVAL_WARMUP(5)
+Updating SPLITSUM w type 5 DIST from 1894.47 to 1840.3715m, speed: 5:24min/km
+Split updates: totalUpdated=2, summaryUpdated=2, startShifted=20
+Increasing SESSION_DIST from 8335.725m to 8281.626m
+Increasing SESSION_SPEED from 3.1807344m/s / 5:14min/km to 3.158886m/s / 5:17min/km
 ===> Input values: 1 sec, 25 sec
 ===> Adjusted record distances from ix 25 with diff -54.10m
 ===> RecordMesgIx to delete from-to: 1 - 25

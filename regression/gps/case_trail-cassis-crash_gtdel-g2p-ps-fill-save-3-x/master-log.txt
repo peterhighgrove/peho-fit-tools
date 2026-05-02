@@ -27,11 +27,12 @@ Created event @ix: 18698
 Event Type is NOT STOP_ALL. Insert of Event record will be BEFORE data record with the same time.Data record was found at wanted event time.
 Created event @ix: 19036
 ==>> Created Timer events between 2025-10-02-13-50-58 and 2025-10-02-13-56-24 (inclusive).
+Updating LAP Ix: 5 DIST from 558.01 to 558.01m, speed: 17:29min/km
+Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
+Increasing SESSION_DIST from 15220.45m to 15220.45m
+Increasing SESSION_SPEED from 1.597m/s / 10:26min/km to 1.5969563m/s / 10:26min/km
 Decreasing LAP_TIMER for lap 5 from 585.585 to 259.58502s
-Decreasing LAP_DIST for lap 5 from 558.01 to 558.01m
 Decreasing SESSION_TIMER from 9530.912 to 9204.912s
-Decreasing SESSION_DIST from 15220.45 to 15220.45m
-Decreasing SESSION_SPEED from 1.597 / 10:26 to 1.6535139m/s / 10:05min/km
 
 PAUSE - SHORTEN, forgot to resume timer after pause
 --------------------------------------------
