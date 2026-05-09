@@ -57,8 +57,6 @@ public class PauseFix {
             + " dist:" + pauseToShorten.getDistPause() + "m"
             + " gap dist start:" + startGapDist + "m end:" + stopGapDist + "m"
             + " gap time end-start:" + (stopGapTime - startGapTime) + "s");
-        System.out.println(fitFile.getTempUpdateLogg());
-        fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
 
         // Updating EVENT-TIMER-START DATA
         //----------------------   
@@ -82,12 +80,16 @@ public class PauseFix {
         // Updating LAP DATA
         //------------------
         Float lapTime = fitFile.getLapMesg().get(pauseToShorten.getIxLap()).getFieldFloatValue(FitFile.LAP_TIMER) + pauseToShorten.getTimePause() - newPauseTime;
-        Float lapDist = fitFile.getLapMesg().get(pauseToShorten.getIxLap()).getFieldFloatValue(FitFile.LAP_DIST) + pauseToShorten.getDistPause();
         fitFile.getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(FitFile.LAP_TIMER, lapTime);
         //fitFile.getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(FitFile.LAP_ETIMER, lapTime);
-        fitFile.getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(FitFile.LAP_DIST, lapDist);
+
+        // Get new LAP dist because updated in addDistToRecords 
+        Float lapDist = fitFile.getLapMesg().get(pauseToShorten.getIxLap()).getFieldFloatValue(FitFile.LAP_DIST);
         fitFile.getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(FitFile.LAP_SPEED, lapDist / lapTime);
         fitFile.getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(FitFile.LAP_ESPEED, lapDist / lapTime);
+
+        //LAP dist and speed is updated in addDistToRecords
+        //fitFile.getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(FitFile.LAP_DIST, lapDist);
 
         // Updating SESSION DATA
         //----------------------
@@ -98,6 +100,18 @@ public class PauseFix {
         //fitFile.elapsedTimerTime += (float) pauseToShorten.getTimePause() - newPauseTime;
         //fitFile.sessionMesg.get(0).setFieldValue(FitFile.SES_ETIMER, fitFile.elapsedTimerTime);
 
+        // Updating SESS speed again, even if updated in addDistToRecords 
+        Float oldAvgSpeed = fitFile.getAvgSpeed();
+        fitFile.setAvgSpeed(fitFile.getTotalDistance() / fitFile.getTotalTimerTime());
+        fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_SPEED, fitFile.getAvgSpeed());
+        fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_ESPEED, fitFile.getAvgSpeed());
+        fitFile.appendTempUpdateLogg("Increasing SESSION_SPEED from " + oldAvgSpeed + "m/s" 
+            + " / " + PehoUtils.mps2minpkm(oldAvgSpeed) + "min/km");
+        fitFile.appendTempUpdateLoggLn(" to " + fitFile.getAvgSpeed() + "m/s" 
+            + " / " + PehoUtils.mps2minpkm(fitFile.getAvgSpeed()) + "min/km");
+
+        System.out.println(fitFile.getTempUpdateLogg());
+        fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
     }
 
     public void pauseIncrease(int pauseNo, Long secondsToPutIntoPause) {
@@ -140,25 +154,27 @@ public class PauseFix {
         fitFile.appendTempUpdateLoggLn("---------------------------------------");
         fitFile.appendTempUpdateLoggLn("Increased pause no: " + pauseNo);
         fitFile.appendTempUpdateLoggLn("-- Pause increased with " + secondsToPutIntoPause + "sec to " + PehoUtils.sec2minSecLong(pauseToIncrease.getTimePause()+secondsToPutIntoPause) + "min");
-        System.out.println(fitFile.getTempUpdateLogg());
-        fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
 
         // Increase distance after the shortened pause, starting from 1 after pause stop
         // ------------------------------------------------------
         Float newStartPauseDist = fitFile.getRecordMesg().get(recordToDeleteIx).getFieldFloatValue(FitFile.REC_DIST);
         Float distChangeValue = newStartPauseDist-orgStartPauseDist; // Will be negative
-        System.out.println("Dist:"+orgStartPauseDist+"-"+newStartPauseDist+"="+distChangeValue);
+        fitFile.appendTempUpdateLoggLn("Dist:"+orgStartPauseDist+"-"+newStartPauseDist+"="+distChangeValue);
         fitFile.addDistToRecords(recordToDeleteIx+1, distChangeValue);
 
         // Updating LAP DATA
         //------------------
         Float lapTime = fitFile.getLapMesg().get(pauseToIncrease.getIxLap()).getFieldFloatValue(FitFile.LAP_TIMER) - secondsToPutIntoPause;
-        Float lapDist = fitFile.getLapMesg().get(pauseToIncrease.getIxLap()).getFieldFloatValue(FitFile.LAP_DIST) + distChangeValue;
         fitFile.getLapMesg().get(pauseToIncrease.getIxLap()).setFieldValue(FitFile.LAP_TIMER, (lapTime));
         //fitFile.getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(FitFile.LAP_ETIMER, (lapTime - secondsToPutIntoPause));
-        fitFile.getLapMesg().get(pauseToIncrease.getIxLap()).setFieldValue(FitFile.LAP_DIST, (lapDist));
+        
+        // Get new LAP dist because updated in addDistToRecords 
+        Float lapDist = fitFile.getLapMesg().get(pauseToIncrease.getIxLap()).getFieldFloatValue(FitFile.LAP_DIST);
         fitFile.getLapMesg().get(pauseToIncrease.getIxLap()).setFieldValue(FitFile.LAP_SPEED, (lapDist / lapTime));
         fitFile.getLapMesg().get(pauseToIncrease.getIxLap()).setFieldValue(FitFile.LAP_ESPEED, (lapDist / lapTime));
+
+        //LAP dist and speed is updated in addDistToRecords
+        //fitFile.getLapMesg().get(pauseToIncrease.getIxLap()).setFieldValue(FitFile.LAP_DIST, (lapDist));
 
         // Updating SESSION DATA
         //----------------------
@@ -172,12 +188,22 @@ public class PauseFix {
         //fitFile.elapsedTimerTime -= (float) secondsToPutIntoPause;
         //fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_ETIMER, fitFile.elapsedTimerTime);
 
-        fitFile.setTotalDistance(fitFile.getRecordMesg().get(fitFile.getNumberOfRecords()-1).getFieldFloatValue(RecordMesg.DistanceFieldNum));
-        fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_DIST, fitFile.getTotalDistance());
+        //SESSION dist and speed is updated in addDistToRecords
+        //fitFile.setTotalDistance(fitFile.getRecordMesg().get(fitFile.getNumberOfRecords()-1).getFieldFloatValue(RecordMesg.DistanceFieldNum));
+        //fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_DIST, fitFile.getTotalDistance());
 
+        // Updating SESS speed again, even if updated in addDistToRecords 
+        Float oldAvgSpeed = fitFile.getAvgSpeed();
         fitFile.setAvgSpeed(fitFile.getTotalDistance() / fitFile.getTotalTimerTime());
         fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_SPEED, fitFile.getAvgSpeed());
         fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_ESPEED, fitFile.getAvgSpeed());
+        fitFile.appendTempUpdateLogg("Increasing SESSION_SPEED from " + oldAvgSpeed + "m/s" 
+            + " / " + PehoUtils.mps2minpkm(oldAvgSpeed) + "min/km");
+        fitFile.appendTempUpdateLoggLn(" to " + fitFile.getAvgSpeed() + "m/s" 
+            + " / " + PehoUtils.mps2minpkm(fitFile.getAvgSpeed()) + "min/km");
+
+        System.out.println(fitFile.getTempUpdateLogg());
+        fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
     }
 
     public void pauseToGap(int pauseNo) {

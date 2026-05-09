@@ -1,9 +1,11 @@
+lap1
 pinc
 7
 50
 pinc
 11
 40
+lap1
 save
 3
 Hållan-Malmbäcksstugan-Svalåtjärn-Bruksvallarna
