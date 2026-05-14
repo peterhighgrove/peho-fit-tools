@@ -6,17 +6,9 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.text.SimpleDateFormat;
-import java.util.Scanner;
-import java.util.stream.Collectors;
 import java.util.Iterator;
-import java.time.Duration;
-import java.time.Instant;
 
 //import javax.annotation.processing.RoundEnvironment;
 
@@ -27,153 +19,16 @@ import se.peho.fittools.core.strings.*;
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 public class FitFileForIndoor extends FitFile {
 
-    /*
-    public static final int FID_CTIME = FileIdMesg.TimeCreatedFieldNum; //long
-    public static final int FID_MANU = FileIdMesg.ManufacturerFieldNum; //int
-    public static final int FID_PROD = FileIdMesg.ProductFieldNum; //int
-    public static final int FID_PRODNAME = FileIdMesg.ProductNameFieldNum; //string
-    public static final int DINFO_TIME = DeviceInfoMesg.TimestampFieldNum; //long
-    public static final int DINFO_SWVER = DeviceInfoMesg.SoftwareVersionFieldNum; //float
-    public static final int ACT_TIME = ActivityMesg.TimestampFieldNum; //long
-    public static final int ACT_LOCTIME = ActivityMesg.LocalTimestampFieldNum; //long
-    public static final int DEVID_APPID = DeveloperDataIdMesg.ApplicationIdFieldNum; //enum
-    public static final int WKT_NAME = WorkoutMesg.WktNameFieldNum; //long
-    public static final int WKT_SPORT = WorkoutMesg.SportFieldNum; //long
-    public static final int WKT_SUBSPORT = WorkoutMesg.SubSportFieldNum; //long
-    public static final int SES_TIME = SessionMesg.TimestampFieldNum; //long
-    public static final int SES_STIME = SessionMesg.StartTimeFieldNum; //long
-    public static final int SES_PROFILE = SessionMesg.SportProfileNameFieldNum; //string
-    public static final int SES_SPORT = SessionMesg.SportFieldNum; //short -> .getByValue -> Sport
-    public static final int SES_SUBSPORT = SessionMesg.SubSportFieldNum; //short -> .getByValue -> SubSport
-    public static final int SES_TIMER = SessionMesg.TotalTimerTimeFieldNum; //float
-    public static final int SES_ETIMER = SessionMesg.TotalElapsedTimeFieldNum; //float
-    public static final int SES_MTIMER = SessionMesg.TotalMovingTimeFieldNum; //float
-    public static final int SES_DIST = SessionMesg.TotalDistanceFieldNum; //float
-    public static final int SES_SPEED = SessionMesg.AvgSpeedFieldNum; //float
-    public static final int SES_MSPEED = SessionMesg.MaxSpeedFieldNum; //float
-    public static final int SES_ESPEED = SessionMesg.EnhancedAvgSpeedFieldNum; //float
-    public static final int SES_EMSPEED = SessionMesg.EnhancedMaxSpeedFieldNum; //float
-    public static final int SES_CAD = SessionMesg.AvgCadenceFieldNum; //short
-    public static final int SES_MCAD = SessionMesg.MaxCadenceFieldNum; //short
-    public static final int SES_POW = SessionMesg.AvgPowerFieldNum; //int
-    public static final int SES_MPOW = SessionMesg.MaxPowerFieldNum; //int
-    public static final int EVE_TIME = EventMesg.TimestampFieldNum; //long
-    public static final int EVE_STIME = EventMesg.StartTimestampFieldNum; //long
-    public static final int EVE_EVENT = EventMesg.EventFieldNum; //long
-    public static final int EVE_TYPE = EventMesg.EventTypeFieldNum; //long
-    public static final int SPL_STIME = SplitMesg.StartTimeFieldNum; //long
-    public static final int SPL_ETIME = SplitMesg.EndTimeFieldNum; //long
-    public static final int SPL_TIMER = SplitMesg.TotalTimerTimeFieldNum; // float
-    public static final int SPL_ETIMER = SplitMesg.TotalElapsedTimeFieldNum; // float
-    public static final int SPL_MTIMER = SplitMesg.TotalMovingTimeFieldNum; // float
-    public static final int SPL_MESSAGE_INDEX = SplitMesg.MessageIndexFieldNum; // int
-    public static final int SPL_TYPE = SplitMesg.SplitTypeFieldNum; // enum
-    public static final int SPL_DIST = SplitMesg.TotalDistanceFieldNum; // float
-    public static final int SPL_SPEED = SplitMesg.AvgSpeedFieldNum; // float
-    public static final int SPL_MSPEED = SplitMesg.MaxSpeedFieldNum; // float
-    public static final int SPL_VSPEED = SplitMesg.AvgVertSpeedFieldNum; // float
-    public static final int SPL_SELE = SplitMesg.StartElevationFieldNum; // int
-    public static final int SPL_ASC = SplitMesg.TotalAscentFieldNum; // int
-    public static final int SPL_DESC = SplitMesg.TotalDescentFieldNum; // int
-    public static final int SPL_SLAT = SplitMesg.StartPositionLatFieldNum; // int (semicircles)
-    public static final int SPL_SLON = SplitMesg.StartPositionLongFieldNum; // int (semicircles)
-    public static final int SPL_ELAT = SplitMesg.EndPositionLatFieldNum; // int (semicircles)
-    public static final int SPL_ELON = SplitMesg.EndPositionLongFieldNum; // int (semicircles)
-    public static final int SPL_CAL = SplitMesg.TotalCaloriesFieldNum; // int
-    public static final int SPLSUM_TIMER = SplitSummaryMesg.TotalTimerTimeFieldNum; // float
-    public static final int SPLSUM_MTIMER = SplitSummaryMesg.TotalMovingTimeFieldNum; // float
-    public static final int SPLSUM_DIST = SplitSummaryMesg.TotalDistanceFieldNum; // float
-    public static final int SPLSUM_SPEED = SplitSummaryMesg.AvgSpeedFieldNum; // float
-    public static final int SPLSUM_MSPEED = SplitSummaryMesg.MaxSpeedFieldNum; // float
-    public static final int SPLSUM_VSPEED = SplitSummaryMesg.AvgVertSpeedFieldNum; // float
-    public static final int SPLSUM_ASC = SplitSummaryMesg.TotalAscentFieldNum; // int
-    public static final int SPLSUM_DESC = SplitSummaryMesg.TotalDescentFieldNum; // int
-    public static final int SPLSUM_CAL = SplitSummaryMesg.TotalCaloriesFieldNum; // int
-    public static final int SPLSUM_TYPE = SplitSummaryMesg.SplitTypeFieldNum; // enum
-    public static final int LAP_TIME = LapMesg.TimestampFieldNum; //long
-    public static final int LAP_STIME = LapMesg.StartTimeFieldNum; //long
-    public static final int LAP_TIMER = LapMesg.TotalTimerTimeFieldNum; //float
-    public static final int LAP_ETIMER = LapMesg.TotalElapsedTimeFieldNum; //float
-    public static final int LAP_MTIMER = LapMesg.TotalMovingTimeFieldNum; //float
-    public static final int LAP_DIST = LapMesg.TotalDistanceFieldNum; //float
-    public static final int LAP_SPEED = LapMesg.AvgSpeedFieldNum; //float
-    public static final int LAP_MSPEED = LapMesg.MaxSpeedFieldNum; // float
-    public static final int LAP_ESPEED = LapMesg.EnhancedAvgSpeedFieldNum; //float
-    public static final int LAP_EMSPEED = LapMesg.EnhancedMaxSpeedFieldNum; // float
-    public static final int LAP_HR = LapMesg.AvgHeartRateFieldNum; // int
-    public static final int LAP_MHR = LapMesg.MaxHeartRateFieldNum; // int
-    public static final int LAP_CAD = LapMesg.AvgCadenceFieldNum; // short
-    public static final int LAP_MCAD = LapMesg.MaxCadenceFieldNum; // short
-    public static final int LAP_INTENSITY = LapMesg.IntensityFieldNum; // enum (short) -> Intensity.getByValue()
-    public static final int LAP_WKT_STEP_IDX = LapMesg.WktStepIndexFieldNum; // integer
-    public static final int LAP_POW = LapMesg.AvgPowerFieldNum; // int
-    public static final int LAP_MPOW = LapMesg.MaxPowerFieldNum; // int
-    public static final int LAP_ASC = LapMesg.TotalAscentFieldNum; // int
-    public static final int LAP_DESC = LapMesg.TotalDescentFieldNum; // int
-    public static final int LAP_ALT = LapMesg.AvgAltitudeFieldNum; // float
-    public static final int LAP_MALT = LapMesg.MaxAltitudeFieldNum; // float
-    public static final int LAP_MINALT = LapMesg.MinAltitudeFieldNum; // float
-    public static final int LAP_SLAT = LapMesg.StartPositionLatFieldNum; // int (semicircles)
-    public static final int LAP_SLON = LapMesg.StartPositionLongFieldNum; // int (semicircles)
-    public static final int LAP_ELAT = LapMesg.EndPositionLatFieldNum; // int (semicircles)
-    public static final int LAP_ELON = LapMesg.EndPositionLongFieldNum; // int (semicircles)
-    public static final int LAP_TEMP = LapMesg.AvgTemperatureFieldNum; // byte
-    public static final int LAP_MTEMP = LapMesg.MaxTemperatureFieldNum; // byte
-    public static final int LAP_MINTEMP = LapMesg.MinTemperatureFieldNum; // byte
-    public static final int LAP_SPORT = LapMesg.SportFieldNum; //short -> .getByValue -> Sport
-    public static final int LAP_SUBSPORT = LapMesg.SubSportFieldNum; //short -> .getByValue -> SubSport
-    public static final int REC_TIME = RecordMesg.TimestampFieldNum; //long
-    public static final int REC_DIST = RecordMesg.DistanceFieldNum; //float
-    public static final int REC_HR = RecordMesg.HeartRateFieldNum; //int
-    public static final int REC_SPEED = RecordMesg.SpeedFieldNum; //float
-    public static final int REC_ESPEED = RecordMesg.EnhancedSpeedFieldNum; //float
-    public static final int REC_CAD = RecordMesg.CadenceFieldNum; //int
-    public static final int REC_POW = RecordMesg.PowerFieldNum; //int
-    public static final int REC_LAT = RecordMesg.PositionLatFieldNum; //int
-    public static final int REC_LON = RecordMesg.PositionLongFieldNum; //int
-    public static final int REC_EALT = RecordMesg.EnhancedAltitudeFieldNum; //float
-    public static final int SP_SPORT = SportMesg.SportFieldNum; //short -> .getByValue -> Sport
-    public static final int SP_SUBSPORT = SportMesg.SubSportFieldNum;
-    public static final int SP_NAME = SportMesg.NameFieldNum; //string
-    */
-
-    //private Integer manufacturerNo;
-    //private String manufacturer;
-    // private Integer productNr;
-    // private String product = "";
-    // private Float swVer;
-    // private Long activityDateTimeUTC;  // Original file
     private Long activityDateTimeLocal; // Original file
     private Long activityDateTimeLocalOrg; // Original file
     private Long diffMinutesLocalUTC;
 
-    // public Integer getProductNr() { return productNr; }
-    // public void setProductNr(Integer productNr) { this.productNr = productNr; }
-    // public String getProduct() { return product; }
-    // public void setProduct(String product) { this.product = product; }
-    // public Float getSwVer() { return swVer; }
-    // public void setSwVer(Float swVer) { this.swVer = swVer; }
-    // public Long getActivityDateTimeUTC() { return activityDateTimeUTC; }
-    // public void setActivityDateTimeUTC(Long activityDateTimeUTC) { this.activityDateTimeUTC = activityDateTimeUTC; }
     public Long getActivityDateTimeLocal() { return activityDateTimeLocal; }
     public void setActivityDateTimeLocal(Long activityDateTimeLocal) { this.activityDateTimeLocal = activityDateTimeLocal; }
     public Long getActivityDateTimeLocalOrg() { return activityDateTimeLocalOrg; }
     public void setActivityDateTimeLocalOrg(Long activityDateTimeLocalOrg) { this.activityDateTimeLocalOrg = activityDateTimeLocalOrg; }
     public Long getDiffMinutesLocalUTC() { return diffMinutesLocalUTC; }
     public void setDiffMinutesLocalUTC(Long diffMinutesLocalUTC) { this.diffMinutesLocalUTC = diffMinutesLocalUTC; }
-
-    private String wktName;
-    private Sport sport;
-    private SubSport subsport;
-    private String sportProfile;
-    public String getWktName() { return wktName; }
-    public void setWktName(String wktName) { this.wktName = wktName; }
-    public Sport getSport() { return sport; }
-    public void setSport(Sport sport) { this.sport = sport; }
-    public SubSport getSubsport() { return subsport; }
-    public void setSubsport(SubSport subsport) { this.subsport = subsport; }
-    public String getSportProfile() { return sportProfile; }
-    public void setSportProfile(String sportProfile) { this.sportProfile = sportProfile; }
 
     private String activityNamnSuffix;
     public String getActivityNamnSuffix() { return activityNamnSuffix; }
@@ -189,134 +44,22 @@ public class FitFileForIndoor extends FitFile {
     public void setIsElliptical(Boolean isElliptical) { this.isElliptical = isElliptical; }
     public void setIsTreadmill(Boolean isTreadmill) { this.isTreadmill = isTreadmill; }
 
-    Float totalTimerTime; //ActivityMesg, excl pauses
-    Float totalDistance;
-    Float totalDistanceOrg;
-    Float avgSpeed; // m/s
-    Float maxSpeed; // m/s
-    int avgCadence;
-    //int maxCadence;
-    int avgPower;
-    //int maxPower;
-
-    int numberOfLaps;
-    Long timeFirstRecord;
-    Long timeFirstRecordOrg;   // Original file
-    Long timeLastRecord;
-    int numberOfRecords;
-
-    Float activeTime = 0f;
-    Float restTime = 0f;
-    Float activeDist = 0f;
-    Float restDist = 0f;
-
     public String savedStrOrgFileInfo = "";
-    //String savedStrLapsAllInfo = "";
-    String savedStrLapsActiveInfoShort = "";
-    String savedStrLapsRestInfoShort = "";
-    //String savedStrLapsActiveInfoLong = "";
-    //String savedStrLapsRestInfoLong = "";
 
-
-    int numberOfDevFields;
     String devAppToModify = "9a0508b9-0256-4639-88b3-a2690a14ddf9";
-    //List <Integer> devFieldsToRemove = Arrays.asList("Strokes", "Calories", "Distance", "Speed", "Power", 2, 6, 7);
-    List <Integer> devFieldsToRemove = Arrays.asList(10, 11, 12, 23, 1, 2, 6, 7);
-    List <String> devFieldNamesToUpdate = Arrays.asList("Training_session", "MaxHRevenLaps");
 
-    //Boolean isEllipticalFile = false;
-    //Boolean hasManualLapsFile = false;
-
-    //Boolean isSkiErgFile = false;
-    //Boolean hasC2File = false;
-    //Boolean hasDevAppData = false;
-    //Boolean isC2File = false;
-    
-    int i;
-    FileInputStream in;
-    Decode decode;
-    MesgBroadcaster broadcaster;
-
-    private List<Mesg> allMesg = new ArrayList<>();
-    private List<Mesg> fileIdMesg = new ArrayList<>();
-    private List<Mesg> deviceInfoMesg = new ArrayList<>();
-    private List<Mesg> wktSessionMesg = new ArrayList<>();
-    private List<Mesg> wktStepMesg = new ArrayList<>();
-    private List<Mesg> wktRecordMesg = new ArrayList<>();
-    private List<Mesg> activityMesg = new ArrayList<>();
-    private List<Mesg> sessionMesg = new ArrayList<>();
-    private List<Mesg> lapMesg = new ArrayList<>();
-    private List<Mesg> splitMesg = new ArrayList<>();
     private List<Mesg> splitSummaryMesg = new ArrayList<>();
-    private List<Mesg> eventMesg = new ArrayList<>();
-    private List<Mesg> recordMesg = new ArrayList<>();
     private List<Mesg> devDataIdMesg = new ArrayList<>();
     private List<Mesg> developerDataIdMesg = new ArrayList<>();
     private List<Mesg> fieldDescrMesg = new ArrayList<>();
     private List<Mesg> sportMesg = new ArrayList<>();
-    public List<Mesg> getAllMesg() { return allMesg; }
-    public List<Mesg> getFileIdMesg() { return fileIdMesg; }
-    public List<Mesg> getDeviceInfoMesg() { return deviceInfoMesg; }
-    public List<Mesg> getWktSessionMesg() { return wktSessionMesg; }
-    public List<Mesg> getWktStepMesg() { return wktStepMesg; }
-    public List<Mesg> getWktRecordMesg() { return wktRecordMesg; }
-    public List<Mesg> getActivityMesg() { return activityMesg; }
-    public List<Mesg> getSessionMesg() { return sessionMesg; }
-    public List<Mesg> getLapMesg() { return lapMesg; }
-    public List<Mesg> getEventMesg() { return eventMesg; }
-    public List<Mesg> getRecordMesg() { return recordMesg; }
     public List<Mesg> getDevDataIdMesg() { return devDataIdMesg; }
     public List<Mesg> getDeveloperDataIdMesg() { return developerDataIdMesg; }
     public List<Mesg> getFieldDescrMesg() { return fieldDescrMesg; }
     public List<Mesg> getSportMesg() { return sportMesg; }
     
-    /* List<FileIdMesg> fileIdRecords = new ArrayList<>();
-    List<FileCreatorMesg> fileCreatorRecords = new ArrayList<>();
-    List<ActivityMesg> activityRecords = new ArrayList<>();
-    List<DeviceInfoMesg> deviceInfoRecords = new ArrayList<>();
-    List<UserProfileMesg> userProfileRecords = new ArrayList<>();
-    List<MaxMetDataMesg> maxMetDataRecords = new ArrayList<>();
-    List<MetZoneMesg> metZoneRecords = new ArrayList<>();
-    List<GoalMesg> goalRecords = new ArrayList<>();
-    List<WorkoutMesg> wktRecords = new ArrayList<>();
-    List<WorkoutSessionMesg> wktSessionRecords = new ArrayList<>();
-    List<ZonesTargetMesg> zonesTargetRecords = new ArrayList<>();
-    List<WorkoutStepMesg> wktStepRecords = new ArrayList<>();
-    List<EventMesg> eventRecords = new ArrayList<>();
-    List<CourseMesg> courseRecords = new ArrayList<>();
-    List<DeveloperDataIdMesg> devDataIdRecords = new ArrayList<>();
-    List<DeveloperFieldDescription> devFieldDescrRecords = new ArrayList<>();
-    List<DeveloperFieldDefinition> devFieldDefRecords = new ArrayList<>();
-    List<FieldDescriptionMesg> fieldDescrRecords = new ArrayList<>();
-    List<SessionMesg> sessionRecords = new ArrayList<>();
-    List<LapMesg> lapRecords = new ArrayList<>();
-    List<RecordMesg> secRecords = new ArrayList<>();
-    List<SplitMesg> splitRecords = new ArrayList<>();
-    List<SplitSummaryMesg> splitSumRecords = new ArrayList<>();
-    List<SpeedZoneMesg> speedZoneRecords = new ArrayList<>();
-    List<CadenceZoneMesg> cadZoneRecords = new ArrayList<>();
-    List<TimeInZoneMesg> timeInZoneRecords = new ArrayList<>();
-    List<HrZoneMesg> hrZoneRecords = new ArrayList<>();
-    List<PowerZoneMesg> powerZoneRecords = new ArrayList<>(); */
-
     List<LapExtraMesg> lapExtraRecords = new ArrayList<>(); //Not Garmin SDK
     List<RecordExtraMesg> secExtraRecords = new ArrayList<>(); //Not Garmin SDK
-
-    SimpleDateFormat sweDateTime = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-
-    Float activeSumSpeed = 0f;
-    Float activeSumCad = 0f;
-    Float activeSumPower = 0f;
-    Float restSumSpeed = 0f;
-    Float restSumCad = 0f;
-    Float restSumPower = 0f;
-
-    Float activeAvgSpeed = 0f;
-    Float activeAvgCad = 0f;
-    Float activeAvgPower = 0f;
-    Float restAvgSpeed = 0f;
-    Float restAvgCad = 0f;
-    Float restAvgPower = 0f;
 
     Float activeFakeSumSpeed = 0f;
     Float activeFakeSumCad = 0f;
@@ -644,78 +387,7 @@ public class FitFileForIndoor extends FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String getFilenameAndSetNewSportProfileName(String suffix, String outputFilenameBase) {
         
-               
-        /* String newProfileName = sportProfile;
-
-        newProfileName = newProfileName.replace(" (bike)","");
-        newProfileName = newProfileName.replace("spinbike","SBike");
-        newProfileName = newProfileName.replace("SpinBike","SBike");
-        newProfileName = newProfileName.replace("Spin","SpinBike");
-        newProfileName = newProfileName.replace("SBike","SpinBike");
-        newProfileName = newProfileName.replace("Cykel inne","SpinBike");
-
-        newProfileName = newProfileName.replace("Elliptical","CT");
-        newProfileName = newProfileName.replace("Ellipt","Elliptical");
-        newProfileName = newProfileName.replace("CT","Elliptical");
-        newProfileName = newProfileName.replace("ct","Elliptical");
-
-        newProfileName = newProfileName.replace("Treadmill","Löpband");
-
-        if (wktRecordMesg.isEmpty()) {
-            System.out.println("========> NO wkt RECORDS");
-
-            // Set sport profile name in the first session message
-            Mesg session = sessionMesg.get(0);
-            String profileText = newProfileName + " " + ((float) (Math.round(totalDistance / 100)) / 10) + "km " + suffix;
-            session.setFieldValue(SES_PROFILE, profileText);
-
-        } else {
-            if (wktStepMesg.isEmpty()) {
-                System.out.println("========> NO wkt STEP RECORDS");
-            } else {
-
-                Mesg workout = wktRecordMesg.get(0);
-
-                // Get workout name safely
-                String wktName = workout.getFieldStringValue(WKT_NAME);
-                if (wktName == null || wktName.isEmpty()) {
-                    System.out.println("================ wktName == NULL");
-                    wktName = "";
-                }
-
-                // Clean up workout name
-                String newWktName = wktName
-                        .replace("Bike ", "")
-                        .replace("Run ", "")
-                        .replace(" (bike)", "")
-                        .replace("HR", "");
-
-                // Compose new session profile name
-                newProfileName += " " + newWktName + " " + ((float) (Math.round(totalDistance / 100)) / 10) + "km " + suffix;
-                System.out.println("----> New SportProfile:  " + newProfileName);
-
-                // Update first session message
-                getSessionMesg().get(0).setFieldValue(SES_PROFILE, newProfileName);
-                getSportMesg().get(0).setFieldValue(SP_NAME, newProfileName);
-            }
-        }
-
-        System.out.println("----> New SportProfile:  " + newProfileName);
-
-        outputFilenameBase = "-" + newProfileName;
-        outputFilenameBase = outputFilenameBase.replace("/","!");
-        outputFilenameBase = outputFilenameBase.replace("×","x");
-
-        System.out.println("----> New FilenameBase: " + outputFilenameBase); */
-
         Mesg workout = wktRecordMesg.get(0);
-
-        // Get workout name safely
-        /* String wktName = workout.getFieldStringValue(WKT_NAME);
-        if (wktName == null || wktName.isEmpty()) {
-            System.out.println("================ wktName == NULL");
-            wktName = "";
-        } */
 
         String filenameBase = new FileBaseStr(
                                     new DTstr(activityDateTimeLocal).get(),
@@ -724,7 +396,6 @@ public class FitFileForIndoor extends FitFile {
                                     new DistTimerStr(totalDistance, totalTimerTime).get(), 
                                     getProduct()
                                 ).get();
-
 
         return filenameBase;
     }
@@ -1426,8 +1097,6 @@ public class FitFileForIndoor extends FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     /* public void mergeCiqAndFitData() {
-        
-
 
         int pauseRecordCounter = 0;
         int sameDistCounter = 1;
@@ -3255,116 +2924,6 @@ public class FitFileForIndoor extends FitFile {
 
 
     }
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    /* public void printFileIdInfo() {
-        int i = 0;
-        System.out.println();
-        System.out.println("==================================================");
-        System.out.println("====FileIdInfoMesg----------------------------------------------");
-        for (Mesg mesg : fileIdMesg) {
-            i++;
-            System.out.println("File ID: " + i);
-
-            Long timeCreated = mesg.getFieldLongValue(FID_CTIME);
-            if (timeCreated != null) {
-                System.out.print(" Time: " + FitDateTime.toString(timeCreated));
-            }
-
-            Integer manuVal = mesg.getFieldIntegerValue(FID_MANU);
-            String manuStr = "";
-            if (manuVal != null) {
-                manuStr = Manufacturer.getStringFromValue(manuVal);
-                System.out.print(" Manufacturer: " + manuStr + "(" + manuVal + ")");
-            }
-
-            Integer prodVal = mesg.getFieldIntegerValue(FID_PROD);
-            if (prodVal != null) {
-                System.out.print(" Product: ");
-                if ("GARMIN".equals(manuStr)) {
-                    System.out.print(GarminProduct.getStringFromValue(prodVal) + "(" + prodVal + ")");
-                } else {
-                    System.out.print(prodVal);
-                }
-            }
-
-            String prodName = mesg.getFieldStringValue(FID_PRODNAME);
-            if (prodName != null) {
-                System.out.print(" ProductName: " + prodName);
-            }
-
-            Long serialNum = mesg.getFieldLongValue(FileIdMesg.SerialNumberFieldNum);
-            if (serialNum != null) {
-                System.out.print(" Serial Number: " + serialNum);
-            }
-
-            Integer number = mesg.getFieldIntegerValue(FileIdMesg.NumberFieldNum);
-            if (number != null) {
-                System.out.print(" Number: " + number);
-            }
-
-            Short type = mesg.getFieldShortValue(FileIdMesg.TypeFieldNum);
-            if (type != null) {
-                System.out.print(" Type: " + type);
-            }
-
-            System.out.println();
-            if (i == 11) {
-                break;
-            }
-        }
-        System.out.println("--------------------------------------------------");
-    } */
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    /* public void printDeviceInfo() {
-        int i = 0;
-        String manu = "";
-        System.out.println();
-        System.out.println("==================================================");
-        System.out.println("====DeviceInfoMesg----------------------------------------------");
-        for (Mesg mesg : deviceInfoMesg) {
-            i++;
-            System.out.print("Device ID: " + i);
-
-            Integer deviceType = mesg.getFieldIntegerValue(DeviceInfoMesg.DeviceTypeFieldNum);
-            if (deviceType != null) {
-                System.out.print(" -- DeviceType: (" + deviceType + ")");
-            }
-
-            Float sw = mesg.getFieldFloatValue(DINFO_SWVER);
-            if (sw != null) {
-                System.out.print(" SW: v" + sw);
-            }
-
-            Integer manuVal = mesg.getFieldIntegerValue(DeviceInfoMesg.ManufacturerFieldNum);
-            if (manuVal != null) {
-                manu = Manufacturer.getStringFromValue(manuVal);
-                System.out.print(" Manufacturer: " + manu + "(" + manuVal + ")");
-            }
-
-            Integer prodVal = mesg.getFieldIntegerValue(DeviceInfoMesg.ProductFieldNum);
-            if (prodVal != null) {
-                System.out.print(" Product: ");
-                if ("GARMIN".equals(manu)) {
-                    System.out.print(GarminProduct.getStringFromValue(prodVal) + "(" + prodVal + ")");
-                } else {
-                    System.out.print(prodVal);
-                }
-            }
-
-            String prodName = mesg.getFieldStringValue(DeviceInfoMesg.ProductNameFieldNum);
-            if (prodName != null) {
-                System.out.print(" ProductName: " + prodName);
-            }
-
-            Float hw = mesg.getFieldFloatValue(DeviceInfoMesg.HardwareVersionFieldNum);
-            if (hw != null) {
-                System.out.print(" HW: v" + hw);
-            }
-
-            System.out.println();
-        }
-        System.out.println("--------------------------------------------------");
-    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printWktInfo() {
         int i = 0;
@@ -4396,422 +3955,306 @@ public class FitFileForIndoor extends FitFile {
             System.out.println();
         }
     }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    /* public void printSecRecords0 () {
-        int i = 0;
-        System.out.println("--------------------------------------------------");
-        for (RecordMesg record : secRecords) {
-            i++;
-            if (i<11 || i>numberOfRecords-10 || i>3012 && i<3020) {
-                System.out.print("Record:" + i);
-                if (record.getTimestamp() != null) {
-                    System.out.print(" Timestamp: " + record.getTimestamp());
-                }
-                // if (lapRecords.get(0).getStartTime() != null) {
-                //     System.out.print(" LapStartTime: " + lapRecords.get(0).getStartTime());
-                // }
-                if (record.getHeartRate() != null) {
-                    System.out.print(" HR: " + record.getHeartRate());
-                }
-                if (record.getCadence() != null) {
-                    System.out.print(" Cad: " + record.getCadence());
-                }
-                if (record.getSpeed() != null) {
-                    System.out.print(" Speed: " + record.getSpeed());
-                }
-                if (record.getDistance() != null) {
-                    System.out.print(" Dist: " + record.getDistance());
-                }
-                if (record.getPositionLat() != null && record.getPositionLong() != null) {
-                    System.out.print(" Position: (" + record.getPositionLat() + ", " + record.getPositionLong() + ")");
-                }
-                //Iterable<DeveloperField> devFields = new ArrayList<>();
-                //devFields = record.getDeveloperFields();
-                //List<Field> allFields = new ArrayList<>();
-                //allFields = record.fields();
-                //Iterable devFields2 = record.getDeveloperFields();
-                //System.out.println(" GETVALUE2: " + allFields.get(0).getStringValue());
-                for (DeveloperField field : record.getDeveloperFields()) {
-                    System.out.print(", " + field.getName() + ":" + field.getStringValue());
-                    //System.out.print(", " + field.getAppId());
-                    //System.out.print(", " + field.getAppUUID());
-                    System.out.print(", " + field.getDeveloperDataIndex());
-                    System.out.print(", " + field.getNum());
-                    // for (int j = 1; j < field.getNumValues(); j++) {
-                    //     System.out.print(", " + field.getValue(j));
-                    // }
-                    //System.out.println();
-                }
-                // for (Field field : record.getFields()) {
-                //     System.out.print(", " + field.getName() + ":" + field.getStringValue());
-                //     //System.out.print(", " + field.getAppId());
-                //     //System.out.print(", " + field.getAppUUID());
-                //     //System.out.print(", " + field.getDeveloperDataIndex());
-                //     System.out.print(", " + field.getNum());
-                //     for (int j = 1; j < field.getNumValues(); j++) {
-                //         System.out.print(", " + field.getValue(j));
-                //     }
-                //     System.out.println();
-                // }
-                System.out.println();
-            }
-        }
-        System.out.println("--------------------------------------------------");
-    }
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printSecRecords () {
-        int i = 0;
-        System.out.println("--------------------------------------------------");
-        for (RecordMesg record : secRecords) {
-            if (i<11 || i>numberOfRecords-10 || i>3012 && i<3020) {
-                System.out.print("Record:" + i);
-                if (record.getTimestamp() != null) {
-                    System.out.print(" Timestamp: " + record.getTimestamp());
-                }
-                // if (lapRecords.get(0).getStartTime() != null) {
-                //     System.out.print(" LapStartTime: " + lapRecords.get(12).getStartTime());
-                // }
-                if (record.getHeartRate() != null) {
-                    System.out.print(" Heart Rate: " + record.getHeartRate());
-                }
-                if (record.getSpeed() != null) {
-                    System.out.print(" Speed: " + record.getSpeed());
-                }
-                if (record.getEnhancedSpeed() != null) {
-                    System.out.print(" EnhSp: " + record.getEnhancedSpeed());
-                }
-                if (record.getDistance() != null) {
-                    System.out.print(" Dist: " + record.getDistance());
-                }
-                if (record.getCadence() != null) {
-                    System.out.print(" Cad: " + record.getCadence());
-                }
-                if (record.getPower() != null) {
-                    System.out.print(" Pow: " + record.getPower());
-                }
+    //=============================================================================
+    public void printSecRecords2() {
+        System.out.println("-----printSecRecords2---------------------------------------------");
+        for (int i = 0; i < recordMesg.size(); i++) {
+            Mesg rec = recordMesg.get(i);
+            if (i < 11 || i > numberOfRecords - 10 || (i > 3012 && i < 3020)) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Record:").append(i);
+
+                // Timestamp
+                Long ts = rec.getFieldLongValue(REC_TIME);
+                if (ts != null) sb.append(" Timestamp:").append(ts);
+
+                // Heart rate
+                appendIfNotNull(sb, " HR:", rec.getFieldIntegerValue(REC_HR));
+
+                // Speed / enhanced speed
+                appendIfNotNull(sb, " Speed:", rec.getFieldFloatValue(REC_SPEED));
+                appendIfNotNull(sb, " EnhSp:", rec.getFieldFloatValue(REC_ESPEED));
+
+                // Distance
+                appendIfNotNull(sb, " Dist:", rec.getFieldFloatValue(REC_DIST));
+
+                // Cadence
+                appendIfNotNull(sb, " Cad:", rec.getFieldIntegerValue(REC_CAD));
+
+                // Power
+                appendIfNotNull(sb, " Pow:", rec.getFieldIntegerValue(REC_POW));
+
+                // Extra data (your custom structure)
                 if (secExtraRecords.get(i).C2DateTime != null) {
-                    System.out.print(" C2time: " + secExtraRecords.get(i).C2DateTime);
+                    sb.append(" C2time:").append(secExtraRecords.get(i).C2DateTime);
                 }
-                if (record.getPositionLat() != null && record.getPositionLong() != null) {
-                    System.out.print(" Position: (" + record.getPositionLat() + ", " + record.getPositionLong() + ")");
+
+                // Position (lat/lon)
+                Integer lat = rec.getFieldIntegerValue(REC_LAT);
+                Integer lon = rec.getFieldIntegerValue(REC_LON);
+                if (lat != null && lon != null) {
+                    sb.append(" Position:(").append(lat).append(", ").append(lon).append(")");
                 }
-                // if (secExtraRecords.get(i).lapNo != 0) {
-                //     System.out.print(" LapNo: " + secExtraRecords.get(i).lapNo);
-                // }
-                System.out.print(" DEV:");
-                for (DeveloperField field : record.getDeveloperFields()) {
-                    System.out.print(", " + field.getName() + ":" + field.getValue( 0 ));
-                    for (int j = 1; j < field.getNumValues(); j++) {
-                        System.out.print(", " + field.getValue(j));
+
+                // Developer fields
+                sb.append(" DEV:");
+                for (DeveloperField field : rec.getDeveloperFields()) {
+                    sb.append(" ").append(field.getName()).append(":");
+                    for (int j = 0; j < field.getNumValues(); j++) {
+                        sb.append(field.getValue(j));
+                        if (j < field.getNumValues() - 1) sb.append(",");
                     }
                 }
 
-                System.out.println();
+                System.out.println(sb);
             }
-            i++;
         }
-        System.out.println("--------------------------------------------------");
-    } */
-    //=============================================================================
-public void printSecRecords2() {
-    System.out.println("-----printSecRecords2---------------------------------------------");
-    for (int i = 0; i < recordMesg.size(); i++) {
-        Mesg rec = recordMesg.get(i);
-        if (i < 11 || i > numberOfRecords - 10 || (i > 3012 && i < 3020)) {
+        System.out.println("---end-----------------------------------------------");
+    }
+
+    // ==============================================================================
+    // Utility methods for printing and formatting lap and record summaries
+    // ==============================================================================
+
+    public void printLapAllSummaryAllMesg2() {
+        System.out.println("---printLapAllSummary-----------------------------------------------");
+
+        int lapNo = 1;
+        for (int i = 0; i < lapMesg.size(); i++) {
+            Mesg lap = lapMesg.get(i);
+            var extra = lapExtraRecords.get(i);
+
             StringBuilder sb = new StringBuilder();
-            sb.append("Record:").append(i);
+            sb.append("Lap:").append(lapNo);
 
-            // Timestamp
-            Long ts = rec.getFieldLongValue(REC_TIME);
-            if (ts != null) sb.append(" Timestamp:").append(ts);
-
-            // Heart rate
-            appendIfNotNull(sb, " HR:", rec.getFieldIntegerValue(REC_HR));
-
-            // Speed / enhanced speed
-            appendIfNotNull(sb, " Speed:", rec.getFieldFloatValue(REC_SPEED));
-            appendIfNotNull(sb, " EnhSp:", rec.getFieldFloatValue(REC_ESPEED));
-
-            // Distance
-            appendIfNotNull(sb, " Dist:", rec.getFieldFloatValue(REC_DIST));
-
-            // Cadence
-            appendIfNotNull(sb, " Cad:", rec.getFieldIntegerValue(REC_CAD));
-
-            // Power
-            appendIfNotNull(sb, " Pow:", rec.getFieldIntegerValue(REC_POW));
-
-            // Extra data (your custom structure)
-            if (secExtraRecords.get(i).C2DateTime != null) {
-                sb.append(" C2time:").append(secExtraRecords.get(i).C2DateTime);
+            // Start time
+            Long startTime = lap.getFieldLongValue(LAP_STIME);
+            if (startTime != null) {
+                sb.append(" StartTime:")
+                .append(FitDateTime.toString(startTime, diffMinutesLocalUTC));
             }
 
-            // Position (lat/lon)
-            Integer lat = rec.getFieldIntegerValue(REC_LAT);
-            Integer lon = rec.getFieldIntegerValue(REC_LON);
-            if (lat != null && lon != null) {
-                sb.append(" Position:(").append(lat).append(", ").append(lon).append(")");
+            // Level and step length (extra)
+            if (extra.level != null && !getIsSkiErg()) {
+                sb.append(" lv").append(extra.level.intValue());
+            }
+            if (extra.stepLen != null && !getIsSkiErg()) {
+                sb.append(" steplen").append((int)(extra.stepLen * 100)).append("cm");
             }
 
-            // Developer fields
-            sb.append(" DEV:");
-            for (DeveloperField field : rec.getDeveloperFields()) {
-                sb.append(" ").append(field.getName()).append(":");
-                for (int j = 0; j < field.getNumValues(); j++) {
-                    sb.append(field.getValue(j));
-                    if (j < field.getNumValues() - 1) sb.append(",");
+            // Timer
+            appendIfNotNull(sb, " LapTime:", lap.getFieldFloatValue(LAP_TIMER));
+
+            // Intensity and heart rate summary
+            Short intensityVal = lap.getFieldShortValue(LAP_INTENSITY);
+            if (intensityVal != null) {
+                String intensityStr = Intensity.getStringFromValue(Intensity.getByValue(intensityVal));
+                sb.append(" WktIntensity:").append(intensityStr);
+
+                boolean active = intensityStr.equals("ACTIVE") || intensityStr.equals("WARMUP");
+                int hrMax = safeInt(lap.getFieldIntegerValue(LAP_MHR));
+                int hrMin = safeInt(extra.hrMin);
+                int hrStart = safeInt(extra.hrStart);
+                int hrEnd = safeInt(extra.hrEnd);
+
+                if (active) {
+                    sb.append(String.format(" HR start:%d min:%d +%d -->max:%d end:%d",
+                            hrStart, hrMin, hrMax - hrMin, hrMax, hrEnd));
+                } else {
+                    sb.append(String.format(" HR start:%d max:%d %d -->min:%d end:%d",
+                            hrStart, hrMax, hrMin - hrMax, hrMin, hrEnd));
                 }
             }
 
+            // Distance
+            appendIfNotNull(sb, "--Dist:", lap.getFieldFloatValue(LAP_DIST));
+
+            // Speed
+            Float avgSpeed = lap.getFieldFloatValue(LAP_SPEED);
+            Float avgESpeed = lap.getFieldFloatValue(LAP_ESPEED);
+            Float maxSpeed = lap.getFieldFloatValue(LAP_EMSPEED);
+            sb.append("Speed: avg:" + avgSpeed + " avgE:" + avgESpeed + " max:" + maxSpeed);
+            //printLapAvgMaxSpeed(avgSpeed, maxSpeed);
+
+            // Cadence
+            appendIfBothNotNull(sb, "--Cad avg:", lap.getFieldShortValue(LAP_CAD),
+                    " max:", lap.getFieldShortValue(LAP_MCAD));
+
+            // Power
+            appendIfBothNotNull(sb, "--Pow avg:", lap.getFieldIntegerValue(LAP_POW),
+                    " max:", lap.getFieldIntegerValue(LAP_MPOW));
+
+            // Drag factor & stroke length
+            if (extra.avgDragFactor != null) {
+                sb.append(String.format("--DFavg:%d max:%d",
+                        Math.round(extra.avgDragFactor), Math.round(extra.maxDragFactor)));
+            }
+            if (extra.avgStrokeLen != null) {
+                sb.append(String.format("--SLavg:%.2f max:%.2f",
+                        extra.avgStrokeLen, extra.maxStrokeLen));
+            }
+
             System.out.println(sb);
+            lapNo++;
         }
+
+        System.out.println("--------------------------------------------------");
     }
-    System.out.println("---end-----------------------------------------------");
-}
 
-// ==============================================================================
-// Utility methods for printing and formatting lap and record summaries
-// ==============================================================================
+    private void appendIfNotNull(StringBuilder sb, String label, Object value) {
+        if (value != null) sb.append(label).append(value);
+    }
 
-public void printLapAllSummaryAllMesg2() {
-    System.out.println("---printLapAllSummary-----------------------------------------------");
+    private void appendIfBothNotNull(StringBuilder sb, String label1, Object val1, String label2, Object val2) {
+        if (val1 != null) sb.append(label1).append(val1);
+        if (val2 != null) sb.append(label2).append(val2);
+    }
 
-    int lapNo = 1;
-    for (int i = 0; i < lapMesg.size(); i++) {
-        Mesg lap = lapMesg.get(i);
-        var extra = lapExtraRecords.get(i);
+    private int safeInt(Number n) {
+        return n == null ? 0 : n.intValue();
+    }
+    //=============================================================================
+    // Debug method to print lap and record details for verification
+    //=============================================================================
+    public void debugLapRecords(List<Mesg> lapMesgs, List<Mesg> recordMesgs) {
+        System.out.println("-------------------------------------------");
+        System.out.println("----- L A P   R E C O R D   D E B U G -----");
+        System.out.printf("Laps: %d  Records: %d%n%n", lapMesgs.size(), recordMesgs.size());
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Lap:").append(lapNo);
+        for (int i = 0; i < lapMesgs.size(); i++) {
+            Mesg lap = lapMesgs.get(i);
 
-        // Start time
-        Long startTime = lap.getFieldLongValue(LAP_STIME);
-        if (startTime != null) {
-            sb.append(" StartTime:")
-              .append(FitDateTime.toString(startTime, diffMinutesLocalUTC));
-        }
-
-        // Level and step length (extra)
-        if (extra.level != null && !getIsSkiErg()) {
-            sb.append(" lv").append(extra.level.intValue());
-        }
-        if (extra.stepLen != null && !getIsSkiErg()) {
-            sb.append(" steplen").append((int)(extra.stepLen * 100)).append("cm");
-        }
-
-        // Timer
-        appendIfNotNull(sb, " LapTime:", lap.getFieldFloatValue(LAP_TIMER));
-
-        // Intensity and heart rate summary
-        Short intensityVal = lap.getFieldShortValue(LAP_INTENSITY);
-        if (intensityVal != null) {
-            String intensityStr = Intensity.getStringFromValue(Intensity.getByValue(intensityVal));
-            sb.append(" WktIntensity:").append(intensityStr);
-
-            boolean active = intensityStr.equals("ACTIVE") || intensityStr.equals("WARMUP");
-            int hrMax = safeInt(lap.getFieldIntegerValue(LAP_MHR));
-            int hrMin = safeInt(extra.hrMin);
-            int hrStart = safeInt(extra.hrStart);
-            int hrEnd = safeInt(extra.hrEnd);
-
-            if (active) {
-                sb.append(String.format(" HR start:%d min:%d +%d -->max:%d end:%d",
-                        hrStart, hrMin, hrMax - hrMin, hrMax, hrEnd));
-            } else {
-                sb.append(String.format(" HR start:%d max:%d %d -->min:%d end:%d",
-                        hrStart, hrMax, hrMin - hrMax, hrMin, hrEnd));
+            // --- basic lap info
+            Long startTimeL = getLongField(lap, "start_time", null);
+            Long timestampL = getLongField(lap, "timestamp", null);
+            if (startTimeL == null) startTimeL = timestampL;
+            if (startTimeL == null) {
+                System.out.printf("%n---- LAP %d ---- (no start_time, skipping)%n", i + 1);
+                continue;
             }
-        }
 
-        // Distance
-        appendIfNotNull(sb, "--Dist:", lap.getFieldFloatValue(LAP_DIST));
+            Float totalElapsed = getFloatField(lap, "total_elapsed_time", null);
+            Float totalTimer = getFloatField(lap, "total_timer_time", null);
 
-        // Speed
-        Float avgSpeed = lap.getFieldFloatValue(LAP_SPEED);
-        Float avgESpeed = lap.getFieldFloatValue(LAP_ESPEED);
-        Float maxSpeed = lap.getFieldFloatValue(LAP_EMSPEED);
-        sb.append("Speed: avg:" + avgSpeed + " avgE:" + avgESpeed + " max:" + maxSpeed);
-        //printLapAvgMaxSpeed(avgSpeed, maxSpeed);
+            Long endTimeL = null;
+            if (totalElapsed != null && totalElapsed > 0f) {
+                endTimeL = startTimeL + Math.round(totalElapsed);
+            } else if (totalTimer != null && totalTimer > 0f) {
+                endTimeL = startTimeL + Math.round(totalTimer);
+            } else if (i + 1 < lapMesgs.size()) {
+                Long nextStart = getLongField(lapMesgs.get(i + 1), "start_time", null);
+                if (nextStart == null)
+                    nextStart = getLongField(lapMesgs.get(i + 1), "timestamp", null);
+                if (nextStart != null && nextStart > startTimeL) endTimeL = nextStart;
+            }
 
-        // Cadence
-        appendIfBothNotNull(sb, "--Cad avg:", lap.getFieldShortValue(LAP_CAD),
-                " max:", lap.getFieldShortValue(LAP_MCAD));
+            // fallback: find last record after lap start
+            if (endTimeL == null) {
+                Long lastAfter = null;
+                for (Mesg r : recordMesgs) {
+                    Long rts = getLongField(r, "timestamp", null);
+                    if (rts != null && rts >= startTimeL) lastAfter = rts;
+                }
+                if (lastAfter != null && lastAfter > startTimeL) endTimeL = lastAfter;
+            }
 
-        // Power
-        appendIfBothNotNull(sb, "--Pow avg:", lap.getFieldIntegerValue(LAP_POW),
-                " max:", lap.getFieldIntegerValue(LAP_MPOW));
+            if (endTimeL == null) endTimeL = startTimeL + 1;
+            endTimeL++; // +1s inclusive
 
-        // Drag factor & stroke length
-        if (extra.avgDragFactor != null) {
-            sb.append(String.format("--DFavg:%d max:%d",
-                    Math.round(extra.avgDragFactor), Math.round(extra.maxDragFactor)));
-        }
-        if (extra.avgStrokeLen != null) {
-            sb.append(String.format("--SLavg:%.2f max:%.2f",
-                    extra.avgStrokeLen, extra.maxStrokeLen));
-        }
+            long lapStart = startTimeL;
+            long lapEnd = endTimeL;
 
-        System.out.println(sb);
-        lapNo++;
-    }
+            double lapDist = getFloatField(lap, "total_distance", 0f);
+            double lapAvgSpd = getFloatField(lap, "avg_speed", 0f);
 
-    System.out.println("--------------------------------------------------");
-}
+            long messageIndexL = getLongField(lap, "message_index", 0L);
+            long eventL = getLongField(lap, "event", 0L);
+            long eventTypeL = getLongField(lap, "event_type", 0L);
+            long lapTriggerL = getLongField(lap, "lap_trigger", 0L);
 
-private void appendIfNotNull(StringBuilder sb, String label, Object value) {
-    if (value != null) sb.append(label).append(value);
-}
+            System.out.printf("---- LAP %d ----%n", i + 1);
+            System.out.printf(
+                "Start: %d  End: %d  Dur: %.1fs  LapMesg Dist: %.2fm  LapMesg AvgSpd: %.3f m/s%n",
+                lapStart, lapEnd, (double) (lapEnd - lapStart), lapDist, lapAvgSpd);
+            System.out.printf(
+                "message_index=%d  event=%d  event_type=%d  lap_trigger=%d%n",
+                messageIndexL, eventL, eventTypeL, lapTriggerL);
 
-private void appendIfBothNotNull(StringBuilder sb, String label1, Object val1, String label2, Object val2) {
-    if (val1 != null) sb.append(label1).append(val1);
-    if (val2 != null) sb.append(label2).append(val2);
-}
-
-private int safeInt(Number n) {
-    return n == null ? 0 : n.intValue();
-}
-//=============================================================================
-// Debug method to print lap and record details for verification
-//=============================================================================
-public void debugLapRecords(List<Mesg> lapMesgs, List<Mesg> recordMesgs) {
-    System.out.println("-------------------------------------------");
-    System.out.println("----- L A P   R E C O R D   D E B U G -----");
-    System.out.printf("Laps: %d  Records: %d%n%n", lapMesgs.size(), recordMesgs.size());
-
-    for (int i = 0; i < lapMesgs.size(); i++) {
-        Mesg lap = lapMesgs.get(i);
-
-        // --- basic lap info
-        Long startTimeL = getLongField(lap, "start_time", null);
-        Long timestampL = getLongField(lap, "timestamp", null);
-        if (startTimeL == null) startTimeL = timestampL;
-        if (startTimeL == null) {
-            System.out.printf("%n---- LAP %d ---- (no start_time, skipping)%n", i + 1);
-            continue;
-        }
-
-        Float totalElapsed = getFloatField(lap, "total_elapsed_time", null);
-        Float totalTimer = getFloatField(lap, "total_timer_time", null);
-
-        Long endTimeL = null;
-        if (totalElapsed != null && totalElapsed > 0f) {
-            endTimeL = startTimeL + Math.round(totalElapsed);
-        } else if (totalTimer != null && totalTimer > 0f) {
-            endTimeL = startTimeL + Math.round(totalTimer);
-        } else if (i + 1 < lapMesgs.size()) {
-            Long nextStart = getLongField(lapMesgs.get(i + 1), "start_time", null);
-            if (nextStart == null)
-                nextStart = getLongField(lapMesgs.get(i + 1), "timestamp", null);
-            if (nextStart != null && nextStart > startTimeL) endTimeL = nextStart;
-        }
-
-        // fallback: find last record after lap start
-        if (endTimeL == null) {
-            Long lastAfter = null;
+            // --- Records immediately after lap start
+            System.out.println("10 Records after lap start:");
+            int count = 0;
             for (Mesg r : recordMesgs) {
-                Long rts = getLongField(r, "timestamp", null);
-                if (rts != null && rts >= startTimeL) lastAfter = rts;
+                Long ts = getLongField(r, "timestamp", null);
+                if (ts != null && ts >= lapStart && ts < lapStart + 10) {
+                    printRecord(r, lapStart);
+                    count++;
+                    if (count >= 10) break;
+                }
             }
-            if (lastAfter != null && lastAfter > startTimeL) endTimeL = lastAfter;
-        }
 
-        if (endTimeL == null) endTimeL = startTimeL + 1;
-        endTimeL++; // +1s inclusive
-
-        long lapStart = startTimeL;
-        long lapEnd = endTimeL;
-
-        double lapDist = getFloatField(lap, "total_distance", 0f);
-        double lapAvgSpd = getFloatField(lap, "avg_speed", 0f);
-
-        long messageIndexL = getLongField(lap, "message_index", 0L);
-        long eventL = getLongField(lap, "event", 0L);
-        long eventTypeL = getLongField(lap, "event_type", 0L);
-        long lapTriggerL = getLongField(lap, "lap_trigger", 0L);
-
-        System.out.printf("---- LAP %d ----%n", i + 1);
-        System.out.printf(
-            "Start: %d  End: %d  Dur: %.1fs  LapMesg Dist: %.2fm  LapMesg AvgSpd: %.3f m/s%n",
-            lapStart, lapEnd, (double) (lapEnd - lapStart), lapDist, lapAvgSpd);
-        System.out.printf(
-            "message_index=%d  event=%d  event_type=%d  lap_trigger=%d%n",
-            messageIndexL, eventL, eventTypeL, lapTriggerL);
-
-        // --- Records immediately after lap start
-        System.out.println("10 Records after lap start:");
-        int count = 0;
-        for (Mesg r : recordMesgs) {
-            Long ts = getLongField(r, "timestamp", null);
-            if (ts != null && ts >= lapStart && ts < lapStart + 10) {
-                printRecord(r, lapStart);
-                count++;
-                if (count >= 10) break;
+            // --- Records immediately before lap end
+            System.out.println("10 Records before lap end:");
+            count = 0;
+            for (Mesg r : recordMesgs) {
+                Long ts = getLongField(r, "timestamp", null);
+                if (ts != null && ts >= lapEnd - 10 && ts <= lapEnd) {
+                    printRecord(r, lapStart);
+                    count++;
+                    if (count >= 10) break;
+                }
             }
-        }
 
-        // --- Records immediately before lap end
-        System.out.println("10 Records before lap end:");
-        count = 0;
-        for (Mesg r : recordMesgs) {
-            Long ts = getLongField(r, "timestamp", null);
-            if (ts != null && ts >= lapEnd - 10 && ts <= lapEnd) {
-                printRecord(r, lapStart);
-                count++;
-                if (count >= 10) break;
+            // --- Compute totals from records within the lap
+            List<Mesg> lapRecords = new ArrayList<>();
+            for (Mesg r : recordMesgs) {
+                Long ts = getLongField(r, "timestamp", null);
+                if (ts != null && ts >= lapStart && ts <= lapEnd) {
+                    lapRecords.add(r);
+                }
             }
+
+            double firstDist = lapRecords.isEmpty() ? 0.0 : getFloatField(lapRecords.get(0), "distance", 0f);
+            double lastDist = lapRecords.isEmpty() ? 0.0 : getFloatField(lapRecords.get(lapRecords.size() - 1), "distance", 0f);
+            double distDelta = lastDist - firstDist;
+            double timeDelta = (double) (lapEnd - lapStart);
+            double avgSpeed = timeDelta > 0 ? distDelta / timeDelta : 0.0;
+
+            System.out.printf(
+                "=> Records total: Dist=%.2fm  Time=%.1fs  AvgSpeed=%.3f m/s%n",
+                distDelta, timeDelta, avgSpeed);
+            System.out.printf(
+                "Compare LapMesg vs Records: LapMesgDist=%.2f  RecordsDist=%.2f  LapMesgAvgSpd=%.3f  RecAvgSpd=%.3f%n%n",
+                lapDist, distDelta, lapAvgSpd, avgSpeed);
         }
-
-        // --- Compute totals from records within the lap
-        List<Mesg> lapRecords = new ArrayList<>();
-        for (Mesg r : recordMesgs) {
-            Long ts = getLongField(r, "timestamp", null);
-            if (ts != null && ts >= lapStart && ts <= lapEnd) {
-                lapRecords.add(r);
-            }
-        }
-
-        double firstDist = lapRecords.isEmpty() ? 0.0 : getFloatField(lapRecords.get(0), "distance", 0f);
-        double lastDist = lapRecords.isEmpty() ? 0.0 : getFloatField(lapRecords.get(lapRecords.size() - 1), "distance", 0f);
-        double distDelta = lastDist - firstDist;
-        double timeDelta = (double) (lapEnd - lapStart);
-        double avgSpeed = timeDelta > 0 ? distDelta / timeDelta : 0.0;
-
-        System.out.printf(
-            "=> Records total: Dist=%.2fm  Time=%.1fs  AvgSpeed=%.3f m/s%n",
-            distDelta, timeDelta, avgSpeed);
-        System.out.printf(
-            "Compare LapMesg vs Records: LapMesgDist=%.2f  RecordsDist=%.2f  LapMesgAvgSpd=%.3f  RecAvgSpd=%.3f%n%n",
-            lapDist, distDelta, lapAvgSpd, avgSpeed);
     }
-}
 
-private static void printRecord(Mesg r, long lapStart) {
-    Long ts = getLongField(r, "timestamp", null);
-    double dist = getFloatField(r, "distance", 0f);
-    double spd = getFloatField(r, "speed", 0f);
-    double enhSpd = getFloatField(r, "enhanced_speed", 0f);
-    if (ts == null) return;
-    System.out.printf(
-        "  ?t=%6ds  ts=%d  dist=%.2f  spd=%.3f  enhSpd=%.3f%n",
-        (ts - lapStart), ts, dist, spd, enhSpd);
-}
+    private static void printRecord(Mesg r, long lapStart) {
+        Long ts = getLongField(r, "timestamp", null);
+        double dist = getFloatField(r, "distance", 0f);
+        double spd = getFloatField(r, "speed", 0f);
+        double enhSpd = getFloatField(r, "enhanced_speed", 0f);
+        if (ts == null) return;
+        System.out.printf(
+            "  ?t=%6ds  ts=%d  dist=%.2f  spd=%.3f  enhSpd=%.3f%n",
+            (ts - lapStart), ts, dist, spd, enhSpd);
+    }
 
-// safe field helpers
-private static Long getLongField(Mesg m, String name, Long defVal) {
-    if (m == null) return defVal;
-    try {
-        Long v = m.getFieldLongValue(name);
-        return v != null ? v : defVal;
-    } catch (Exception e) { return defVal; }
-}
+    // safe field helpers
+    private static Long getLongField(Mesg m, String name, Long defVal) {
+        if (m == null) return defVal;
+        try {
+            Long v = m.getFieldLongValue(name);
+            return v != null ? v : defVal;
+        } catch (Exception e) { return defVal; }
+    }
 
-private static Float getFloatField(Mesg m, String name, Float defVal) {
-    if (m == null) return defVal;
-    try {
-        Float v = m.getFieldFloatValue(name);
-        return v != null ? v : defVal;
-    } catch (Exception e) { return defVal; }
-}
+    private static Float getFloatField(Mesg m, String name, Float defVal) {
+        if (m == null) return defVal;
+        try {
+            Float v = m.getFieldFloatValue(name);
+            return v != null ? v : defVal;
+        } catch (Exception e) { return defVal; }
+    }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printSplitRecords() {
@@ -4925,6 +4368,4 @@ private static Float getFloatField(Mesg m, String name, Float defVal) {
         }
         System.out.println("---- END SPLITS ----");
     }
-
-
 }

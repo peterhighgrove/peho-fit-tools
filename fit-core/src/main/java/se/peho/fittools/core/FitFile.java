@@ -606,6 +606,48 @@ public class FitFile {
         }
     } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void addTimeToLapAndSession(int lapIx, Float timeToAdd) {
+        // Updating LAP DATA
+        //------------------
+        Float lapTime = getLapMesg().get(lapIx).getFieldFloatValue(LAP_TIMER) + timeToAdd;
+        getLapMesg().get(lapIx).setFieldValue(LAP_TIMER, (lapTime));
+        //getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(LAP_ETIMER, (lapTime - secondsToPutIntoPause));
+        
+        // Get new LAP dist because updated in addDistToRecords 
+        Float lapDist = getLapMesg().get(lapIx).getFieldFloatValue(LAP_DIST);
+        getLapMesg().get(lapIx).setFieldValue(LAP_SPEED, (lapDist / lapTime));
+        getLapMesg().get(lapIx).setFieldValue(LAP_ESPEED, (lapDist / lapTime));
+
+        //LAP dist and speed is updated in addDistToRecords
+        //getLapMesg().get().setFieldValue(LAP_DIST, (lapDist));
+
+        // Updating SESSION DATA
+        //----------------------
+        setTotalTimerTime(getTotalTimerTime() + (float) timeToAdd);
+        getSessionMesg().get(0).setFieldValue(SES_TIMER, getTotalTimerTime());
+        getActivityMesg().get(0).setFieldValue(ACT_TIMER, getTotalTimerTime());
+        Float sesMTimer = getSessionMesg().get(0).getFieldFloatValue(SES_MTIMER);
+        if (sesMTimer != null) {
+            getSessionMesg().get(0).setFieldValue(SES_MTIMER, sesMTimer + timeToAdd);
+        }
+        //elapsedTimerTime -= (float) secondsToPutIntoPause;
+        //getSessionMesg().get(0).setFieldValue(SES_ETIMER, elapsedTimerTime);
+
+        //SESSION dist and speed is updated in addDistToRecords
+        //setTotalDistance(getRecordMesg().get(getNumberOfRecords()-1).getFieldFloatValue(RecordMesg.DistanceFieldNum));
+        //getSessionMesg().get(0).setFieldValue(SES_DIST, getTotalDistance());
+
+        // Updating SESS speed again, even if updated in addDistToRecords 
+        Float oldAvgSpeed = getAvgSpeed();
+        setAvgSpeed(getTotalDistance() / getTotalTimerTime());
+        getSessionMesg().get(0).setFieldValue(SES_SPEED, getAvgSpeed());
+        getSessionMesg().get(0).setFieldValue(SES_ESPEED, getAvgSpeed());
+        appendTempUpdateLogg("Increasing SESSION_SPEED from " + oldAvgSpeed + "m/s" 
+            + " / " + PehoUtils.mps2minpkm(oldAvgSpeed) + "min/km");
+        appendTempUpdateLoggLn(" to " + getAvgSpeed() + "m/s" 
+            + " / " + PehoUtils.mps2minpkm(getAvgSpeed()) + "min/km");
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void addDistToRecords(int fromRecordIx, Float distToAdd) {
         Float fromDist = null;
         if (fromRecordIx >= 0 && fromRecordIx < getNumberOfRecords()) {
