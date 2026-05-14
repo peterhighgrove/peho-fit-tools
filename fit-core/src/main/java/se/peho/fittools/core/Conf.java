@@ -240,11 +240,11 @@ public class Conf {
         }
 
         // ================================================================
-        // STEP 7: Default profileNameSuffix → "gym jobbet"
+        // STEP 7: Default profileNameSuffix → "Friskis Orminge"
         // ================================================================
         if (profileNameSuffix.isEmpty()) {
-            setProfileNameSuffix("gym jobbet");
-            System.out.println("------> profileNameSuffix not set, defaulting to \"gym jobbet\"");
+            setProfileNameSuffix("Friskis Orminge");
+            System.out.println("------> profileNameSuffix not set, defaulting to \"Friskis Orminge\"");
         }
 
         System.out.println("+++++++++++++++++++++++++++++++++++");
