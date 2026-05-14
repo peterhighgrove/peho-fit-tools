@@ -10,8 +10,11 @@ public class ProfileStr {
         if (profileName != null && !profileName.isEmpty()) {
             this.name = profileName
                 .replace(",", ".")
+                .replace("FTMS", "")
                 .replace("-(bike)", "")
                 .replace("-bike", "")
+                .replace("-(row)", "")
+                .replace("-row", "")
                 ;
         } else if (sport != null) {
             name = sport.toString().toLowerCase();
