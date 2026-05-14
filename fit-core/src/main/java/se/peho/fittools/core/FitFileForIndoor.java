@@ -2113,21 +2113,51 @@ public class FitFileForIndoor extends FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void calcSplitRecordsBasedOnLaps() {
 
-        Integer lapIx = 0;
-        Integer lapIxInSplitMesg = 0;
+        int lapIx = 0;
+
+        System.out.println("----- CALC SPLIT DATA FROM LAPS - TOTAL SPLITS: " + splitMesg.size() + " LAPS: " + lapMesg.size());
+
+        if (lapMesg.isEmpty()) {
+            if (debugSplit) System.out.println("----- No laps found, skipping split calc");
+            return;
+        }
+        if (splitMesg.isEmpty()) {
+            if (debugSplit) System.out.println("----- No splits found, skipping split calc");
+            return;
+        }
 
         for (Mesg lap : lapMesg) {
+            Integer lapIxInSplitMesg = null;
             for (int i = 0; i < splitMesg.size(); i++) {
-                lapIxInSplitMesg = splitMesg.get(i).getFieldIntegerValue(67);
-                if (lapIxInSplitMesg != null && lapIxInSplitMesg.equals(lapIx)) {
-                    if (debugSplit) System.out.println("----- Link   SPLIT index " + lapIxInSplitMesg + " to LAP index " + lapIx);
+                Integer candidateLapIxInSplitMesg = splitMesg.get(i).getFieldIntegerValue(67);
+                if (candidateLapIxInSplitMesg != null && candidateLapIxInSplitMesg.equals(lapIx)) {
+                    lapIxInSplitMesg = i;
+                    if (debugSplit) System.out.println("----- Link SPLIT record " + i + " to LAP index " + lapIx);
                     break;
                 }
             }
+
+            if (lapIxInSplitMesg == null) {
+                if (debugSplit) System.out.println("----- No SPLIT found for LAP index " + lapIx + ", skipping");
+                lapIx++;
+                continue;
+            }
+
+            if (lapIx >= lapExtraRecords.size()) {
+                if (debugSplit) System.out.println("----- lapExtraRecords missing for LAP index " + lapIx + ", skipping");
+                lapIx++;
+                continue;
+            }
+
             Float lapDist = lap.getFieldFloatValue(LAP_DIST);
             Float lapSpeed = lap.getFieldFloatValue(LAP_ESPEED);
             Float lapMaxSpeed = lap.getFieldFloatValue(LAP_EMSPEED);
-            Float distAtLapStart = recordMesg.get(lapExtraRecords.get(lapIx).recordIxStart).getFieldFloatValue(REC_DIST);
+            Float distAtLapStart = 0f;
+            Integer lapStartRecordIx = lapExtraRecords.get(lapIx).recordIxStart;
+            if (lapStartRecordIx != null && lapStartRecordIx >= 0 && lapStartRecordIx < recordMesg.size()) {
+                Float dist = recordMesg.get(lapStartRecordIx).getFieldFloatValue(REC_DIST);
+                distAtLapStart = dist != null ? dist : 0f;
+            }
             Integer lapPow = lap.getFieldIntegerValue(LAP_POW);
             Integer lapMaxPow = lap.getFieldIntegerValue(LAP_MPOW);
 

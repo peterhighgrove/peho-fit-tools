@@ -22,7 +22,7 @@ public class Main {
         
         // Reading CONF FILE
         Conf conf = new Conf(args);
-        
+
         System.out.println("ArgsLen: " + args.length);
 
         // ================================
