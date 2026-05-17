@@ -1,0 +1,47 @@
+==================================================
+New file info AFTER update:
+==================================================
+--------------------------------------------------
+ --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v26.09
+ --> Sport:FITNESS_EQUIPMENT, SubSport:INDOOR_ROWING, SportProfile: SkiErg 0.3km Friskis Orminge, WktName:null
+ --> Org activity dateTime Local:2026-05-14-10-15-23
+ --> New activity dateTime Local:2026-05-14-10-30-23
+ --> Org activity DateTime UTC:  2026-05-14-08-15-23
+ --> timeZone:                   +02:00
+ --> Org start datetime UTC:     2026-05-14-08-15-23
+ --> New start datetime UTC:     2026-05-14-08-30-23
+--------------------------------------------------
+---- ACTIVE LAPS ----
+Lap1 HR->max97 2:08min 49spm 3:16min/500m 62W 0.3km
+Lap3 HR->max103 1min 50spm 2:30min/500m 102W 0.2km
+Lap5 HR->max107 1min 53spm 2:23min/500m 115W 0.2km
+Lap8 HR->max129 4min 52spm 2:16min/500m 141W 0.9km
+Lap10 HR->max131 3min 53spm 2:13min/500m 147W 0.7km
+Lap12 HR->max133 3min 53spm 2:14min/500m 147W 0.7km
+Lap14 HR->max131 3min 53spm 2:15min/500m 143W 0.7km
+Lap16 HR->max133 2min 55spm 2:13min/500m 151W 0.5km
+Lap18 HR->max135 2min 56spm 2:12min/500m 151W 0.5km
+Lap20 HR->max135 2min 54spm 2:12min/500m 148W 0.5km
+Lap22 HR->max136 2min 54spm 2:12min/500m 153W 0.5km
+Lap24 HR->max134 1min 56spm 2:09min/500m 162W 0.2km
+Lap26 HR->max138 1min 57spm 2:06min/500m 177W 0.2km
+Lap28 HR->max140 1min 57spm 2:02min/500m 182W 0.2km
+Lap30 HR->max138 1min 58spm 2:06min/500m 174W 0.2km
+Lap32 HR->max139 1min 58spm 2:07min/500m 173W 0.2km
+avgCad: 0spm, avgPace: 2147483647:2147483647min/500m, avgPow: 0W, sumDist: 0.0km
+---- REST LAPS ----
+Lap4 HRst?->max101 1min 48spm 2:43min/500m 86W 0.2km
+Lap9 HRst?->max127 1min 49spm 2:47min/500m 75W 0.2km
+Lap11 HRst?->max130 1min 49spm 3:21min/500m 53W 0.1km
+Lap13 HRst?->max132 1min 49spm 3:31min/500m 45W 0.1km
+Lap15 HRst?->max131 1min 48spm 3:15min/500m 55W 0.2km
+Lap17 HRst?->max133 1min 48spm 3:28min/500m 51W 0.1km
+Lap19 HRst?->max134 1min 48spm 3:26min/500m 51W 0.1km
+Lap21 HRst?->max134 1min 48spm 3:53min/500m 37W 0.1km
+Lap23 HRst?->max136 1min 47spm 3:42min/500m 41W 0.1km
+Lap25 HRst?->max134 1min 52spm 3:33min/500m 44W 0.1km
+Lap27 HRst?->max138 1min 48spm 3:47min/500m 45W 0.1km
+Lap29 HRst?->max141 1min 48spm 3:56min/500m 42W 0.1km
+Lap31 HRst?->max139 1min 48spm 3:42min/500m 51W 0.1km
+avgCad: 0spm, avgPace: 2147483647:2147483647min/500m, avgPow: 0W, sumDist: 0.0km
+==================================================

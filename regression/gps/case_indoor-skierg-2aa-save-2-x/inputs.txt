@@ -1,0 +1,7 @@
+aa
+{{RUN_DIR}}/add1.fit
+aa
+{{RUN_DIR}}/add2.fit
+save
+15
+Friskis Orminge
