@@ -10,3 +10,13 @@ PAUSE - INCREASE, forgot to stop before
 ---------------------------------------
 Increased pause no: 4
 -- Pause increased with 70sec to 1:16min
+Dist:1912.32-1787.43=-124.88989
+Updating LAP Ix: 0 DIST from 3000.0 to 2875.11m, speed: 9:06min/km
+Updating SPLIT w start dist 0.0 DIST from 5191.54 to 5066.6504m, speed: 8:00min/km type=INTERVAL_ACTIVE(3)
+Updating SPLITSUM w type 3 DIST from 5191.54 to 5066.6504m, speed: 8:00min/km
+Updating SPLIT w start dist 1740.55 DIST from 383.25 to 258.3601m, speed: 13:36min/km type=RWD_RUN(17)
+Updating SPLITSUM w type 17 DIST from 5163.14 to 5038.25m, speed: 7:57min/km
+Split updates: totalUpdated=2, summaryUpdated=2, startShifted=14
+Increasing SESSION_DIST from 5191.54m to 5066.6504m
+Increasing SESSION_SPEED from 2.136m/s / 7:48min/km to 2.0845473m/s / 8:00min/km
+Increasing SESSION_SPEED from 2.0845473m/s / 8:00min/km to 2.146362m/s / 7:46min/km

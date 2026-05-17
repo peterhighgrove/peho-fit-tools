@@ -4,12 +4,22 @@ PAUSE - SHORTEN, forgot to resume timer after pause
 Shortened pause no: 1
 -- Pause decreased from 123sec to 30sec
 -->new speed:3:06min/km / 19.386km/h dist:500.7943m gap dist start:165.97m end:666.7643m gap time end-start:93s
+Updating LAP Ix: 0 DIST from 1000.0 to 1500.7943m, speed: 2:46min/km
+Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
+Increasing SESSION_DIST from 15796.82m to 16297.614m
+Increasing SESSION_SPEED from 3.403m/s / 4:54min/km to 3.5106213m/s / 4:45min/km
+Increasing SESSION_SPEED from 3.5106213m/s / 4:45min/km to 3.441675m/s / 4:51min/km
 
 PAUSE - SHORTEN, forgot to resume timer after pause
 --------------------------------------------
 Shortened pause no: 4
 -- Pause decreased from 419sec to 65sec
 -->new speed:19:56min/km / 3.01km/h dist:295.93826m gap dist start:2282.28m end:2578.2183m gap time end-start:354s
+Updating LAP Ix: 1 DIST from 1000.0 to 1295.9382m, speed: 4:29min/km
+Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
+Increasing SESSION_DIST from 16297.614m to 16593.553m
+Increasing SESSION_SPEED from 3.441675m/s / 4:51min/km to 3.5041702m/s / 4:45min/km
+Increasing SESSION_SPEED from 3.5041702m/s / 4:45min/km to 3.2604315m/s / 5:07min/km
 ----------------------------
 -- Adding GPS point in gap: 1
    New gap coordinates: 63.089754, 13.756968

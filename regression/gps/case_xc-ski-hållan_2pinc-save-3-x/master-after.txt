@@ -17,10 +17,10 @@ Lap2 HR->max144 5:36min 5:36min/km 10.7km/h 154W 1.0km
 Lap3 HR->max141 5:53min 5:53min/km 10.2km/h 98W 1.0km
 Lap4 HR->max126 4:43min 4:42min/km 12.7km/h 85W 1.0km
 Lap5 HR->max134 4:03min 4:03min/km 14.8km/h 104W 1.0km
-Lap6 HR->max121 6min 6:06min/km 9.8km/h 71W 1.0km
+Lap6 HR->max121 6min 6:03min/km 9.9km/h 71W 1.0km
 Lap7 HR->max128 6:46min 6:46min/km 8.9km/h 84W 1.0km
 Lap8 HR->max123 3:49min 3:49min/km 15.7km/h 81W 1.0km
-Lap9 HR->max126 5:26min 5:29min/km 10.9km/h 99W 1.0km
+Lap9 HR->max126 5:26min 5:28min/km 11.0km/h 99W 1.0km
 Lap10 HR->max128 3:01min 3:01min/km 19.9km/h 104W 1.0km
 Lap11 HR->max135 4:39min 4:39min/km 12.9km/h 97W 1.0km
 Lap12 HR->max139 8:30min 8:30min/km 7.1km/h 124W 1.0km

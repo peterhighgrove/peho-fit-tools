@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.HashSet;
+import java.util.Set;
 
 //import javax.annotation.processing.RoundEnvironment;
 
@@ -547,7 +549,32 @@ public class FitFileForIndoor extends FitFile {
             return;
         }
 
-        // --- Step 2: remove matching FieldDescriptionMesg entries
+        // --- Step 2: remove matching developer payload fields from all messages
+        // IMPORTANT: encoder requires payload and definition lists to stay consistent.
+        Set<Integer> fieldNumsToRemove = new HashSet<>(devFieldsToRemove);
+        int removedPayloadFields = 0;
+        for (Mesg mesg : allMesg) {
+            Iterable<DeveloperField> devFields = mesg.getDeveloperFields();
+            if (devFields == null) {
+                continue;
+            }
+
+            Iterator<DeveloperField> devIt = devFields.iterator();
+            while (devIt.hasNext()) {
+                DeveloperField devField = devIt.next();
+                if (devField != null
+                        && devField.getDeveloperDataIndex() == devIndex
+                        && fieldNumsToRemove.contains(devField.getNum())) {
+                    devIt.remove();
+                    removedPayloadFields++;
+                }
+            }
+        }
+        if (debugDevFields) {
+            System.out.println("Removed developer payload fields: " + removedPayloadFields);
+        }
+
+        // --- Step 3: remove matching FieldDescriptionMesg entries
         Iterator<Mesg> it = allMesg.iterator();
         while (it.hasNext()) {
             Mesg m = it.next();
@@ -836,6 +863,9 @@ public class FitFileForIndoor extends FitFile {
             for (DeveloperField field : record.getDeveloperFields()) {
 
                 String name = field.getName();
+                if (name == null) {
+                    continue;
+                }
                 switch (name) {
                     case "Distance" -> {
                         distFromDevField = field.getFloatValue();
@@ -1139,36 +1169,36 @@ public class FitFileForIndoor extends FitFile {
                 Integer powerFromDevField = 0;
                 Short cadFromDevField = 0;
 
-                if (field.getName().equals("Distance")) {
+                if ("Distance".equals(field.getName())) {
                     distFromDevField = field.getFloatValue();
                     //if (currentDist == null)  currentDist = 0f;
                     // set native distance field
                     record.setFieldValue(REC_DIST, distFromDevField);
                     field.setValue(0f);
                 }
-                if (field.getName().equals("Cadence")) {
+                if ("Cadence".equals(field.getName())) {
                     cadFromDevField = field.getShortValue();
                     //if (currentCadence == null) currentCadence = 0;
                     record.setFieldValue(REC_CAD, cadFromDevField);
                     field.setValue(0f);
                 }
-                if (field.getName().equals("Power")) {
+                if ("Power".equals(field.getName())) {
                     powerFromDevField = field.getIntegerValue();
                     //if (currentPower == null) currentPower = 0;
                     record.setFieldValue(REC_POW, powerFromDevField);
                     field.setValue(0f);
                 }
-                if (field.getName().equals("Speed")) {
+                if ("Speed".equals(field.getName())) {
                     speedFromDevField = field.getFloatValue();
                     //if (currentSpeed == null) currentSpeed = 0f;
                     record.setFieldValue(REC_SPEED, speedFromDevField);
                     record.setFieldValue(REC_ESPEED, speedFromDevField);
                     field.setValue(0f);
                 }
-                if (field.getName().equals("StrokeLength")) {
+                if ("StrokeLength".equals(field.getName())) {
                     strokeLengthFromDevField = field.getFloatValue();
                 }
-                if (field.getName().equals("DragFactor")) {
+                if ("DragFactor".equals(field.getName())) {
                     dragFactorFromDevField = field.getFloatValue();
                 }
             }
@@ -1189,7 +1219,7 @@ public class FitFileForIndoor extends FitFile {
                         System.out.println("==========> MORE 1 Same dist in a row: " + recordIx + ", " + sameDistCounter + " @ " + distCurrent + ", " + record.getFieldLongValue(REC_TIME));
                     }
                     for (DeveloperField fieldRecordNext : recordNext.getDeveloperFields()) {
-                        if (fieldRecordNext.getName().equals("Distance")) {
+                        if ("Distance".equals(fieldRecordNext.getName())) {
                             distNextFromDevField = fieldRecordNext.getFloatValue();
                         }
                     }
@@ -1262,7 +1292,7 @@ public class FitFileForIndoor extends FitFile {
                         for (int i = recordIx-1; i >= 0; i--) {
                             Mesg recordToFix = recordMesg.get(i);
                             for (DeveloperField field : recordToFix.getDeveloperFields()) {
-                                if (field.getName().equals("StrokeLength")) {
+                                if ("StrokeLength".equals(field.getName())) {
                                     field.setValue(strokeLengthFromDevField);
                                 }
                             }
@@ -1277,7 +1307,7 @@ public class FitFileForIndoor extends FitFile {
                         for (int i = recordIx-1; i >= 0; i--) {
                             Mesg recordToFix = recordMesg.get(i);
                             for (DeveloperField field : recordToFix.getDeveloperFields()) {
-                                if (field.getName().equals("DragFactor")) {
+                                if ("DragFactor".equals(field.getName())) {
                                     field.setValue(dragFactorFromDevField);
                                 }
                             }
@@ -1292,7 +1322,7 @@ public class FitFileForIndoor extends FitFile {
                         for (int i = recordIx-1; i >= 0; i--) {
                             Mesg recordToFix = recordMesg.get(i);
                             for (DeveloperField field : recordToFix.getDeveloperFields()) {
-                                if (field.getName().equals("Training_session")) {
+                                if ("Training_session".equals(field.getName())) {
                                     field.setValue(currentTrainingSession);
                                 }
                             }
@@ -1537,14 +1567,14 @@ public class FitFileForIndoor extends FitFile {
 
                 // Developer fields for stroke length / drag factor (reading from recordMesg at recordIx)
                 for (DeveloperField field : recordMesg.get(recordIx).getDeveloperFields()) {
-                    if (field.getName().equals("StrokeLength")) {
+                    if ("StrokeLength".equals(field.getName())) {
                         Float f = field.getFloatValue();
                         if (f != null) {
                             currentLapSumStrokeLen += f;
                             if (f > currentLapMaxStrokeLen) currentLapMaxStrokeLen = f;
                         }
                     }
-                    if (field.getName().equals("DragFactor")) {
+                    if ("DragFactor".equals(field.getName())) {
                         Float f = field.getFloatValue();
                         if (f != null) {
                             currentLapSumDragFactor += f;
@@ -1632,13 +1662,13 @@ public class FitFileForIndoor extends FitFile {
 
                     // Developer fields for last record of lap - update lapExtraRecords stroke/drag
                     for (DeveloperField field : recordMesg.get(recordIx).getDeveloperFields()) {
-                        if (field.getName().equals("StrokeLength")) {
+                        if ("StrokeLength".equals(field.getName())) {
                             lapExtraRecords.get(lapIx).avgStrokeLen = (float) Math.round(100 * currentLapSumStrokeLen / denom) / 100;
                             lapExtraRecords.get(lapIx).maxStrokeLen = currentLapMaxStrokeLen;
                             currentLapSumStrokeLen = 0f;
                             currentLapMaxStrokeLen = 0f;
                         }
-                        if (field.getName().equals("DragFactor")) {
+                        if ("DragFactor".equals(field.getName())) {
                             lapExtraRecords.get(lapIx).avgDragFactor = (float) Math.round(100 * currentLapSumDragFactor / denom) / 100;
                             lapExtraRecords.get(lapIx).maxDragFactor = currentLapMaxDragFactor;
                             currentLapSumDragFactor = 0f;
@@ -2031,13 +2061,13 @@ public class FitFileForIndoor extends FitFile {
                 currentLapSumPower = 0;
 
                 for (DeveloperField field : recordMesg.get(recordIx).getDeveloperFields()) {
-                    if (field.getName().equals("StrokeLength")) {
+                    if ("StrokeLength".equals(field.getName())) {
                         lapExtraRecords.get(lapIx).avgStrokeLen = (float) Math.round(100 * currentLapSumStrokeLen / (recordIx-lapExtraRecords.get(lapIx).recordIxStart+1)) /100;
                         lapExtraRecords.get(lapIx).maxStrokeLen = currentLapMaxStrokeLen;
                         currentLapSumStrokeLen = 0f;
                         currentLapMaxStrokeLen = 0f;
                     }
-                    if (field.getName().equals("DragFactor")) {
+                    if ("DragFactor".equals(field.getName())) {
                         lapExtraRecords.get(lapIx).avgDragFactor = (float) Math.round(100 * currentLapSumDragFactor / (recordIx-lapExtraRecords.get(lapIx).recordIxStart+1)) /100;
                         lapExtraRecords.get(lapIx).maxDragFactor = currentLapMaxDragFactor;
                         currentLapSumDragFactor = 0f;
@@ -2513,7 +2543,7 @@ public class FitFileForIndoor extends FitFile {
             // LEVEL TO CIQ Level 
             // LAPTIME for active laps TO CIQ TrainingSess 
             for (DeveloperField field : record.getDeveloperFields()) {
-                if (field.getName().equals("Level")) {
+                if ("Level".equals(field.getName())) {
                     field.setValue(lapExtraRecords.get(lapIx).level);
                 }
                 if (devFieldNamesToUpdate.contains(field.getName())) {
@@ -2849,6 +2879,7 @@ public class FitFileForIndoor extends FitFile {
 
         try {
             FileEncoder encode;
+            int sanitizedMesgCount = 0;
 
             encode = new FileEncoder(new java.io.File(outputFilePath), Fit.ProtocolVersion.V2_0);
 
@@ -2856,9 +2887,29 @@ public class FitFileForIndoor extends FitFile {
                 /* if (record.getNum() != MesgNum.SPLIT &&
                     record.getNum() != MesgNum.SPLIT_SUMMARY) { */
                 if (record.getNum() != MesgNum.SPLIT) {
-                    encode.write(record);
+                    try {
+                        encode.write(record);
+                    } catch (NullPointerException npe) {
+                        // Garmin SDK may throw when dev payload references a removed FieldDescription.
+                        if (npe.getMessage() != null && npe.getMessage().contains("fieldDescriptionMesg")) {
+                            Mesg sanitized = new Mesg(record);
+                            Iterator<DeveloperField> devIt = sanitized.getDeveloperFields().iterator();
+                            while (devIt.hasNext()) {
+                                devIt.next();
+                                devIt.remove();
+                            }
+                            encode.write(sanitized);
+                            sanitizedMesgCount++;
+                        } else {
+                            throw npe;
+                        }
+                    }
                 }
                 
+            }
+
+            if (sanitizedMesgCount > 0) {
+                System.out.println("Sanitized developer fields in messages during encode: " + sanitizedMesgCount);
             }
 
             // Close the encoder to finalize the file

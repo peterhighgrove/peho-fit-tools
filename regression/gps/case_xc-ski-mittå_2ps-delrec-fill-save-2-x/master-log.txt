@@ -4,19 +4,29 @@ PAUSE - SHORTEN, forgot to resume timer after pause
 Shortened pause no: 6
 -- Pause decreased from 130sec to 7sec
 -->new speed:8:27min/km / 7.107km/h dist:242.83244m gap dist start:2928.63m end:3171.4624m gap time end-start:123s
+Updating LAP Ix: 2 DIST from 1000.0 to 1242.8324m, speed: 5:08min/km
+Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
+Increasing SESSION_DIST from 18870.26m to 19113.092m
+Increasing SESSION_SPEED from 3.358m/s / 4:58min/km to 3.4008648m/s / 4:54min/km
+Increasing SESSION_SPEED from 3.4008648m/s / 4:54min/km to 3.3280282m/s / 5:00min/km
 
 PAUSE - SHORTEN, forgot to resume timer after pause
 --------------------------------------------
 Shortened pause no: 15
 -- Pause decreased from 289sec to 220sec
 -->new speed:2:33min/km / 23.461km/h dist:449.6699m gap dist start:7329.7m end:7779.37m gap time end-start:69s
+Updating LAP Ix: 7 DIST from 1000.0 to 1449.6699m, speed: 2:15min/km
+Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
+Increasing SESSION_DIST from 19113.092m to 19562.762m
+Increasing SESSION_SPEED from 3.3280282m/s / 5:00min/km to 3.406326m/s / 4:54min/km
+Increasing SESSION_SPEED from 3.406326m/s / 4:54min/km to 3.3658867m/s / 4:57min/km
 -------------------------
 Deleting records to create a GAP
 -------------------------
 Updating LAP Ix: 4 DIST from 1000.0 to 996.5854m, speed: 6:56min/km
 Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
 Increasing SESSION_DIST from 19562.762m to 19559.348m
-Increasing SESSION_SPEED from 3.406326m/s / 4:54min/km to 3.3652992m/s / 4:57min/km
+Increasing SESSION_SPEED from 3.3658867m/s / 4:57min/km to 3.3652992m/s / 4:57min/km
 ===> Input values: 31:53 min, 33:32 min
 ===> Adjusted record distances from ix 1900 with diff -3.41m
 ===> RecordMesgIx to delete from-to: 1801 - 1900

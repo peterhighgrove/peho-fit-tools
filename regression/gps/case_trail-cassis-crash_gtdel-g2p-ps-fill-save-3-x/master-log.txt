@@ -39,5 +39,10 @@ PAUSE - SHORTEN, forgot to resume timer after pause
 Shortened pause no: 30
 -- Pause decreased from 326sec to 300sec
 -->new speed:5:52min/km / 10.233km/h dist:73.906555m gap dist start:5208.94m end:5282.8467m gap time end-start:26s
+Updating LAP Ix: 5 DIST from 558.01 to 631.91656m, speed: 6:51min/km
+Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
+Increasing SESSION_DIST from 15220.45m to 15294.356m
+Increasing SESSION_SPEED from 1.5969563m/s / 10:26min/km to 1.6615429m/s / 10:02min/km
+Increasing SESSION_SPEED from 1.6615429m/s / 10:02min/km to 1.656863m/s / 10:04min/km
 Filling gaps with 1sec records
 -- GapNo: 1, dist: 73.91016m, time: 26sec, @Dist: 5208.94-5282.85m, time: 2025-10-02-13-55-58

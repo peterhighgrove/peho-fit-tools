@@ -546,7 +546,11 @@ public class FitFile {
         }
 
         public void calcDistGap () {
-            this.altPause = this.altStop - this.altStart;
+            if (this.altStop != null && this.altStart != null) {
+                this.altPause = this.altStop - this.altStart;
+            } else {
+                this.altPause = 0f;
+            }
         }
         
 
@@ -1986,27 +1990,25 @@ public class FitFile {
 
                 Long timeStop = record.getFieldLongValue(EVE_TIME);
                 Float distStart = recordMesg.get(ixRecordStart).getFieldFloatValue(REC_DIST);
-                if (recordMesg.get(ixRecordStart).getFieldIntegerValue(REC_LAT) != null) {
-                    latStart = recordMesg.get(ixRecordStart).getFieldIntegerValue(REC_LAT);
-                    lonStart = recordMesg.get(ixRecordStart).getFieldIntegerValue(REC_LON);
+                int ixGpsStart = findClosestRecordWithGps(ixRecordStart);
+                int ixGpsStop = findClosestRecordWithGps(ixRecordStop);
+                boolean hasGpsStart = ixGpsStart >= 0;
+                boolean hasGpsStop = ixGpsStop >= 0;
+
+                if (hasGpsStart) {
+                    latStart = recordMesg.get(ixGpsStart).getFieldIntegerValue(REC_LAT);
+                    lonStart = recordMesg.get(ixGpsStart).getFieldIntegerValue(REC_LON);
                 } else {
-                    int i = 0;
-                    while (recordMesg.get(ixRecordStart-i).getFieldIntegerValue(REC_LAT) == null){
-                        i++;
-                    }
-                    latStart = recordMesg.get(ixRecordStart-i).getFieldIntegerValue(REC_LAT);
-                    lonStart = recordMesg.get(ixRecordStart-i).getFieldIntegerValue(REC_LON);
+                    latStart = 0;
+                    lonStart = 0;
                 }
-                if (recordMesg.get(ixRecordStop).getFieldIntegerValue(REC_LAT) != null) {
-                    latStop = recordMesg.get(ixRecordStop).getFieldIntegerValue(REC_LAT);
-                    lonStop = recordMesg.get(ixRecordStop).getFieldIntegerValue(REC_LON);
+
+                if (hasGpsStop) {
+                    latStop = recordMesg.get(ixGpsStop).getFieldIntegerValue(REC_LAT);
+                    lonStop = recordMesg.get(ixGpsStop).getFieldIntegerValue(REC_LON);
                 } else {
-                    int i = 0;
-                    while (recordMesg.get(ixRecordStop-i).getFieldIntegerValue(REC_LAT) == null){
-                        i++;
-                    }
-                    latStop = recordMesg.get(ixRecordStop-i).getFieldIntegerValue(REC_LAT);
-                    lonStop = recordMesg.get(ixRecordStop-i).getFieldIntegerValue(REC_LON);
+                    latStop = 0;
+                    lonStop = 0;
                 }
                 Float altStart = recordMesg.get(ixRecordStart).getFieldFloatValue(REC_EALT);
                 Float altStop = recordMesg.get(ixRecordStop).getFieldFloatValue(REC_EALT);
@@ -2029,7 +2031,12 @@ public class FitFile {
                 newPause.setAltStop(altStop);
                 newPause.calcTimePause();
                 newPause.calcDistGap();
-                newPause.calcDistPause();   // uses lat/lon values already set
+                if (hasGpsStart && hasGpsStop) {
+                    newPause.calcDistPause();
+                } else {
+                    // Indoor files may not carry GPS coordinates for pause points.
+                    newPause.setDistPause(0f);
+                }
 
                 pauseRecords.add(newPause);
 
@@ -2043,6 +2050,41 @@ public class FitFile {
             }
             eventIx += 1;
         }
+    }
+
+    private int findClosestRecordWithGps(int preferredIndex) {
+        if (recordMesg.isEmpty()) {
+            return -1;
+        }
+
+        int boundedIndex = Math.max(0, Math.min(preferredIndex, recordMesg.size() - 1));
+
+        int backwardIndex = findRecordWithGpsBackward(boundedIndex);
+        if (backwardIndex >= 0) {
+            return backwardIndex;
+        }
+
+        return findRecordWithGpsForward(boundedIndex + 1);
+    }
+
+    private int findRecordWithGpsBackward(int startIndex) {
+        for (int i = startIndex; i >= 0; i--) {
+            if (recordMesg.get(i).getFieldIntegerValue(REC_LAT) != null
+                    && recordMesg.get(i).getFieldIntegerValue(REC_LON) != null) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int findRecordWithGpsForward(int startIndex) {
+        for (int i = startIndex; i < recordMesg.size(); i++) {
+            if (recordMesg.get(i).getFieldIntegerValue(REC_LAT) != null
+                    && recordMesg.get(i).getFieldIntegerValue(REC_LON) != null) {
+                return i;
+            }
+        }
+        return -1;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printPause(int ix) {
@@ -2164,7 +2206,7 @@ public class FitFile {
 
         // Find the last STOP_ALL event in this file (to insert after)
         int insertIndex = -1;
-        Long lastStopAllTime = null;
+        Long lastStopAllTimeInOrgFile = null;
         for (int i = 0; i < allMesg.size(); i++) {
             Mesg mesg = allMesg.get(i);
             if (mesg.getNum() == MesgNum.EVENT
@@ -2173,7 +2215,7 @@ public class FitFile {
                     && mesg.getFieldValue(EVE_EVENT) != null
                     && Event.getByValue(mesg.getFieldShortValue(EVE_EVENT)).equals(Event.TIMER)) {
                 insertIndex = i + 1;
-                lastStopAllTime = mesg.getFieldLongValue(EVE_TIME);
+                lastStopAllTimeInOrgFile = mesg.getFieldLongValue(EVE_TIME);
             }
         }
         if (insertIndex < 0) {
@@ -2208,6 +2250,25 @@ public class FitFile {
             return;
         }
 
+        // Debug: summarize which message types are included in the selected segment.
+        java.util.Map<Integer, Integer> segmentMesgCounts = new java.util.TreeMap<>();
+        for (int i = startIx; i <= stopIx; i++) {
+            Mesg mesg = fileToAdd.allMesg.get(i);
+            int mesgNum = mesg.getNum();
+            segmentMesgCounts.put(mesgNum, segmentMesgCounts.getOrDefault(mesgNum, 0) + 1);
+        }
+        appendTempUpdateLoggLn("Selected segment in second file: ix " + startIx + " to " + stopIx
+                + " (" + (stopIx - startIx + 1) + " messages)");
+        System.out.println("===> Segment message type counts (to add):");
+        for (java.util.Map.Entry<Integer, Integer> entry : segmentMesgCounts.entrySet()) {
+            String mesgName = MesgNum.getStringFromValue(entry.getKey());
+            if (mesgName == null) {
+                mesgName = "UNKNOWN";
+            }
+            //System.out.println("     mesgNum=" + entry.getKey() + " (" + mesgName + ") count=" + entry.getValue());
+            appendTempUpdateLoggLn("mesgNum=" + entry.getKey() + " (" + mesgName + ") count=" + entry.getValue());
+        }
+
         // Collect lap segment from fileToAdd: LAP messages and TIME_IN_ZONE messages that directly follow them
         List<Mesg> lapSegment = new ArrayList<>();
         for (int i = 0; i < fileToAdd.allMesg.size(); i++) {
@@ -2231,9 +2292,131 @@ public class FitFile {
             }
         }
         int nextMessageIndex = maxMessageIndex + 1;
+
+        Mesg existingWorkoutMesg = null;
+        int existingWorkoutStepsCount = 0;
+        for (Mesg mesg : allMesg) {
+            if (mesg.getNum() == MesgNum.WORKOUT && existingWorkoutMesg == null) {
+                existingWorkoutMesg = mesg;
+            }
+            if (mesg.getNum() == MesgNum.WORKOUT_STEP) {
+                existingWorkoutStepsCount++;
+            }
+        }
+
+        Mesg addedWorkoutMesg = null;
+        List<Mesg> addedWorkoutSteps = new ArrayList<>();
+        for (Mesg mesg : fileToAdd.allMesg) {
+            if (mesg.getNum() == MesgNum.WORKOUT && addedWorkoutMesg == null) {
+                addedWorkoutMesg = new Mesg(mesg);
+            }
+            if (mesg.getNum() == MesgNum.WORKOUT_STEP) {
+                addedWorkoutSteps.add(new Mesg(mesg));
+            }
+        }
+
+        Integer originalNumValidSteps = null;
+        if (existingWorkoutMesg != null) {
+            originalNumValidSteps = existingWorkoutMesg.getFieldIntegerValue(WorkoutMesg.NumValidStepsFieldNum);
+        }
+        if (originalNumValidSteps == null) {
+            originalNumValidSteps = existingWorkoutStepsCount;
+        }
+
+        boolean mergeWorkoutIntoExisting = existingWorkoutMesg != null && addedWorkoutMesg != null;
+        if (mergeWorkoutIntoExisting && originalNumValidSteps != null && originalNumValidSteps > 0) {
+            for (Mesg lapMesgToAdjust : lapSegment) {
+                if (lapMesgToAdjust.getNum() != MesgNum.LAP) {
+                    continue;
+                }
+                Integer lapWktStepIx = lapMesgToAdjust.getFieldIntegerValue(LAP_WKT_STEP_IDX);
+                if (lapWktStepIx != null) {
+                    lapMesgToAdjust.setFieldValue(LAP_WKT_STEP_IDX, lapWktStepIx + originalNumValidSteps);
+                }
+            }
+            appendTempUpdateLoggLn("Adjusted appended LAP wkt_step_index by +" + originalNumValidSteps + " (existing workout steps).");
+        }
+
+        if (existingWorkoutMesg == null && addedWorkoutMesg != null) {
+            addedWorkoutMesg.setFieldValue(254, nextMessageIndex);
+            nextMessageIndex++;
+        } else if (existingWorkoutMesg != null && addedWorkoutMesg != null) {
+            Integer existingNumValidSteps = existingWorkoutMesg.getFieldIntegerValue(WorkoutMesg.NumValidStepsFieldNum);
+            if (existingNumValidSteps == null) {
+                existingNumValidSteps = 0;
+            }
+            Integer addedNumValidSteps = addedWorkoutMesg.getFieldIntegerValue(WorkoutMesg.NumValidStepsFieldNum);
+            if (addedNumValidSteps == null) {
+                addedNumValidSteps = 0;
+            }
+            existingWorkoutMesg.setFieldValue(WorkoutMesg.NumValidStepsFieldNum, existingNumValidSteps + addedNumValidSteps);
+
+            String existingWktName = existingWorkoutMesg.getFieldStringValue(WorkoutMesg.WktNameFieldNum);
+            String addedWktName = addedWorkoutMesg.getFieldStringValue(WorkoutMesg.WktNameFieldNum);
+            if (addedWktName != null && !addedWktName.isBlank()) {
+                if (existingWktName == null || existingWktName.isBlank()) {
+                    existingWorkoutMesg.setFieldValue(WorkoutMesg.WktNameFieldNum, addedWktName);
+                } else if (!existingWktName.contains(addedWktName)) {
+                    existingWorkoutMesg.setFieldValue(WorkoutMesg.WktNameFieldNum, existingWktName + " + " + addedWktName);
+                }
+            }
+            appendTempUpdateLoggLn("Merged WORKOUT(26): num_valid_steps +" + addedNumValidSteps);
+        }
+
+        boolean hasOriginalWorkoutSteps = existingWorkoutStepsCount > 0;
+        for (Mesg stepMesg : addedWorkoutSteps) {
+            if (hasOriginalWorkoutSteps) {
+                Short durationType = stepMesg.getFieldShortValue(WorkoutStepMesg.DurationTypeFieldNum);
+                if (durationType != null && durationType == 6 && originalNumValidSteps != null && originalNumValidSteps > 0) {
+                    Long durationValue = stepMesg.getFieldLongValue(WorkoutStepMesg.DurationValueFieldNum);
+                    if (durationValue != null) {
+                        stepMesg.setFieldValue(WorkoutStepMesg.DurationValueFieldNum, durationValue + originalNumValidSteps.longValue());
+                    }
+                }
+            }
+            stepMesg.setFieldValue(254, nextMessageIndex);
+            nextMessageIndex++;
+        }
+
         for (Mesg mesg : lapSegment) {
             mesg.setFieldValue(254, nextMessageIndex);
             nextMessageIndex++;
+        }
+
+        int workoutInsertIndex = 0;
+        for (int i = 0; i < allMesg.size(); i++) {
+            int mesgNum = allMesg.get(i).getNum();
+            if (mesgNum == MesgNum.WORKOUT_SESSION || mesgNum == MesgNum.WORKOUT || mesgNum == MesgNum.WORKOUT_STEP) {
+                workoutInsertIndex = i + 1;
+            }
+        }
+        if (workoutInsertIndex == 0) {
+            for (int i = 0; i < allMesg.size(); i++) {
+                int mesgNum = allMesg.get(i).getNum();
+                if (mesgNum == MesgNum.LAP || mesgNum == MesgNum.SESSION || mesgNum == MesgNum.EVENT || mesgNum == MesgNum.RECORD) {
+                    workoutInsertIndex = i;
+                    break;
+                }
+            }
+        }
+
+        int insertedWorkoutMesgCount = (existingWorkoutMesg == null && addedWorkoutMesg != null ? 1 : 0) + addedWorkoutSteps.size();
+        int workoutInsertStartIndex = workoutInsertIndex;
+
+        if (existingWorkoutMesg == null && addedWorkoutMesg != null) {
+            allMesg.add(workoutInsertIndex, addedWorkoutMesg);
+            workoutInsertIndex++;
+            appendTempUpdateLoggLn("Inserted WORKOUT(26) from second file.");
+        }
+        for (Mesg stepMesg : addedWorkoutSteps) {
+            allMesg.add(workoutInsertIndex, stepMesg);
+            workoutInsertIndex++;
+        }
+        if (!addedWorkoutSteps.isEmpty()) {
+            appendTempUpdateLoggLn("Inserted WORKOUT_STEP(27) messages from second file: " + addedWorkoutSteps.size());
+        }
+        if (insertedWorkoutMesgCount > 0 && workoutInsertStartIndex <= insertIndex) {
+            insertIndex += insertedWorkoutMesgCount;
         }
 
         // Find insertion index for laps in this file: after the last LAP or TIME_IN_ZONE message
@@ -2245,6 +2428,8 @@ public class FitFile {
             }
         }
 
+        int lapInsertStartIndex = lapInsertIndex;
+
         // Insert lap segment
         for (Mesg mesg : lapSegment) {
             allMesg.add(lapInsertIndex, mesg);
@@ -2253,15 +2438,17 @@ public class FitFile {
         appendTempUpdateLoggLn("Inserted " + lapSegment.size() + " lap-related messages from second file." + System.lineSeparator()
             + "Lap messages inserted at index: " + (lapInsertIndex - lapSegment.size()) + " to " + (lapInsertIndex - 1) + ".");
 
-        // Adjust insertIndex for activity segment since we inserted laps
-        insertIndex += lapSegment.size();
+        // Adjust insertIndex for activity segment if laps were inserted before it
+        if (!lapSegment.isEmpty() && lapInsertStartIndex <= insertIndex) {
+            insertIndex += lapSegment.size();
+        }
 
         Long pauseSeconds = 0L;
         // Calculate pause between activities
-        if (lastStopAllTime != null && firstStartTime != null) {
-            pauseSeconds = firstStartTime - lastStopAllTime;
+        if (lastStopAllTimeInOrgFile != null && firstStartTime != null) {
+            pauseSeconds = firstStartTime - lastStopAllTimeInOrgFile;
             appendTempUpdateLoggLn("Pause between activities: " + PehoUtils.sec2minSecLong(pauseSeconds) + System.lineSeparator()
-                + "Last STOP_ALL time in first file: " + FitDateTime.toString(lastStopAllTime, diffMinutesLocalUTC) + System.lineSeparator()
+                + "Last STOP_ALL time in first file: " + FitDateTime.toString(lastStopAllTimeInOrgFile, diffMinutesLocalUTC) + System.lineSeparator()
                 + "First START time in second file: " + FitDateTime.toString(firstStartTime, diffMinutesLocalUTC));
         }
 
@@ -2269,6 +2456,10 @@ public class FitFile {
         Float lastAltThis = null;
         if (!recordMesg.isEmpty()) {
             lastAltThis = recordMesg.get(recordMesg.size() - 1).getFieldFloatValue(REC_EALT);
+        }
+        Float lastDistThis = null;
+        if (!recordMesg.isEmpty()) {
+            lastDistThis = recordMesg.get(recordMesg.size() - 1).getFieldFloatValue(REC_DIST);
         }
         Float firstAltSegment = null;
         for (int i = startIx; i <= stopIx; i++) {
@@ -2286,18 +2477,36 @@ public class FitFile {
             appendTempUpdateLoggLn("Elevation difference could not be calculated (missing data).");
         }
 
-        // Insert the segment into this file (keep original order, no time changes)
+        // Insert selected message types from the segment into this file (keep original order, no time changes)
         List<Mesg> segment = new ArrayList<>();
+        int skippedMesgInSegment = 0;
         for (int i = startIx; i <= stopIx; i++) {
-            Mesg mesg = new Mesg(fileToAdd.allMesg.get(i));
-            if (mesg.getNum() == MesgNum.RECORD && elevationDiff != 0f) {
-                Float alt = mesg.getFieldFloatValue(REC_EALT);
-                if (alt != null) {
-                    mesg.setFieldValue(REC_EALT, alt + elevationDiff);
+            Mesg sourceMesg = fileToAdd.allMesg.get(i);
+            if (sourceMesg.getNum() != MesgNum.RECORD
+                    && sourceMesg.getNum() != MesgNum.EVENT
+                    && sourceMesg.getNum() != 233) {
+                skippedMesgInSegment++;
+                continue;
+            }
+
+            Mesg mesg = new Mesg(sourceMesg);
+            if (mesg.getNum() == MesgNum.RECORD) {
+                if (elevationDiff != 0f) {
+                    Float alt = mesg.getFieldFloatValue(REC_EALT);
+                    if (alt != null) {
+                        mesg.setFieldValue(REC_EALT, alt + elevationDiff);
+                    }
+                }
+                if (lastDistThis != null) {
+                    Float dist = mesg.getFieldFloatValue(REC_DIST);
+                    if (dist != null) {
+                        mesg.setFieldValue(REC_DIST, dist + lastDistThis);
+                    }
                 }
             }
             segment.add(mesg);
         }
+        appendTempUpdateLoggLn("Filtered selected segment to mesg 20/21/233. Added: " + segment.size() + ", skipped: " + skippedMesgInSegment);
 
         // Update message index for segment messages
         for (Mesg mesg : segment) {
@@ -2312,6 +2521,9 @@ public class FitFile {
 
         // Rebuild internal message lists so they reflect the appended segment
         rebuildMessageListsFromAllMesg();
+
+        // WORKOUT_STEP message index (field 254) is per-step sequence and should be 0..N-1.
+        rewriteWorkoutStepMessageIndexesFromZero();
 
         // Update number of laps field
         this.numberOfLaps = lapMesg.size();
@@ -2362,10 +2574,29 @@ public class FitFile {
             int totalLaps = currentLaps + secondFileLaps;
             sessionMesg.get(0).setFieldValue(SES_LAPS, totalLaps);
         }
+
+        // Update LAP_IX for all laps
+        for (int i = 0; i < lapMesg.size(); i++) {
+            lapMesg.get(i).setFieldValue(FitFile.LAP_IX, i);
+        }
+
+        // Update SES_LAPS
+        if (!sessionMesg.isEmpty()) {
+            sessionMesg.get(0).setFieldValue(FitFile.SES_LAPS, numberOfLaps);
+        }
+
         System.out.println(getTempUpdateLogg());
         appendUpdateLogg(getTempUpdateLogg());
     }
-
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private void rewriteWorkoutStepMessageIndexesFromZero() {
+        int stepIx = 0;
+        for (Mesg stepMesg : wktStepMesg) {
+            stepMesg.setFieldValue(WorkoutStepMesg.MessageIndexFieldNum, stepIx);
+            stepIx++;
+        }
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private void rebuildMessageListsFromAllMesg() {
         // Keep ordering from allMesg, but rebuild per-type caches
         fileIdMesg.clear();
