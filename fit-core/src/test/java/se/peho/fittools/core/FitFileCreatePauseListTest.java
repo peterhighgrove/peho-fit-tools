@@ -5,15 +5,20 @@ import static org.junit.Assert.assertTrue;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
-import org.junit.Test;
 import org.junit.Assume;
+import org.junit.Test;
 
 import com.garmin.fit.EventMesg;
 import com.garmin.fit.EventType;
+import com.garmin.fit.FileIdMesg;
+import com.garmin.fit.LapMesg;
 import com.garmin.fit.Mesg;
 import com.garmin.fit.RecordMesg;
+import com.garmin.fit.TimeInZoneMesg;
 
 import se.peho.fittools.core.commands.ActivityAddAnother;
 
@@ -91,5 +96,54 @@ public class FitFileCreatePauseListTest {
         int recordsAfter = watchFitFile.getRecordMesg().size();
         assertTrue("Expected added activity to increase record count", recordsAfter > recordsBefore);
         assertTrue("Expected pause list to be available after aa flow", watchFitFile.getPauseList().size() >= 1);
+    }
+
+    @Test
+    public void activityReportGenerator_groupsConsecutiveRepeatedMesg() {
+        FitFile fitFile = new FitFile();
+        fitFile.getAllMesg().addAll(Arrays.asList(
+            (Mesg) new FileIdMesg(),
+            (Mesg) new RecordMesg(),
+            (Mesg) new RecordMesg(),
+            (Mesg) new EventMesg(),
+            (Mesg) new EventMesg(),
+            (Mesg) new EventMesg(),
+            (Mesg) new LapMesg(),
+            (Mesg) new RecordMesg()
+        ));
+
+        ActivityReportGenerator generator = new ActivityReportGenerator(fitFile);
+
+        List<String> summary = generator.buildFileStructureSummary();
+
+        assertEquals(Arrays.asList(
+            "[0] FILE_ID(0)",
+            "[1-2] RECORD(20) x2",
+            "[3-5] EVENT(21) x3",
+            "[6] LAP(19)",
+            "[7] RECORD(20)"
+        ), summary);
+    }
+
+    @Test
+    public void activityReportGenerator_includesSecondMesgIndexesForRepeatedPair() {
+        FitFile fitFile = new FitFile();
+
+        for (int i = 0; i < 3; i++) {
+            Mesg timeInZone = new TimeInZoneMesg();
+            fitFile.getAllMesg().add(timeInZone);
+
+            LapMesg lap = new LapMesg();
+            lap.setMessageIndex(i);
+            fitFile.getAllMesg().add(lap);
+        }
+
+        ActivityReportGenerator generator = new ActivityReportGenerator(fitFile);
+
+        List<String> summary = generator.buildFileStructureSummary();
+
+        assertEquals(Arrays.asList(
+            "[0-4] TIME_IN_ZONE(216), [1-5:0-2] LAP(19) x3"
+        ), summary);
     }
 }

@@ -1,28 +1,5 @@
 Adding activity from another file
 Selected segment in second file: ix 29 to 6391 (6363 messages)
-mesgNum=2 (DEVICE_SETTINGS) count=1
-mesgNum=3 (USER_PROFILE) count=1
-mesgNum=7 (ZONES_TARGET) count=1
-mesgNum=12 (SPORT) count=1
-mesgNum=13 (TRAINING_SETTINGS) count=1
-mesgNum=20 (RECORD) count=1673
-mesgNum=21 (EVENT) count=18
-mesgNum=22 () count=21
-mesgNum=23 (DEVICE_INFO) count=51
-mesgNum=72 (TRAINING_FILE) count=1
-mesgNum=79 () count=1
-mesgNum=104 () count=9
-mesgNum=141 () count=1
-mesgNum=147 () count=6
-mesgNum=160 (GPS_METADATA) count=2165
-mesgNum=162 (TIMESTAMP_CORRELATION) count=7
-mesgNum=233 () count=2179
-mesgNum=288 () count=1
-mesgNum=325 () count=166
-mesgNum=326 () count=44
-mesgNum=327 () count=12
-mesgNum=394 () count=1
-mesgNum=499 () count=2
 Inserted 18 lap-related messages from second file.
 Lap messages inserted at index: 42 to 59.
 Pause between activities: 5:51

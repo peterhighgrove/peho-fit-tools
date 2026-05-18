@@ -2250,24 +2250,8 @@ public class FitFile {
             return;
         }
 
-        // Debug: summarize which message types are included in the selected segment.
-        java.util.Map<Integer, Integer> segmentMesgCounts = new java.util.TreeMap<>();
-        for (int i = startIx; i <= stopIx; i++) {
-            Mesg mesg = fileToAdd.allMesg.get(i);
-            int mesgNum = mesg.getNum();
-            segmentMesgCounts.put(mesgNum, segmentMesgCounts.getOrDefault(mesgNum, 0) + 1);
-        }
         appendTempUpdateLoggLn("Selected segment in second file: ix " + startIx + " to " + stopIx
                 + " (" + (stopIx - startIx + 1) + " messages)");
-        System.out.println("===> Segment message type counts (to add):");
-        for (java.util.Map.Entry<Integer, Integer> entry : segmentMesgCounts.entrySet()) {
-            String mesgName = MesgNum.getStringFromValue(entry.getKey());
-            if (mesgName == null) {
-                mesgName = "UNKNOWN";
-            }
-            //System.out.println("     mesgNum=" + entry.getKey() + " (" + mesgName + ") count=" + entry.getValue());
-            appendTempUpdateLoggLn("mesgNum=" + entry.getKey() + " (" + mesgName + ") count=" + entry.getValue());
-        }
 
         // Collect lap segment from fileToAdd: LAP messages and TIME_IN_ZONE messages that directly follow them
         List<Mesg> lapSegment = new ArrayList<>();
@@ -2282,16 +2266,6 @@ public class FitFile {
                 }
             }
         }
-
-        // Update message index for LAP messages in lapSegment
-        int maxMessageIndex = 0;
-        for (Mesg mesg : allMesg) {
-            Integer index = mesg.getFieldIntegerValue(254);
-            if (index != null && index > maxMessageIndex) {
-                maxMessageIndex = index;
-            }
-        }
-        int nextMessageIndex = maxMessageIndex + 1;
 
         Mesg existingWorkoutMesg = null;
         int existingWorkoutStepsCount = 0;
@@ -2338,8 +2312,7 @@ public class FitFile {
         }
 
         if (existingWorkoutMesg == null && addedWorkoutMesg != null) {
-            addedWorkoutMesg.setFieldValue(254, nextMessageIndex);
-            nextMessageIndex++;
+            // Keep original WORKOUT message_index as-is (no global 254 rewrite).
         } else if (existingWorkoutMesg != null && addedWorkoutMesg != null) {
             Integer existingNumValidSteps = existingWorkoutMesg.getFieldIntegerValue(WorkoutMesg.NumValidStepsFieldNum);
             if (existingNumValidSteps == null) {
@@ -2374,13 +2347,6 @@ public class FitFile {
                     }
                 }
             }
-            stepMesg.setFieldValue(254, nextMessageIndex);
-            nextMessageIndex++;
-        }
-
-        for (Mesg mesg : lapSegment) {
-            mesg.setFieldValue(254, nextMessageIndex);
-            nextMessageIndex++;
         }
 
         int workoutInsertIndex = 0;
@@ -2507,12 +2473,6 @@ public class FitFile {
             segment.add(mesg);
         }
         appendTempUpdateLoggLn("Filtered selected segment to mesg 20/21/233. Added: " + segment.size() + ", skipped: " + skippedMesgInSegment);
-
-        // Update message index for segment messages
-        for (Mesg mesg : segment) {
-            mesg.setFieldValue(254, nextMessageIndex);
-            nextMessageIndex++;
-        }
 
         for (Mesg mesg : segment) {
             allMesg.add(insertIndex, mesg);

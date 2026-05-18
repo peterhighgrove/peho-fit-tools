@@ -1,25 +1,5 @@
 Adding activity from another file
 Selected segment in second file: ix 33 to 644 (612 messages)
-mesgNum=2 (DEVICE_SETTINGS) count=1
-mesgNum=3 (USER_PROFILE) count=1
-mesgNum=7 (ZONES_TARGET) count=1
-mesgNum=12 (SPORT) count=1
-mesgNum=13 (TRAINING_SETTINGS) count=1
-mesgNum=20 (RECORD) count=287
-mesgNum=21 (EVENT) count=2
-mesgNum=22 () count=2
-mesgNum=23 (DEVICE_INFO) count=9
-mesgNum=26 (WORKOUT) count=1
-mesgNum=27 (WORKOUT_STEP) count=5
-mesgNum=72 (TRAINING_FILE) count=1
-mesgNum=79 () count=1
-mesgNum=104 () count=1
-mesgNum=125 () count=1
-mesgNum=141 () count=1
-mesgNum=147 () count=6
-mesgNum=206 (FIELD_DESCRIPTION) count=3
-mesgNum=233 () count=286
-mesgNum=394 () count=1
 Inserted WORKOUT(26) from second file.
 Inserted WORKOUT_STEP(27) messages from second file: 5
 Inserted 10 lap-related messages from second file.
@@ -36,26 +16,6 @@ TotalElapsedTimer first file:2:08
 TotalElapsedTimer second file:4:46
 Adding activity from another file
 Selected segment in second file: ix 99 to 6269 (6171 messages)
-mesgNum=2 (DEVICE_SETTINGS) count=1
-mesgNum=3 (USER_PROFILE) count=1
-mesgNum=7 (ZONES_TARGET) count=1
-mesgNum=12 (SPORT) count=1
-mesgNum=13 (TRAINING_SETTINGS) count=1
-mesgNum=20 (RECORD) count=3058
-mesgNum=21 (EVENT) count=2
-mesgNum=22 () count=2
-mesgNum=23 (DEVICE_INFO) count=8
-mesgNum=26 (WORKOUT) count=1
-mesgNum=27 (WORKOUT_STEP) count=13
-mesgNum=72 (TRAINING_FILE) count=1
-mesgNum=79 () count=1
-mesgNum=104 () count=11
-mesgNum=141 () count=1
-mesgNum=147 () count=6
-mesgNum=206 (FIELD_DESCRIPTION) count=3
-mesgNum=233 () count=3057
-mesgNum=288 () count=1
-mesgNum=394 () count=1
 Adjusted appended LAP wkt_step_index by +5 (existing workout steps).
 Merged WORKOUT(26): num_valid_steps +13
 Inserted WORKOUT_STEP(27) messages from second file: 13

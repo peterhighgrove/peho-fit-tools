@@ -388,75 +388,70 @@ public class FitFileForIndoor extends FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String getFilenameAndSetNewSportProfileName(String suffix, String outputFilenameBase) {
-        
-        Mesg workout = wktRecordMesg.get(0);
-
-        String filenameBase = new FileBaseStr(
-                                    new DTstr(activityDateTimeLocal).get(),
-                                    sportProfile, 
-                                    wktName, 
-                                    new DistTimerStr(totalDistance, totalTimerTime).get(), 
-                                    getProduct()
-                                ).get();
-
-        return filenameBase;
+        return ActivityNamingStr.getFilenameAndSetNewSportProfileName(
+                activityDateTimeLocal,
+                sportProfile,
+                wktName,
+                totalDistance,
+                totalTimerTime,
+                getProduct()
+        );
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String getFileNameBaseNewTime() {
-        if (StringsDebug.enabled) System.out.println("----> New FilenameBase: ");
-        if (StringsDebug.enabled) System.out.println("        DateTimeLocal: " + new DTstr(activityDateTimeLocal).get());
-        if (StringsDebug.enabled) System.out.println("        SportProfile : " + new ProfileStr(sportProfile, sport, subsport).get());
-        if (StringsDebug.enabled) System.out.println("        WktName      : " + new WorkoutStr(wktName).get());
-        if (StringsDebug.enabled) System.out.println("        TimerDist    : " + new DistTimerStr(totalDistance, totalTimerTime).get());
-        if (StringsDebug.enabled) System.out.println("        Product      : " + new ProductStr(getManufacturerNo(), getProductNo(), getSwVer()).get());
-        if (StringsDebug.enabled) System.out.println("        Suffix      : " + activityNamnSuffix);
-        return new FileBaseStr(
-                    new DTstr(activityDateTimeLocal).get(),
-                    new ProfileStr(sportProfile, sport, subsport).get(),
-                    new WorkoutStr(wktName).get(),
-                    new DistTimerStr(totalDistance, totalTimerTime).get(), 
-                    new ProductStr(getManufacturerNo(), getProductNo(), getSwVer()).get(),
-                    activityNamnSuffix
-                ).get();
+        return ActivityNamingStr.getFileNameBaseNewTime(
+                activityDateTimeLocal,
+                sportProfile,
+                sport,
+                subsport,
+                wktName,
+                totalDistance,
+                totalTimerTime,
+                getManufacturerNo(),
+                getProductNo(),
+                getSwVer(),
+                activityNamnSuffix
+        );
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String getFileNameBaseOrgTime() {
-        if (StringsDebug.enabled) System.out.println("----> Org FilenameBase: ");
-        if (StringsDebug.enabled) System.out.println("        DateTimeLocal: " + new DTstr(activityDateTimeLocalOrg).get());
-        if (StringsDebug.enabled) System.out.println("        SportProfile : " + new ProfileStr(sportProfile, sport, subsport).get());
-        if (StringsDebug.enabled) System.out.println("        WktName      : " + new WorkoutStr(wktName).get());
-        if (StringsDebug.enabled) System.out.println("        TimerDist    : " + new DistTimerStr(totalDistance, totalTimerTime).get());
-        if (StringsDebug.enabled) System.out.println("        Product      : " + new ProductStr(getManufacturerNo(), getProductNo(), getSwVer()).get());
-        if (StringsDebug.enabled) System.out.println("        Suffix      : " + activityNamnSuffix);
-        return new FileBaseStr(
-                    new DTstr(activityDateTimeLocalOrg).get(),
-                    new ProfileStr(sportProfile, sport, subsport).get(),
-                    new WorkoutStr(wktName).get(),
-                    new DistTimerStr(totalDistance, totalTimerTime).get(),
-                    new ProductStr(getManufacturerNo(), getProductNo(), getSwVer()).get(),
-                    activityNamnSuffix
-                ).get();
+        return ActivityNamingStr.getFileNameBaseOrgTime(
+                activityDateTimeLocalOrg,
+                sportProfile,
+                sport,
+                subsport,
+                wktName,
+                totalDistance,
+                totalTimerTime,
+                getManufacturerNo(),
+                getProductNo(),
+                getSwVer(),
+                activityNamnSuffix
+        );
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String getActivityNameStr() {
-        if (StringsDebug.enabled) System.out.println("----> New ProfileBaseStr: ");
-        if (StringsDebug.enabled) System.out.println("        SportProfile : " + new ProfileStr(sportProfile, sport, subsport).get());
-        if (StringsDebug.enabled) System.out.println("        WktName      : " + new WorkoutStr(wktName).get());
-        if (StringsDebug.enabled) System.out.println("        Dist    : " + new Km1(totalDistance).get());
-        if (StringsDebug.enabled) System.out.println("        Suffix      : " + activityNamnSuffix);
-        return new NewProfileStr(
-                    new ProfileStr(sportProfile, sport, subsport).get(),
-                    new WorkoutStr(wktName).get(),
-                    new Km1(totalDistance).get(),
-                    activityNamnSuffix
-                ).get();
+        return ActivityNamingStr.getActivityNameStr(
+                sportProfile,
+                sport,
+                subsport,
+                wktName,
+                totalDistance,
+                activityNamnSuffix
+        );
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void setNewSportProfileName() {
-        String newActivityName = getActivityNameStr();
-        // Set sport profile name in the first session message
-        Mesg session = sessionMesg.get(0);
-        session.setFieldValue(SES_PROFILE, newActivityName);
+        String newActivityName = ActivityNamingStr.setNewSportProfileName(
+                sessionMesg,
+                SES_PROFILE,
+                sportProfile,
+                sport,
+                subsport,
+                wktName,
+                totalDistance,
+                activityNamnSuffix
+        );
         setSportProfile(newActivityName);
     }
         //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
