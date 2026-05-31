@@ -3,7 +3,7 @@ New file info AFTER update:
 ==================================================
 --------------------------------------------------
  --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v23.18
- --> Sport:RUNNING, SubSport:TRAIL, SportProfile:Trail Run, WktName:null
+ --> Sport:RUNNING, SubSport:TRAIL, SportProfile:Trail Run Cassis-Calanques park west 15.3km, WktName:null
  --> Org activity dateTime Local:2025-10-02-11-33-35
  --> New activity dateTime Local:2025-10-02-11-36-35
  --> Org activity DateTime UTC:  2025-10-02-09-33-35

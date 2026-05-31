@@ -3,7 +3,7 @@ New file info AFTER update:
 ==================================================
 --------------------------------------------------
  --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v26.07
- --> Sport:CROSS_COUNTRY_SKIING, SubSport:SKATE_SKIING, SportProfile:XC Skate Ski, WktName:null
+ --> Sport:CROSS_COUNTRY_SKIING, SubSport:SKATE_SKIING, SportProfile:XC Skate Ski Bydalen 16.6km, WktName:null
  --> Org activity dateTime Local:2026-04-06-10-08-18
  --> New activity dateTime Local:2026-04-06-10-10-18
  --> Org activity DateTime UTC:  2026-04-06-08-08-18

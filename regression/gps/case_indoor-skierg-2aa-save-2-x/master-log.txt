@@ -9,6 +9,7 @@ Last STOP_ALL time in first file: 2026-05-14-10-17-31
 First START time in second file: 2026-05-14-10-18-40
 Elevation difference could not be calculated (missing data).
 Filtered selected segment to mesg 20/21/233. Added: 575, skipped: 37
+Updating/resetting Profilename to Sport Profile: SkiErg 0.3km Friskis Orminge -> SkiErg-row
 Updating session and activity messages with new totals
 TotalTimerTime:6:55
 TotalDistance:1265.0
@@ -26,6 +27,7 @@ Last STOP_ALL time in first file: 2026-05-14-10-23-26
 First START time in second file: 2026-05-14-10-24-20
 Elevation difference could not be calculated (missing data).
 Filtered selected segment to mesg 20/21/233. Added: 6117, skipped: 54
+Updating/resetting Profilename to Sport Profile: SkiErg-row -> SkiErg-row
 Updating session and activity messages with new totals
 TotalTimerTime:57:53
 TotalDistance:11386.0

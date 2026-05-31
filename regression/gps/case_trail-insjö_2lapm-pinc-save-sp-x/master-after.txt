@@ -3,7 +3,7 @@ New file info AFTER update:
 ==================================================
 --------------------------------------------------
  --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v26.09
- --> Sport:RUNNING, SubSport:TRAIL, SportProfile:Trail Run, WktName:null
+ --> Sport:RUNNING, SubSport:TRAIL, SportProfile:Trail Run Velamsund Insjöstigen 5.1km, WktName:null
  --> Org activity dateTime Local:2026-04-11-14-12-34
  --> New activity dateTime Local:2026-04-11-14-14-34
  --> Org activity DateTime UTC:  2026-04-11-12-12-34

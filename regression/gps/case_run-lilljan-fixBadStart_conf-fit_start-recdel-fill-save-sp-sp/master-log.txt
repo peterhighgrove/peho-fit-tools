@@ -13,7 +13,7 @@ NEW TIMES
 startTime:2025-09-17-15-06-20
 Lap time/stime:2025-09-17-15-06-20 / 2025-09-17-15-06-20
 Ses time/stime:2025-09-17-15-06-20 / 2025-09-17-15-06-20
-Act time UTC:2025-09-17-15-06-20
+Act time UTC:2025-09-17-15-06-21
 Act time Loc:2025-09-17-17-06-20
 -------------------------
 Deleting records to create a GAP

@@ -10,7 +10,7 @@
 --------------------------------------------------
 --------------------------------------------------
  --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v25.11
- --> Sport:CYCLING, SubSport:INDOOR_CYCLING, SportProfile: SkiErg 6-5-4/2-3-2-1/1min 10.2km Friskis Orminge, WktName:Bike 6-5-4/2-3-2-1/1min
+ --> Sport:CYCLING, SubSport:INDOOR_CYCLING, SportProfile:SkiErg 6-5-4/2-3-2-1/1min Friskis Orminge 10.2km, WktName:Bike 6-5-4/2-3-2-1/1min
  --> Org activity dateTime Local:2026-02-14-15-11-11
  --> New activity dateTime Local:2026-02-14-15-13-11
  --> Org activity DateTime UTC:  2026-02-14-14-11-11

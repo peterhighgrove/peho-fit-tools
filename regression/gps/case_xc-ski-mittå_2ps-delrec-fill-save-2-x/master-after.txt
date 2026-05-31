@@ -3,7 +3,7 @@ New file info AFTER update:
 ==================================================
 --------------------------------------------------
  --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v26.03
- --> Sport:CROSS_COUNTRY_SKIING, SubSport:GENERIC, SportProfile:XC Classic Ski, WktName:null
+ --> Sport:CROSS_COUNTRY_SKIING, SubSport:GENERIC, SportProfile:XC Classic Ski Mittåkläppsspåret-Djupdalsrundan 19.6km, WktName:null
  --> Org activity dateTime Local:2026-03-08-14-46-10
  --> New activity dateTime Local:2026-03-08-14-48-10
  --> Org activity DateTime UTC:  2026-03-08-13-46-10

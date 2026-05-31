@@ -3,10 +3,10 @@ New file info AFTER update:
 ==================================================
 --------------------------------------------------
  --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v23.18
- --> Sport:RUNNING, SubSport:GENERIC, SportProfile:Run, WktName:null
+ --> Sport:RUNNING, SubSport:GENERIC, SportProfile:Run Lill-Jans och Fiskartorpets elljus 8.3km, WktName:null
  --> Org activity dateTime Local:2025-09-17-17-06-21
  --> New activity dateTime Local:2025-09-17-17-15-20
- --> Org activity DateTime UTC:  2025-09-17-15-06-20
+ --> Org activity DateTime UTC:  2025-09-17-15-06-21
  --> timeZone:                   +02:00
  --> Org start datetime UTC:     2025-09-17-15-06-21
  --> New start datetime UTC:     2025-09-17-15-15-20
