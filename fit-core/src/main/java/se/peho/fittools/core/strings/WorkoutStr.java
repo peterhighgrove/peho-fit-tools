@@ -11,6 +11,8 @@ public class WorkoutStr {
                 .replace("Bike ", "")
                 .replace("Run ", "")
                 .replace("Styrka ", "")
+                .replace("Custom ", "")
+                .replace("Row ", "")
                 .replace(" (bike)", "")
                 .replace("HR", "")
                 .replace(" + ", "+")

@@ -273,7 +273,8 @@ public class Main {
 
             Float totalTimerTime = sessMesg.getTotalTimerTime();
             Float totalDistance  = sessMesg.getTotalDistance();
-            String timerStr = new Hmmss(totalTimerTime).get();
+            String timerStr = new TimeStr(totalTimerTime).get();
+            String distStr = new DistStr(totalDistance).get();
             String distTimerStr = new DistTimerStr(
                 totalDistance
                 ,totalTimerTime
@@ -302,23 +303,37 @@ public class Main {
 
             String newFilebaseStr = "";
 
-            if (profileName.contains("km")) {
-                newFilebaseStr = new FileBaseStr(
+            newFilebaseStr = new MergedFileBaseStr(
+            dateTime != null && !dateTime.isEmpty() ? dateTime : "unknown"
+            , profileName != null && !profileName.isEmpty() ? profileName.trim() : null
+            , wktName != null && !wktName.isEmpty() ? wktName : null
+            , distStr != null && !distStr.isEmpty() ? distStr : null
+            , timerStr != null && !timerStr.isEmpty() ? timerStr : null
+            , product != null && !product.isEmpty() ? product : null
+            , null
+            ).get();
+
+            /* if (profileName.contains("km")) {
+                newFilebaseStr = new MergedFileBaseStr(
                 dateTime != null && !dateTime.isEmpty() ? dateTime : "unknown"
                 , profileName != null && !profileName.isEmpty() ? profileName.trim() : null
                 , null
+                , distStr != null && !distStr.isEmpty() ? distStr : null
                 , timerStr != null && !timerStr.isEmpty() ? timerStr : null
                 , product != null && !product.isEmpty() ? product : null
+                , null
                 ).get();
             } else {
-                newFilebaseStr = new FileBaseStr(
+                newFilebaseStr = new MergedFileBaseStr(
                 dateTime != null && !dateTime.isEmpty() ? dateTime : "unknown"
                 , profileName != null && !profileName.isEmpty() ? profileName : null
                 , wktName != null && !wktName.isEmpty() ? wktName : null
-                , distTimerStr != null && !distTimerStr.isEmpty() ? distTimerStr : null
+                , distStr != null && !distStr.isEmpty() ? distStr : null
+                , timerStr != null && !timerStr.isEmpty() ? timerStr : null
                 , product != null && !product.isEmpty() ? product : null
+                , null
                 ).get();
-            }
+            } */
 
             return newFilebaseStr;
 

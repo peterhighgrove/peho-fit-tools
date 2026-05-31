@@ -7,7 +7,7 @@ import se.peho.fittools.core.Conf;
 import se.peho.fittools.core.FitFileForIndoor;
 import se.peho.fittools.core.PehoUtils;
 import se.peho.fittools.core.TextLapFile;
-import se.peho.fittools.core.strings.SanitizedFilename;
+import se.peho.fittools.core.strings.*;
  
 public class Main {
 
@@ -34,7 +34,7 @@ public class Main {
         watchFitFile.setDebugFlags(conf);
         c2FitFile.setDebugFlags(conf);
 
-        watchFitFile.setActivityNamnSuffix(conf.getProfileNameSuffix());
+        watchFitFile.setActivityNameSuffix(conf.getProfileNameSuffix());
 
         // READING FIT FILE
         watchFitFile.readFitFile (conf.getInputFilePath());
@@ -213,31 +213,115 @@ public class Main {
             // ================================
         }
 
-        //watchFitFile.renameDevFieldName();
-        
-        String outputFilenameBaseOrgTime = conf.getFilePathPrefix() + new SanitizedFilename(watchFitFile.getFileNameBaseOrgTime()).get();
-        String outputFilenameBaseNewTime = conf.getFilePathPrefix() + new SanitizedFilename(watchFitFile.getFileNameBaseNewTime()).get();
-        System.out.println("---> Output filename base org time: " + outputFilenameBaseOrgTime);
+        // CREATE OUTPUT FILENAME BASE W/O DATETIME
+        String watchFilenameBaseStr = new MergedFileBaseStr(
+            new ProfileStr(watchFitFile.getSportProfile(), 
+                watchFitFile.getSport(), 
+                watchFitFile.getSubsport()
+                ).get(),
+            new WorkoutStr(watchFitFile.getWktName()).get(),
+            new DistStr(watchFitFile.getTotalDistance()).get(),
+            new TimeStr(watchFitFile.getTotalTimerTime()).get(),
+            new ProductStr(watchFitFile.getManufacturerNo(), 
+                watchFitFile.getProductNo(), 
+                watchFitFile.getSwVer()
+                ).get(),
+            watchFitFile.getActivityNameSuffix()
+            ).get();
+        /* String FileBaseOrgTimeStr = new FileBaseStr(
+            new DTstr(watchFitFile.getActivityDateTimeLocalOrg()).get(),
+            new ProfileStr(watchFitFile.getSportProfile(), 
+                watchFitFile.getSport(), 
+                watchFitFile.getSubsport()
+                ).get(),
+            new WorkoutStr(watchFitFile.getWktName()).get(),
+            new DistStr(watchFitFile.getTotalDistance()).get(),
+            new TimeStr(watchFitFile.getTotalTimerTime()).get(),
+            new ProductStr(watchFitFile.getManufacturerNo(), 
+                watchFitFile.getProductNo(), 
+                watchFitFile.getSwVer()
+                ).get(),
+            watchFitFile.getActivityNamnSuffix()
+            ).get(); */
 
-        String outputFilenameBaseNewTimeExtra = "";
+        // CREATE OUTPUT FILENAME BASE WITH DATETIME
+        String watchFilenameWithOrgTime = ""
+            + new DTstr(watchFitFile.getActivityDateTimeLocalOrg()).get()
+            + (watchFilenameBaseStr != null && !watchFilenameBaseStr.isEmpty() ? "-" + watchFilenameBaseStr : "")
+            ;
+        String watchFilePathWithOrgTime = ""
+            + conf.getFilePathPrefix() 
+            + new SanitizedFilename(watchFilenameWithOrgTime).get();
+
+    
+        /* String FileBaseNewTimeStr = new FileBaseStr(
+            new DTstr(watchFitFile.getActivityDateTimeLocal()).get(),
+            new ProfileStr(watchFitFile.getSportProfile(), 
+                watchFitFile.getSport(), 
+                watchFitFile.getSubsport()
+                ).get(),
+            new WorkoutStr(watchFitFile.getWktName()).get(),
+            new DistStr(watchFitFile.getTotalDistance()).get(),
+            new TimeStr(watchFitFile.getTotalTimerTime()).get(),
+            new ProductStr(watchFitFile.getManufacturerNo(), 
+                watchFitFile.getProductNo(), 
+                watchFitFile.getSwVer()
+                ).get(),
+            watchFitFile.getActivityNamnSuffix()
+            ).get(); */
+        // CREATE OUTPUT FILENAME BASE WITH DATETIME
+        String watchFilenameWithNewTime = ""
+            + new DTstr(watchFitFile.getActivityDateTimeLocal()).get()
+            + (watchFilenameBaseStr != null && !watchFilenameBaseStr.isEmpty() ? "-" + watchFilenameBaseStr : "")
+            ;
+        String watchFilePathWithNewTime = conf.getFilePathPrefix() 
+            + new SanitizedFilename(watchFilenameWithNewTime).get();
+            
+        System.out.println("---> Output watch filename base org time: " + watchFilePathWithOrgTime);
+
+        String extraFilePathWithTime = "";
         if (hasC2Fit) {
-            outputFilenameBaseNewTimeExtra = conf.getFilePathPrefix() + new SanitizedFilename(c2FitFile.getFileNameBaseNewTime()).get();
-            System.out.println("---> Output filename base new time: " + outputFilenameBaseNewTime);
+            String extraFilenameBaseStr = new MergedFileBaseStr(
+                new ProfileStr(c2FitFile.getSportProfile(), 
+                    c2FitFile.getSport(), 
+                    c2FitFile.getSubsport()
+                    ).get(),
+                new WorkoutStr(c2FitFile.getWktName()).get(),
+                new DistStr(c2FitFile.getTotalDistance()).get(),
+                new TimeStr(c2FitFile.getTotalTimerTime()).get(),
+                new ProductStr(c2FitFile.getManufacturerNo(), 
+                    c2FitFile.getProductNo(), 
+                    c2FitFile.getSwVer()
+                    ).get(),
+                c2FitFile.getActivityNameSuffix()
+                ).get();
+
+            String extraFilenameWithTime = ""
+                + new DTstr(c2FitFile.getActivityDateTimeLocal()).get()
+                + (extraFilenameBaseStr != null && !extraFilenameBaseStr.isEmpty() ? "-" + extraFilenameBaseStr : "")
+                ;
+
+            extraFilePathWithTime = conf.getFilePathPrefix()
+                 + new SanitizedFilename(extraFilenameWithTime).get();
+
+            System.out.println("---> Output C2 filename base new time: " + extraFilePathWithTime);
         }
 
         watchFitFile.setNewSportProfileName();
 
-        watchFitFile.encodeNewFit(outputFilenameBaseNewTime + "-merged" + (int)(conf.getTimeOffsetSec()/60) + "min.fit", encodeWorkoutRecords);
+        watchFitFile.encodeNewFit(
+            watchFilePathWithNewTime + "-merged" + (int)(conf.getTimeOffsetSec()/60) + "min.fit"
+            , encodeWorkoutRecords);
         
 
-        PehoUtils.renameFile(conf.getInputFilePath(), outputFilenameBaseOrgTime + "-org.fit");
+        PehoUtils.renameFile(conf.getInputFilePath(), watchFilePathWithOrgTime + "-org.fit");
         
         if (hasC2Fit) {
-            PehoUtils.renameFile(conf.getExtraFilename(), outputFilenameBaseNewTimeExtra + "-org.fit");
+            PehoUtils.renameFile(conf.getExtraFilename(), extraFilePathWithTime + "-org.fit");
         }
 
         if (hasManualLapsTxt) {
-            PehoUtils.renameFile(conf.getExtraFilename(), outputFilenameBaseOrgTime + "-manualLaps.txt");
+            PehoUtils.renameFile(conf.getExtraFilename(), watchFilePathWithOrgTime + "-manualLaps.txt");
         }
 
         watchFitFile.createFileSummaryIndoor();
@@ -256,7 +340,7 @@ public class Main {
         if (conf.isDebugWkt()) watchFitFile.printWktInfo();
         if (conf.isDebugWkt()) watchFitFile.printWktSessionInfo();
         if (conf.isDebugWkt()) watchFitFile.printWktStepInfo();
-        watchFitFile.printWriteLapSummery(outputFilenameBaseNewTime + "-merged" + (int)(conf.getTimeOffsetSec()/60) + "min-laps.txt");
+        watchFitFile.printWriteLapSummery(watchFilePathWithNewTime + "-merged" + (int)(conf.getTimeOffsetSec()/60) + "min-laps.txt");
     }
 
 }

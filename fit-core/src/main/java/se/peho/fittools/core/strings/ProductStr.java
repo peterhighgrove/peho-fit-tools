@@ -7,11 +7,27 @@ public class ProductStr {
 
     private String nameStr = null;
 
+    private static String safeManufacturer(Integer manufNo) {
+        if (manufNo == null) {
+            return "";
+        }
+        String manufacturer = Manufacturer.getStringFromValue(manufNo);
+        return manufacturer != null ? manufacturer : "";
+    }
+
+    private static String safeProduct(Integer productNo) {
+        if (productNo == null) {
+            return "";
+        }
+        String product = GarminProduct.getStringFromValue(productNo);
+        return product != null ? product : "";
+    }
+
     public ProductStr(Integer manufNo, Integer productNo, Float swVersionNo) {
         // DeviceInfo
         // --------------------------------
-        String manuf = Manufacturer.getStringFromValue(manufNo);
-        String product = GarminProduct.getStringFromValue(productNo);
+        String manuf = safeManufacturer(manufNo);
+        String product = safeProduct(productNo);
 
         if (StringsDebug.enabled) System.out.println("  Extracted From DevInfo Manufacturer: " + manuf + "(" + manufNo + ")"
             + ", Product: " + product + "(" + productNo + ")"
@@ -69,8 +85,8 @@ public class ProductStr {
 
         // FileIdInfo
         // --------------------------------
-        String manuf2 = Manufacturer.getStringFromValue(manufNo2);
-        String product2 = GarminProduct.getStringFromValue(productNo2);
+        String manuf2 = safeManufacturer(manufNo2);
+        String product2 = safeProduct(productNo2);
 
         if (StringsDebug.enabled) System.out.println("                  From FileId Manufacturer: " + manuf2 + "(" + manufNo2 + ")"
             + " Product: " + product2 + "(" + productNo2 + ")"

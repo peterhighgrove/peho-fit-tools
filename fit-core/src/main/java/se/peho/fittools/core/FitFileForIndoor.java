@@ -32,10 +32,6 @@ public class FitFileForIndoor extends FitFile {
     public Long getDiffMinutesLocalUTC() { return diffMinutesLocalUTC; }
     public void setDiffMinutesLocalUTC(Long diffMinutesLocalUTC) { this.diffMinutesLocalUTC = diffMinutesLocalUTC; }
 
-    private String activityNamnSuffix;
-    public String getActivityNamnSuffix() { return activityNamnSuffix; }
-    public void setActivityNamnSuffix(String activityNamnSuffix) { this.activityNamnSuffix = activityNamnSuffix; }
-
     private Boolean isSkiErg = false;
     private Boolean isElliptical = false;
     private Boolean isTreadmill = false;
@@ -410,7 +406,7 @@ public class FitFileForIndoor extends FitFile {
                 getManufacturerNo(),
                 getProductNo(),
                 getSwVer(),
-                activityNamnSuffix
+                getActivityNameSuffix()
         );
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -426,7 +422,7 @@ public class FitFileForIndoor extends FitFile {
                 getManufacturerNo(),
                 getProductNo(),
                 getSwVer(),
-                activityNamnSuffix
+                getActivityNameSuffix()
         );
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -437,7 +433,7 @@ public class FitFileForIndoor extends FitFile {
                 subsport,
                 wktName,
                 totalDistance,
-                activityNamnSuffix
+                getActivityNameSuffix()
         );
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -445,12 +441,12 @@ public class FitFileForIndoor extends FitFile {
         String newActivityName = ActivityNamingStr.setNewSportProfileName(
                 sessionMesg,
                 SES_PROFILE,
-                sportProfile,
-                sport,
-                subsport,
+                getSportProfile(),
+                getSport(),
+                getSubsport(),
                 wktName,
                 totalDistance,
-                activityNamnSuffix
+                getActivityNameSuffix()
         );
         setSportProfile(newActivityName);
     }
@@ -1622,7 +1618,7 @@ public class FitFileForIndoor extends FitFile {
                     lapExtraRecords.get(lapIx).timeEnd = record.getFieldLongValue(REC_TIME);
 
                     // Calc LAP DISTANCE & AVG SPEED
-                    if (lapNo == numberOfLaps) {
+                    if (lapNo == numberOfLaps || recordIx > (numberOfRecords - tempC2SyncSecondsLapDistCalc - 1)) {
                         tempC2SyncSecondsLapDistCalc = 0;
                     }
                     Float shiftedDistance = recordMesg.get(recordIx + tempC2SyncSecondsLapDistCalc).getFieldFloatValue(REC_DIST);

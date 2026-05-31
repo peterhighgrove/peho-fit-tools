@@ -7,9 +7,9 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.mergeanalyze.Main",
       "projectName": "fit-wkt-merge-analyze",
-      "args": "\"Friskis Orminge\" 2 \"2026-05-14-10-22-20-SkiErg-4-3×3-4×2-5×1min-0km-50.58min-garmin-e2pro-v26.09-renamed.zip\" \"2026-05-14-10-22-20-indoor_skiing-10.1km-51.02min-c2-org.fit\""
+      //"args": "\"Friskis Orminge\" 6 \"2026-05-14-10-22-20-SkiErg-4-3×3-4×2-5×1min-0km-50.58min-garmin-e2pro-v26.09-renamed.zip\" \"2026-05-14-10-22-20-indoor_skiing-10.1km-51.02min-c2-org.fit\""
       //"args": "\"Friskis Orminge\" 2 \"2026-05-14-10-16-40-SkiErg-TestRow Custom Workout-0km-4.46min-garmin-e2pro-v26.09-renamed.zip\" \"2026-05-14-10-16-40-indoor_skiing-1km-4.57min-c2-org.fit\""
-      //"args": "\"Friskis Orminge\" 2 \"2026-05-14-10-13-23-SkiErg-0km-2.08min-garmin-e2pro-v26.09-renamed.zip\" \"2026-05-14-10-13-23-indoor_skiing-0.3km-2.12min-c2-org.fit\""
+      "args": "\"Friskis Orminge\" 6 \"2026-05-27-18-42-48-SkiErg-3x(3-2-1+1)min-0km-24.11min-garmin-e2pro-v26.09-renamed.zip\" \"2026-05-27-18-42-48-indoor_skiing-4.7km-24.16min-c2-org.fit\""
       //"args": "\"Friskis Orminge\""
     },
     {
@@ -18,7 +18,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"Friskis Orminge\" 17 \"2026-05-14-10-15-23-SkiErg-0.3km-2.08min-Friskis Orminge-garmin-e2pro-v26.09-merged2min.fit\""
+      "args": "\"Kummelnäsvägen-Pråmhällorna\" 3 \"2026-05-31-16-28-39-Trail Run-8.3km-55.00min-garmin-e2pro-v26.09-renamed.zip\""
     },
     {
       "type": "java",
@@ -27,9 +27,9 @@
       "mainClass": "se.peho.fittools.fitZipRenamer.Main",
       "projectName": "fit-zip-renamer",
       //"args": "fit \"C:\\Users\\peter\\Andersborg+ ToReDrive\\Dokument Peter OneDrive\\Träning\\ActivityFiles\\Peter activities\" \"2026-01-03-13-06-42-SkiErg-bike 3x(3-2-1min) 10.0km Friskis Orminge-c2\""
-      //"args": "zipfit \"C:\\Users\\peter\\Downloads\" \"2025-10-03-Cassis_East\""
-      //"args": "zip \"C:\\Users\\peter\\Downloads\""
-      "args": "zip \"C:\\Users\\peter\\Downloads\" \"2026-01-11-13-25-50-SkiErg-4x(2-1min)-21.04min-0km-garmin-e2pro-v25.08-renamed\""
+      //"args": "zipfit \"/home/hoglund/Downloads\" \"2025-10-03-Cassis_East\""
+      "args": "zip \"/home/hoglund/Downloads\""
+      //"args": "fit \"/home/hoglund/Downloads\" \"2026-05-27-18-48-48-SkiErg-3x(3-2-1+1)min-Friskis Orminge-4.7km-24.11min-garmin-e2pro-v26.09-merged6min.fit\""
     },
     {
       "type": "java",

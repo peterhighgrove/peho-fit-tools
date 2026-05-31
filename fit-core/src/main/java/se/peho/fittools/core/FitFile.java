@@ -1,7 +1,7 @@
 package  se.peho.fittools.core;
 import com.garmin.fit.*;
 
-import se.peho.fittools.core.strings.Hmmss;
+import se.peho.fittools.core.strings.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -192,6 +192,7 @@ public class FitFile {
     List<Mesg> allMesg = new ArrayList<>();
     List<Mesg> fileIdMesg = new ArrayList<>();
     List<Mesg> deviceInfoMesg = new ArrayList<>();
+    List<Mesg> sportMesg = new ArrayList<>();
     List<Mesg> wktSessionMesg = new ArrayList<>();
     List<Mesg> wktStepMesg = new ArrayList<>();
     List<Mesg> wktRecordMesg = new ArrayList<>();
@@ -260,6 +261,10 @@ public class FitFile {
     public Long getActivityDateTimeLocalOrg() { return activityDateTimeLocalOrg; }
     public void setActivityDateTimeLocalOrg(Long activityDateTimeLocalOrg) { this.activityDateTimeLocalOrg = activityDateTimeLocalOrg; }
 
+    private String activityNameSuffix;
+    public String getActivityNameSuffix() { return activityNameSuffix; }
+    public void setActivityNameSuffix(String activityNameSuffix) { this.activityNameSuffix = activityNameSuffix; }
+
     public Long getDiffMinutesLocalUTC() { return diffMinutesLocalUTC; }
     public void setDiffMinutesLocalUTC(Long diffMinutesLocalUTC) { this.diffMinutesLocalUTC = diffMinutesLocalUTC; }
 
@@ -296,8 +301,13 @@ public class FitFile {
     public SubSport getSubsport() { return subsport; }
     public void setSubsport(SubSport subsport) { this.subsport = subsport; }
 
-    public String getSportProfile() { return sportProfile; }
-    public void setSportProfile(String sportProfile) { this.sportProfile = sportProfile; }
+    public String getSportProfile() { 
+        return this.sessionMesg.get(0).getFieldStringValue(SES_PROFILE); 
+    }
+    public void setSportProfile(String sportProfile) { 
+        this.sportProfile = sportProfile; 
+        this.sessionMesg.get(0).setFieldValue(SES_PROFILE, sportProfile);
+    }
 
     public Float getTotalTimerTime() { return totalTimerTime; }
     public void setTotalTimerTime(Float totalTimerTime) { this.totalTimerTime = totalTimerTime; }
@@ -2495,6 +2505,12 @@ public class FitFile {
         this.totalDistance += fileToAdd.totalDistance;
 
         if (!sessionMesg.isEmpty()) {
+            appendTempUpdateLoggLn("Updating/resetting Profilename to Sport Profile: " 
+                + sessionMesg.get(0).getFieldStringValue(SES_PROFILE) + " -> "
+                + sportMesg.get(0).getFieldStringValue(SP_NAME));
+
+            setSportProfile(sportMesg.get(0).getFieldStringValue(SP_NAME));
+
             appendTempUpdateLoggLn("Updating session and activity messages with new totals");
             appendTempUpdateLoggLn("TotalTimerTime:" + PehoUtils.sec2minSecLong(totalTimerTime));
             appendTempUpdateLoggLn("TotalDistance:" + totalDistance);
@@ -2729,7 +2745,6 @@ public class FitFile {
         // Updating ACTIVITY DATA
         //----------------------
         activityMesg.get(0).setFieldValue(ACT_TIMER, getTotalTimerTime());
-        setActivityDateTimeUTC(getActivityDateTimeUTC() - timeToIncrease);
         setActivityDateTimeLocal(getActivityDateTimeLocal() - timeToIncrease);
         activityMesg.get(0).setFieldValue(ACT_TIME, getActivityDateTimeUTC());
         activityMesg.get(0).setFieldValue(ACT_LOCTIME, getActivityDateTimeLocal());
@@ -3366,6 +3381,9 @@ public class FitFile {
                         case MesgNum.DEVICE_INFO:
                             deviceInfoMesg.add(mesg);
                             break;
+                        case MesgNum.SPORT:
+                            sportMesg.add(mesg);
+                            break;
                         case MesgNum.ACTIVITY:
                             activityMesg.add(mesg);
                             break;
@@ -3411,7 +3429,8 @@ public class FitFile {
             }
 
             if (fileIdMesg.get(0).getFieldIntegerValue(FID_MANU) != null) {
-                setManufacturer(Manufacturer.getStringFromValue(fileIdMesg.get(0).getFieldIntegerValue(FID_MANU)));
+                setManufacturerNo(fileIdMesg.get(0).getFieldIntegerValue(FID_MANU));
+                setManufacturer(Manufacturer.getStringFromValue(getManufacturerNo()));
                 if ("GARMIN".equals(getManufacturer())) {
                     if (fileIdMesg.get(0).getFieldIntegerValue(FID_MANU) != null) {
                         setProductNo(fileIdMesg.get(0).getFieldIntegerValue(FID_PROD));
@@ -3449,7 +3468,7 @@ public class FitFile {
             if (sessionMesg.get(0).getFieldStringValue(SES_PROFILE) == null) {
                 sessionMesg.get(0).setFieldValue(SES_PROFILE, "noProfile");
             } else {
-                setSportProfile(sessionMesg.get(0).getFieldStringValue(SES_PROFILE));
+                setSportProfile(sessionMesg.get(0).getFieldStringValue(SES_PROFILE).trim());
             }
             if (sessionMesg.get(0).getFieldFloatValue(SES_TIMER) != null) {
                 setTotalTimerTime(sessionMesg.get(0).getFieldFloatValue(SES_TIMER));
@@ -5119,28 +5138,70 @@ public class FitFile {
 
         boolean encodeWorkoutRecords = true;
         String outputFilePath = "";
-        
-        //renameDevFieldName();
-        
-        String orgDateTime = FitDateTime.toString(activityDateTimeLocalOrg);
-        String newDateTime = FitDateTime.toString(activityDateTimeLocal);
 
-        String outputFilenameBase = "";
+        setActivityNameSuffix(conf.getProfileNameSuffix());
+
+        System.out.println("Profile from beginning: '" + sportProfile + "'");
+
+        // CREATE OUTPUT FILENAME BASE W/O DATETIME
+        String watchFilenameBaseStr = new MergedFileBaseStr(
+            new ProfileStr(getSportProfile(), 
+                getSport(), 
+                getSubsport()
+                ).get(),
+            new WorkoutStr(getWktName()).get(),
+            new DistStr(getTotalDistance()).get(),
+            new TimeStr(getTotalTimerTime()).get(),
+            new ProductStr(getManufacturerNo(), 
+                getProductNo(), 
+                getSwVer()
+                ).get(),
+            getActivityNameSuffix()
+            ).get();
+
+            // CREATE OUTPUT FILENAME BASE WITH DATETIME
+            String watchFilenameWithOrgTime = ""
+                + new DTstr(getActivityDateTimeLocalOrg()).get()
+                + (watchFilenameBaseStr != null && !watchFilenameBaseStr.isEmpty() ? "-" + watchFilenameBaseStr : "")
+                ;
+
+            String watchFilePathWithOrgTime = ""
+                + conf.getFilePathPrefix() 
+                + new SanitizedFilename(watchFilenameWithOrgTime).get();
+
+            String watchFilenameWithNewTime = ""
+                + new DTstr(getActivityDateTimeLocal()).get()
+                + (watchFilenameBaseStr != null && !watchFilenameBaseStr.isEmpty() ? "-" + watchFilenameBaseStr : "")
+                ;
+            String watchFilePathWithNewTime = conf.getFilePathPrefix() 
+                + new SanitizedFilename(watchFilenameWithNewTime).get();
+                
+            System.out.println("---> Output watch filename base org time: " + watchFilePathWithOrgTime);
+
+        String newActivityName = new MergedProfileStr(
+            new ProfileStr(getSportProfile(), 
+                getSport(), 
+                getSubsport()
+                ).get(),
+            new WorkoutStr(getWktName()).get(),
+            new DistStr(getTotalDistance()).get(),
+            getActivityNameSuffix()
+            ).get();
+
+        setSportProfile(newActivityName);
 
         saveFileInfoAfter();
 
-        outputFilenameBase = getFilenameAndSetNewSportProfileName(conf.getProfileNameSuffix(), outputFilePath);
-        //outputFilePath = conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (changedStartTimeBySec/60) + "min.fit";
-        outputFilePath = conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-mergedJava" + (conf.getTimeOffsetSec()/60) + "min.fit";
+        outputFilePath = watchFilePathWithNewTime + "-fixed" + (conf.getTimeOffsetSec()/60) + "min.fit";
         
         encodeNewFit(outputFilePath, encodeWorkoutRecords);
         
-        PehoUtils.renameFile(conf.getInputFilePath(), conf.getFilePathPrefix() + orgDateTime + outputFilenameBase + "-watch.fit");
+        PehoUtils.renameFile(conf.getInputFilePath(), watchFilePathWithOrgTime + "-org.fit");
         
         //createFileSummary();
 
         try {
-            FileWriter myWriter = new FileWriter(conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-before.txt");
+            FileWriter myWriter = new FileWriter(watchFilePathWithNewTime + "-before.txt");
             myWriter.write(savedFileInfoBefore);
             myWriter.close();
         } catch (IOException e) {
@@ -5148,15 +5209,15 @@ public class FitFile {
             e.printStackTrace();
         }
         try {
-            FileWriter myWriter = new FileWriter(conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-log.txt");
-            myWriter.write(updateLogg);
+            FileWriter myWriter = new FileWriter(watchFilePathWithNewTime + "-log.txt");
+            myWriter.write(getUpdateLogg());
             myWriter.close();
         } catch (IOException e) {
             System.out.println("An error occurred saving log file.");
             e.printStackTrace();
         }
         try {
-            FileWriter myWriter = new FileWriter(conf.getFilePathPrefix() + newDateTime + outputFilenameBase + "-after.txt");
+            FileWriter myWriter = new FileWriter(watchFilePathWithNewTime + "-after.txt");
             myWriter.write(savedFileInfoAfter);
             myWriter.write(savedStrLapsActiveInfoShort);
             myWriter.write(savedStrLapsRestInfoShort);
@@ -5165,7 +5226,7 @@ public class FitFile {
             System.out.println("An error occurred saving after file.");
             e.printStackTrace();
         }
-
+        
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

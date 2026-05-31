@@ -207,7 +207,7 @@ EOF
     local new_fit
     local new_after
     local new_log
-    new_fit="$(find "$run_dir" -maxdepth 1 -type f -name '*-mergedJava*min.fit' | sort | tail -n 1)"
+    new_fit="$(find "$run_dir" -maxdepth 1 -type f -name '*-*min.fit' | sort | tail -n 1)"
     new_after="$(find "$run_dir" -maxdepth 1 -type f -name '*-after.txt' ! -name 'master-after.txt' | sort | tail -n 1)"
     new_log="$(find "$run_dir" -maxdepth 1 -type f -name '*-log.txt' ! -name 'master-log.txt' | sort | tail -n 1)"
 

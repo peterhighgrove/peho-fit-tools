@@ -144,7 +144,7 @@ public class Conf {
                 System.out.println("+++++++++++++++++++++++++++++++++++");
                 String defaultPath = PehoUtils.resolveDownloadsFolder();
                 System.out.println("filePathPrefix: "    + defaultPath + File.separator + "  (Downloads if exists, else current path)");
-                System.out.println("profileNameSuffix: " + "gym jobbet");
+                System.out.println("profileNameSuffix: " + "Friskis Orminge");
                 System.out.println("timeOffsetSec: "     + "120 sec (2 minutes)");
                 System.out.println("inputFilePath: "     + "aaa.zip / aaa.fit (searched in current path)");
                 System.out.println("extraFilename: "     + "bbb.zip / bbb.fit / bbb.txt (searched in current path)");
@@ -292,7 +292,7 @@ public class Conf {
         System.out.println();
         System.out.println("Usage: <program> <profileNameSuffix> [timeOffsetMin] [inputFile] [extraFile] [command [commandArgs...]]");
         System.out.println();
-        System.out.println("  profileNameSuffix  Profile name suffix string (default: \"gym jobbet\").");
+        System.out.println("  profileNameSuffix  Profile name suffix string (default: \"Friskis Orminge\").");
         System.out.println("  timeOffsetMin      Time offset in whole minutes (default: 2).");
         System.out.println("  inputFile          Path to the primary input file (e.g. aaa.zip or aaa.fit).");
         System.out.println("                     Falls back to aaa.zip / aaa.fit in the working directory.");

@@ -7,7 +7,7 @@ public class ProfileStr {
     private String name = null;
 
     public ProfileStr(String profileName, Sport sport, SubSport subSport) {
-        if (profileName != null && !profileName.isEmpty()) {
+        if (profileName != null && !profileName.isEmpty() && !profileName.equals("noProfile")) {
             this.name = profileName
                 .replace(",", ".")
                 .replace("FTMS", "")
