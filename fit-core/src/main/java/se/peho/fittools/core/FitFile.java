@@ -2991,10 +2991,10 @@ public class FitFile {
         int mesgIx = 0;
         int eventCounter = 0;
         List<Integer> mesgToDelete = new ArrayList<>();
-        String tempLog = "START - Deleting events" + System.lineSeparator() + "------------------------------" + System.lineSeparator() +
-                         "Input values to delete events between " + FitDateTime.toString(new DateTime(eventTimeStartToDelete),diffMinutesLocalUTC) + " and " + FitDateTime.toString(new DateTime(eventTimeStopToDelete),diffMinutesLocalUTC) + System.lineSeparator() +
-                         "Event to delete: " + eventToDelete + System.lineSeparator() +
-                         "Event type to delete: " + eventTypeToDelete + System.lineSeparator();
+        appendTempUpdateLoggLn("START - Deleting events" + System.lineSeparator() + "------------------------------");
+        appendTempUpdateLoggLn("Input values to delete events between " + FitDateTime.toString(new DateTime(eventTimeStartToDelete),diffMinutesLocalUTC) + " and " + FitDateTime.toString(new DateTime(eventTimeStopToDelete),diffMinutesLocalUTC));
+        appendTempUpdateLoggLn("Event to delete: " + (eventToDelete.equals(Event.INVALID) ? "ALL" : eventToDelete));
+        appendTempUpdateLoggLn("Event type to delete: " + (eventTypeToDelete.equals(EventType.INVALID) ? "ALL" : eventTypeToDelete));
 
 
         for (Mesg mesg:allMesg) {
@@ -3014,26 +3014,24 @@ public class FitFile {
                 if (eventTime >= eventTimeStartToDelete && eventTime <= eventTimeStopToDelete) {
 
                     // Find matching event
-                        if (mesgEvent.equals(eventToDelete)) {
+                    if (mesgEvent.equals(eventToDelete) || (eventToDelete.equals(Event.INVALID) && !mesgEvent.equals(Event.TIMER))) {
 
                         // If event is a TIMER event
                         if (eventTypeToDelete.equals(EventType.INVALID)) {
                             mesgToDelete.add(mesgIx);
-                                tempLog += "Found matching EVENT to delete in allMesg: " + 
+                                appendTempUpdateLoggLn("Found matching EVENT to delete in allMesg: " + 
                                     Event.getByValue(mesg.getFieldShortValue(EVE_EVENT)) + 
                                     EventType.getByValue(mesg.getFieldShortValue(EVE_TYPE)) + 
-                                    " @ix:" + mesgIx +
-                                    System.lineSeparator();
+                                    " @ix:" + mesgIx);
 
                         // If event is not a TIMER event
                         } else {
                             if (mesgEventType.equals(eventTypeToDelete)) {
                                 mesgToDelete.add(mesgIx);
-                                tempLog += "Found matching EVENT and eventTYPE to delete in allMesg: " + 
+                                appendTempUpdateLoggLn("Found matching EVENT and eventTYPE to delete in allMesg: " + 
                                     Event.getByValue(mesg.getFieldShortValue(EVE_EVENT)) + 
                                     EventType.getByValue(mesg.getFieldShortValue(EVE_TYPE)) + 
-                                    " @ix:" + mesgIx +
-                                    System.lineSeparator();
+                                    " @ix:" + mesgIx);
                             }
                         }
                     }
@@ -3050,10 +3048,7 @@ public class FitFile {
 
         // Update event message list and event timer message list
         reCreateEventMesg();
-
-        updateLogg += tempLog;
-        System.out.println(tempLog);
-    }
+        }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void reCreateEventMesg() {
 

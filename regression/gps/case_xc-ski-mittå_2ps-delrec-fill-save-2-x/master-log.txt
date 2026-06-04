@@ -1,5 +1,5 @@
 
-PAUSE - SHORTEN, forgot to resume timer after pause
+PAUSE - SHORTEN@end, forgot to resume timer after pause
 --------------------------------------------
 Shortened pause no: 6
 -- Pause decreased from 130sec to 7sec
@@ -9,8 +9,14 @@ Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
 Increasing SESSION_DIST from 18870.26m to 19113.092m
 Increasing SESSION_SPEED from 3.358m/s / 4:58min/km to 3.4008648m/s / 4:54min/km
 Increasing SESSION_SPEED from 3.4008648m/s / 4:54min/km to 3.3280282m/s / 5:00min/km
+START - Deleting events
+------------------------------
+Input values to delete events between 2026-03-08-15-09-53 and 2026-03-08-15-11-56
+Event to delete: ALL
+Event type to delete: ALL
+Found matching EVENT to delete in allMesg: RECOVERY_HRMARKER @ix:4567
 
-PAUSE - SHORTEN, forgot to resume timer after pause
+PAUSE - SHORTEN@end, forgot to resume timer after pause
 --------------------------------------------
 Shortened pause no: 15
 -- Pause decreased from 289sec to 220sec
@@ -20,6 +26,11 @@ Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
 Increasing SESSION_DIST from 19113.092m to 19562.762m
 Increasing SESSION_SPEED from 3.3280282m/s / 5:00min/km to 3.406326m/s / 4:54min/km
 Increasing SESSION_SPEED from 3.406326m/s / 4:54min/km to 3.3658867m/s / 4:57min/km
+START - Deleting events
+------------------------------
+Input values to delete events between 2026-03-08-15-52-24 and 2026-03-08-15-53-33
+Event to delete: ALL
+Event type to delete: ALL
 -------------------------
 Deleting records to create a GAP
 -------------------------
@@ -30,7 +41,7 @@ Increasing SESSION_SPEED from 3.3658867m/s / 4:57min/km to 3.3652992m/s / 4:57mi
 ===> Input values: 31:53 min, 33:32 min
 ===> Adjusted record distances from ix 1900 with diff -3.41m
 ===> RecordMesgIx to delete from-to: 1801 - 1900
-===> AllMesgIx to delete from: 7001 and number of records: 100
+===> AllMesgIx to delete from: 7000 and number of records: 100
 ===> Deleting records to create gap of 1:42 min, from 31:53 min into the activity
 ===> Deleting records from 2026-03-08-14-25-56 to 2026-03-08-14-27-35
 Filling gaps with 1sec records

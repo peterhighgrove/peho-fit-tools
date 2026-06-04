@@ -2,8 +2,9 @@ START - Deleting events
 ------------------------------
 Input values to delete events between 2025-10-02-13-50-58 and 2025-10-02-13-56-24
 Event to delete: TIMER
-Event type to delete: INVALID
+Event type to delete: ALL
 Found matching EVENT to delete in allMesg: TIMERSTART @ix:19023
+==>> Deleted Timer events between 2025-10-02-13-50-58 and 2025-10-02-13-56-24 (inclusive).
 -------------------------
 Creating timer events in GAP to create a PAUSE
 For GAP no: 1
@@ -34,7 +35,7 @@ Increasing SESSION_SPEED from 1.597m/s / 10:26min/km to 1.5969563m/s / 10:26min/
 Decreasing LAP_TIMER for lap 5 from 585.585 to 259.58502s
 Decreasing SESSION_TIMER from 9530.912 to 9204.912s
 
-PAUSE - SHORTEN, forgot to resume timer after pause
+PAUSE - SHORTEN@end, forgot to resume timer after pause
 --------------------------------------------
 Shortened pause no: 30
 -- Pause decreased from 326sec to 300sec
@@ -44,5 +45,10 @@ Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
 Increasing SESSION_DIST from 15220.45m to 15294.356m
 Increasing SESSION_SPEED from 1.5969563m/s / 10:26min/km to 1.6615429m/s / 10:02min/km
 Increasing SESSION_SPEED from 1.6615429m/s / 10:02min/km to 1.656863m/s / 10:04min/km
+START - Deleting events
+------------------------------
+Input values to delete events between 2025-10-02-13-55-58 and 2025-10-02-13-56-24
+Event to delete: ALL
+Event type to delete: ALL
 Filling gaps with 1sec records
 -- GapNo: 1, dist: 73.91016m, time: 26sec, @Dist: 5208.94-5282.85m, time: 2025-10-02-13-55-58

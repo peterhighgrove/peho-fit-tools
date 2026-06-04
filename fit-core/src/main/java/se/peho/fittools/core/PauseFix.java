@@ -15,11 +15,15 @@ public class PauseFix {
     }
 
     public void pauseShorten(int pauseNo, Long newPauseTime) {
+        // SHORTEN a PAUSE@end when forgot to resume the timer.
 
         FitFile.PauseMesg pauseToShorten = fitFile.getPauseList().get(pauseNo-1);
 
+        // <- activity start -|-- startPause       --|--              (org)stopPause->stopGap --|-- activity stop ->
+        // <- activity start -|-- startPause -newPauseTime- (new)stopPause/startGap - stopGap --|-- activity stop ->
         Mesg startPauseRecord = fitFile.getRecordMesg().get(pauseToShorten.getIxStart());
-        Mesg stopGapRecord = fitFile.getRecordMesg().get(pauseToShorten.getIxStop()); // Org PAUSE STOP = New GAP STOP
+        // Org PAUSE STOP = New GAP STOP
+        Mesg stopGapRecord = fitFile.getRecordMesg().get(pauseToShorten.getIxStop()); 
 
         Long startPauseTime = startPauseRecord.getFieldLongValue(FitFile.REC_TIME);
         Float startPauseDist = startPauseRecord.getFieldFloatValue(FitFile.REC_DIST);
@@ -47,7 +51,7 @@ public class PauseFix {
 
         fitFile.clearTempUpdateLogg();
         fitFile.appendTempUpdateLoggLn("");
-        fitFile.appendTempUpdateLoggLn("PAUSE - SHORTEN, forgot to resume timer after pause");
+        fitFile.appendTempUpdateLoggLn("PAUSE - SHORTEN@end, forgot to resume timer after pause");
         fitFile.appendTempUpdateLoggLn("--------------------------------------------");
         fitFile.appendTempUpdateLoggLn("Shortened pause no: " + pauseNo);
         fitFile.appendTempUpdateLoggLn("-- Pause decreased from " + pauseToShorten.getTimePause() + "sec to " + newPauseTime + "sec");
@@ -109,6 +113,9 @@ public class PauseFix {
             + " / " + PehoUtils.mps2minpkm(oldAvgSpeed) + "min/km");
         fitFile.appendTempUpdateLoggLn(" to " + fitFile.getAvgSpeed() + "m/s" 
             + " / " + PehoUtils.mps2minpkm(fitFile.getAvgSpeed()) + "min/km");
+
+        // Delete all events in new gap because those event time will be out of order after shortening the pause, and can cause issues in Garmin Connect when uploading the file.
+        fitFile.deleteEvents(startGapTime, stopGapTime, Event.INVALID, EventType.INVALID);
 
         System.out.println(fitFile.getTempUpdateLogg());
         fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());

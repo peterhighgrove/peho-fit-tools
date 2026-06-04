@@ -23,6 +23,8 @@ public class GapTimerDelCommand implements Command {
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
         while (true) {
+            watchFitFile.clearTempUpdateLogg();
+
             Integer gapNo = InputHelper.askForNumber("Enter GAP number to DELETE Timer events in and crash/reboot issues", sc);
             if (gapNo == null) return;
 
@@ -34,7 +36,10 @@ public class GapTimerDelCommand implements Command {
             Long gapStop = watchFitFile.getGapList().get(gapNo - 1).getTimeStop();
 
             watchFitFile.deleteEvents(gapStart, gapStop, Event.TIMER, EventType.INVALID);
-            System.out.println("==>> Deleted Timer events between " + FitDateTime.toString(gapStart, watchFitFile.getDiffMinutesLocalUTC()) + " and " + FitDateTime.toString(gapStop, watchFitFile.getDiffMinutesLocalUTC()) + " (inclusive).");
+            watchFitFile.appendTempUpdateLoggLn("==>> Deleted Timer events between " + FitDateTime.toString(gapStart, watchFitFile.getDiffMinutesLocalUTC()) + " and " + FitDateTime.toString(gapStop, watchFitFile.getDiffMinutesLocalUTC()) + " (inclusive).");
+
+            System.out.println(watchFitFile.getTempUpdateLogg());
+            watchFitFile.appendUpdateLogg(watchFitFile.getTempUpdateLogg());
 
             watchFitFile.createTimerList();
             watchFitFile.createPauseList();

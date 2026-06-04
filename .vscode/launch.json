@@ -18,7 +18,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"Kummelnäsvägen-Pråmhällorna\" 3 \"2026-05-31-16-28-39-Trail Run-8.3km-55.00min-garmin-e2pro-v26.09-renamed.zip\""
+      "args": "\"TEST\" 3 \"input.zip\""
     },
     {
       "type": "java",
