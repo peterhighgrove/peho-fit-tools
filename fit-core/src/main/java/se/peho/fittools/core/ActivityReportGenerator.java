@@ -1,5 +1,7 @@
 package se.peho.fittools.core;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,18 +21,30 @@ public class ActivityReportGenerator {
 
     public void printFileStructure() {
         List<String> summaryLines = buildFileStructureSummary();
+        List<String> outputLines = new ArrayList<>();
 
-        System.out.println();
-        System.out.println("================================================");
-        printMesgTypeSummary();
-        System.out.println("================================================");
-        System.out.println("ACTIVITY FILE STRUCTURE");
-        System.out.println("------------------------------------------------");
-        for (String line : summaryLines) {
+        outputLines.add("");
+        outputLines.add("================================================");
+        outputLines.addAll(buildMesgTypeSummaryLines());
+        outputLines.add("================================================");
+        outputLines.add("ACTIVITY FILE STRUCTURE");
+        outputLines.add("------------------------------------------------");
+        outputLines.addAll(summaryLines);
+        outputLines.add("------------------------------------------------");
+        outputLines.add("Total mesg: " + fitFile.getAllMesg().size());
+
+        for (String line : outputLines) {
             System.out.println(line);
         }
-        System.out.println("------------------------------------------------");
-        System.out.println("Total mesg: " + fitFile.getAllMesg().size());
+
+        try (FileWriter myWriter = new FileWriter("activity-file-structure.txt")) {
+            for (String line : outputLines) {
+                myWriter.write(line);
+                myWriter.write(System.lineSeparator());
+            }
+        } catch (IOException e) {
+            System.out.println("Could not write activity-file-structure.txt");
+        }
     }
 
     List<String> buildFileStructureSummary() {
@@ -199,17 +213,19 @@ public class ActivityReportGenerator {
         return count;
     }
 
-    private void printMesgTypeSummary() {
+    private List<String> buildMesgTypeSummaryLines() {
+        List<String> lines = new ArrayList<>();
         Map<Integer, Integer> counts = new TreeMap<>();
         for (Mesg mesg : fitFile.getAllMesg()) {
             int num = mesg.getNum();
             counts.put(num, counts.getOrDefault(num, 0) + 1);
         }
-        System.out.println("MESG TYPE COUNTS");
-        System.out.println("------------------------------------------------");
+        lines.add("MESG TYPE COUNTS");
+        lines.add("------------------------------------------------");
         for (Map.Entry<Integer, Integer> entry : counts.entrySet()) {
-            System.out.println(String.format("  %-30s %d", formatMesgName(entry.getKey()), entry.getValue()));
+            lines.add(String.format("  %-30s %d", formatMesgName(entry.getKey()), entry.getValue()));
         }
+        return lines;
     }
 
     private String formatRepeatedPatternEntry(

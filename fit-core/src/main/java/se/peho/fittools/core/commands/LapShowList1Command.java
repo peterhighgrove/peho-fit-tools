@@ -10,7 +10,7 @@ public class LapShowList1Command implements Command {
     public String getKey() { return "lap1"; }
 
     @Override
-    public String getDescription() { return "Show LAP list, LapRecords0"; }
+    public String getDescription() { return "Show LAP list, LapReport1"; }
 
     @Override
     public String getCategory() { return "Laps"; }
@@ -18,6 +18,7 @@ public class LapShowList1Command implements Command {
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
 
-        watchFitFile.getLapReportGenerator().printLapRecords0();
+        watchFitFile.getLapReportGenerator().printLapReport1();
+        watchFitFile.getLapReportGenerator().printLapReport1AllMesg();
     }
 }

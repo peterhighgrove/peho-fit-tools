@@ -49,7 +49,7 @@ public class Main {
         if (conf.isDebugDevFields()) watchFitFile.printDevDataId();
         if (conf.isDebugDevFields()) watchFitFile.printFieldDescr();
         //watchFitFile.printCourse();
-        if (conf.isDebugLaps()) watchFitFile.getLapReportGenerator().printLapRecords0();
+        if (conf.isDebugLaps()) watchFitFile.getLapReportGenerator().printLapReport1();
         //watchFitFile.printSecRecords0();
         //watchFitFile.printSecRecords();
         if (conf.isDebugLaps()) watchFitFile.debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
@@ -126,7 +126,7 @@ public class Main {
                     
                     c2FitFile.createFileSummaryIndoor();
                     
-                    if (conf.isDebugLaps()) c2FitFile.getLapReportGenerator().printLapRecords0();
+                    if (conf.isDebugLaps()) c2FitFile.getLapReportGenerator().printLapReport1();
                     //c2FitFile.printSecRecords0();
 
                     //watchFitFile.addDevFieldDescr();

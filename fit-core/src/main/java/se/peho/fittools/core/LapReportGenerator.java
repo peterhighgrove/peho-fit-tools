@@ -2,6 +2,7 @@ package se.peho.fittools.core;
 
 import com.garmin.fit.Intensity;
 import com.garmin.fit.Mesg;
+import com.garmin.fit.MesgNum;
 import com.garmin.fit.FitRuntimeException;
 
 public class LapReportGenerator {
@@ -11,7 +12,7 @@ public class LapReportGenerator {
         this.fitFile = fitFile;
     }
 
-    public void printLapRecords0() {
+    public void printLapReport1() {
         try {
             System.out.println();
             System.out.println("===================================================================");
@@ -23,6 +24,80 @@ public class LapReportGenerator {
             System.out.println("--- --- ------ --------  ----- ---- ----- ------ --- --------");
             int lapNo = 1;
             for (Mesg mesg : fitFile.getLapMesg()) {
+                String lapIxStr = "-";
+                Integer lapIx = mesg.getFieldIntegerValue(FitFile.LAP_IX);
+                if (lapIx != null) lapIxStr = String.format("%d", lapIx);
+
+                String startTimeStr = "-";
+                Long startTime = mesg.getFieldLongValue(FitFile.LAP_STIME);
+                if (startTime != null) startTimeStr = FitDateTime.toStringTime(startTime, fitFile.getDiffMinutesLocalUTC());
+
+                String lapTimerStr = "-";
+                if (startTime != null) lapTimerStr = PehoUtils.sec2minSecLong(fitFile.findTimerBasedOnTime(startTime));
+
+                String lapTimeStr = "-";
+                Float totalTimer = mesg.getFieldFloatValue(FitFile.LAP_TIMER);
+                if (totalTimer != null) lapTimeStr = PehoUtils.sec2minSecShort(totalTimer);
+
+                String lapDistStr = "-";
+                Float totalDistance = mesg.getFieldFloatValue(FitFile.LAP_DIST);
+                if (totalDistance != null) lapDistStr = PehoUtils.m2km2(totalDistance);
+
+                String speedKmhStr = "-";
+                String paceStr = "-";
+                Float avgSpeed = mesg.getFieldFloatValue(FitFile.LAP_ESPEED);
+                if (avgSpeed != null) {
+                    speedKmhStr = PehoUtils.mps2kmph1(avgSpeed);
+                    paceStr = PehoUtils.mps2minpkm(avgSpeed);
+                }
+
+                String lapCadStr = "-";
+                Short avgCadence = mesg.getFieldShortValue(FitFile.LAP_CAD);
+                if (avgCadence != null) lapCadStr = String.format("%d", avgCadence);
+
+                String intensityStr = "-";
+                Long intensity = mesg.getFieldLongValue(FitFile.LAP_INTENSITY);
+                if (intensity != null) intensityStr = PehoUtils.getLabel(Intensity.class, intensity);
+
+                System.out.printf("%-3d %-3s %6s %-7s %6s %-4s %-5s %-6s %-3s %-8s%n", lapNo, lapIxStr, lapTimerStr, startTimeStr, lapTimeStr, lapDistStr, speedKmhStr, paceStr, lapCadStr, intensityStr);
+                lapNo++;
+            }
+            Integer sesLaps = null;
+            for (Mesg ses : fitFile.getSessionMesg()) {
+                sesLaps = ses.getFieldIntegerValue(FitFile.SES_LAPS);
+                if (sesLaps != null) break;
+            }
+            System.out.println("-------------------------------------------------------------------");
+            System.out.println("Number of laps: " + fitFile.getNumberOfLaps() + ", Session laps: " + (sesLaps != null ? sesLaps : "-"));
+        }
+        catch (FitRuntimeException e) {
+            System.out.println("LAP ERROR!!!!");
+        }
+    }
+
+    public void printLapReport1AllMesg() {
+        try {
+            Mesg firstLapMesg = null;
+            for (Mesg mesg : fitFile.getAllMesg()) {
+                if (mesg.getNum() == MesgNum.LAP) {
+                    firstLapMesg = mesg;
+                    break;
+                }
+            }
+            if (firstLapMesg == null) throw new FitRuntimeException("No lap message in allMesg");
+
+            System.out.println();
+            System.out.println("===================================================================");
+            System.out.println("LAPS IN FILE (lap1)");
+            System.out.println("Start datetime: " + FitDateTime.toString(firstLapMesg.getFieldLongValue(FitFile.LAP_STIME), fitFile.getDiffMinutesLocalUTC()));
+            System.out.println("-------------------------------------------------------------------");
+            System.out.println("No  Ix   Start           Time  Dist Speed Pace   Cad Intensity");
+            System.out.println("         timer  clock          km   km/h  min/km ");
+            System.out.println("--- --- ------ --------  ----- ---- ----- ------ --- --------");
+            int lapNo = 1;
+            for (Mesg mesg : fitFile.getAllMesg()) {
+                if (mesg.getNum() != MesgNum.LAP) continue;
+
                 String lapIxStr = "-";
                 Integer lapIx = mesg.getFieldIntegerValue(FitFile.LAP_IX);
                 if (lapIx != null) lapIxStr = String.format("%d", lapIx);

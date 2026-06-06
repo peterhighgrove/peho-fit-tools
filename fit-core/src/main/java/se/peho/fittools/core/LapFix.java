@@ -242,34 +242,50 @@ public class LapFix {
         if (fitFile.lapMesg.get(toLap-1).getFieldIntegerValue(FitFile.LAP_SLON) != null) {
             fitFile.lapMesg.get(toLap-1).setFieldValue(FitFile.LAP_SLON, lonStart);
         }
+        fitFile.getLapReportGenerator().printLapReport1();
+        fitFile.getLapReportGenerator().printLapReport1AllMesg();
 
         fitFile.appendTempUpdateLoggLn("Merged laps: " + fromLap + " to " + toLap);
         fitFile.appendTempUpdateLoggLn("-- New lap " + (toLap-1) + " time: " + PehoUtils.sec2minSecLong(timerSumOfLaps) + " min, dist: " + Math.round(distSumOfLaps) + " m");
 
         // Deleting the merged laps (fromLap to toLap-1)
         //-----------------------------------------------
-        for (int lapIxCounter = fromLap-1; lapIxCounter <= toLap-2; lapIxCounter++) {
-            Long lapStartTime = fitFile.lapMesg.get(lapIxCounter).getFieldLongValue(FitFile.LAP_STIME);
-            int mesgIxCounter = 0;
-            for (Mesg mesg:fitFile.allMesg) {
-                if (mesg.getNum() == MesgNum.LAP) {
-                    if (mesg.getFieldLongValue(FitFile.LAP_STIME).equals(lapStartTime)) {
-                        fitFile.appendTempUpdateLoggLn("-- Deleting lap ix:" + lapIxCounter + " time:" + FitDateTime.toString(mesg.getFieldLongValue(FitFile.LAP_STIME),0));
-                        break;
-                    }
-                }
-                mesgIxCounter++;
+        int deleteCount = toLap - fromLap;
+        int targetLapIx = fromLap - 1;
+        for (int deleteCounter = 0; deleteCounter < deleteCount; deleteCounter++) {
+            int lapAllMesgIx = findLapMesgIndexInAllMesgByLapIx(targetLapIx);
+            if (lapAllMesgIx < 0) {
+                fitFile.appendTempUpdateLoggLn("-- Could not find LAP mesg in allMesg for lap ix:" + targetLapIx);
+                continue;
             }
-            fitFile.allMesg.remove(mesgIxCounter);
-            fitFile.lapMesg.remove(fromLap-1);
-        }
 
+            Mesg lapMesgToDelete = fitFile.allMesg.get(lapAllMesgIx);
+            fitFile.appendTempUpdateLoggLn("-- Deleting lap ix:" + targetLapIx + " time:"
+                + FitDateTime.toString(lapMesgToDelete.getFieldLongValue(FitFile.LAP_STIME), fitFile.getDiffMinutesLocalUTC()));
+
+            int timeInZoneIx = findLinkedTimeInZoneMesgIndex(lapAllMesgIx, targetLapIx);
+            if (timeInZoneIx >= 0) {
+                fitFile.appendTempUpdateLoggLn("-- Deleting linked TIME_IN_ZONE mesg for lap ix:" + targetLapIx);
+                int firstRemoveIx = Math.max(lapAllMesgIx, timeInZoneIx);
+                int secondRemoveIx = Math.min(lapAllMesgIx, timeInZoneIx);
+                fitFile.allMesg.remove(firstRemoveIx);
+                fitFile.allMesg.remove(secondRemoveIx);
+            } else {
+                fitFile.appendTempUpdateLoggLn("-- Could not find linked TIME_IN_ZONE mesg for lap ix:" + targetLapIx);
+                fitFile.allMesg.remove(lapAllMesgIx);
+            }
+
+            int lapMesgIx = findLapMesgIndexInLapMesgByLapIx(targetLapIx);
+            if (lapMesgIx >= 0) {
+                fitFile.lapMesg.remove(lapMesgIx);
+            }
+
+            decrementLapReferencesAfterDeletedLap(targetLapIx);
+        }
         fitFile.numberOfLaps -= (toLap - fromLap);
 
-        // Update LAP_IX for remaining laps
-        for (int i = 0; i < fitFile.lapMesg.size(); i++) {
-            fitFile.lapMesg.get(i).setFieldValue(FitFile.LAP_IX, i);
-        }
+        fitFile.getLapReportGenerator().printLapReport1();
+        fitFile.getLapReportGenerator().printLapReport1AllMesg();
 
         // Update SES_LAPS
         if (!fitFile.sessionMesg.isEmpty()) {
@@ -279,5 +295,100 @@ public class LapFix {
         // Print and save logs
         System.out.println(fitFile.getTempUpdateLogg());
         fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
+    }
+
+    private int findLapMesgIndexInAllMesgByLapIx(int lapIx) {
+        for (int i = 0; i < fitFile.allMesg.size(); i++) {
+            Mesg mesg = fitFile.allMesg.get(i);
+            if (mesg.getNum() != MesgNum.LAP) {
+                continue;
+            }
+            Integer currentLapIx = mesg.getFieldIntegerValue(FitFile.LAP_IX);
+            if (currentLapIx != null && currentLapIx.equals(lapIx)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int findLapMesgIndexInLapMesgByLapIx(int lapIx) {
+        for (int i = 0; i < fitFile.lapMesg.size(); i++) {
+            Integer currentLapIx = fitFile.lapMesg.get(i).getFieldIntegerValue(FitFile.LAP_IX);
+            if (currentLapIx != null && currentLapIx.equals(lapIx)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int findLinkedTimeInZoneMesgIndex(int lapAllMesgIx, int lapIx) {
+        int nextIx = lapAllMesgIx + 1;
+        if (nextIx < fitFile.allMesg.size()) {
+            Mesg nextMesg = fitFile.allMesg.get(nextIx);
+            if (isLinkedTimeInZoneMesg(nextMesg, lapIx)) {
+                return nextIx;
+            }
+        }
+
+        for (int i = 0; i < fitFile.allMesg.size(); i++) {
+            if (i == lapAllMesgIx || i == nextIx) {
+                continue;
+            }
+            if (isLinkedTimeInZoneMesg(fitFile.allMesg.get(i), lapIx)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private void decrementLapReferencesAfterDeletedLap(int deletedLapIx) {
+        for (Mesg mesg : fitFile.allMesg) {
+            if (mesg.getNum() == MesgNum.LAP) {
+                Integer lapIx = mesg.getFieldIntegerValue(FitFile.LAP_IX);
+                if (lapIx != null && lapIx > deletedLapIx) {
+                    mesg.setFieldValue(FitFile.LAP_IX, lapIx - 1);
+                }
+                continue;
+            }
+
+            if (mesg.getNum() == MesgNum.TIME_IN_ZONE) {
+                Integer referenceMesg = getMesgFieldAsInt(mesg, FitFile.TIZ_REF_MESG);
+                Integer referenceIndex = getMesgFieldAsInt(mesg, FitFile.TIZ_REF_IX);
+                if (referenceMesg != null
+                    && referenceMesg == MesgNum.LAP
+                    && referenceIndex != null
+                    && referenceIndex > deletedLapIx) {
+                    mesg.setFieldValue(FitFile.TIZ_REF_IX, referenceIndex - 1);
+                }
+            }
+        }
+    }
+
+    private boolean isLinkedTimeInZoneMesg(Mesg mesg, int lapIx) {
+        if (mesg.getNum() != MesgNum.TIME_IN_ZONE) {
+            return false;
+        }
+        Integer referenceMesg = getMesgFieldAsInt(mesg, FitFile.TIZ_REF_MESG);
+        Integer referenceIndex = getMesgFieldAsInt(mesg, FitFile.TIZ_REF_IX);
+        return referenceMesg != null
+            && referenceMesg == MesgNum.LAP
+            && referenceIndex != null
+            && referenceIndex == lapIx;
+    }
+
+    private Integer getMesgFieldAsInt(Mesg mesg, int fieldNum) {
+        Integer intValue = mesg.getFieldIntegerValue(fieldNum);
+        if (intValue != null) {
+            return intValue;
+        }
+        Short shortValue = mesg.getFieldShortValue(fieldNum);
+        if (shortValue != null) {
+            return shortValue.intValue();
+        }
+        Long longValue = mesg.getFieldLongValue(fieldNum);
+        if (longValue != null) {
+            return longValue.intValue();
+        }
+        return null;
     }
 }

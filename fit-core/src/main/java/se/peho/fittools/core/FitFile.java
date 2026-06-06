@@ -138,6 +138,8 @@ public class FitFile {
     public static final int SP_SPORT = SportMesg.SportFieldNum; //short -> .getByValue -> Sport
     public static final int SP_SUBSPORT = SportMesg.SubSportFieldNum;
     public static final int SP_NAME = SportMesg.NameFieldNum; //string
+    public static final int TIZ_REF_MESG = TimeInZoneMesg.ReferenceMesgFieldNum; //int 0
+    public static final int TIZ_REF_IX = TimeInZoneMesg.ReferenceIndexFieldNum; //int 1
 
 
     private Integer manufacturerNo;
@@ -5109,7 +5111,7 @@ public class FitFile {
         printFieldDescr();
         printCourse();
         printSplitSummary();
-        getLapReportGenerator().printLapRecords0();
+        getLapReportGenerator().printLapReport1();
         getLapReportGenerator().printLapAllSummary();
         getLapReportGenerator().printLapLongSummery();
         System.out.print(getLapReportGenerator().createLapSummery());
