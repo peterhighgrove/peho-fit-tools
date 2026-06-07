@@ -17,6 +17,7 @@ import com.garmin.fit.EventType;
 import com.garmin.fit.FileIdMesg;
 import com.garmin.fit.LapMesg;
 import com.garmin.fit.Mesg;
+import com.garmin.fit.GpsMetadataMesg;
 import com.garmin.fit.RecordMesg;
 import com.garmin.fit.TimeInZoneMesg;
 
@@ -118,7 +119,8 @@ public class FitFileCreatePauseListTest {
 
         assertEquals(Arrays.asList(
             "[0] FILE_ID(0)",
-            "[1-2] RECORD(20) x2",
+            "[1] RECORD(20)",
+            "[2] RECORD(20)",
             "[3-5] EVENT(21) x3",
             "[6] LAP(19)",
             "[7] RECORD(20)"
@@ -143,7 +145,80 @@ public class FitFileCreatePauseListTest {
         List<String> summary = generator.buildFileStructureSummary();
 
         assertEquals(Arrays.asList(
-            "[0-4] TIME_IN_ZONE(216), [1-5:0-2] LAP(19) x3"
+            "[0] TIME_IN_ZONE(216)",
+            "[1-3:0-1] LAP(19), [2-4] TIME_IN_ZONE(216) x2",
+            "[5:2] LAP(19)"
+        ), summary);
+    }
+
+    @Test
+    public void activityReportGenerator_groupsMixedPatternRepeatedTwice_whenStarterAllowed() {
+        FitFile fitFile = new FitFile();
+
+        fitFile.getAllMesg().addAll(Arrays.asList(
+            (Mesg) new RecordMesg(),
+            (Mesg) new TimeInZoneMesg(),
+            (Mesg) new GpsMetadataMesg(),
+            (Mesg) new RecordMesg(),
+            (Mesg) new TimeInZoneMesg(),
+            (Mesg) new GpsMetadataMesg()
+        ));
+
+        ActivityReportGenerator generator = new ActivityReportGenerator(fitFile);
+
+        List<String> summary = generator.buildFileStructureSummary();
+
+        assertEquals(Arrays.asList(
+            "[0-3] RECORD(20), [1-4] TIME_IN_ZONE(216), [2-5] GPS_METADATA(160) x2"
+        ), summary);
+    }
+
+    @Test
+    public void activityReportGenerator_groupsAlternatingGpsMetadataAndUnknown233() {
+        FitFile fitFile = new FitFile();
+
+        fitFile.getAllMesg().addAll(Arrays.asList(
+            (Mesg) new GpsMetadataMesg(),
+            new Mesg("unknownx", 233) {},
+            (Mesg) new GpsMetadataMesg(),
+            new Mesg("unknownx", 233) {},
+            (Mesg) new GpsMetadataMesg(),
+            new Mesg("unknownx", 233) {}
+        ));
+
+        ActivityReportGenerator generator = new ActivityReportGenerator(fitFile);
+
+        List<String> summary = generator.buildFileStructureSummary();
+
+        // Pattern starts with 160 (allowed), so group [160, 233] x3
+        assertEquals(Arrays.asList(
+            "[0-4] GPS_METADATA(160), [1-5] unknownx(233) x3"
+        ), summary);
+    }
+
+    @Test
+    public void activityReportGenerator_prefersGpsMetadataFirstWhenPatternStartsWith233() {
+        FitFile fitFile = new FitFile();
+
+        fitFile.getAllMesg().addAll(Arrays.asList(
+            new Mesg("unknownx", 233) {},
+            (Mesg) new GpsMetadataMesg(),
+            new Mesg("unknownx", 233) {},
+            (Mesg) new GpsMetadataMesg(),
+            new Mesg("unknownx", 233) {},
+            (Mesg) new GpsMetadataMesg(),
+            new Mesg("unknownx", 233) {}
+        ));
+
+        ActivityReportGenerator generator = new ActivityReportGenerator(fitFile);
+
+        List<String> summary = generator.buildFileStructureSummary();
+
+        // First 233 doesn't start with 20/160, so shown alone.
+        // Then [160, 233] repeats 3 times starting at index 1
+        assertEquals(Arrays.asList(
+            "[0] unknownx(233)",
+            "[1-5] GPS_METADATA(160), [2-6] unknownx(233) x3"
         ), summary);
     }
 }

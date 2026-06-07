@@ -1,5 +1,6 @@
 Adding activity from another file
 Selected segment in second file: ix 29 to 6391 (6363 messages)
+Adjusted TIME_IN_ZONE reference_index by +18 for 9 message(s).
 Inserted 18 lap-related messages from second file.
 Lap messages inserted at index: 42 to 59.
 Pause between activities: 5:51
@@ -7,7 +8,7 @@ Last STOP_ALL time in first file: 2026-03-09-13-09-01
 First START time in second file: 2026-03-09-13-14-52
 Elevation difference: -92.400024m (last of first file: 886.0m, first of second file: 978.4m)
 
-Filtered selected segment to mesg 20/21/233. Added: 3870, skipped: 2493
+Filtered selected segment to mesg 20/21/233. Added: 6245, skipped: 118
 Updating/resetting Profilename to Sport Profile: XC Classic Ski -> XC Classic Ski
 Updating session and activity messages with new totals
 TotalTimerTime:125:27

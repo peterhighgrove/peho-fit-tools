@@ -30,9 +30,12 @@ public class FitFile {
     public static final int ACT_LOCTIME = ActivityMesg.LocalTimestampFieldNum; //long
     public static final int ACT_TIMER = ActivityMesg.TotalTimerTimeFieldNum; //long
     public static final int DEVID_APPID = DeveloperDataIdMesg.ApplicationIdFieldNum; //enum
-    public static final int WKT_NAME = WorkoutMesg.WktNameFieldNum; //long
+    public static final int WKT_NAME = WorkoutMesg.WktNameFieldNum; //string
     public static final int WKT_SPORT = WorkoutMesg.SportFieldNum; //long
     public static final int WKT_SUBSPORT = WorkoutMesg.SubSportFieldNum; //long
+    public static final int WKT_NUMSTEPS = WorkoutMesg.NumValidStepsFieldNum; //int
+    public static final int WKTST_DURTYPE = WorkoutStepMesg.DurationTypeFieldNum; //short
+    public static final int WKTST_DURVALUE = WorkoutStepMesg.DurationValueFieldNum; //long
     public static final int SES_TIME = SessionMesg.TimestampFieldNum; //long
     public static final int SES_STIME = SessionMesg.StartTimeFieldNum; //long
     public static final int SES_PROFILE = SessionMesg.SportProfileNameFieldNum; //string
@@ -2266,6 +2269,9 @@ public class FitFile {
                 + " (" + (stopIx - startIx + 1) + " messages)");
 
         // Collect lap segment from fileToAdd: LAP messages and TIME_IN_ZONE messages that directly follow them
+        // and shift TIME_IN_ZONE lap references to destination lap index space.
+        int lapIndexOffset = lapMesg.size();
+        int adjustedTizRefCount = 0;
         List<Mesg> lapSegment = new ArrayList<>();
         for (int i = 0; i < fileToAdd.allMesg.size(); i++) {
             Mesg mesg = fileToAdd.allMesg.get(i);
@@ -2273,10 +2279,21 @@ public class FitFile {
                 lapSegment.add(new Mesg(mesg));
                 // Check if the next message is TIME_IN_ZONE (216)
                 if (i + 1 < fileToAdd.allMesg.size() && fileToAdd.allMesg.get(i + 1).getNum() == 216) {
-                    lapSegment.add(new Mesg(fileToAdd.allMesg.get(i + 1)));
+                    Mesg tizMesg = new Mesg(fileToAdd.allMesg.get(i + 1));
+                    Integer tizRefMesg = tizMesg.getFieldIntegerValue(TIZ_REF_MESG);
+                    Integer tizRefIx = tizMesg.getFieldIntegerValue(TIZ_REF_IX);
+                    if (tizRefIx != null && (tizRefMesg == null || tizRefMesg == MesgNum.LAP)) {
+                        tizMesg.setFieldValue(TIZ_REF_IX, tizRefIx + lapIndexOffset);
+                        adjustedTizRefCount++;
+                    }
+                    lapSegment.add(tizMesg);
                     i++; // Skip the TIME_IN_ZONE message in the loop
                 }
             }
+        }
+        if (adjustedTizRefCount > 0) {
+            appendTempUpdateLoggLn("Adjusted TIME_IN_ZONE reference_index by +" + lapIndexOffset
+                    + " for " + adjustedTizRefCount + " message(s).");
         }
 
         Mesg existingWorkoutMesg = null;
@@ -2326,23 +2343,25 @@ public class FitFile {
         if (existingWorkoutMesg == null && addedWorkoutMesg != null) {
             // Keep original WORKOUT message_index as-is (no global 254 rewrite).
         } else if (existingWorkoutMesg != null && addedWorkoutMesg != null) {
-            Integer existingNumValidSteps = existingWorkoutMesg.getFieldIntegerValue(WorkoutMesg.NumValidStepsFieldNum);
+            Integer existingNumValidSteps = existingWorkoutMesg.getFieldIntegerValue(WKT_NUMSTEPS);
             if (existingNumValidSteps == null) {
                 existingNumValidSteps = 0;
             }
-            Integer addedNumValidSteps = addedWorkoutMesg.getFieldIntegerValue(WorkoutMesg.NumValidStepsFieldNum);
+            Integer addedNumValidSteps = addedWorkoutMesg.getFieldIntegerValue(WKT_NUMSTEPS);
             if (addedNumValidSteps == null) {
                 addedNumValidSteps = 0;
             }
-            existingWorkoutMesg.setFieldValue(WorkoutMesg.NumValidStepsFieldNum, existingNumValidSteps + addedNumValidSteps);
+            existingWorkoutMesg.setFieldValue(WKT_NUMSTEPS, existingNumValidSteps + addedNumValidSteps);
 
-            String existingWktName = existingWorkoutMesg.getFieldStringValue(WorkoutMesg.WktNameFieldNum);
-            String addedWktName = addedWorkoutMesg.getFieldStringValue(WorkoutMesg.WktNameFieldNum);
+            String existingWktName = existingWorkoutMesg.getFieldStringValue(WKT_NAME);
+            String addedWktName = addedWorkoutMesg.getFieldStringValue(WKT_NAME);
             if (addedWktName != null && !addedWktName.isBlank()) {
                 if (existingWktName == null || existingWktName.isBlank()) {
-                    existingWorkoutMesg.setFieldValue(WorkoutMesg.WktNameFieldNum, addedWktName);
+                    existingWorkoutMesg.setFieldValue(WKT_NAME, addedWktName);
+                    setWktName(addedWktName);
                 } else if (!existingWktName.contains(addedWktName)) {
-                    existingWorkoutMesg.setFieldValue(WorkoutMesg.WktNameFieldNum, existingWktName + " + " + addedWktName);
+                    existingWorkoutMesg.setFieldValue(WKT_NAME, existingWktName + " + " + addedWktName);
+                    setWktName(existingWktName + " + " + addedWktName);
                 }
             }
             appendTempUpdateLoggLn("Merged WORKOUT(26): num_valid_steps +" + addedNumValidSteps);
@@ -2351,11 +2370,11 @@ public class FitFile {
         boolean hasOriginalWorkoutSteps = existingWorkoutStepsCount > 0;
         for (Mesg stepMesg : addedWorkoutSteps) {
             if (hasOriginalWorkoutSteps) {
-                Short durationType = stepMesg.getFieldShortValue(WorkoutStepMesg.DurationTypeFieldNum);
+                Short durationType = stepMesg.getFieldShortValue(WKTST_DURTYPE);
                 if (durationType != null && durationType == 6 && originalNumValidSteps != null && originalNumValidSteps > 0) {
-                    Long durationValue = stepMesg.getFieldLongValue(WorkoutStepMesg.DurationValueFieldNum);
+                    Long durationValue = stepMesg.getFieldLongValue(WKTST_DURVALUE);
                     if (durationValue != null) {
-                        stepMesg.setFieldValue(WorkoutStepMesg.DurationValueFieldNum, durationValue + originalNumValidSteps.longValue());
+                        stepMesg.setFieldValue(WKTST_DURVALUE, durationValue + originalNumValidSteps.longValue());
                     }
                 }
             }
@@ -2401,7 +2420,7 @@ public class FitFile {
         int lapInsertIndex = 0;
         for (int i = 0; i < allMesg.size(); i++) {
             Mesg mesg = allMesg.get(i);
-            if (mesg.getNum() == MesgNum.LAP || mesg.getNum() == 216) {
+            if (mesg.getNum() == MesgNum.LAP || mesg.getNum() == MesgNum.TIME_IN_ZONE) {
                 lapInsertIndex = i + 1;
             }
         }
@@ -2462,7 +2481,12 @@ public class FitFile {
             Mesg sourceMesg = fileToAdd.allMesg.get(i);
             if (sourceMesg.getNum() != MesgNum.RECORD
                     && sourceMesg.getNum() != MesgNum.EVENT
-                    && sourceMesg.getNum() != 233) {
+                    && sourceMesg.getNum() != MesgNum.GPS_METADATA
+                    && sourceMesg.getNum() != 233 // Undoc mesg
+                    && sourceMesg.getNum() != 325 // Undoc mesg
+                    && sourceMesg.getNum() != 326 // Undoc mesg GPS Event 
+                    && sourceMesg.getNum() != 14  // Undoc mesg Device status w battery level and temp
+                    ) {
                 skippedMesgInSegment++;
                 continue;
             }

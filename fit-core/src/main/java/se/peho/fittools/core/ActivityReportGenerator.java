@@ -3,8 +3,10 @@ package se.peho.fittools.core;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import com.garmin.fit.Event;
@@ -13,6 +15,10 @@ import com.garmin.fit.Mesg;
 import com.garmin.fit.MesgNum;
 
 public class ActivityReportGenerator {
+    private static final int MESG_GPS_METADATA = 160;
+    private static final int MESG_TIME_IN_ZONE = 216;
+    private static final int MESG_UNKNOWN_233 = 233;
+
     private final FitFile fitFile;
 
     public ActivityReportGenerator(FitFile fitFile) {
@@ -64,68 +70,87 @@ public class ActivityReportGenerator {
             List<Integer> pattern = buildRepeatingPattern(allMesg, ix);
             int patternLength = pattern.size();
             int repeatCount = countPatternRepetitions(allMesg, ix, pattern);
-            int nextIx = ix + (patternLength * repeatCount);
+            int totalCount = repeatCount * pattern.size();
+            
+            // Grouping thresholds:
+            // - Same-type runs (pattern size 1): require at least 3 consecutive
+            // - Heterogeneous patterns (pattern size > 1): require at least 2 repeats
+            boolean shouldGroup = pattern.size() == 1 ? repeatCount >= 3 : repeatCount >= 2;
+            if (shouldGroup) {
+                int nextIx = ix + (patternLength * repeatCount);
 
-            // Get message index information from first and last message in group
-            Mesg firstMesg = allMesg.get(patternStart);
-            int lastIx = nextIx - 1;
-            Mesg lastMesg = allMesg.get(lastIx);
-            String indexInfo = formatIndexInfo(
-                patternStart,
-                lastIx,
-                firstMesg.getFieldIntegerValue(254),
-                lastMesg.getFieldIntegerValue(254)
-            );
+                // Get message index information from first and last message in group
+                Mesg firstMesg = allMesg.get(patternStart);
+                int lastIx = nextIx - 1;
+                Mesg lastMesg = allMesg.get(lastIx);
+                String indexInfo = formatIndexInfo(
+                    patternStart,
+                    lastIx,
+                    firstMesg.getFieldIntegerValue(254),
+                    lastMesg.getFieldIntegerValue(254)
+                );
 
-            // Format output line
-            StringBuilder line = new StringBuilder();
-            // Check if all messages in pattern are the same type
-            boolean allSameType = pattern.stream().allMatch(m -> m.equals(pattern.get(0)));
+                // Format output line
+                StringBuilder line = new StringBuilder();
+                // Check if all messages in pattern are the same type
+                boolean allSameType = pattern.stream().allMatch(m -> m.equals(pattern.get(0)));
 
-            if (allSameType) {
-                line.append(indexInfo).append(" ");
-                // Simplify: show as single message type with total count
-                int mesgNum = pattern.get(0);
-                line.append(formatMesgName(mesgNum));
-                
-                // Add EVENT details if this is an EVENT message
-                if (mesgNum == MesgNum.EVENT) {
-                    line.append(getEventDetails(firstMesg));
-                }
-                
-                int totalCount = repeatCount * pattern.size();
-                if (totalCount > 1) {
-                    line.append(" x").append(totalCount);
-                }
-            } else if (pattern.size() == 1) {
-                line.append(indexInfo).append(" ");
-                // Single message type
-                int mesgNum = pattern.get(0);
-                line.append(formatMesgName(mesgNum));
-                
-                // Add EVENT details if this is an EVENT message
-                if (mesgNum == MesgNum.EVENT) {
-                    line.append(getEventDetails(firstMesg));
-                }
-                
-                if (repeatCount > 1) {
-                    line.append(" x").append(repeatCount);
-                }
-            } else {
-                // Multi-message pattern (different types)
-                for (int i = 0; i < pattern.size(); i++) {
-                    if (i > 0) {
-                        line.append(", ");
+                if (allSameType) {
+                    line.append(indexInfo).append(" ");
+                    // Simplify: show as single message type with total count
+                    int mesgNum = pattern.get(0);
+                    line.append(formatMesgName(mesgNum));
+                    
+                    // Add EVENT details if this is an EVENT message
+                    if (mesgNum == MesgNum.EVENT) {
+                        line.append(getEventDetails(firstMesg));
                     }
-                    line.append(formatRepeatedPatternEntry(allMesg, patternStart, patternLength, repeatCount, i, pattern.get(i)));
+                    
+                    if (totalCount > 1) {
+                        line.append(" x").append(totalCount);
+                    }
+                } else if (pattern.size() == 1) {
+                    line.append(indexInfo).append(" ");
+                    // Single message type
+                    int mesgNum = pattern.get(0);
+                    line.append(formatMesgName(mesgNum));
+                    
+                    // Add EVENT details if this is an EVENT message
+                    if (mesgNum == MesgNum.EVENT) {
+                        line.append(getEventDetails(firstMesg));
+                    }
+                    
+                    if (repeatCount > 1) {
+                        line.append(" x").append(repeatCount);
+                    }
+                } else {
+                    // Multi-message pattern (different types)
+                    for (int i = 0; i < pattern.size(); i++) {
+                        if (i > 0) {
+                            line.append(", ");
+                        }
+                        line.append(formatRepeatedPatternEntry(allMesg, patternStart, patternLength, repeatCount, i, pattern.get(i)));
+                    }
+                    if (repeatCount > 1) {
+                        line.append(" x").append(repeatCount);
+                    }
                 }
-                if (repeatCount > 1) {
-                    line.append(" x").append(repeatCount);
-                }
-            }
 
-            summaryLines.add(line.toString());
-            ix = nextIx;
+                summaryLines.add(line.toString());
+                ix = nextIx;
+            } else {
+                // Less than 3 consecutive: display individually
+                Mesg mesg = allMesg.get(ix);
+                String indexInfo = formatIndexInfo(ix, ix, mesg.getFieldIntegerValue(254), mesg.getFieldIntegerValue(254));
+                StringBuilder line = new StringBuilder();
+                line.append(indexInfo).append(" ");
+                line.append(formatMesgName(mesg.getNum()));
+                if (mesg.getNum() == MesgNum.EVENT) {
+                    line.append(getEventDetails(mesg));
+                }
+                summaryLines.add(line.toString());
+                ix++;
+            }
         }
 
         return summaryLines;
@@ -139,7 +164,14 @@ public class ActivityReportGenerator {
         List<Integer> pattern = new ArrayList<>();
         
         // Start with the first message
-        pattern.add(allMesg.get(ix).getNum());
+        int startMesgNum = allMesg.get(ix).getNum();
+        pattern.add(startMesgNum);
+
+        // Never start heterogeneous grouped patterns with these mesg types.
+        // Same-type repeats are still handled by length-1 pattern + repeat count.
+        if (isRestrictedGroupStarter(startMesgNum)) {
+            return pattern;
+        }
         
         // Try to extend the pattern by one message at a time
         // and see if this extended pattern actually repeats.
@@ -158,29 +190,52 @@ public class ActivityReportGenerator {
                 break;
             }
 
-            // Check if this heterogeneous candidate pattern repeats at least once
-            if (candidate.size() == len && repeatPatternExists(allMesg, ix, candidate)) {
-                pattern = candidate;
-            } else {
+            // Heterogeneous grouped patterns must not repeat mesg types.
+            // Example disallowed: LAP, TIME_IN_ZONE, LAP, TIME_IN_ZONE
+            if (hasDuplicateTypes(candidate)) {
                 break;
             }
+
+            // Check if this heterogeneous candidate pattern repeats at least twice (3 total)
+            if (candidate.size() == len && repeatPatternExists(allMesg, ix, candidate)) {
+                pattern = candidate;
+            }
+            // Do not break: continue trying longer patterns even if this length doesn't repeat
         }
         
         return pattern;
     }
 
+    private boolean isRestrictedGroupStarter(int mesgNum) {
+        // Don't allow heterogeneous grouping to start with TIME_IN_ZONE(216) or UNKNOWN_233
+        // This ensures patterns starting with 20/160 are preferred for grouping
+        return mesgNum == MESG_TIME_IN_ZONE || mesgNum == MESG_UNKNOWN_233;
+    }
+
+    private boolean hasDuplicateTypes(List<Integer> pattern) {
+        Set<Integer> seen = new HashSet<>();
+        for (Integer mesgNum : pattern) {
+            if (!seen.add(mesgNum)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
-     * Check if the pattern repeats at least once starting at position ix.
+     * Check if the pattern repeats at least once starting at position ix (2 total consecutive).
      */
     private boolean repeatPatternExists(List<Mesg> allMesg, int ix, List<Integer> pattern) {
         int checkIx = ix + pattern.size();
         
-        // Check if the next occurrence of the pattern exists
-        for (int patternIdx = 0; patternIdx < pattern.size(); patternIdx++) {
-            if (checkIx >= allMesg.size() || allMesg.get(checkIx).getNum() != pattern.get(patternIdx)) {
-                return false;
+        // Check if the pattern repeats at least once (for 2 total consecutive occurrences)
+        for (int repeat = 0; repeat < 1; repeat++) {
+            for (int patternIdx = 0; patternIdx < pattern.size(); patternIdx++) {
+                if (checkIx >= allMesg.size() || allMesg.get(checkIx).getNum() != pattern.get(patternIdx)) {
+                    return false;
+                }
+                checkIx++;
             }
-            checkIx++;
         }
         return true;
     }
@@ -274,9 +329,52 @@ public class ActivityReportGenerator {
     private String formatMesgName(int mesgNum) {
         String mesgName = MesgNum.getStringFromValue(mesgNum);
         if (mesgName == null || mesgName.isBlank() || mesgName.startsWith("UNKNOWN")) {
+            String alias = getUndocumentedMesgAlias(mesgNum);
+            if (alias != null) {
+                return alias + "(" + mesgNum + ")";
+            }
             return "UNKNOWN(" + mesgNum + ")";
         }
         return mesgName + "(" + mesgNum + ")";
+    }
+
+    private String getUndocumentedMesgAlias(int mesgNum) {
+        switch (mesgNum) {
+            case 22:
+                return "device_used";
+            case 79:
+                return "user_metrics";
+            case 104:
+                return "device_status";
+            case 113:
+                return "best_effort";
+            case 140:
+                return "activity_metrics";
+            case 141:
+                return "epo_status";
+            case 147:
+                return "sensor_settings";
+            case 195:
+                return "unknown";
+            case 233:
+                return "unknownx";
+            case 288:
+                return "unknown";
+            case 325:
+                return "unknown";
+            case 326:
+                return "gps_event";
+            case 327:
+                return "unknown";
+            case 380:
+                return "unknown";
+            case 394:
+                return "cpe_status";
+            case 428:
+                return "workout_schedule";
+            default:
+                return null;
+        }
     }
 
     private String getEventDetails(Mesg eventMesg) {

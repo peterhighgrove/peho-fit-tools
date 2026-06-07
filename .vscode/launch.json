@@ -18,7 +18,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"LAPM5\" 5 \"2026-04-11-14-15-34-Trail Run-LAPM4-5.2km-40.31min-garmin-e2pro-v26.09-fixed3min.fit\""
+      "args": "\"Friskis Orminge\" 25 \"2026-05-14-10-13-23-SkiErg-0km-2.08min-garmin-e2pro-v26.09-renamed.zip\""
     },
     {
       "type": "java",

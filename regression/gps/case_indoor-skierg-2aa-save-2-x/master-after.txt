@@ -3,7 +3,7 @@ New file info AFTER update:
 ==================================================
 --------------------------------------------------
  --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v26.09
- --> Sport:FITNESS_EQUIPMENT, SubSport:INDOOR_ROWING, SportProfile:SkiErg Friskis Orminge 11.4km, WktName:null
+ --> Sport:FITNESS_EQUIPMENT, SubSport:INDOOR_ROWING, SportProfile:SkiErg TestWorkout+4-3×3-4×2-5×1min Friskis Orminge 11.4km, WktName:TestRow Custom Workout + Bike 4-3×3-4×2-5×1min
  --> Org activity dateTime Local:2026-05-14-10-15-23
  --> New activity dateTime Local:2026-05-14-10-30-23
  --> Org activity DateTime UTC:  2026-05-14-08-15-23
