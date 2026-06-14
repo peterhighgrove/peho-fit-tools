@@ -10,6 +10,8 @@ recdel
 31:53
 33:32
 fill
+af
+ac
 save
 2
 Mittåkläppsspåret-Djupdalsrundan

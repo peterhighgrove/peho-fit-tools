@@ -1,6 +1,7 @@
 Adding activity from another file
 Selected segment in second file: ix 29 to 6391 (6363 messages)
 Adjusted TIME_IN_ZONE reference_index by +18 for 9 message(s).
+Set timestamp(253) for inserted LAP/TIME_IN_ZONE/WORKOUT/WORKOUT_STEP to 2026-03-09-10-40-18
 Inserted 18 lap-related messages from second file.
 Lap messages inserted at index: 42 to 59.
 Pause between activities: 5:51

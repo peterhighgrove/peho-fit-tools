@@ -1,6 +1,7 @@
 Adding activity from another file
 Selected segment in second file: ix 33 to 644 (612 messages)
 Adjusted TIME_IN_ZONE reference_index by +1 for 5 message(s).
+Set timestamp(253) for inserted LAP/TIME_IN_ZONE/WORKOUT/WORKOUT_STEP to 2026-05-14-10-15-23
 Inserted WORKOUT(26) from second file.
 Inserted WORKOUT_STEP(27) messages from second file: 5
 Inserted 10 lap-related messages from second file.
@@ -19,6 +20,7 @@ TotalElapsedTimer second file:4:46
 Adding activity from another file
 Selected segment in second file: ix 99 to 6269 (6171 messages)
 Adjusted TIME_IN_ZONE reference_index by +6 for 27 message(s).
+Set timestamp(253) for inserted LAP/TIME_IN_ZONE/WORKOUT/WORKOUT_STEP to 2026-05-14-10-15-23
 Adjusted appended LAP wkt_step_index by +5 (existing workout steps).
 Merged WORKOUT(26): num_valid_steps +13
 Inserted WORKOUT_STEP(27) messages from second file: 13

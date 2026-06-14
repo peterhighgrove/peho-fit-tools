@@ -10,6 +10,7 @@ import se.peho.fittools.core.commands.ActivityInfoShowDetailedCommand;
 import se.peho.fittools.core.commands.ActivityAddAnother;
 import se.peho.fittools.core.commands.ActivityChangeTime;
 import se.peho.fittools.core.commands.ActivityFileStructureCommand;
+import se.peho.fittools.core.commands.ActivityMesgCSVCommand;
 import se.peho.fittools.core.commands.GapAddGpsCommand;
 import se.peho.fittools.core.commands.GapTimerCreateCommand;
 import se.peho.fittools.core.commands.GapEventsPrintCommand;
@@ -55,6 +56,7 @@ public class MenuRunner {
             new ActivityChangeTime(),
             new ActivityAddAnother(),
             new ActivityFileStructureCommand(),
+            new ActivityMesgCSVCommand(),
             new GapShowListCommand(),
             new GapShowListFilteredCommand(),
             new GapAddGpsCommand(),

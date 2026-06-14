@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -392,5 +393,194 @@ public class ActivityReportGenerator {
         String typeStr = eventType != null ? eventType.toString() : "UNKNOWN(" + rawEventType + ")";
 
         return " [" + eventStr + "/" + typeStr + "]";
+    }
+
+    public void writeMesgList() {
+        List<Mesg> allMesg = fitFile.getAllMesg();
+        long diffMinutesLocalUTC = fitFile.getDiffMinutesLocalUTC() != null ? fitFile.getDiffMinutesLocalUTC() : 0L;
+
+        Long firstTimestamp = null;
+        Long lastTimestamp = null;
+
+        try (FileWriter writer = new FileWriter("activity-mesg-list.csv")) {
+            writer.write(String.join(",",
+                    "Overall mesg ix",
+                    "Timestamp (field 253) raw value",
+                    "Timestamp (field 253) localtime string",
+                    "Timestamp value that is compatible with Libre",
+                    "Seconds diff from last value",
+                    "ElapsedTimer in h:mm:ss",
+                    "TotalTimer in h:mm:ss (pause time excluded)",
+                    "Mesg name",
+                    "Mesg no",
+                    "Mesg ix (field 253) if applicable",
+                    "Event type and data",
+                    "Distance in m",
+                    "Enh speed in min/sec hh:mm:ss string",
+                    "Enh speed in m/s value",
+                    "Cadence"
+            ));
+            writer.write(System.lineSeparator());
+
+            for (int overallIx = 0; overallIx < allMesg.size(); overallIx++) {
+                Mesg mesg = allMesg.get(overallIx);
+                Long timestamp = mesg.getFieldLongValue(253);
+
+                if (timestamp != null && firstTimestamp == null) {
+                    firstTimestamp = timestamp;
+                }
+
+                String timestampLocal = "";
+                String timestampLibre = "";
+                String timestampDiff = "";
+                String elapsedTimer = "";
+                String totalTimer = "";
+
+                if (timestamp != null) {
+                    timestampLocal = formatLocalDateTimeForCsv(timestamp, diffMinutesLocalUTC);
+                    timestampLibre = formatLibreDateTimeValue(timestamp, diffMinutesLocalUTC);
+                    if (lastTimestamp != null) {
+                        timestampDiff = String.valueOf(timestamp - lastTimestamp);
+                    }
+                    if (firstTimestamp != null) {
+                        elapsedTimer = formatHms(timestamp - firstTimestamp);
+                    }
+                    totalTimer = formatHms(fitFile.findTimerBasedOnTime(timestamp));
+                    lastTimestamp = timestamp;
+                }
+
+                String mesgName = formatMesgName(mesg.getNum());
+                String mesgNo = String.valueOf(mesg.getNum());
+                Integer mesgIx = mesg.getFieldIntegerValue(254);
+                String mesgIxValue = mesgIx != null ? String.valueOf(mesgIx) : "";
+
+                String eventTypeAndData = "";
+                String distanceMeters = "";
+                String enhSpeedPace = "";
+                String enhSpeedMps = "";
+                String cadence = "";
+
+                if (mesg.getNum() == MesgNum.EVENT) {
+                    eventTypeAndData = buildEventTypeAndData(mesg);
+                }
+
+                if (mesg.getNum() == MesgNum.RECORD) {
+                    Float dist = mesg.getFieldFloatValue(FitFile.REC_DIST);
+                    if (dist != null) {
+                        distanceMeters = String.format(Locale.ROOT, "%.1f", dist);
+                    }
+
+                    Float enhancedSpeed = mesg.getFieldFloatValue(FitFile.REC_ESPEED);
+                    if (enhancedSpeed != null) {
+                        enhSpeedMps = String.format(Locale.ROOT, "%.3f", enhancedSpeed);
+                        enhSpeedPace = speedToHmsPerKm(enhancedSpeed);
+                    }
+
+                    Short recordCadence = mesg.getFieldShortValue(FitFile.REC_CAD);
+                    if (recordCadence != null) {
+                        cadence = String.valueOf(recordCadence);
+                    }
+                }
+
+                List<String> row = List.of(
+                        String.valueOf(overallIx),
+                        timestamp != null ? String.valueOf(timestamp) : "",
+                        timestampLocal,
+                        timestampLibre,
+                        timestampDiff,
+                        elapsedTimer,
+                        totalTimer,
+                        mesgName,
+                        mesgNo,
+                        mesgIxValue,
+                        eventTypeAndData,
+                        distanceMeters,
+                        enhSpeedPace,
+                        enhSpeedMps,
+                        cadence
+                );
+
+                writer.write(toCsvLine(row));
+                writer.write(System.lineSeparator());
+            }
+
+            System.out.println("Wrote activity-mesg-list.csv with " + allMesg.size() + " rows.");
+        } catch (IOException e) {
+            System.out.println("Could not write activity-mesg-list.csv");
+        }
+    }
+
+    private String formatLocalDateTimeForCsv(Long fitTimestamp, long diffMinutesLocalUTC) {
+        String value = FitDateTime.toString(fitTimestamp, diffMinutesLocalUTC);
+        if (value == null || value.length() < 19) {
+            return "";
+        }
+        // Convert yyyy-MM-dd-HH-mm-ss to yyyy-MM-dd HH:mm:ss for easier spreadsheet parsing.
+        return value.substring(0, 10) + " " + value.substring(11, 13) + ":"
+                + value.substring(14, 16) + ":" + value.substring(17, 19);
+    }
+
+    private String formatLibreDateTimeValue(Long fitTimestamp, long diffMinutesLocalUTC) {
+        long unixSecondsLocal = fitTimestamp + FitDateTime.FIT_EPOCH_OFFSET + (diffMinutesLocalUTC * 60L);
+        double libreValue = (unixSecondsLocal / 86400.0d) + 25569.0d;
+        return String.format(Locale.ROOT, "%.12f", libreValue);
+    }
+
+    private String formatHms(Long secondsValue) {
+        if (secondsValue == null || secondsValue < 0) {
+            return "";
+        }
+        long hours = secondsValue / 3600;
+        long minutes = (secondsValue % 3600) / 60;
+        long seconds = secondsValue % 60;
+        return String.format(Locale.ROOT, "%d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    private String speedToHmsPerKm(Float speedMetersPerSecond) {
+        if (speedMetersPerSecond == null || speedMetersPerSecond <= 0f) {
+            return "";
+        }
+        long secondsPerKm = Math.round(1000d / speedMetersPerSecond);
+        return formatHms(secondsPerKm);
+    }
+
+    private String buildEventTypeAndData(Mesg eventMesg) {
+        Short rawEvent = eventMesg.getFieldShortValue(FitFile.EVE_EVENT);
+        Short rawEventType = eventMesg.getFieldShortValue(FitFile.EVE_TYPE);
+        Object rawData = eventMesg.getFieldValue(3);
+
+        String eventStr = rawEvent != null
+                ? String.valueOf(Event.getByValue(rawEvent))
+                : "";
+        String typeStr = rawEventType != null
+                ? String.valueOf(EventType.getByValue(rawEventType))
+                : "";
+
+        if (rawData == null && eventStr.isBlank() && typeStr.isBlank()) {
+            return "";
+        }
+        return eventStr + "/" + typeStr + (rawData != null ? " data=" + rawData : "");
+    }
+
+    private String toCsvLine(List<String> values) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < values.size(); i++) {
+            if (i > 0) {
+                sb.append(',');
+            }
+            sb.append(escapeCsv(values.get(i)));
+        }
+        return sb.toString();
+    }
+
+    private String escapeCsv(String value) {
+        if (value == null) {
+            return "";
+        }
+        String escaped = value.replace("\"", "\"\"");
+        if (escaped.contains(",") || escaped.contains("\"") || escaped.contains("\n") || escaped.contains("\r")) {
+            return "\"" + escaped + "\"";
+        }
+        return escaped;
     }
 }

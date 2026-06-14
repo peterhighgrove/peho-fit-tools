@@ -15,9 +15,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 public class FitFile {
 
     public static final int FID_CTIME = FileIdMesg.TimeCreatedFieldNum; //long
@@ -138,12 +135,16 @@ public class FitFile {
     public static final int REC_LAT = RecordMesg.PositionLatFieldNum; //int
     public static final int REC_LON = RecordMesg.PositionLongFieldNum; //int
     public static final int REC_EALT = RecordMesg.EnhancedAltitudeFieldNum; //float
+    public static final int MESG_TIMESTAMP = 253; // standard FIT timestamp field
     public static final int SP_SPORT = SportMesg.SportFieldNum; //short -> .getByValue -> Sport
     public static final int SP_SUBSPORT = SportMesg.SubSportFieldNum;
     public static final int SP_NAME = SportMesg.NameFieldNum; //string
+    public static final int TIZ_TIME = TimeInZoneMesg.TimestampFieldNum; //long 253
     public static final int TIZ_REF_MESG = TimeInZoneMesg.ReferenceMesgFieldNum; //int 0
     public static final int TIZ_REF_IX = TimeInZoneMesg.ReferenceIndexFieldNum; //int 1
-
+    public static final int TC_TIME = TimestampCorrelationMesg.TimestampFieldNum; //long 253
+    public static final int TC_STIME = TimestampCorrelationMesg.SystemTimestampFieldNum; //long 1
+    public static final int TC_LTIME = TimestampCorrelationMesg.LocalTimestampFieldNum; //long 3
 
     private Integer manufacturerNo;
     private String manufacturer;
@@ -892,16 +893,28 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public Long findTimerBasedOnTime(Long timeValueToSearchFor) {
+        if (timeValueToSearchFor == null) {
+            return null;
+        }
+        if (recordMesg == null || recordMesg.isEmpty() || recordMesgAddOnRecords == null || recordMesgAddOnRecords.isEmpty()) {
+            return null;
+        }
+
         int ix = 0;
-        // FIND IX i allMesg list
+        // FIND IX in recordMesg list
         for (Mesg record : recordMesg) {
-            if (record.getFieldLongValue(REC_TIME) >= (timeValueToSearchFor)) {
+            Long recordTime = record.getFieldLongValue(REC_TIME);
+            if (recordTime != null && recordTime >= timeValueToSearchFor) {
                 break;
             }
             ix += 1;
         }
 
-        // Get the time of the day for this record
+        // Clamp so timestamp after last record maps to the last known timer value.
+        if (ix >= recordMesgAddOnRecords.size()) {
+            ix = recordMesgAddOnRecords.size() - 1;
+        }
+
         return recordMesgAddOnRecords.get(ix).getTimer();
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -2219,26 +2232,23 @@ public class FitFile {
         clearTempUpdateLogg();
         appendTempUpdateLoggLn("Adding activity from another file");
 
-        // Find the last STOP_ALL event in this file (to insert after)
-        int insertIndex = -1;
-        Long lastStopAllTimeInOrgFile = null;
-        for (int i = 0; i < allMesg.size(); i++) {
-            Mesg mesg = allMesg.get(i);
-            if (mesg.getNum() == MesgNum.EVENT
-                    && mesg.getFieldValue(EVE_TYPE) != null
-                    && mesg.getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())
-                    && mesg.getFieldValue(EVE_EVENT) != null
-                    && Event.getByValue(mesg.getFieldShortValue(EVE_EVENT)).equals(Event.TIMER)) {
-                insertIndex = i + 1;
-                lastStopAllTimeInOrgFile = mesg.getFieldLongValue(EVE_TIME);
-            }
+        // Keep inserted LAP/TIME_IN_ZONE/WORKOUT/WORKOUT_STEP timestamps aligned
+        // with this activity's start timestamp.
+        Long baseStartTimestamp = getTimeFirstRecord();
+        if (baseStartTimestamp == null && !recordMesg.isEmpty()) {
+            baseStartTimestamp = recordMesg.get(0).getFieldLongValue(REC_TIME);
         }
-        if (insertIndex < 0) {
-            appendTempUpdateLoggLn("No STOP_ALL event found in base file; appending to end.");
-            insertIndex = allMesg.size();
+        if (baseStartTimestamp == null && !sessionMesg.isEmpty()) {
+            baseStartTimestamp = sessionMesg.get(0).getFieldLongValue(SES_STIME);
+        }
+        if (baseStartTimestamp == null && !lapMesg.isEmpty()) {
+            baseStartTimestamp = lapMesg.get(0).getFieldLongValue(LAP_STIME);
         }
 
-        // Find the segment to add: from first START event to last STOP_ALL event in the file to add
+        // Append the merged activity after all messages already in the base file.
+        int insertIndex = allMesg.size();
+
+        // Find the segment to add: from first START event to the physical end of the file to add.
         int startIx = -1;
         int stopIx = -1;
         Long firstStartTime = null;
@@ -2255,13 +2265,13 @@ public class FitFile {
                 startIx = i;
                 firstStartTime = mesg.getFieldLongValue(EVE_TIME);
             }
-            if (event.equals(Event.TIMER) && type.equals(EventType.STOP_ALL)) {
-                stopIx = i;
-            }
+        }
+        if (!fileToAdd.allMesg.isEmpty()) {
+            stopIx = fileToAdd.allMesg.size() - 1;
         }
 
         if (startIx < 0 || stopIx < 0 || stopIx < startIx) {
-            appendTempUpdateLoggLn("Could not find a valid START/STOP_ALL segment in file to add. No changes made.");
+            appendTempUpdateLoggLn("Could not find a valid START/end-of-file segment in file to add. No changes made.");
             return;
         }
 
@@ -2276,10 +2286,17 @@ public class FitFile {
         for (int i = 0; i < fileToAdd.allMesg.size(); i++) {
             Mesg mesg = fileToAdd.allMesg.get(i);
             if (mesg.getNum() == MesgNum.LAP) {
-                lapSegment.add(new Mesg(mesg));
+                Mesg lapMesgToAdd = new Mesg(mesg);
+                if (baseStartTimestamp != null) {
+                    lapMesgToAdd.setFieldValue(MESG_TIMESTAMP, baseStartTimestamp);
+                }
+                lapSegment.add(lapMesgToAdd);
                 // Check if the next message is TIME_IN_ZONE (216)
                 if (i + 1 < fileToAdd.allMesg.size() && fileToAdd.allMesg.get(i + 1).getNum() == 216) {
                     Mesg tizMesg = new Mesg(fileToAdd.allMesg.get(i + 1));
+                    if (baseStartTimestamp != null) {
+                        tizMesg.setFieldValue(MESG_TIMESTAMP, baseStartTimestamp);
+                    }
                     Integer tizRefMesg = tizMesg.getFieldIntegerValue(TIZ_REF_MESG);
                     Integer tizRefIx = tizMesg.getFieldIntegerValue(TIZ_REF_IX);
                     if (tizRefIx != null && (tizRefMesg == null || tizRefMesg == MesgNum.LAP)) {
@@ -2312,10 +2329,24 @@ public class FitFile {
         for (Mesg mesg : fileToAdd.allMesg) {
             if (mesg.getNum() == MesgNum.WORKOUT && addedWorkoutMesg == null) {
                 addedWorkoutMesg = new Mesg(mesg);
+                if (baseStartTimestamp != null) {
+                    addedWorkoutMesg.setFieldValue(MESG_TIMESTAMP, baseStartTimestamp);
+                }
             }
             if (mesg.getNum() == MesgNum.WORKOUT_STEP) {
-                addedWorkoutSteps.add(new Mesg(mesg));
+                Mesg stepMesg = new Mesg(mesg);
+                if (baseStartTimestamp != null) {
+                    stepMesg.setFieldValue(MESG_TIMESTAMP, baseStartTimestamp);
+                }
+                addedWorkoutSteps.add(stepMesg);
             }
+        }
+
+        if (baseStartTimestamp != null) {
+            appendTempUpdateLoggLn("Set timestamp(253) for inserted LAP/TIME_IN_ZONE/WORKOUT/WORKOUT_STEP to "
+                    + FitDateTime.toString(baseStartTimestamp, diffMinutesLocalUTC));
+        } else {
+            appendTempUpdateLoggLn("Could not resolve base start timestamp; left inserted LAP/TIME_IN_ZONE/WORKOUT/WORKOUT_STEP timestamps unchanged.");
         }
 
         Integer originalNumValidSteps = null;
@@ -2442,10 +2473,14 @@ public class FitFile {
 
         Long pauseSeconds = 0L;
         // Calculate pause between activities
-        if (lastStopAllTimeInOrgFile != null && firstStartTime != null) {
-            pauseSeconds = firstStartTime - lastStopAllTimeInOrgFile;
+        Long lastTimeInOrgFile = timeLastRecord;
+        if (lastTimeInOrgFile == null && !recordMesg.isEmpty()) {
+            lastTimeInOrgFile = recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME);
+        }
+        if (lastTimeInOrgFile != null && firstStartTime != null) {
+            pauseSeconds = firstStartTime - lastTimeInOrgFile;
             appendTempUpdateLoggLn("Pause between activities: " + PehoUtils.sec2minSecLong(pauseSeconds) + System.lineSeparator()
-                + "Last STOP_ALL time in first file: " + FitDateTime.toString(lastStopAllTimeInOrgFile, diffMinutesLocalUTC) + System.lineSeparator()
+                + "Last time in first file: " + FitDateTime.toString(lastTimeInOrgFile, diffMinutesLocalUTC) + System.lineSeparator()
                 + "First START time in second file: " + FitDateTime.toString(firstStartTime, diffMinutesLocalUTC));
         }
 
@@ -2475,17 +2510,35 @@ public class FitFile {
         }
 
         // Insert selected message types from the segment into this file (keep original order, no time changes)
+        // Exclude list: skip these message types during merge
         List<Mesg> segment = new ArrayList<>();
         int skippedMesgInSegment = 0;
         for (int i = startIx; i <= stopIx; i++) {
             Mesg sourceMesg = fileToAdd.allMesg.get(i);
-            if (sourceMesg.getNum() != MesgNum.RECORD
-                    && sourceMesg.getNum() != MesgNum.EVENT
-                    && sourceMesg.getNum() != MesgNum.GPS_METADATA
-                    && sourceMesg.getNum() != 233 // Undoc mesg
-                    && sourceMesg.getNum() != 325 // Undoc mesg
-                    && sourceMesg.getNum() != 326 // Undoc mesg GPS Event 
-                    && sourceMesg.getNum() != 14  // Undoc mesg Device status w battery level and temp
+            if (
+                       sourceMesg.getNum() == 0    // FILE_ID(0)
+                    || sourceMesg.getNum() == 49   // FILE_CREATOR(49)
+                    || sourceMesg.getNum() == 34   // ACTIVITY(34)
+                    || sourceMesg.getNum() == 207  // DEVELOPER_DATA_ID(207)
+                    || sourceMesg.getNum() == 206  // FIELD_DESCRIPTION(206)
+                    || sourceMesg.getNum() == 140  // activity_metrics(140)
+                    || sourceMesg.getNum() == 26   // WORKOUT
+                    || sourceMesg.getNum() == 27   // WORKOUT_STEP
+                    || sourceMesg.getNum() == 18   // SESSION(18)
+                    || sourceMesg.getNum() == 216  // TIME_IN_ZONE(216)
+                    || sourceMesg.getNum() == 19   // LAP(19)
+                    || sourceMesg.getNum() == 312  // SPLIT
+                    || sourceMesg.getNum() == 313  // SPLIT_SUM
+                    // Above usually before first START event and are then not incuded in segment added
+                    || sourceMesg.getNum() == 141  // epo_status
+                    || sourceMesg.getNum() == 394  // cpe_status
+                    || sourceMesg.getNum() == 2    // DEVICE_SETTINGS
+                    || sourceMesg.getNum() == 3    // USER_PROFILE
+                    || sourceMesg.getNum() == 147  // SENSOR_SETTINGS
+                    || sourceMesg.getNum() == 79   // user_metrics
+                    || sourceMesg.getNum() == 12   // SPORT
+                    || sourceMesg.getNum() == 13   // TRAINING_SETTINGS
+                    || sourceMesg.getNum() == 7    // ZONES_TARGET
                     ) {
                 skippedMesgInSegment++;
                 continue;
@@ -2508,7 +2561,7 @@ public class FitFile {
             }
             segment.add(mesg);
         }
-        appendTempUpdateLoggLn("Filtered selected segment to mesg 20/21/233. Added: " + segment.size() + ", skipped: " + skippedMesgInSegment);
+        appendTempUpdateLoggLn("Filtered segment (excluded: 141/394/3/79/12/13/207/206/72). Added: " + segment.size() + ", skipped: " + skippedMesgInSegment);
 
         for (Mesg mesg : segment) {
             allMesg.add(insertIndex, mesg);
@@ -3374,7 +3427,6 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void readFitFile (String inputFilePath) {
-        Integer indexet=0;
         try {
             // Verify the file exists and is a valid FIT file
             File file = new File(inputFilePath);
@@ -3390,6 +3442,10 @@ public class FitFile {
         try {
             // Create a Decode object
             decode = new Decode();
+            System.out.println("FIT SDK profile version: "
+                    + Fit.PROFILE_VERSION_MAJOR + "." + Fit.PROFILE_VERSION_MINOR
+                    + " " + Fit.PROFILE_TYPE
+                    + " (" + Fit.PROFILE_VERSION + ")");
 
             decode.read(in, new MesgListener() {
                 public void onMesg(Mesg mesg) {
@@ -3436,10 +3492,14 @@ public class FitFile {
                         case MesgNum.RECORD:
                             recordMesg.add(mesg);
                             break;
-                        }
+                        case 132:
+                            System.out.println("Heart Rate Mesg found, but not added to list. Mesg ix: " + mesg.getFieldLongValue(253));
+                            break;
+                        default:
+                            break;
                     }
                 }
-            );
+            });
 
             // Decode the FIT file
 
@@ -3544,14 +3604,17 @@ public class FitFile {
     public void changeStartTime (int changeSeconds) {
         Long timeToChange;
         for (Mesg mesg : allMesg) {
+            boolean handledTimestamp = false;
             switch (mesg.getNum()) {
                 case MesgNum.FILE_ID:
+                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(FID_CTIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(FID_CTIME, timeToChange + changeSeconds);
                     }
                     break;
                 case MesgNum.ACTIVITY:
+                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(ACT_TIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(ACT_TIME, timeToChange + changeSeconds);
@@ -3561,13 +3624,37 @@ public class FitFile {
                         mesg.setFieldValue(ACT_LOCTIME, timeToChange + changeSeconds);
                     }
                     break;
+                case 140:  // ActivityMetrics
+                    handledTimestamp = true;
+                    timeToChange = mesg.getFieldLongValue(MESG_TIMESTAMP);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(MESG_TIMESTAMP, timeToChange + changeSeconds);
+                    }
+                    timeToChange = mesg.getFieldLongValue(48); //Local timestamp
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(48, timeToChange + changeSeconds);
+                    }
+                    break;
+                case 79:  //UserMetrics
+                    handledTimestamp = true;
+                    timeToChange = mesg.getFieldLongValue(MESG_TIMESTAMP);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(MESG_TIMESTAMP, timeToChange + changeSeconds);
+                    }
+                    timeToChange = mesg.getFieldLongValue(16); // Start of activity
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(16, timeToChange + changeSeconds);
+                    }
+                    break;
                 case MesgNum.DEVICE_INFO:
+                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(DINFO_TIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(DINFO_TIME, timeToChange + changeSeconds);
                     }
                     break;
                 case MesgNum.EVENT:
+                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(EVE_TIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(EVE_TIME, timeToChange + changeSeconds);
@@ -3578,6 +3665,7 @@ public class FitFile {
                     }
                     break;
                 case MesgNum.SESSION:
+                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(SES_TIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(SES_TIME, timeToChange + changeSeconds);
@@ -3588,6 +3676,7 @@ public class FitFile {
                     }
                     break;
                 case MesgNum.LAP:
+                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(LAP_TIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(LAP_TIME, timeToChange + changeSeconds);
@@ -3598,6 +3687,7 @@ public class FitFile {
                     }
                     break;
                 case MesgNum.SPLIT:
+                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(SPL_STIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(SPL_STIME, timeToChange + changeSeconds);
@@ -3607,12 +3697,44 @@ public class FitFile {
                         mesg.setFieldValue(SPL_ETIME, timeToChange + changeSeconds);
                     }
                     break;
+                case MesgNum.TIME_IN_ZONE:
+                    handledTimestamp = true;
+                    timeToChange = mesg.getFieldLongValue(TIZ_TIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(TIZ_TIME, timeToChange + changeSeconds);
+                    }
+                    break;
                 case MesgNum.RECORD:
+                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(REC_TIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(REC_TIME, timeToChange + changeSeconds);
                     }
                     break;
+                case MesgNum.TIMESTAMP_CORRELATION:
+                    handledTimestamp = true;
+                    timeToChange = mesg.getFieldLongValue(TC_TIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(TC_TIME, timeToChange + changeSeconds);
+                    }
+                    timeToChange = mesg.getFieldLongValue(TC_STIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(TC_STIME, timeToChange + changeSeconds);
+                    }
+                    timeToChange = mesg.getFieldLongValue(TC_LTIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(TC_LTIME, timeToChange + changeSeconds);
+                    }
+                    break;
+                default:
+                    break;
+                
+            }
+            if (!handledTimestamp) {
+                timeToChange = mesg.getFieldLongValue(MESG_TIMESTAMP);
+                if (timeToChange != null) {
+                    mesg.setFieldValue(MESG_TIMESTAMP, timeToChange + changeSeconds);
+                }
             }
         }
         setTimeFirstRecord(recordMesg.get(0).getFieldLongValue(REC_TIME));

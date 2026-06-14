@@ -1,0 +1,88 @@
+
+================================================
+MESG TYPE COUNTS
+------------------------------------------------
+  FILE_ID(0)                     1
+  DEVICE_SETTINGS(2)             1
+  USER_PROFILE(3)                1
+  ZONES_TARGET(7)                1
+  SPORT(12)                      1
+  TRAINING_SETTINGS(13)          1
+  SESSION(18)                    1
+  LAP(19)                        33
+  RECORD(20)                     3474
+  EVENT(21)                      6
+  device_used(22)                2
+  DEVICE_INFO(23)                18
+  WORKOUT(26)                    1
+  WORKOUT_STEP(27)               18
+  ACTIVITY(34)                   1
+  FILE_CREATOR(49)               1
+  user_metrics(79)               1
+  UNKNOWN(125)                   2
+  activity_metrics(140)          1
+  epo_status(141)                1
+  sensor_settings(147)           6
+  TIMESTAMP_CORRELATION(162)     1
+  FIELD_DESCRIPTION(206)         4
+  DEVELOPER_DATA_ID(207)         2
+  TIME_IN_ZONE(216)              34
+  unknownx(233)                  3480
+  unknown(288)                   1
+  gps_event(326)                 1
+  unknown(327)                   3
+  cpe_status(394)                1
+================================================
+ACTIVITY FILE STRUCTURE
+------------------------------------------------
+[0] FILE_ID(0)
+[1] FILE_CREATOR(49)
+[2] ACTIVITY(34)
+[3] DEVELOPER_DATA_ID(207)
+[4] DEVELOPER_DATA_ID(207)
+[5] FIELD_DESCRIPTION(206)
+[6] activity_metrics(140)
+[7] WORKOUT(26)
+[8-25:0-17] WORKOUT_STEP(27) x18
+[26:0] SESSION(18)
+[27] TIME_IN_ZONE(216)
+[28-92:0-32] LAP(19), [29-93] TIME_IN_ZONE(216) x33
+[94] unknown(288)
+[95] unknown(327)
+[96] unknown(327)
+[97] gps_event(326)
+[98] TIMESTAMP_CORRELATION(162)
+[99] EVENT(21) [TIMER/START]
+[100-108] DEVICE_INFO(23) x9
+[109] device_used(22)
+[110] epo_status(141)
+[111] cpe_status(394)
+[112] DEVICE_SETTINGS(2)
+[113] USER_PROFILE(3)
+[114-119:0-5] sensor_settings(147) x6
+[120] user_metrics(79)
+[121] SPORT(12)
+[122:0] TRAINING_SETTINGS(13)
+[123:0] ZONES_TARGET(7)
+[124-126] FIELD_DESCRIPTION(206) x3
+[127-135] RECORD(20), [128-136] unknownx(233) x5
+[137] device_used(22)
+[138-382] RECORD(20), [139-383] unknownx(233) x123
+[384] RECORD(20)
+[385] EVENT(21) [TIMER/STOP_ALL]
+[386] EVENT(21) [TIMER/START]
+[387-957] RECORD(20), [388-958] unknownx(233) x286
+[959] RECORD(20)
+[960] EVENT(21) [TIMER/STOP_ALL]
+[961] EVENT(21) [TIMER/START]
+[962-7074] RECORD(20), [963-7075] unknownx(233) x3057
+[7076] RECORD(20)
+[7077] EVENT(21) [TIMER/STOP_ALL]
+[7078-7086] DEVICE_INFO(23) x9
+[7087-7094] unknownx(233) x8
+[7095] UNKNOWN(125)
+[7096] UNKNOWN(125)
+[7097] unknownx(233)
+[7098] unknown(327)
+------------------------------------------------
+Total mesg: 7099

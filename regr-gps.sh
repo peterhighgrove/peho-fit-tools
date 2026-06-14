@@ -9,6 +9,8 @@ set -uo pipefail
 #     master.fit                 # required, expected output for binary compare
 #     master-after.txt           # required unless --bless
 #     master-log.txt             # required unless --bless
+#     activity-file-structure.txt # required unless --bless
+#     activity-mesg-list.csv     # required unless --bless
 #     inputs.txt                 # required, scripted console input (one entry per line)
 #     conf.txt                   # optional, if missing a deterministic conf is generated
 #
@@ -37,6 +39,8 @@ Case requirements per folder:
         master.fit (required unless --bless)
         master-after.txt (required unless --bless)
         master-log.txt (required unless --bless)
+    activity-file-structure.txt (required unless --bless)
+    activity-mesg-list.csv (required unless --bless)
   inputs.txt
   conf.txt (optional)
 EOF
@@ -108,6 +112,8 @@ validate_case_files() {
     local master="$case_dir/master.fit"
     local master_after="$case_dir/master-after.txt"
     local master_log="$case_dir/master-log.txt"
+    local master_activity_structure="$case_dir/activity-file-structure.txt"
+    local master_mesg_list="$case_dir/activity-mesg-list.csv"
     local inputs="$case_dir/inputs.txt"
 
     if [[ ! -f "$master" && "$BLESS" != "true" ]]; then
@@ -120,6 +126,14 @@ validate_case_files() {
     fi
     if [[ ! -f "$master_log" && "$BLESS" != "true" ]]; then
         echo "missing master-log.txt"
+        return 1
+    fi
+    if [[ ! -f "$master_activity_structure" && "$BLESS" != "true" ]]; then
+        echo "missing activity-file-structure.txt"
+        return 1
+    fi
+    if [[ ! -f "$master_mesg_list" && "$BLESS" != "true" ]]; then
+        echo "missing activity-mesg-list.csv"
         return 1
     fi
     if [[ ! -f "$inputs" ]]; then
@@ -144,6 +158,8 @@ run_case() {
     local master="$case_dir/master.fit"
     local master_after="$case_dir/master-after.txt"
     local master_log="$case_dir/master-log.txt"
+    local master_activity_structure="$case_dir/activity-file-structure.txt"
+    local master_mesg_list="$case_dir/activity-mesg-list.csv"
     local inputs="$case_dir/inputs.txt"
     local conf="$case_dir/conf.txt"
 
@@ -207,9 +223,13 @@ EOF
     local new_fit
     local new_after
     local new_log
+    local new_activity_structure
+    local new_mesg_list
     new_fit="$(find "$run_dir" -maxdepth 1 -type f -name '*-*min.fit' | sort | tail -n 1)"
     new_after="$(find "$run_dir" -maxdepth 1 -type f -name '*-after.txt' ! -name 'master-after.txt' | sort | tail -n 1)"
     new_log="$(find "$run_dir" -maxdepth 1 -type f -name '*-log.txt' ! -name 'master-log.txt' | sort | tail -n 1)"
+    new_activity_structure="$run_dir/activity-file-structure.txt"
+    new_mesg_list="$run_dir/activity-mesg-list.csv"
 
     if [[ -z "$new_fit" || ! -f "$new_fit" ]]; then
         echo "[FAIL] $case_name (no merged output fit found)"
@@ -226,11 +246,23 @@ EOF
         echo "       log: $log_file"
         return 1
     fi
+    if [[ ! -f "$new_activity_structure" ]]; then
+        echo "[FAIL] $case_name (no activity-file-structure.txt output found)"
+        echo "       log: $log_file"
+        return 1
+    fi
+    if [[ ! -f "$new_mesg_list" ]]; then
+        echo "[FAIL] $case_name (no activity-mesg-list.csv output found)"
+        echo "       log: $log_file"
+        return 1
+    fi
 
     if [[ "$BLESS" == "true" ]]; then
         cp -f "$new_fit" "$master"
         cp -f "$new_after" "$master_after"
         cp -f "$new_log" "$master_log"
+        cp -f "$new_activity_structure" "$master_activity_structure"
+        cp -f "$new_mesg_list" "$master_mesg_list"
         echo "[PASS] $case_name (blessed master.fit)"
         return 0
     fi
@@ -272,6 +304,32 @@ EOF
         if command -v sha256sum >/dev/null 2>&1; then
             echo "       hashes:"
             sha256sum "$new_log" "$master_log" | sed 's/^/         /'
+        fi
+        echo "--------------------------------------------"
+    fi
+
+    if ! cmp -s "$new_activity_structure" "$master_activity_structure"; then
+        case_ok=false
+        echo "======= (ACTIVITY-FILE-STRUCTURE.TXT differs) =================="
+        echo "[FAIL] $case_name (activity-file-structure.txt differs)"
+        echo "       new:    $new_activity_structure"
+        echo "       master: $master_activity_structure"
+        if command -v sha256sum >/dev/null 2>&1; then
+            echo "       hashes:"
+            sha256sum "$new_activity_structure" "$master_activity_structure" | sed 's/^/         /'
+        fi
+        echo "--------------------------------------------"
+    fi
+
+    if ! cmp -s "$new_mesg_list" "$master_mesg_list"; then
+        case_ok=false
+        echo "======= (ACTIVITY-MESG-LIST.CSV differs) ======================="
+        echo "[FAIL] $case_name (activity-mesg-list.csv differs)"
+        echo "       new:    $new_mesg_list"
+        echo "       master: $master_mesg_list"
+        if command -v sha256sum >/dev/null 2>&1; then
+            echo "       hashes:"
+            sha256sum "$new_mesg_list" "$master_mesg_list" | sed 's/^/         /'
         fi
         echo "--------------------------------------------"
     fi

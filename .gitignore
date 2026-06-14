@@ -4,7 +4,10 @@
 *conf.txt
 # regression/
 .run/
-lap-results*
+/lap-results*
+/*activity-file*
+/*activity-mesg*
+/2026*
 #*gitignore
 
 # ---------------------------
@@ -12,6 +15,7 @@ lap-results*
 # ---------------------------
 target/
 jars/
+libs/
 
 # ---------------------------
 # Maven Wrapper

@@ -6,6 +6,7 @@ import se.peho.fittools.core.Command;
 import se.peho.fittools.core.Conf;
 import se.peho.fittools.core.FitFile;
 import se.peho.fittools.core.InputHelper;
+import se.peho.fittools.core.ActivityReportGenerator;
 
 public class SaveChangeStartTimeExitCommand implements Command {
 
