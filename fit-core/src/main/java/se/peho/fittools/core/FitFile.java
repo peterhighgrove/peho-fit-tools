@@ -2520,10 +2520,7 @@ public class FitFile {
                     || sourceMesg.getNum() == 49   // FILE_CREATOR(49)
                     || sourceMesg.getNum() == 34   // ACTIVITY(34)
                     || sourceMesg.getNum() == 207  // DEVELOPER_DATA_ID(207)
-                    || sourceMesg.getNum() == 206  // FIELD_DESCRIPTION(206)
                     || sourceMesg.getNum() == 140  // activity_metrics(140)
-                    || sourceMesg.getNum() == 26   // WORKOUT
-                    || sourceMesg.getNum() == 27   // WORKOUT_STEP
                     || sourceMesg.getNum() == 18   // SESSION(18)
                     || sourceMesg.getNum() == 216  // TIME_IN_ZONE(216)
                     || sourceMesg.getNum() == 19   // LAP(19)
@@ -2537,8 +2534,11 @@ public class FitFile {
                     || sourceMesg.getNum() == 147  // SENSOR_SETTINGS
                     || sourceMesg.getNum() == 79   // user_metrics
                     || sourceMesg.getNum() == 12   // SPORT
-                    || sourceMesg.getNum() == 13   // TRAINING_SETTINGS
                     || sourceMesg.getNum() == 7    // ZONES_TARGET
+                    || sourceMesg.getNum() == 26   // WORKOUT
+                    || sourceMesg.getNum() == 27   // WORKOUT_STEP
+                    || sourceMesg.getNum() == 206  // FIELD_DESCRIPTION(206)
+                    || sourceMesg.getNum() == 13   // TRAINING_SETTINGS
                     ) {
                 skippedMesgInSegment++;
                 continue;

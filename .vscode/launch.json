@@ -18,7 +18,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"TEST aa\" 3 \"input.zip\""
+      "args": "\"TEST20\" 20 \"input.zip\""
     },
     {
       "type": "java",
