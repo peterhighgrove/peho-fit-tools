@@ -9,6 +9,7 @@ import java.util.Scanner;
 import se.peho.fittools.core.commands.ActivityInfoShowDetailedCommand;
 import se.peho.fittools.core.commands.ActivityAddAnother;
 import se.peho.fittools.core.commands.ActivityChangeTime;
+import se.peho.fittools.core.commands.ActivityDumpMesgCommand;
 import se.peho.fittools.core.commands.ActivityFileStructureCommand;
 import se.peho.fittools.core.commands.ActivityMesgCSVCommand;
 import se.peho.fittools.core.commands.GapAddGpsCommand;
@@ -57,6 +58,7 @@ public class MenuRunner {
             new ActivityAddAnother(),
             new ActivityFileStructureCommand(),
             new ActivityMesgCSVCommand(),
+            new ActivityDumpMesgCommand(),
             new GapShowListCommand(),
             new GapShowListFilteredCommand(),
             new GapAddGpsCommand(),

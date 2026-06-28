@@ -1,5 +1,3 @@
-af
-ac
 save
 3
 

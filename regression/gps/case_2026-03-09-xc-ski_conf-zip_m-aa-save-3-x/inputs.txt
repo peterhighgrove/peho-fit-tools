@@ -1,8 +1,6 @@
 m
 aa
 {{RUN_DIR}}/add.zip
-af
-ac
 save
 3
 Bruksvallarna

@@ -3,8 +3,6 @@ recdel
 14:00
 20:00
 lap1
-af
-ac
 save
 
 Himlaberget

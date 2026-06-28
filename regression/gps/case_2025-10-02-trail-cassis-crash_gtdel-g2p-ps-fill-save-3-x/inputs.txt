@@ -7,8 +7,6 @@ ps
 300
 y
 fill
-af
-ac
 save
 3
 Cassis-Calanques park west

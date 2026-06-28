@@ -9,7 +9,7 @@
       "projectName": "fit-wkt-merge-analyze",
       //"args": "\"Friskis Orminge\" 6 \"2026-05-14-10-22-20-SkiErg-4-3×3-4×2-5×1min-0km-50.58min-garmin-e2pro-v26.09-renamed.zip\" \"2026-05-14-10-22-20-indoor_skiing-10.1km-51.02min-c2-org.fit\""
       //"args": "\"Friskis Orminge\" 2 \"2026-05-14-10-16-40-SkiErg-TestRow Custom Workout-0km-4.46min-garmin-e2pro-v26.09-renamed.zip\" \"2026-05-14-10-16-40-indoor_skiing-1km-4.57min-c2-org.fit\""
-      "args": "\"Friskis Orminge\" 6 \"2026-05-27-18-42-48-SkiErg-3x(3-2-1+1)min-0km-24.11min-garmin-e2pro-v26.09-renamed.zip\" \"2026-05-27-18-42-48-indoor_skiing-4.7km-24.16min-c2-org.fit\""
+      "args": "\"Friskis Orminge\" 8 \"master.fit\" \"2026-05-27-18-42-48-indoor_skiing-4.7km-24.16min-c2-org.fit\""
       //"args": "\"Friskis Orminge\""
     },
     {
@@ -18,7 +18,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"TEST20\" 20 \"input.zip\""
+      "args": "\"TESTskirg\" 4 \"2026-02-14-15-13-11-SkiErg-6-5-4+2-3-2-1+1min-Friskis Orminge-10.2km-50.13min-garmin-e2pro-v25.11-merged2min.fit\""
     },
     {
       "type": "java",

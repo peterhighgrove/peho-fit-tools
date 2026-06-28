@@ -40,6 +40,33 @@ JAR_PATH=""
 BLESS=false
 DEBUG=false
 SPORT_ARG=""
+FIT_MSG_DIFF=true
+
+# ---------------------------------------------------------------------------
+run_fit_message_diff() {
+    local new_fit="$1"
+    local master_fit="$2"
+    local run_dir="$3"
+    local case_name="$4"
+    local helper="$ROOT_DIR/diff-fit-messages.sh"
+    local diff_dir="$run_dir/fit-diff-${case_name}"
+    local preview_file="$diff_dir/diff-summary.log"
+
+    if [[ ! -x "$helper" ]]; then
+        echo "       fit message diff skipped (helper missing or not executable): $helper"
+        return 0
+    fi
+
+    mkdir -p "$diff_dir"
+    if "$helper" "$new_fit" "$master_fit" "$diff_dir" > "$preview_file" 2>&1; then
+        echo "       fit message diff saved: $diff_dir"
+        echo "       --- fit message diff preview (first 80 lines) ---"
+        sed -n '1,80p' "$preview_file" | sed 's/^/         /'
+    else
+        echo "       fit message diff failed (see): $preview_file"
+        sed -n '1,80p' "$preview_file" | sed 's/^/         /'
+    fi
+}
 
 # ---------------------------------------------------------------------------
 debug() { [[ "$DEBUG" == true ]] && echo "[DEBUG] $*" >&2; }
@@ -58,6 +85,7 @@ Options:
   --version <ver>   Use ./jars/fit-wkt-<ver>.jar  (also accepted as 2nd positional arg)
   --jar <path>      Use explicit jar path
   --bless           Create/update master.fit and master-laps.txt from current output
+    --no-fit-msg-diff Disable automatic message-level FIT diff on fit mismatch
   --debug           Verbose output
   -h, --help
 EOF
@@ -86,6 +114,7 @@ parse_args() {
             --version) VERSION="${2:-}"; shift 2 ;;
             --jar)     JAR_PATH="${2:-}"; shift 2 ;;
             --bless)   BLESS=true; shift ;;
+            --no-fit-msg-diff) FIT_MSG_DIFF=false; shift ;;
             --debug)   DEBUG=true; shift ;;
             -h|--help) print_usage; exit 0 ;;
             *)
@@ -267,6 +296,9 @@ EOF
         if command -v sha256sum >/dev/null 2>&1; then
             sha256sum "$new_fit" "$case_dir/master.fit" | sed 's/^/         /'
         fi
+        if [[ "$FIT_MSG_DIFF" == "true" ]]; then
+            run_fit_message_diff "$new_fit" "$case_dir/master.fit" "$run_dir" "$case_name"
+        fi
     fi
 
     if ! cmp -s "$new_laps" "$case_dir/master-laps.txt"; then
@@ -308,6 +340,7 @@ main() {
     echo "Jar      : $JAR_PATH"
     echo "Cases dir: $CASES_DIR"
     echo "Bless    : $BLESS"
+    echo "Fit diff : $FIT_MSG_DIFF"
     echo "Sports   : ${sports[*]}"
     echo "============================================"
 

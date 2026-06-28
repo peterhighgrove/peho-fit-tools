@@ -2,7 +2,10 @@ package se.peho.fittools.core;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +13,10 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeMap;
 
+import com.garmin.fit.DeveloperField;
 import com.garmin.fit.Event;
 import com.garmin.fit.EventType;
+import com.garmin.fit.Field;
 import com.garmin.fit.Mesg;
 import com.garmin.fit.MesgNum;
 
@@ -19,6 +24,7 @@ public class ActivityReportGenerator {
     private static final int MESG_GPS_METADATA = 160;
     private static final int MESG_TIME_IN_ZONE = 216;
     private static final int MESG_UNKNOWN_233 = 233;
+    private static final DateTimeFormatter SUFFIX_DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
 
     private final FitFile fitFile;
 
@@ -44,10 +50,16 @@ public class ActivityReportGenerator {
             System.out.println(line);
         }
 
-        try (FileWriter myWriter = new FileWriter("activity-file-structure.txt")) {
+        String baseName = "activity-file-structure.txt";
+        String suffixedName = addExportSuffix(baseName);
+
+        try (FileWriter baseWriter = new FileWriter(baseName);
+                FileWriter suffixedWriter = new FileWriter(suffixedName)) {
             for (String line : outputLines) {
-                myWriter.write(line);
-                myWriter.write(System.lineSeparator());
+                baseWriter.write(line);
+                baseWriter.write(System.lineSeparator());
+                suffixedWriter.write(line);
+                suffixedWriter.write(System.lineSeparator());
             }
         } catch (IOException e) {
             System.out.println("Could not write activity-file-structure.txt");
@@ -402,8 +414,12 @@ public class ActivityReportGenerator {
         Long firstTimestamp = null;
         Long lastTimestamp = null;
 
-        try (FileWriter writer = new FileWriter("activity-mesg-list.csv")) {
-            writer.write(String.join(",",
+        String baseName = "activity-mesg-list.csv";
+        String suffixedName = addExportSuffix(baseName);
+
+        try (FileWriter baseWriter = new FileWriter(baseName);
+                FileWriter suffixedWriter = new FileWriter(suffixedName)) {
+            String header = String.join(",",
                     "Overall mesg ix",
                     "Timestamp (field 253) raw value",
                     "Timestamp (field 253) localtime string",
@@ -419,8 +435,11 @@ public class ActivityReportGenerator {
                     "Enh speed in min/sec hh:mm:ss string",
                     "Enh speed in m/s value",
                     "Cadence"
-            ));
-            writer.write(System.lineSeparator());
+                    );
+                    baseWriter.write(header);
+                    baseWriter.write(System.lineSeparator());
+                    suffixedWriter.write(header);
+                    suffixedWriter.write(System.lineSeparator());
 
             for (int overallIx = 0; overallIx < allMesg.size(); overallIx++) {
                 Mesg mesg = allMesg.get(overallIx);
@@ -500,14 +519,112 @@ public class ActivityReportGenerator {
                         cadence
                 );
 
-                writer.write(toCsvLine(row));
-                writer.write(System.lineSeparator());
+                String line = toCsvLine(row);
+                baseWriter.write(line);
+                baseWriter.write(System.lineSeparator());
+                suffixedWriter.write(line);
+                suffixedWriter.write(System.lineSeparator());
             }
 
             System.out.println("Wrote activity-mesg-list.csv with " + allMesg.size() + " rows.");
         } catch (IOException e) {
             System.out.println("Could not write activity-mesg-list.csv");
         }
+    }
+
+    public void writeFullMesgDump() {
+        List<Mesg> allMesg = fitFile.getAllMesg();
+
+        String baseName = "full-mesg-dump.txt";
+        String suffixedName = addExportSuffix(baseName);
+
+        try (FileWriter baseWriter = new FileWriter(baseName);
+                FileWriter suffixedWriter = new FileWriter(suffixedName)) {
+            for (int i = 0; i < allMesg.size(); i++) {
+                Mesg mesg = allMesg.get(i);
+                String mesgName = MesgNum.getStringFromValue(mesg.getNum());
+                if (mesgName == null || mesgName.isBlank()) {
+                    mesgName = "UNKNOWN";
+                }
+
+                String messageHeader = "M|" + i + "|num=" + mesg.getNum() + "|name=" + mesgName + "|local=" + mesg.getLocalNum();
+                baseWriter.write(messageHeader);
+                baseWriter.write(System.lineSeparator());
+                suffixedWriter.write(messageHeader);
+                suffixedWriter.write(System.lineSeparator());
+
+                for (Field field : mesg.getFields()) {
+                    StringBuilder sb = new StringBuilder();
+                    int n = field.getNumValues();
+                    for (int vi = 0; vi < n; vi++) {
+                        if (vi > 0) {
+                            sb.append("~");
+                        }
+                        sb.append(stringifyFitValue(field.getValue(vi)));
+                    }
+                    String fieldName = field.getName() != null ? field.getName() : "";
+                    String line = "F|" + field.getNum() + "|" + fieldName + "|" + sb;
+                    baseWriter.write(line);
+                    baseWriter.write(System.lineSeparator());
+                    suffixedWriter.write(line);
+                    suffixedWriter.write(System.lineSeparator());
+                }
+
+                for (DeveloperField field : mesg.getDeveloperFields()) {
+                    StringBuilder sb = new StringBuilder();
+                    int n = field.getNumValues();
+                    for (int vi = 0; vi < n; vi++) {
+                        if (vi > 0) {
+                            sb.append("~");
+                        }
+                        sb.append(stringifyFitValue(field.getValue(vi)));
+                    }
+                    String fieldName = field.getName() != null ? field.getName() : "";
+                    String line = "D|ddi=" + field.getDeveloperDataIndex() + "|num=" + field.getNum() + "|" + fieldName + "|" + sb;
+                    baseWriter.write(line);
+                    baseWriter.write(System.lineSeparator());
+                    suffixedWriter.write(line);
+                    suffixedWriter.write(System.lineSeparator());
+                }
+            }
+
+            System.out.println("Wrote full-mesg-dump.txt with " + allMesg.size() + " mesg.");
+        } catch (IOException e) {
+            System.out.println("Could not write full-mesg-dump.txt");
+        }
+    }
+
+    private String addExportSuffix(String baseFilename) {
+        int dotIx = baseFilename.lastIndexOf('.');
+        String suffix = buildExportSuffix();
+        if (dotIx > 0) {
+            return baseFilename.substring(0, dotIx) + suffix + baseFilename.substring(dotIx);
+        }
+        return baseFilename + suffix;
+    }
+
+    private String buildExportSuffix() {
+        Long activityLocal = fitFile.getActivityDateTimeLocal();
+        if (activityLocal == null && !fitFile.getAllMesg().isEmpty()) {
+            activityLocal = fitFile.getAllMesg().get(0).getFieldLongValue(253);
+        }
+
+        String activityDateTime = activityLocal != null
+                ? FitDateTime.toString(activityLocal)
+                : "0000-00-00-00-00-00";
+        String nowDateTime = LocalDateTime.now().format(SUFFIX_DATE_TIME);
+
+        return "_activity." + activityDateTime + "_now." + nowDateTime;
+    }
+
+    private String stringifyFitValue(Object value) {
+        if (value == null) {
+            return "";
+        }
+        if (value instanceof byte[]) {
+            return Arrays.toString((byte[]) value);
+        }
+        return String.valueOf(value);
     }
 
     private String formatLocalDateTimeForCsv(Long fitTimestamp, long diffMinutesLocalUTC) {

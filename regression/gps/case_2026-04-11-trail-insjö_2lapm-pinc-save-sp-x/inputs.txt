@@ -7,8 +7,6 @@ lapm
 pinc
 4
 70
-af
-ac
 save
 
 Velamsund Insjöstigen

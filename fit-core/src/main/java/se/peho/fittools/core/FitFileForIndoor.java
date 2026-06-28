@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ import se.peho.fittools.core.strings.*;
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 public class FitFileForIndoor extends FitFile {
 
-    private Long activityDateTimeLocal; // Original file
+/*     private Long activityDateTimeLocal; // Original file
     private Long activityDateTimeLocalOrg; // Original file
     private Long diffMinutesLocalUTC;
 
@@ -31,7 +32,7 @@ public class FitFileForIndoor extends FitFile {
     public void setActivityDateTimeLocalOrg(Long activityDateTimeLocalOrg) { this.activityDateTimeLocalOrg = activityDateTimeLocalOrg; }
     public Long getDiffMinutesLocalUTC() { return diffMinutesLocalUTC; }
     public void setDiffMinutesLocalUTC(Long diffMinutesLocalUTC) { this.diffMinutesLocalUTC = diffMinutesLocalUTC; }
-
+ */
     private Boolean isSkiErg = false;
     private Boolean isElliptical = false;
     private Boolean isTreadmill = false;
@@ -44,10 +45,15 @@ public class FitFileForIndoor extends FitFile {
 
     public String savedStrOrgFileInfo = "";
 
+    int numberOfDevFields;
+    String devAppToRemove = "9a0508b9-0256-4639-88b3-a2690a14ddf9";
+    //List <Integer> devFieldsToRemove = Arrays.asList("Strokes", "Calories", "Distance", "Speed", "Power", 2, 6, 7);
+    List <Integer> devFieldsToRemove = Arrays.asList(10, 11, 12, 23, 1, 2, 6, 7);
+    List <String> devFieldNamesToUpdate = Arrays.asList("Training_session", "MaxHRevenLaps");
+
     String devAppToModify = "9a0508b9-0256-4639-88b3-a2690a14ddf9";
 
-    private List<Mesg> splitSummaryMesg = new ArrayList<>();
-    private List<Mesg> devDataIdMesg = new ArrayList<>();
+/*     private List<Mesg> devDataIdMesg = new ArrayList<>();
     private List<Mesg> developerDataIdMesg = new ArrayList<>();
     private List<Mesg> fieldDescrMesg = new ArrayList<>();
     private List<Mesg> sportMesg = new ArrayList<>();
@@ -55,9 +61,9 @@ public class FitFileForIndoor extends FitFile {
     public List<Mesg> getDeveloperDataIdMesg() { return developerDataIdMesg; }
     public List<Mesg> getFieldDescrMesg() { return fieldDescrMesg; }
     public List<Mesg> getSportMesg() { return sportMesg; }
-    
+     */
     List<LapExtraMesg> lapExtraRecords = new ArrayList<>(); //Not Garmin SDK
-    List<RecordExtraMesg> secExtraRecords = new ArrayList<>(); //Not Garmin SDK
+    //List<RecordExtraMesg> secExtraRecords = new ArrayList<>(); //Not Garmin SDK
 
     Float activeFakeSumSpeed = 0f;
     Float activeFakeSumCad = 0f;
@@ -96,7 +102,7 @@ public class FitFileForIndoor extends FitFile {
                 + "  debugDevFields=" + debugDevFields);
         }
     }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+/*     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     class RecordExtraMesg {
         private int lapNo;
         private Long C2DateTime;
@@ -111,7 +117,7 @@ public class FitFileForIndoor extends FitFile {
         public Long getC2DateTime() { return C2DateTime; }
         public void setC2DateTime(Long C2DateTime) { this.C2DateTime = C2DateTime; }
 
-    }
+    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     class LapExtraMesg {
         private int hrStart;
@@ -179,7 +185,7 @@ public class FitFileForIndoor extends FitFile {
         public void setCadLapSum(Float cadLapSum) { this.cadLapSum = cadLapSum; }
 
     }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+/*     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void addDistToRecords(int fromRecordIx, Float distToAdd) {
         Float recordDist;
         //  +1 cause not to update 3 new records
@@ -188,9 +194,9 @@ public class FitFileForIndoor extends FitFile {
             recordDist = recordMesg.get(ix).getFieldFloatValue(REC_DIST);
             recordMesg.get(ix).setFieldValue(REC_DIST, (recordDist + distToAdd));
         }
-    }
+    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public int findIxInAllMesg(Long timeToSearchFor) {
+/*     public int findIxInAllMesg(Long timeToSearchFor) {
         int ix = 0;
         // FIND IX i allMesg list
         for (Mesg record : allMesg) {
@@ -204,9 +210,9 @@ public class FitFileForIndoor extends FitFile {
             ix += 1;
         }
         return ix;
-    }
+    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public int findIxInRecordMesg(Long timeToSearchFor) {
+/*     public int findIxInRecordMesg(Long timeToSearchFor) {
         int ix = 0;
         // FIND IX i allMesg list
         for (Mesg record : recordMesg) {
@@ -220,7 +226,7 @@ public class FitFileForIndoor extends FitFile {
             ix += 1;
         }
         return ix;
-    }
+    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void initLapExtraRecords() {
 
@@ -383,7 +389,7 @@ public class FitFileForIndoor extends FitFile {
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public String getFilenameAndSetNewSportProfileName(String suffix, String outputFilenameBase) {
+/*     public String getFilenameAndSetNewSportProfileName(String suffix, String outputFilenameBase) {
         return ActivityNamingStr.getFilenameAndSetNewSportProfileName(
                 activityDateTimeLocal,
                 sportProfile,
@@ -392,9 +398,9 @@ public class FitFileForIndoor extends FitFile {
                 totalTimerTime,
                 getProduct()
         );
-    }
+    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public String getFileNameBaseNewTime() {
+/*     public String getFileNameBaseNewTime() {
         return ActivityNamingStr.getFileNameBaseNewTime(
                 activityDateTimeLocal,
                 sportProfile,
@@ -408,9 +414,9 @@ public class FitFileForIndoor extends FitFile {
                 getSwVer(),
                 getActivityNameSuffix()
         );
-    }
+    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public String getFileNameBaseOrgTime() {
+/*     public String getFileNameBaseOrgTime() {
         return ActivityNamingStr.getFileNameBaseOrgTime(
                 activityDateTimeLocalOrg,
                 sportProfile,
@@ -424,9 +430,9 @@ public class FitFileForIndoor extends FitFile {
                 getSwVer(),
                 getActivityNameSuffix()
         );
-    }
+    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public String getActivityNameStr() {
+/*     public String getActivityNameStr() {
         return ActivityNamingStr.getActivityNameStr(
                 sportProfile,
                 sport,
@@ -435,9 +441,9 @@ public class FitFileForIndoor extends FitFile {
                 totalDistance,
                 getActivityNameSuffix()
         );
-    }
+    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void setNewSportProfileName() {
+/*     public void setNewSportProfileName() {
         String newActivityName = ActivityNamingStr.setNewSportProfileName(
                 sessionMesg,
                 SES_PROFILE,
@@ -449,7 +455,7 @@ public class FitFileForIndoor extends FitFile {
                 getActivityNameSuffix()
         );
         setSportProfile(newActivityName);
-    }
+    } */
         //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     /* public void addDevFieldDescr() {
         byte[] appId = new byte[]{
@@ -715,9 +721,9 @@ public class FitFileForIndoor extends FitFile {
         return isTrue;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void checkC2StartDist () {
+/*     public void checkC2StartDist () {
         // sdsd
-    }
+    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public Boolean hasC2FitFile(String filename) {
         Boolean isTrue = false;
@@ -940,7 +946,7 @@ public class FitFileForIndoor extends FitFile {
             while (c2FitFile.recordMesg.get(c2RecordIx).getFieldFloatValue(REC_DIST) - 0.5 <= record.getFieldFloatValue(REC_DIST) - C2FitFileDistanceStartCorrection) {
                 record.setFieldValue(REC_CAD, c2FitFile.recordMesg.get(c2RecordIx).getFieldShortValue(REC_CAD));
                 //record.setFieldValue(REC_POW, c2FitFile.recordMesg.get(c2RecordIx).getFieldIntegerValue(REC_POW));
-                secExtraRecords.get(recordIx).C2DateTime = c2FitFile.recordMesg.get(c2RecordIx).getFieldLongValue(REC_TIME);
+                secExtraRecords.get(recordIx).setC2DateTime(c2FitFile.recordMesg.get(c2RecordIx).getFieldLongValue(REC_TIME));
                 c2RecordIx++;
                 if (c2RecordIx > c2FitFile.numberOfRecords - 1) {
                     c2RecordIx--;
@@ -2712,7 +2718,7 @@ public class FitFileForIndoor extends FitFile {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void readFitFile (String inputFilePath) {
+/*     public void readFitFile (String inputFilePath) {
         
         try {
             // Verify the file exists and is a valid FIT file
@@ -2861,10 +2867,10 @@ public class FitFileForIndoor extends FitFile {
         } catch (FitRuntimeException e) {
             System.err.println("Error processing FIT file: " + e.getMessage());
         }
-    }
+    } */
 
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void encodeNewFit (String outputFilePath, boolean encodeWorkoutRecords) {
+    public void encodeIndoorFit (String outputFilePath, boolean encodeWorkoutRecords) {
 
         System.out.println("Encode Activity FIT File");
 
@@ -2875,8 +2881,8 @@ public class FitFileForIndoor extends FitFile {
             encode = new FileEncoder(new java.io.File(outputFilePath), Fit.ProtocolVersion.V2_0);
 
             for (Mesg record : allMesg) {
-                /* if (record.getNum() != MesgNum.SPLIT &&
-                    record.getNum() != MesgNum.SPLIT_SUMMARY) { */
+                // if (record.getNum() != MesgNum.SPLIT &&
+                //    record.getNum() != MesgNum.SPLIT_SUMMARY) {
                 if (record.getNum() != MesgNum.SPLIT) {
                     try {
                         encode.write(record);
@@ -2928,7 +2934,7 @@ public class FitFileForIndoor extends FitFile {
     }
         
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void changeStartTime (int changeSeconds) {
+/*     public void changeStartTime (int changeSeconds) {
 
         for (Mesg mesg : allMesg) {
             int mesgNum = mesg.getNum();
@@ -2975,29 +2981,29 @@ public class FitFileForIndoor extends FitFile {
             Long actLocalTime = activityMesg.get(0).getFieldLongValue(ACT_LOCTIME);
             if (actLocalTime != null) activityDateTimeLocal = actLocalTime;
         }
-        /* timeFirstRecord = recordMesg.get(0).getFieldLongValue(REC_TIME);
-        timeLastRecord = recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME);
-        activityDateTimeLocal = activityMesg.get(0).getFieldLongValue(ACT_LOCTIME); */
+        // timeFirstRecord = recordMesg.get(0).getFieldLongValue(REC_TIME);
+        // timeLastRecord = recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME);
+        // activityDateTimeLocal = activityMesg.get(0).getFieldLongValue(ACT_LOCTIME);
 
-    }
+    } */
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void createFileSummaryIndoor() {
         savedStrOrgFileInfo += "--------------------------------------------------" + System.lineSeparator();
         savedStrOrgFileInfo += " --> Manufacturer:" + getManufacturer() + ", " + getProduct() + "(" + getProductNo() + ")" + ", SW: v" + getSwVer() + System.lineSeparator();
         savedStrOrgFileInfo += " --> Sport:"+ sport + ", SubSport:" + subsport + ", SportProfile:" + sportProfile + ", WktName:" + wktName + System.lineSeparator();
-        savedStrOrgFileInfo += " --> Org activity dateTime Local:" + FitDateTime.toString(activityDateTimeLocalOrg) + System.lineSeparator();
-        savedStrOrgFileInfo += " --> New activity dateTime Local:" + FitDateTime.toString(activityDateTimeLocal) + System.lineSeparator();
+        savedStrOrgFileInfo += " --> Org activity dateTime Local:" + FitDateTime.toString(getActivityDateTimeLocalOrg()) + System.lineSeparator();
+        savedStrOrgFileInfo += " --> New activity dateTime Local:" + FitDateTime.toString(getActivityDateTimeLocal()) + System.lineSeparator();
         savedStrOrgFileInfo += " --> Org activity DateTime UTC:  " + FitDateTime.toString(getActivityDateTimeUTC()) + System.lineSeparator();
-        savedStrOrgFileInfo += " --> timeZone:                   " + FitDateTime.offsetToTimeZoneString(diffMinutesLocalUTC) + System.lineSeparator();
-        savedStrOrgFileInfo += " --> Org start datetime UTC:     " + FitDateTime.toString(timeFirstRecordOrg) + System.lineSeparator();
-        savedStrOrgFileInfo += " --> New start datetime UTC:     " + FitDateTime.toString(timeFirstRecord) + System.lineSeparator();
+        savedStrOrgFileInfo += " --> timeZone:                   " + FitDateTime.offsetToTimeZoneString(getDiffMinutesLocalUTC()) + System.lineSeparator();
+        savedStrOrgFileInfo += " --> Org start datetime UTC:     " + FitDateTime.toString(getTimeFirstRecordOrg()) + System.lineSeparator();
+        savedStrOrgFileInfo += " --> New start datetime UTC:     " + FitDateTime.toString(getTimeFirstRecord()) + System.lineSeparator();
         
         savedStrOrgFileInfo += "--------------------------------------------------" + System.lineSeparator();
 
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printWktInfo() {
+/*     public void printWktInfo() {
         int i = 0;
         System.out.println();
         System.out.println("==================================================");
@@ -3035,13 +3041,13 @@ public class FitFileForIndoor extends FitFile {
             if (capField != null) {
                 System.out.print(" Capabilities: " + PehoUtils.getLabelWithValue(WorkoutCapabilities.class, capField));
             }
-            /* Field capField = mesg.getField(WorkoutMesg.CapabilitiesFieldNum);
-            Long raw = capField != null ? capField.getLongValue() : null;
+            // /* Field capField = mesg.getField(WorkoutMesg.CapabilitiesFieldNum);
+            // Long raw = capField != null ? capField.getLongValue() : null;
 
-            if (raw != null) {
-                List<String> caps = decodeWorkoutCapabilities(raw);
-                System.out.print(" Capabilities: " + String.join(", ", caps));
-            } */
+            // if (raw != null) {
+            //     List<String> caps = decodeWorkoutCapabilities(raw);
+            //     System.out.print(" Capabilities: " + String.join(", ", caps));
+            // }
 
             System.out.println();
         }
@@ -3064,10 +3070,10 @@ public class FitFileForIndoor extends FitFile {
             e.printStackTrace();
         }
         return result;
-    }
+    } */
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printWktSessionInfo() {
+/*     public void printWktSessionInfo() {
         int i = 0;
         System.out.println();
         System.out.println("==================================================");
@@ -3097,9 +3103,9 @@ public class FitFileForIndoor extends FitFile {
             System.out.println();
         }
         System.out.println("--------------------------------------------------");
-    }
+    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printWktStepInfo() {
+/*     public void printWktStepInfo() {
         int i = 0;
         System.out.println();
         System.out.println("==================================================");
@@ -3270,9 +3276,9 @@ public class FitFileForIndoor extends FitFile {
             System.out.println();
         }
         System.out.println("--------------------------------------------------");
-    }
+    } */
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printSessionInfo () {
+/*     public void printSessionInfo () {
         int i = 0;
         System.out.println();
         System.out.println("==================================================");
@@ -3320,9 +3326,9 @@ public class FitFileForIndoor extends FitFile {
             System.out.println();
         }
         System.out.println("--------------------------------------------------");
-    }
+    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printCourse() {
+/*     public void printCourse() {
         System.out.println();
         System.out.println("==================================================");
         System.out.println("====CourseMesg----------------------------------------------");
@@ -3341,9 +3347,9 @@ public class FitFileForIndoor extends FitFile {
             }
         }
         System.out.println("--------------------------------------------------");
-    }
+    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printDevDataId() {
+/*     public void printDevDataId() {
         System.out.println();
         System.out.println("==================================================");
         System.out.println("====DevDataIdMesg----------------------------------------------");
@@ -3503,20 +3509,20 @@ public class FitFileForIndoor extends FitFile {
             //System.out.print(" " + FitDateTime.toTimerString(startTimer));
         }
 
-        /* // Timestamp
-        Long timestamp = mesg.getFieldLongValue(LAP_TIME);
-        if (timestamp != null) {
-            System.out.print(" Timestamp: " + FitDateTime.toString(timestamp, diffMinutesLocalUTC));
-        } */
+        //  // Timestamp
+        // Long timestamp = mesg.getFieldLongValue(LAP_TIME);
+        // if (timestamp != null) {
+        //     System.out.print(" Timestamp: " + FitDateTime.toString(timestamp, diffMinutesLocalUTC));
+        // } 
 
-        /*/ Extra record fields
-        if (lapExtraRecords.get(i).timeEnd != null) System.out.print(" TimeEnd: " + lapExtraRecords.get(i).timeEnd);
-        if (lapExtraRecords.get(i).stepLen != null) System.out.print(" StepLen: " + lapExtraRecords.get(i).stepLen);
-        if (lapExtraRecords.get(i).hrStart != 0) System.out.print(" hrStart: " + lapExtraRecords.get(i).hrStart);
-        if (lapExtraRecords.get(i).hrEnd != 0) System.out.print(" hrEnd: " + lapExtraRecords.get(i).hrEnd);
-        if (lapExtraRecords.get(i).recordIxEnd != 0) System.out.print(" recordIxEnd: " + lapExtraRecords.get(i).recordIxEnd);
-        if (lapExtraRecords.get(i).hrMin != 0) System.out.print(" hrMin: " + lapExtraRecords.get(i).hrMin);
-        */
+        //  Extra record fields
+        // if (lapExtraRecords.get(i).timeEnd != null) System.out.print(" TimeEnd: " + lapExtraRecords.get(i).timeEnd);
+        // if (lapExtraRecords.get(i).stepLen != null) System.out.print(" StepLen: " + lapExtraRecords.get(i).stepLen);
+        // if (lapExtraRecords.get(i).hrStart != 0) System.out.print(" hrStart: " + lapExtraRecords.get(i).hrStart);
+        // if (lapExtraRecords.get(i).hrEnd != 0) System.out.print(" hrEnd: " + lapExtraRecords.get(i).hrEnd);
+        // if (lapExtraRecords.get(i).recordIxEnd != 0) System.out.print(" recordIxEnd: " + lapExtraRecords.get(i).recordIxEnd);
+        // if (lapExtraRecords.get(i).hrMin != 0) System.out.print(" hrMin: " + lapExtraRecords.get(i).hrMin);
+        
         System.out.println();
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -3605,15 +3611,15 @@ public class FitFileForIndoor extends FitFile {
                 System.out.print(" StartTime:" + FitDateTime.toString(startTime, diffMinutesLocalUTC));
             }
 
-            /*
-            // Extra fields: level and step length (skip if SkiErg)
-            if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
-                System.out.print(" lv" + lapExtraRecords.get(i).level.intValue());
-            }
-            if (lapExtraRecords.get(i).stepLen != null && !isSkiErgFile()) {
-                System.out.print(" steplen" + (int) (lapExtraRecords.get(i).stepLen * 100) + "cm");
-            }
-            */
+            // /*
+            // // Extra fields: level and step length (skip if SkiErg)
+            // if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
+            //     System.out.print(" lv" + lapExtraRecords.get(i).level.intValue());
+            // }
+            // if (lapExtraRecords.get(i).stepLen != null && !isSkiErgFile()) {
+            //     System.out.print(" steplen" + (int) (lapExtraRecords.get(i).stepLen * 100) + "cm");
+            // }
+            // 
 
             // Total timer
             Float totalTimer = mesg.getFieldFloatValue(LAP_TIMER);
@@ -3625,23 +3631,23 @@ public class FitFileForIndoor extends FitFile {
 
             System.out.print(" WktIntensity: " + intensity);
 
-            /*
-            // Heart rate logic
-            Integer maxHr = mesg.getFieldIntegerValue(LAP_MAX_HR);
-            if ("ACTIVE".equals(intensityLabel) || "WARMUP".equals(intensityLabel)) {
-                System.out.print(" HR start:" + lapExtraRecords.get(i).hrStart);
-                System.out.print(" min:" + lapExtraRecords.get(i).hrMin);
-                System.out.print("+" + ((maxHr != null ? maxHr : 0) - lapExtraRecords.get(i).hrMin));
-                System.out.print("-->max:" + (maxHr != null ? maxHr : "N/A"));
-                System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
-            } else {
-                System.out.print(" HR start:" + lapExtraRecords.get(i).hrStart);
-                System.out.print(" max:" + (maxHr != null ? maxHr : "N/A"));
-                System.out.print("" + (lapExtraRecords.get(i).hrMin - (maxHr != null ? maxHr : 0)));
-                System.out.print("-->min:" + lapExtraRecords.get(i).hrMin);
-                System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
-            }
-            */
+            // /*
+            // // Heart rate logic
+            // Integer maxHr = mesg.getFieldIntegerValue(LAP_MAX_HR);
+            // if ("ACTIVE".equals(intensityLabel) || "WARMUP".equals(intensityLabel)) {
+            //     System.out.print(" HR start:" + lapExtraRecords.get(i).hrStart);
+            //     System.out.print(" min:" + lapExtraRecords.get(i).hrMin);
+            //     System.out.print("+" + ((maxHr != null ? maxHr : 0) - lapExtraRecords.get(i).hrMin));
+            //     System.out.print("-->max:" + (maxHr != null ? maxHr : "N/A"));
+            //     System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
+            // } else {
+            //     System.out.print(" HR start:" + lapExtraRecords.get(i).hrStart);
+            //     System.out.print(" max:" + (maxHr != null ? maxHr : "N/A"));
+            //     System.out.print("" + (lapExtraRecords.get(i).hrMin - (maxHr != null ? maxHr : 0)));
+            //     System.out.print("-->min:" + lapExtraRecords.get(i).hrMin);
+            //     System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
+            // }
+            // 
 
             // Distance
             Float totalDist = mesg.getFieldFloatValue(LAP_DIST);
@@ -3668,17 +3674,17 @@ public class FitFileForIndoor extends FitFile {
                 System.out.print(" max:" + (maxPower != null ? maxPower : "N/A"));
             }
 
-            /*
-            // Extra lap info: Drag Factor and Stroke Length
-            if (lapExtraRecords.get(i).avgDragFactor != null) {
-                System.out.print("--DFavg:" + (int) Math.round(lapExtraRecords.get(i).avgDragFactor));
-                System.out.print(" max:" + (int) Math.round(lapExtraRecords.get(i).maxDragFactor));
-            }
-            if (lapExtraRecords.get(i).avgStrokeLen != null) {
-                System.out.print("--SLavg:" + lapExtraRecords.get(i).avgStrokeLen);
-                System.out.print(" max:" + lapExtraRecords.get(i).maxStrokeLen);
-            }
-            */
+            // /*
+            // // Extra lap info: Drag Factor and Stroke Length
+            // if (lapExtraRecords.get(i).avgDragFactor != null) {
+            //     System.out.print("--DFavg:" + (int) Math.round(lapExtraRecords.get(i).avgDragFactor));
+            //     System.out.print(" max:" + (int) Math.round(lapExtraRecords.get(i).maxDragFactor));
+            // }
+            // if (lapExtraRecords.get(i).avgStrokeLen != null) {
+            //     System.out.print("--SLavg:" + lapExtraRecords.get(i).avgStrokeLen);
+            //     System.out.print(" max:" + lapExtraRecords.get(i).maxStrokeLen);
+            // }
+            // 
 
             System.out.println();
             i++;
@@ -3702,29 +3708,29 @@ public class FitFileForIndoor extends FitFile {
             if ("ACTIVE".equals(intensity)) {
                 System.out.print("Lap:" + lapNo);
 
-                /*
-                if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
-                    System.out.print(" lv" + lapExtraRecords.get(i).level.intValue());
-                }
-                */
+                // /*
+                // if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
+                //     System.out.print(" lv" + lapExtraRecords.get(i).level.intValue());
+                // }
+                //
 
                 Float totalTimer = mesg.getFieldFloatValue(LAP_TIMER);
                 if (totalTimer != null) {
                     System.out.print(" LapTime: " + PehoUtils.sec2minSecShort(totalTimer));
                 }
 
-                /*
-                System.out.print(" HR start:" + lapExtraRecords.get(i).hrStart);
-                if (i > 0) {
-                    System.out.print(" HRmin" + lapExtraRecords.get(i - 1).hrMin);
-                } else {
-                    System.out.print(" HR");
-                }
-                System.out.print(" min:" + lapExtraRecords.get(i).hrMin);
-                System.out.print("+" + (mesg.getFieldIntegerValue(LAP_MAX_HR) - lapExtraRecords.get(i).hrMin));
-                System.out.print("-->max:" + mesg.getFieldIntegerValue(LAP_MAX_HR));
-                System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
-                */
+                // /*
+                // System.out.print(" HR start:" + lapExtraRecords.get(i).hrStart);
+                // if (i > 0) {
+                //     System.out.print(" HRmin" + lapExtraRecords.get(i - 1).hrMin);
+                // } else {
+                //     System.out.print(" HR");
+                // }
+                // System.out.print(" min:" + lapExtraRecords.get(i).hrMin);
+                // System.out.print("+" + (mesg.getFieldIntegerValue(LAP_MAX_HR) - lapExtraRecords.get(i).hrMin));
+                // System.out.print("-->max:" + mesg.getFieldIntegerValue(LAP_MAX_HR));
+                // System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
+                
 
                 Float totalDist = mesg.getFieldFloatValue(LAP_DIST);
                 if (totalDist != null) System.out.print("--Dist:" + totalDist);
@@ -3747,16 +3753,16 @@ public class FitFileForIndoor extends FitFile {
                     System.out.print(" max:" + (maxPower != null ? maxPower : "N/A"));
                 }
 
-                /*
-                if (lapExtraRecords.get(i).avgDragFactor != null) {
-                    System.out.print("--DFavg:" + (int) Math.round(lapExtraRecords.get(i).avgDragFactor));
-                    System.out.print(" max:" + (int) Math.round(lapExtraRecords.get(i).maxDragFactor));
-                }
-                if (lapExtraRecords.get(i).avgStrokeLen != null) {
-                    System.out.print("--SLavg:" + lapExtraRecords.get(i).avgStrokeLen);
-                    System.out.print(" max:" + lapExtraRecords.get(i).maxStrokeLen);
-                }
-                */
+                // /*
+                // if (lapExtraRecords.get(i).avgDragFactor != null) {
+                //     System.out.print("--DFavg:" + (int) Math.round(lapExtraRecords.get(i).avgDragFactor));
+                //     System.out.print(" max:" + (int) Math.round(lapExtraRecords.get(i).maxDragFactor));
+                // }
+                // if (lapExtraRecords.get(i).avgStrokeLen != null) {
+                //     System.out.print("--SLavg:" + lapExtraRecords.get(i).avgStrokeLen);
+                //     System.out.print(" max:" + lapExtraRecords.get(i).maxStrokeLen);
+                // }
+                
 
                 System.out.println();
             }
@@ -3776,24 +3782,24 @@ public class FitFileForIndoor extends FitFile {
             if ("REST".equals(intensity) || "RECOVERY".equals(intensity)) {
                 System.out.print("Lap:" + lapNo);
 
-                /*
-                if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
-                    System.out.print(" lv" + lapExtraRecords.get(i).level.intValue());
-                }
-                */
+                // /*
+                // if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
+                //     System.out.print(" lv" + lapExtraRecords.get(i).level.intValue());
+                // }
+                
 
                 Float totalTimer = mesg.getFieldFloatValue(LAP_TIMER);
                 if (totalTimer != null) {
                     System.out.print(" LapTime: " + PehoUtils.sec2minSecShort(totalTimer));
                 }
 
-                /*
-                System.out.print(" HR start:" + lapExtraRecords.get(i).hrStart);
-                System.out.print(" max:" + mesg.getFieldIntegerValue(LAP_MAX_HR));
-                System.out.print("" + (lapExtraRecords.get(i).hrMin - mesg.getFieldIntegerValue(LAP_MAX_HR)));
-                System.out.print("-->min:" + lapExtraRecords.get(i).hrMin);
-                System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
-                */
+                // /*
+                // System.out.print(" HR start:" + lapExtraRecords.get(i).hrStart);
+                // System.out.print(" max:" + mesg.getFieldIntegerValue(LAP_MAX_HR));
+                // System.out.print("" + (lapExtraRecords.get(i).hrMin - mesg.getFieldIntegerValue(LAP_MAX_HR)));
+                // System.out.print("-->min:" + lapExtraRecords.get(i).hrMin);
+                // System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
+                
 
                 Float totalDist = mesg.getFieldFloatValue(LAP_DIST);
                 if (totalDist != null) System.out.print("--Dist:" + totalDist);
@@ -3816,23 +3822,23 @@ public class FitFileForIndoor extends FitFile {
                     System.out.print(" max:" + (maxPower != null ? maxPower : "N/A"));
                 }
 
-                /*
-                if (lapExtraRecords.get(i).avgDragFactor != null) {
-                    System.out.print("--DFavg:" + (int) Math.round(lapExtraRecords.get(i).avgDragFactor));
-                    System.out.print(" max:" + (int) Math.round(lapExtraRecords.get(i).maxDragFactor));
-                }
-                if (lapExtraRecords.get(i).avgStrokeLen != null) {
-                    System.out.print("--SLavg:" + lapExtraRecords.get(i).avgStrokeLen);
-                    System.out.print(" max:" + lapExtraRecords.get(i).maxStrokeLen);
-                }
-                */
+                // /*
+                // if (lapExtraRecords.get(i).avgDragFactor != null) {
+                //     System.out.print("--DFavg:" + (int) Math.round(lapExtraRecords.get(i).avgDragFactor));
+                //     System.out.print(" max:" + (int) Math.round(lapExtraRecords.get(i).maxDragFactor));
+                // }
+                // if (lapExtraRecords.get(i).avgStrokeLen != null) {
+                //     System.out.print("--SLavg:" + lapExtraRecords.get(i).avgStrokeLen);
+                //     System.out.print(" max:" + lapExtraRecords.get(i).maxStrokeLen);
+                // }
+                //
 
                 System.out.println();
             }
             i++;
             lapNo++;
         }
-    }
+    } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printWriteLapSummery (String filename) {
         
@@ -4019,14 +4025,14 @@ public class FitFileForIndoor extends FitFile {
         }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printRecordMesg (int ix1, int ix2) {
+/*     public void printRecordMesg (int ix1, int ix2) {
         for (i=ix1; i<=ix2; i++) {
             System.out.print(FitDateTime.toString(recordMesg.get(i).getFieldLongValue(REC_TIME)));
             System.out.print(((recordMesg.get(i).getFieldLongValue(REC_LAT))));
             System.out.print(((recordMesg.get(i).getFieldLongValue(REC_LON))));
             System.out.println();
         }
-    }
+    } */
     //=============================================================================
     public void printSecRecords2() {
         System.out.println("-----printSecRecords2---------------------------------------------");
@@ -4057,8 +4063,8 @@ public class FitFileForIndoor extends FitFile {
                 appendIfNotNull(sb, " Pow:", rec.getFieldIntegerValue(REC_POW));
 
                 // Extra data (your custom structure)
-                if (secExtraRecords.get(i).C2DateTime != null) {
-                    sb.append(" C2time:").append(secExtraRecords.get(i).C2DateTime);
+                if (secExtraRecords.get(i).getC2DateTime() != null) {
+                    sb.append(" C2time:").append(secExtraRecords.get(i).getC2DateTime());
                 }
 
                 // Position (lat/lon)
@@ -4103,7 +4109,7 @@ public class FitFileForIndoor extends FitFile {
             Long startTime = lap.getFieldLongValue(LAP_STIME);
             if (startTime != null) {
                 sb.append(" StartTime:")
-                .append(FitDateTime.toString(startTime, diffMinutesLocalUTC));
+                .append(FitDateTime.toString(startTime, getDiffMinutesLocalUTC()));
             }
 
             // Level and step length (extra)
@@ -4334,7 +4340,7 @@ public class FitFileForIndoor extends FitFile {
         System.out.println();
         System.out.println("==================================================");
         System.out.println("SPLITS IN FILE");
-        System.out.println(" File  between " + FitDateTime.toString(timeFirstRecord,diffMinutesLocalUTC) + " >>>> " + FitDateTime.toString(timeLastRecord,diffMinutesLocalUTC));
+        System.out.println(" File  between " + FitDateTime.toString(timeFirstRecord,getDiffMinutesLocalUTC()) + " >>>> " + FitDateTime.toString(timeLastRecord,getDiffMinutesLocalUTC()));
         System.out.println(String.format(" TotalTime:%1$smin Dist:%2$skm", PehoUtils.sec2minSecLong(totalTimerTime), PehoUtils.m2km2(totalDistance)));
         System.out.println("--------------------------------------------------");
         for (Mesg mesg : splitMesg) {
@@ -4347,10 +4353,10 @@ public class FitFileForIndoor extends FitFile {
             }
 
             Long startTime = mesg.getFieldLongValue(SPL_STIME);
-            if (startTime != null) System.out.print(" Time:" + FitDateTime.toString(startTime, diffMinutesLocalUTC));
+            if (startTime != null) System.out.print(" Time:" + FitDateTime.toString(startTime, getDiffMinutesLocalUTC()));
 
             Long endTime = mesg.getFieldLongValue(SPL_ETIME);
-            if (endTime != null) System.out.print("->" + FitDateTime.toString(endTime, diffMinutesLocalUTC));
+            if (endTime != null) System.out.print("->" + FitDateTime.toString(endTime, getDiffMinutesLocalUTC()));
 
             Float totalTimer = mesg.getFieldFloatValue(SPL_TIMER);
             if (totalTimer != null)  System.out.print(" SplTime:" + PehoUtils.sec2minSecLong(totalTimer) + "min");
@@ -4399,7 +4405,7 @@ public class FitFileForIndoor extends FitFile {
         System.out.println();
         System.out.println("==================================================");
         System.out.println("SPLIT SUMMARIES IN FILE");
-        System.out.println(" File  between " + FitDateTime.toString(timeFirstRecord,diffMinutesLocalUTC) + " >>>> " + FitDateTime.toString(timeLastRecord,diffMinutesLocalUTC));
+        System.out.println(" File  between " + FitDateTime.toString(timeFirstRecord,getDiffMinutesLocalUTC()) + " >>>> " + FitDateTime.toString(timeLastRecord,getDiffMinutesLocalUTC()));
         System.out.println(String.format(" TotalTime:%1$smin Dist:%2$skm", PehoUtils.sec2minSecLong(totalTimerTime), PehoUtils.m2km2(totalDistance)));
         System.out.println("--------------------------------------------------");
         for (Mesg mesg : splitSummaryMesg) {

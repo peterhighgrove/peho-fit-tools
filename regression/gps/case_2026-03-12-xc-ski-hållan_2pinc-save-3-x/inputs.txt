@@ -6,8 +6,6 @@ pinc
 11
 40
 lap1
-af
-ac
 save
 3
 Hållan-Malmbäcksstugan-Svalåtjärn-Bruksvallarna
