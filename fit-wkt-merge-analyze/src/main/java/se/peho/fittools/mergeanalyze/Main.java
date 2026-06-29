@@ -52,7 +52,7 @@ public class Main {
         if (conf.isDebugLaps()) watchFitFile.getLapReportGenerator().printLapReport1();
         //watchFitFile.printSecRecords0();
         //watchFitFile.printSecRecords();
-        if (conf.isDebugLaps()) watchFitFile.debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
+        if (conf.isDebugLaps()) watchFitFile.getLapReportGenerator().debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
         //watchFitFile.printSplitRecords();
         //watchFitFile.printSplitSumRecords();
 
@@ -318,7 +318,7 @@ public class Main {
         //watchFitFile.printCourse();
         if (conf.isDebugDevFields()) watchFitFile.printDevDataId();
         if (conf.isDebugDevFields()) watchFitFile.printFieldDescr();
-        if (conf.isDebugLaps()) watchFitFile.debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
+        if (conf.isDebugLaps()) watchFitFile.getLapReportGenerator().debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
         if (conf.isDebugWkt()) watchFitFile.printWktInfo();
         if (conf.isDebugWkt()) watchFitFile.printWktSessionInfo();
         if (conf.isDebugWkt()) watchFitFile.printWktStepInfo();

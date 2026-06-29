@@ -205,10 +205,11 @@ public class FitFile {
     //List<Mesg> developerDataIdMesg = new ArrayList<>();
     List<Mesg> fieldDescrMesg = new ArrayList<>();
 
-    private List<PauseMesg> pauseRecords = new ArrayList<>(); //Not Garmin SDK
-    private List<GapMesg> gapRecords = new ArrayList<>(); //Not Garmin SDK
-    private List<RecordMesgAddOnRecords> recordMesgAddOnRecords = new ArrayList<>(); //Not Garmin SDK
+    List<PauseMesg> pauseRecords = new ArrayList<>(); //Not Garmin SDK
+    List<GapMesg> gapRecords = new ArrayList<>(); //Not Garmin SDK
+    List<RecordMesgAddOnRecords> recordMesgAddOnRecords = new ArrayList<>(); //Not Garmin SDK
     List<RecordExtraMesg> secExtraRecords = new ArrayList<>(); //Not Garmin SDK
+    List<LapExtraMesg> lapExtraRecords = new ArrayList<>(); //Not Garmin SDK
 
     SimpleDateFormat sweDateTime = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 
@@ -568,6 +569,98 @@ public class FitFile {
         }
         
 
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    class LapExtraMesg {
+        private int hrStart;
+        private int hrEnd;
+        private int hrMin;
+        private Long timeEnd;
+        private int lapNo;
+        private int recordIxStart;
+        private int recordIxEnd;
+        private Float stepLen;
+        private Float level;
+        private Float avgStrokeLen;
+        private Float maxStrokeLen;
+        private Float avgDragFactor;
+        private Float maxDragFactor;
+        private Float speedLapSum;
+        private Float cadLapSum;
+
+        public LapExtraMesg(int hrStart, int hrEnd, int hrMin, Long timeEnd, int lapNo, int recordIxStart, 
+                int recordIxEnd, Float stepLen, Float level, Float avgStrokeLen, Float maxStrokeLen, Float avgDragFactor, Float maxDragFactor) {
+            this.hrStart = hrStart;
+            this.hrEnd = hrEnd;
+            this.hrMin = hrMin;
+            this.timeEnd = timeEnd;
+            this.lapNo = lapNo;
+            this.recordIxStart = recordIxStart;
+            this.recordIxEnd = recordIxEnd;
+            this.stepLen = stepLen;
+            this.level = level;
+            this.avgStrokeLen = avgStrokeLen;
+            this.maxStrokeLen = maxStrokeLen;
+            this.avgDragFactor = avgDragFactor;
+            this.maxDragFactor = maxDragFactor;
+        }
+
+        public int getHrStart() { return hrStart; }
+        public void setHrStart(int hrStart) { this.hrStart = hrStart; }
+        public int getHrEnd() { return hrEnd; }
+        public void setHrEnd(int hrEnd) { this.hrEnd = hrEnd; }
+        public int getHrMin() { return hrMin; }
+        public void setHrMin(int hrMin) { this.hrMin = hrMin; }
+        public Long getTimeEnd() { return timeEnd; }
+        public void setTimeEnd(Long timeEnd) { this.timeEnd = timeEnd; }
+        public int getLapNo() { return lapNo; }
+        public void setLapNo(int lapNo) { this.lapNo = lapNo; }
+        public int getRecordIxStart() { return recordIxStart; }
+        public void setRecordIxStart(int recordIxStart) { this.recordIxStart = recordIxStart; }
+        public int getRecordIxEnd() { return recordIxEnd; }
+        public void setRecordIxEnd(int recordIxEnd) { this.recordIxEnd = recordIxEnd; }
+        public Float getStepLen() { return stepLen; }
+        public void setStepLen(Float stepLen) { this.stepLen = stepLen; }
+        public Float getLevel() { return level; }
+        public void setLevel(Float level) { this.level = level; }
+        public Float getAvgStrokeLen() { return avgStrokeLen; }
+        public void setAvgStrokeLen(Float avgStrokeLen) { this.avgStrokeLen = avgStrokeLen; }
+        public Float getMaxStrokeLen() { return maxStrokeLen; }
+        public void setMaxStrokeLen(Float maxStrokeLen) { this.maxStrokeLen = maxStrokeLen; }
+        public Float getAvgDragFactor() { return avgDragFactor; }
+        public void setAvgDragFactor(Float avgDragFactor) { this.avgDragFactor = avgDragFactor; }
+        public Float getMaxDragFactor() { return maxDragFactor; }
+        public void setMaxDragFactor(Float maxDragFactor) { this.maxDragFactor = maxDragFactor; }
+        public Float getSpeedLapSum() { return speedLapSum; }
+        public void setSpeedLapSum(Float speedLapSum) { this.speedLapSum = speedLapSum; }
+        public Float getCadLapSum() { return cadLapSum; }
+        public void setCadLapSum(Float cadLapSum) { this.cadLapSum = cadLapSum; }
+
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void initLapExtraRecords() {
+
+        int hrStart = 0;
+        int hrEnd = 0;
+        int hrMin = 9999;
+        Long timeEnd = null;
+        int lapNo = 0;
+        int recordIxStart = 0;
+        int recordIxEnd = 0;
+        Float stepLen = null;
+        Float level = 0f;
+        Float avgStrokeLen = 0f;
+        Float maxStrokeLen = 0f;
+        Float avgDragFactor = 0f;
+        Float maxDragFactor = 0f;
+
+        System.out.println("----- INIT LapExtra Records for ALL MESG -----");
+        for (Mesg record : lapMesg) {
+            LapExtraMesg newLapExtra = new LapExtraMesg(hrStart, hrEnd, hrMin, timeEnd, recordIxStart, recordIxEnd, lapNo, stepLen, level, avgStrokeLen, maxStrokeLen, avgDragFactor, maxDragFactor);
+            newLapExtra.setSpeedLapSum(0f);
+            newLapExtra.setCadLapSum(0f);
+            lapExtraRecords.add(newLapExtra);
+        }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     class RecordExtraMesg {
@@ -5399,6 +5492,18 @@ public class FitFile {
         
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void appendIfNotNull(StringBuilder sb, String label, Object value) {
+        if (value != null) sb.append(label).append(value);
+    }
+
+    public void appendIfBothNotNull(StringBuilder sb, String label1, Object val1, String label2, Object val2) {
+        if (val1 != null) sb.append(label1).append(val1);
+        if (val2 != null) sb.append(label2).append(val2);
+    }
+
+    public int safeInt(Number n) {
+        return n == null ? 0 : n.intValue();
+    }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     /*
     public void printWriteLapSummery (String filename) {
@@ -5649,5 +5754,60 @@ public class FitFile {
             i++;
         }
         System.out.println("--------------------------------------------------");
+    }
+    public void printSecRecords2() {
+        System.out.println("-----printSecRecords2---------------------------------------------");
+        for (int i = 0; i < recordMesg.size(); i++) {
+            Mesg rec = recordMesg.get(i);
+            if (i < 11 || i > numberOfRecords - 10 || (i > 3012 && i < 3020)) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Record:").append(i);
+
+                // Timestamp
+                Long ts = rec.getFieldLongValue(REC_TIME);
+                if (ts != null) sb.append(" Timestamp:").append(ts);
+
+                // Heart rate
+                appendIfNotNull(sb, " HR:", rec.getFieldIntegerValue(REC_HR));
+
+                // Speed / enhanced speed
+                appendIfNotNull(sb, " Speed:", rec.getFieldFloatValue(REC_SPEED));
+                appendIfNotNull(sb, " EnhSp:", rec.getFieldFloatValue(REC_ESPEED));
+
+                // Distance
+                appendIfNotNull(sb, " Dist:", rec.getFieldFloatValue(REC_DIST));
+
+                // Cadence
+                appendIfNotNull(sb, " Cad:", rec.getFieldIntegerValue(REC_CAD));
+
+                // Power
+                appendIfNotNull(sb, " Pow:", rec.getFieldIntegerValue(REC_POW));
+
+                // Extra data (your custom structure)
+                if (secExtraRecords.get(i).getC2DateTime() != null) {
+                    sb.append(" C2time:").append(secExtraRecords.get(i).getC2DateTime());
+                }
+
+                // Position (lat/lon)
+                Integer lat = rec.getFieldIntegerValue(REC_LAT);
+                Integer lon = rec.getFieldIntegerValue(REC_LON);
+                if (lat != null && lon != null) {
+                    sb.append(" Position:(").append(lat).append(", ").append(lon).append(")");
+                }
+
+                // Developer fields
+                sb.append(" DEV:");
+                for (DeveloperField field : rec.getDeveloperFields()) {
+                    sb.append(" ").append(field.getName()).append(":");
+                    for (int j = 0; j < field.getNumValues(); j++) {
+                        sb.append(field.getValue(j));
+                        if (j < field.getNumValues() - 1) sb.append(",");
+                    }
+                }
+
+                System.out.println(sb);
+            }
+        }
+        System.out.println("---end-----------------------------------------------");
     }
 }
