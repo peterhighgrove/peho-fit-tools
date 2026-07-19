@@ -293,20 +293,30 @@ EOF
     if ! cmp -s "$new_fit" "$case_dir/master.fit"; then
         case_ok=false
         echo "[FAIL] $case_name (fit differs)"
-        if command -v sha256sum >/dev/null 2>&1; then
-            sha256sum "$new_fit" "$case_dir/master.fit" | sed 's/^/         /'
-        fi
-        if [[ "$FIT_MSG_DIFF" == "true" ]]; then
-            run_fit_message_diff "$new_fit" "$case_dir/master.fit" "$run_dir" "$case_name"
-        fi
+        # if command -v sha256sum >/dev/null 2>&1; then
+        #     sha256sum "$new_fit" "$case_dir/master.fit" | sed 's/^/         /'
+        # fi
+        # if [[ "$FIT_MSG_DIFF" == "true" ]]; then
+        #     run_fit_message_diff "$new_fit" "$case_dir/master.fit" "$run_dir" "$case_name"
+        # fi
+        echo "--- vvv RUN BELOW vvv---"
+        echo "/home/hoglund/dev/peho-fit-tools/diff-fit-messages.sh \\"
+        echo "\"$case_dir/master.fit\" \\"
+        echo "\"$new_fit\""
+        echo "--------------------------------------------"
     fi
 
     if ! cmp -s "$new_laps" "$case_dir/master-laps.txt"; then
         case_ok=false
         echo "[FAIL] $case_name (laps.txt differs)"
-        echo "       --- diff (first 30 lines) ---"
-        diff -y --suppress-common-lines "$new_laps" "$case_dir/master-laps.txt" \
-            | head -n 30 | sed 's/^/         /'
+        # echo "       --- diff (first 30 lines) ---"
+        # diff -y --suppress-common-lines "$new_laps" "$case_dir/master-laps.txt" \
+        #     | head -n 30 | sed 's/^/         /'
+        echo "--- vvv RUN BELOW vvv---"
+        echo "diff -u \\"
+        echo "\"$case_dir/master-laps.txt\" \\"
+        echo "\"$new_laps\""
+        echo "--------------------------------------------"
     fi
 
     if [[ "$case_ok" == "true" ]]; then

@@ -1,0 +1,91 @@
+/home/hoglund/dev/peho-fit-tools/regr-wkt.sh --version 2.64
+
+14/7 regr-wkt 2.64
+treadmill no lap values
+elliptical no level and steps
+skierg extra lap lines
+
+wktMergeAnalyze.Main
+    Fixed that appendTempUpdatelogg was not printed twice
+
+Fixed steplength calc in FillLapExtra
+    Dissappeard when I empty, used for Elliptical and treadmeill
+
+..>Built v2.65
+
+Fixed level to LapExtraRecord with reading dev field in FillLapExtra
+
+-->Built v2.66
+
+Changed regr wkt treadmill files
+    To use conf.txt
+    --bless
+
+Regr-gps
+    Found bug in calc active/rest avg speed/pace
+    Used sumActive/RestSpeed in calc avg speed that is null in xc-ski, changed to use totalDist
+
+    pace in active/rest list is not recognized as skierg
+        Here's a summary of what was added to FitFile.java:
+            MySport enum — SKIERG, ELLIPTICAL, TREADMILL, OTHER — declared as a nested public enum in FitFile
+            mySport field + getMySport() / setMySport() accessors
+            detectAndSetMySport() method — checks sportProfile using the same string patterns as both FitFile.isSkiErgFile/isTreadmillFile/isEllipticalFile and FitFileForIndoor.checkIfSkiErgFile/checkIfTreadmillFile/checkIfEllipticalFile, then sets mySport accordingly
+        detectAndSetMySport() put last in readFitFile()
+
+--> Build v2.68
+
+Regr ok
+
+Updated also wkt Main to use mySport
+commented out FitFileForIndoor.checkIfEllipticalFile .checkIfSkiErgFile .checkIfTreadmillFile
+commented out FitFile.isEllipticalFile .isSkiErgFile .isTreadmillFile
+
+--> Build v2.69
+
+created a wrapper to be able to save file info before/after without printing active/rest to console
+        public void printActiveRestLapSummery() {
+        printActiveRestLapSummeryWithPrintOption(true);
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void printActiveRestLapSummeryWithPrintOption(Boolean printToConsole) {
+
+--> Build v2.70
+
+Still get active/rest laps in the log file
+    Insert clearTempUpdateLog after in saveFileInfo()
+
+--> Build v2.70 (again)
+
+Changes to saveFileInfoBefore() /After()
+    to use append tempUpdateLogg
+    getters and append to the variables saveFileInfo Before/After
+
+Still got double output from command lapi
+    public void printActiveRestLapSummery() {
+        fitFile.clearTempUpdateLogg();
+
+        CORRECTED TO NOT APPEND-> createActiveRestLapSummeryWithPrintOption(true);
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public String createActiveRestLapSummeryWithPrintOption(Boolean printToConsoleAndSaveToLog) 
+
+SAME LOGIC FOR
+    public String printFileSummary() {
+        return printFileSummary(true);
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public String printFileSummary(Boolean printToConsoleAndSaveToLog) 
+
+BUGGAR
+!!fitFile.findTimerBasedOnTime(startTime); do not work on treadmill files
+    LapReportGenerator 
+                    String lapTimerStr = "-";
+                Long timerTime = fitFile.findTimerBasedOnTime(startTime);
+                if (startTime != null && timerTime != null) lapTimerStr = PehoUtils.sec2minSecLong(timerTime);
+
+TODO
+All print methods use appendTempUpdateLog and return String and (Boolean printToConsoleAndSaveToLog)
+
+Add the menu inputs to tempUpdateLogg
+
+Change updateLogg to updateLog

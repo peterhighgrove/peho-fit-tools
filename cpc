@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Clean course point name prefixes from FIT files (cpc command)
+# This script removes common prefix patterns from course point names in Garmin FIT files
+
+set -uo pipefail
+
+# Find the JAR file
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+JAR_FILE="$SCRIPT_DIR/fit-clean-cpoint-names/target/fit-clean-cpoint-names-2.55.jar"
+
+if [ ! -f "$JAR_FILE" ]; then
+    echo "ERROR: JAR file not found at $JAR_FILE"
+    echo "Please build the project first: mvn clean install"
+    exit 1
+fi
+
+# Run the Java application
+java -jar "$JAR_FILE" "$@"

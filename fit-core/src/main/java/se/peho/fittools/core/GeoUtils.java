@@ -56,6 +56,41 @@ public class GeoUtils {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return EARTH_RADIUS * c;
     }
+
+    public static double bearingDegrees(double lat1, double lon1, double lat2, double lon2) {
+        double φ1 = Math.toRadians(lat1);
+        double φ2 = Math.toRadians(lat2);
+        double Δλ = Math.toRadians(lon2 - lon1);
+
+        double y = Math.sin(Δλ) * Math.cos(φ2);
+        double x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+        double bearing = Math.toDegrees(Math.atan2(y, x));
+        return (bearing + 360.0) % 360.0;
+    }
+
+    public static double[] destinationPoint(double lat, double lon, double bearingDegrees, double distanceMeters) {
+        double angularDistance = distanceMeters / EARTH_RADIUS;
+        double bearingRadians = Math.toRadians(bearingDegrees);
+        double φ1 = Math.toRadians(lat);
+        double λ1 = Math.toRadians(lon);
+
+        double sinφ1 = Math.sin(φ1);
+        double cosφ1 = Math.cos(φ1);
+        double sinAngularDistance = Math.sin(angularDistance);
+        double cosAngularDistance = Math.cos(angularDistance);
+
+        double φ2 = Math.asin(sinφ1 * cosAngularDistance + cosφ1 * sinAngularDistance * Math.cos(bearingRadians));
+        double λ2 = λ1 + Math.atan2(
+            Math.sin(bearingRadians) * sinAngularDistance * cosφ1,
+            cosAngularDistance - sinφ1 * Math.sin(φ2)
+        );
+
+        double lat2 = Math.toDegrees(φ2);
+        double lon2 = Math.toDegrees(λ2);
+        lon2 = ((lon2 + 540.0) % 360.0) - 180.0;
+
+        return new double[]{lat2, lon2};
+    }
     // Parse "lat, lon" with auto-format detection
     public static double[] parseCoordinates(String input) {
         String[] parts = input.split(",");

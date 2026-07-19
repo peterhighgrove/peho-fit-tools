@@ -6,14 +6,19 @@ import com.garmin.fit.MesgNum;
 import com.garmin.fit.FitRuntimeException;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class LapReportGenerator {
     private final FitFile fitFile;
 
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public LapReportGenerator(FitFile fitFile) {
         this.fitFile = fitFile;
+        fitFile.fillLapExtraRecords();
     }
 
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printLapReport1() {
         try {
             System.out.println();
@@ -35,7 +40,8 @@ public class LapReportGenerator {
                 if (startTime != null) startTimeStr = FitDateTime.toStringTime(startTime, fitFile.getDiffMinutesLocalUTC());
 
                 String lapTimerStr = "-";
-                if (startTime != null) lapTimerStr = PehoUtils.sec2minSecLong(fitFile.findTimerBasedOnTime(startTime));
+                Long timerTime = fitFile.findTimerBasedOnTime(startTime);
+                if (startTime != null && timerTime != null) lapTimerStr = PehoUtils.sec2minSecLong(timerTime);
 
                 String lapTimeStr = "-";
                 Float totalTimer = mesg.getFieldFloatValue(FitFile.LAP_TIMER);
@@ -61,7 +67,17 @@ public class LapReportGenerator {
                 Long intensity = mesg.getFieldLongValue(FitFile.LAP_INTENSITY);
                 if (intensity != null) intensityStr = PehoUtils.getLabel(Intensity.class, intensity);
 
-                System.out.printf("%-3d %-3s %6s %-7s %6s %-4s %-5s %-6s %-3s %-8s%n", lapNo, lapIxStr, lapTimerStr, startTimeStr, lapTimeStr, lapDistStr, speedKmhStr, paceStr, lapCadStr, intensityStr);
+                System.out.printf("%-3d %-3s %6s %-7s %6s %-4s %-5s %-6s %-3s %-8s%n"
+                , lapNo
+                , lapIxStr
+                , lapTimerStr
+                , startTimeStr
+                , lapTimeStr
+                , lapDistStr
+                , speedKmhStr
+                , paceStr
+                , lapCadStr
+                , intensityStr);
                 lapNo++;
             }
             Integer sesLaps = null;
@@ -77,6 +93,7 @@ public class LapReportGenerator {
         }
     }
 
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printLapReport1AllMesg() {
         try {
             Mesg firstLapMesg = null;
@@ -151,15 +168,21 @@ public class LapReportGenerator {
         }
     }
 
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printLapRecord(int ix) {
         Mesg lapRecord = fitFile.getLapMesg().get(ix);
-        int lapNo = ix + 1;
-        System.out.print("Lap:" + lapNo);
 
         // Level from extra records
-        // if (lapExtraRecords.get(i).level != null) {
-        //     System.out.print(" lv" + lapExtraRecords.get(i).level);
-        // }
+        if (fitFile.getLapExtraRecords().get(ix).getLevel() != null) {
+            if (fitFile.getLapExtraRecords().get(ix).getLevel() != null) {
+                if (fitFile.getMySport() == FitFile.MySport.TREADMILL) {
+                    System.out.print(" " + fitFile.getLapExtraRecords().get(ix).getLevel().intValue() + "%");
+                } else 
+                if (fitFile.getMySport() == FitFile.MySport.ELLIPTICAL) {
+                    System.out.print(" lv" + fitFile.getLapExtraRecords().get(ix).getLevel().intValue());
+                }
+            }
+        }
 
         // Timer
         Float totalTimer = lapRecord.getFieldFloatValue(FitFile.LAP_TIMER);
@@ -170,8 +193,12 @@ public class LapReportGenerator {
         if (lapDist != null) System.out.print(" " + PehoUtils.m2km2(lapDist) + "km");
 
         // DistFrom / DistTo from secRecords
-        //System.out.print(" DistFrom: " + secRecords.get(lapExtraRecords.get(i).recordIxStart).getDistance());
-        //System.out.print(" DistTo: " + secRecords.get(lapExtraRecords.get(i).recordIxEnd).getDistance());
+        System.out.print(" DistFrom:" 
+            + PehoUtils.m2km2(fitFile.getRecordMesg().get(fitFile.getLapExtraRecords().get(ix).getRecordIxStart())
+            .getFieldFloatValue(FitFile.REC_DIST)));
+        System.out.print(" DistTo:" 
+            + PehoUtils.m2km2(fitFile.getRecordMesg().get(fitFile.getLapExtraRecords().get(ix).getRecordIxEnd())
+            .getFieldFloatValue(FitFile.REC_DIST)));
 
         // Enhanced average speed
         Float enhAvgSpeed = lapRecord.getFieldFloatValue(FitFile.LAP_ESPEED);
@@ -186,7 +213,7 @@ public class LapReportGenerator {
         if (intensityRaw != null) {
             Intensity intensityEnum = Intensity.getByValue(intensityRaw.shortValue());
             String intensityLabel = intensityEnum != null ? Intensity.getStringFromValue(intensityEnum) : "unknown";
-            System.out.print(" WktIntensity:" + intensityLabel);
+            System.out.print(" WktInt:" + intensityLabel);
         }
 
         // Workout Step Index
@@ -196,7 +223,10 @@ public class LapReportGenerator {
         // Start Time
         Long startTime = lapRecord.getFieldLongValue(FitFile.LAP_STIME);
         if (startTime != null) {
-            System.out.print(" start@:" + PehoUtils.sec2minSecLong(fitFile.findTimerBasedOnTime(startTime)) + ", " + FitDateTime.toString(startTime, fitFile.getDiffMinutesLocalUTC()));
+            System.out.print(" start@"
+                 + PehoUtils.sec2minSecLong(fitFile.findTimerBasedOnTime(startTime))
+                 + ", "
+                 + FitDateTime.toStringTime(startTime, fitFile.getDiffMinutesLocalUTC()));
         }
 
         // Start Timer WRONG VALUE!!!!!
@@ -205,23 +235,39 @@ public class LapReportGenerator {
             //System.out.print(" " + FitDateTime.toTimerString(startTimer));
         }
 
-        /* // Timestamp
-        Long timestamp = mesg.getFieldLongValue(LAP_TIME);
-        if (timestamp != null) {
-            System.out.print(" Timestamp: " + FitDateTime.toString(timestamp, diffMinutesLocalUTC));
-        } */
+        // Timestamp
+        // Long timestamp = mesg.getFieldLongValue(LAP_TIME);
+        // if (timestamp != null) {
+        //     System.out.print(" Timestamp: " + FitDateTime.toString(timestamp, diffMinutesLocalUTC));
+        // }
 
-        /*/ Extra record fields
-        if (lapExtraRecords.get(i).timeEnd != null) System.out.print(" TimeEnd: " + lapExtraRecords.get(i).timeEnd);
-        if (lapExtraRecords.get(i).stepLen != null) System.out.print(" StepLen: " + lapExtraRecords.get(i).stepLen);
-        if (lapExtraRecords.get(i).hrStart != 0) System.out.print(" hrStart: " + lapExtraRecords.get(i).hrStart);
-        if (lapExtraRecords.get(i).hrEnd != 0) System.out.print(" hrEnd: " + lapExtraRecords.get(i).hrEnd);
-        if (lapExtraRecords.get(i).recordIxEnd != 0) System.out.print(" recordIxEnd: " + lapExtraRecords.get(i).recordIxEnd);
-        if (lapExtraRecords.get(i).hrMin != 0) System.out.print(" hrMin: " + lapExtraRecords.get(i).hrMin);
-        */
+        // Extra record fields
+        if (fitFile.getLapExtraRecords().get(ix).getTimeEnd() != null) 
+            System.out.print(" end@" 
+                + FitDateTime.toStringTime(fitFile.getLapExtraRecords().get(ix).getTimeEnd(), fitFile.getDiffMinutesLocalUTC()));
+        if (fitFile.getLapExtraRecords().get(ix).getStepLen() != null) 
+            System.out.print(" StepLen:" + fitFile.getLapExtraRecords().get(ix).getStepLen());
+        if (fitFile.getLapExtraRecords().get(ix).getAvgDragFactor() != null) 
+            System.out.print(" DFavg:" + fitFile.getLapExtraRecords().get(ix).getAvgDragFactor());
+        if (fitFile.getLapExtraRecords().get(ix).getMaxDragFactor() != null) 
+            System.out.print(" DFmax:" + fitFile.getLapExtraRecords().get(ix).getMaxDragFactor());
+        if (fitFile.getLapExtraRecords().get(ix).getAvgStrokeLen() != null) 
+            System.out.print(" SLavg:" + fitFile.getLapExtraRecords().get(ix).getAvgStrokeLen());
+        if (fitFile.getLapExtraRecords().get(ix).getMaxStrokeLen() != null) 
+            System.out.print(" SLmax:" + fitFile.getLapExtraRecords().get(ix).getMaxStrokeLen());
+        if (fitFile.getLapExtraRecords().get(ix).getHrStart() != 0) 
+            System.out.print(" hrStart:" + fitFile.getLapExtraRecords().get(ix).getHrStart());
+        if (fitFile.getLapExtraRecords().get(ix).getHrEnd() != 0) 
+            System.out.print(" hrEnd:" + fitFile.getLapExtraRecords().get(ix).getHrEnd());
+        if (fitFile.getLapExtraRecords().get(ix).getHrMin() != 0) 
+            System.out.print(" hrMin:" + fitFile.getLapExtraRecords().get(ix).getHrMin());
+        if (fitFile.getLapExtraRecords().get(ix).getRecordIxEnd() != 0) 
+            System.out.print(" recordIxEnd:" + fitFile.getLapExtraRecords().get(ix).getRecordIxEnd());
+       
         System.out.println();
     }
 
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printLapRecords() {
         int ix = 0;
 
@@ -241,9 +287,10 @@ public class LapReportGenerator {
         }
     }
 
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printLapAvgMaxSpeed(Float avgSpeed, Float maxSpeed) {
         if (avgSpeed != null) {
-            if (fitFile.isSkiErgFile()) {
+            if (fitFile.getMySport() == FitFile.MySport.SKIERG) {
                 System.out.print("--Sp avg:" + PehoUtils.mps2minp500m(avgSpeed));
                 System.out.print(" max:" + PehoUtils.mps2minp500m(maxSpeed));
             } else {
@@ -253,9 +300,10 @@ public class LapReportGenerator {
         }
     }
 
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printLapAvgSpeed(Float avgSpeed) {
         if (avgSpeed != null) {
-            if (fitFile.isSkiErgFile()) {
+            if (fitFile.getMySport() == FitFile.MySport.SKIERG) {
                 System.out.print(" " + PehoUtils.mps2minp500m(avgSpeed) + "min/500m");
             } else {
                 System.out.print(" " + PehoUtils.mps2minpkm(avgSpeed) + "min/km");
@@ -264,10 +312,11 @@ public class LapReportGenerator {
         }
     }
 
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String lapAvgSpeed(Float avgSpeed) {
         String tempString = "";
         if (avgSpeed != null) {
-            if (fitFile.isSkiErgFile()) {
+            if (fitFile.getMySport() == FitFile.MySport.SKIERG) {
                 tempString += " " + PehoUtils.mps2minp500m(avgSpeed) + "min/500m";
             } else {
                 tempString += " " + PehoUtils.mps2minpkm(avgSpeed) + "min/km";
@@ -277,10 +326,11 @@ public class LapReportGenerator {
         return tempString;
     }
 
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String lapEndSum2String(Float avgCad, Float avgSpeed, Float avgPower, Float dist) {
         String tempString = "";
         tempString += "avgCad: " + (int) Math.round(avgCad) + "spm";
-        if (fitFile.isSkiErgFile()) {
+        if (fitFile.getMySport() == FitFile.MySport.SKIERG) {
             tempString += ", avgPace: " + PehoUtils.mps2minp500m(avgSpeed) + "min/500m";
             tempString += ", avgPow: " + (int) Math.round(avgPower) + "W";
         } else {
@@ -292,6 +342,7 @@ public class LapReportGenerator {
         return tempString;
     }
 
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printLapAllSummary() {
         int i = 0;
         int lapNo = 1;
@@ -307,15 +358,22 @@ public class LapReportGenerator {
                 System.out.print(" StartTime:" + FitDateTime.toString(startTime, fitFile.getDiffMinutesLocalUTC()));
             }
 
-            /*
+            
             // Extra fields: level and step length (skip if SkiErg)
-            if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
-                System.out.print(" lv" + lapExtraRecords.get(i).level.intValue());
+            if (fitFile.getLapExtraRecords().get(i).getLevel() != null) {
+                if (fitFile.getMySport() == FitFile.MySport.TREADMILL) {
+                    System.out.print(" " + fitFile.getLapExtraRecords().get(i).getLevel().intValue() + "%");
+                } else 
+                if (fitFile.getMySport() == FitFile.MySport.ELLIPTICAL) {
+                    System.out.print(" lv" + fitFile.getLapExtraRecords().get(i).getLevel().intValue());
+                }
             }
-            if (lapExtraRecords.get(i).stepLen != null && !isSkiErgFile()) {
-                System.out.print(" steplen" + (int) (lapExtraRecords.get(i).stepLen * 100) + "cm");
+
+            if (fitFile.getLapExtraRecords().get(i).getStepLen() != null
+                 && fitFile.getMySport() != FitFile.MySport.SKIERG) {
+                System.out.print(" steplen" + (int) (fitFile.getLapExtraRecords().get(i).getStepLen() * 100) + "cm");
             }
-            */
+           
 
             // Total timer
             Float totalTimer = mesg.getFieldFloatValue(FitFile.LAP_TIMER);
@@ -327,23 +385,23 @@ public class LapReportGenerator {
 
             System.out.print(" WktIntensity: " + intensity);
 
-            /*
+            
             // Heart rate logic
-            Integer maxHr = mesg.getFieldIntegerValue(LAP_MAX_HR);
-            if ("ACTIVE".equals(intensityLabel) || "WARMUP".equals(intensityLabel)) {
-                System.out.print(" HR start:" + lapExtraRecords.get(i).hrStart);
-                System.out.print(" min:" + lapExtraRecords.get(i).hrMin);
-                System.out.print("+" + ((maxHr != null ? maxHr : 0) - lapExtraRecords.get(i).hrMin));
+            Integer maxHr = mesg.getFieldIntegerValue(FitFile.LAP_MHR);
+            if ("ACTIVE".equals(intensity) || "WARMUP".equals(intensity)) {
+                System.out.print(" HR start:" + fitFile.getLapExtraRecords().get(i).getHrStart());
+                System.out.print(" min:" + fitFile.getLapExtraRecords().get(i).getHrMin());
+                System.out.print("+" + ((maxHr != null ? maxHr : 0) - fitFile.getLapExtraRecords().get(i).getHrMin()));
                 System.out.print("-->max:" + (maxHr != null ? maxHr : "N/A"));
-                System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
+                System.out.print(" end:" + fitFile.getLapExtraRecords().get(i).getHrEnd());
             } else {
-                System.out.print(" HR start:" + lapExtraRecords.get(i).hrStart);
+                System.out.print(" HR start:" + fitFile.getLapExtraRecords().get(i).getHrStart());
                 System.out.print(" max:" + (maxHr != null ? maxHr : "N/A"));
-                System.out.print("" + (lapExtraRecords.get(i).hrMin - (maxHr != null ? maxHr : 0)));
-                System.out.print("-->min:" + lapExtraRecords.get(i).hrMin);
-                System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
+                System.out.print("" + (fitFile.getLapExtraRecords().get(i).getHrMin() - (maxHr != null ? maxHr : 0)));
+                System.out.print("-->min:" + fitFile.getLapExtraRecords().get(i).getHrMin());
+                System.out.print(" end:" + fitFile.getLapExtraRecords().get(i).getHrEnd());
             }
-            */
+           
 
             // Distance
             Float totalDist = mesg.getFieldFloatValue(FitFile.LAP_DIST);
@@ -370,17 +428,17 @@ public class LapReportGenerator {
                 System.out.print(" max:" + (maxPower != null ? maxPower : "N/A"));
             }
 
-            /*
+            
             // Extra lap info: Drag Factor and Stroke Length
-            if (lapExtraRecords.get(i).avgDragFactor != null) {
-                System.out.print("--DFavg:" + (int) Math.round(lapExtraRecords.get(i).avgDragFactor));
-                System.out.print(" max:" + (int) Math.round(lapExtraRecords.get(i).maxDragFactor));
+            if (fitFile.getLapExtraRecords().get(i).getAvgDragFactor() != null) {
+                System.out.print("--DFavg:" + (int) Math.round(fitFile.getLapExtraRecords().get(i).getAvgDragFactor()));
+                System.out.print(" max:" + (int) Math.round(fitFile.getLapExtraRecords().get(i).getMaxDragFactor()));
             }
-            if (lapExtraRecords.get(i).avgStrokeLen != null) {
-                System.out.print("--SLavg:" + lapExtraRecords.get(i).avgStrokeLen);
-                System.out.print(" max:" + lapExtraRecords.get(i).maxStrokeLen);
+            if (fitFile.getLapExtraRecords().get(i).getAvgStrokeLen() != null) {
+                System.out.print("--SLavg:" + fitFile.getLapExtraRecords().get(i).getAvgStrokeLen());
+                System.out.print(" max:" + fitFile.getLapExtraRecords().get(i).getMaxStrokeLen());
             }
-            */
+           
 
             System.out.println();
             i++;
@@ -388,6 +446,7 @@ public class LapReportGenerator {
         }
     }
 
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printLapLongSummery() {
         System.out.println();
         System.out.println("================================================");
@@ -404,29 +463,32 @@ public class LapReportGenerator {
             if ("ACTIVE".equals(intensity)) {
                 System.out.print("Lap:" + lapNo);
 
-                /*
-                if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
-                    System.out.print(" lv" + lapExtraRecords.get(i).level.intValue());
+                if (fitFile.getLapExtraRecords().get(i).getLevel() != null) {
+                    if (fitFile.getMySport() == FitFile.MySport.TREADMILL) {
+                        System.out.print(" " + fitFile.getLapExtraRecords().get(i).getLevel().intValue() + "%");
+                    } else 
+                    if (fitFile.getMySport() == FitFile.MySport.ELLIPTICAL) {
+                        System.out.print(" lv" + fitFile.getLapExtraRecords().get(i).getLevel().intValue());
+                    }
                 }
-                */
 
                 Float totalTimer = mesg.getFieldFloatValue(FitFile.LAP_TIMER);
                 if (totalTimer != null) {
                     System.out.print(" LapTime: " + PehoUtils.sec2minSecShort(totalTimer));
                 }
 
-                /*
-                System.out.print(" HR start:" + lapExtraRecords.get(i).hrStart);
+                
+                System.out.print(" HR start:" + fitFile.getLapExtraRecords().get(i).getHrStart());
                 if (i > 0) {
-                    System.out.print(" HRmin" + lapExtraRecords.get(i - 1).hrMin);
+                    System.out.print(" HRmin" + fitFile.getLapExtraRecords().get(i - 1).getHrMin());
                 } else {
                     System.out.print(" HR");
                 }
-                System.out.print(" min:" + lapExtraRecords.get(i).hrMin);
-                System.out.print("+" + (mesg.getFieldIntegerValue(LAP_MAX_HR) - lapExtraRecords.get(i).hrMin));
-                System.out.print("-->max:" + mesg.getFieldIntegerValue(LAP_MAX_HR));
-                System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
-                */
+                System.out.print(" min:" + fitFile.getLapExtraRecords().get(i).getHrMin());
+                System.out.print("+" + (mesg.getFieldIntegerValue(FitFile.LAP_MHR) - fitFile.getLapExtraRecords().get(i).getHrMin()));
+                System.out.print("-->max:" + mesg.getFieldIntegerValue(FitFile.LAP_MHR));
+                System.out.print(" end:" + fitFile.getLapExtraRecords().get(i).getHrEnd());
+               
 
                 Float totalDist = mesg.getFieldFloatValue(FitFile.LAP_DIST);
                 if (totalDist != null) System.out.print("--Dist:" + totalDist);
@@ -449,16 +511,16 @@ public class LapReportGenerator {
                     System.out.print(" max:" + (maxPower != null ? maxPower : "N/A"));
                 }
 
-                /*
-                if (lapExtraRecords.get(i).avgDragFactor != null) {
-                    System.out.print("--DFavg:" + (int) Math.round(lapExtraRecords.get(i).avgDragFactor));
-                    System.out.print(" max:" + (int) Math.round(lapExtraRecords.get(i).maxDragFactor));
+                
+                if (fitFile.getLapExtraRecords().get(i).getAvgDragFactor() != null) {
+                    System.out.print("--DFavg:" + (int) Math.round(fitFile.getLapExtraRecords().get(i).getAvgDragFactor()));
+                    System.out.print(" max:" + (int) Math.round(fitFile.getLapExtraRecords().get(i).getMaxDragFactor()));
                 }
-                if (lapExtraRecords.get(i).avgStrokeLen != null) {
-                    System.out.print("--SLavg:" + lapExtraRecords.get(i).avgStrokeLen);
-                    System.out.print(" max:" + lapExtraRecords.get(i).maxStrokeLen);
+                if (fitFile.getLapExtraRecords().get(i).getAvgStrokeLen() != null) {
+                    System.out.print("--SLavg:" + fitFile.getLapExtraRecords().get(i).getAvgStrokeLen());
+                    System.out.print(" max:" + fitFile.getLapExtraRecords().get(i).getMaxStrokeLen());
                 }
-                */
+               
 
                 System.out.println();
             }
@@ -478,24 +540,27 @@ public class LapReportGenerator {
             if ("REST".equals(intensity) || "RECOVERY".equals(intensity)) {
                 System.out.print("Lap:" + lapNo);
 
-                /*
-                if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
-                    System.out.print(" lv" + lapExtraRecords.get(i).level.intValue());
+                if (fitFile.getLapExtraRecords().get(i).getLevel() != null) {
+                    if (fitFile.getMySport() == FitFile.MySport.TREADMILL) {
+                        System.out.print(" " + fitFile.getLapExtraRecords().get(i).getLevel().intValue() + "%");
+                    } else 
+                    if (fitFile.getMySport() == FitFile.MySport.ELLIPTICAL) {
+                        System.out.print(" lv" + fitFile.getLapExtraRecords().get(i).getLevel().intValue());
+                    }
                 }
-                */
 
                 Float totalTimer = mesg.getFieldFloatValue(FitFile.LAP_TIMER);
                 if (totalTimer != null) {
                     System.out.print(" LapTime: " + PehoUtils.sec2minSecShort(totalTimer));
                 }
 
-                /*
-                System.out.print(" HR start:" + lapExtraRecords.get(i).hrStart);
-                System.out.print(" max:" + mesg.getFieldIntegerValue(LAP_MAX_HR));
-                System.out.print("" + (lapExtraRecords.get(i).hrMin - mesg.getFieldIntegerValue(LAP_MAX_HR)));
-                System.out.print("-->min:" + lapExtraRecords.get(i).hrMin);
-                System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
-                */
+                
+                System.out.print(" HR start:" + fitFile.getLapExtraRecords().get(i).getHrStart());
+                System.out.print(" max:" + mesg.getFieldIntegerValue(fitFile.LAP_MHR));
+                System.out.print("" + (fitFile.getLapExtraRecords().get(i).getHrMin() - mesg.getFieldIntegerValue(fitFile.LAP_MHR)));
+                System.out.print("-->min:" + fitFile.getLapExtraRecords().get(i).getHrMin());
+                System.out.print(" end:" + fitFile.getLapExtraRecords().get(i).getHrEnd());
+               
 
                 Float totalDist = mesg.getFieldFloatValue(FitFile.LAP_DIST);
                 if (totalDist != null) System.out.print("--Dist:" + totalDist);
@@ -518,16 +583,16 @@ public class LapReportGenerator {
                     System.out.print(" max:" + (maxPower != null ? maxPower : "N/A"));
                 }
 
-                /*
-                if (lapExtraRecords.get(i).avgDragFactor != null) {
-                    System.out.print("--DFavg:" + (int) Math.round(lapExtraRecords.get(i).avgDragFactor));
-                    System.out.print(" max:" + (int) Math.round(lapExtraRecords.get(i).maxDragFactor));
+                
+                if (fitFile.getLapExtraRecords().get(i).getAvgDragFactor() != null) {
+                    System.out.print("--DFavg:" + (int) Math.round(fitFile.getLapExtraRecords().get(i).getAvgDragFactor()));
+                    System.out.print(" max:" + (int) Math.round(fitFile.getLapExtraRecords().get(i).getMaxDragFactor()));
                 }
-                if (lapExtraRecords.get(i).avgStrokeLen != null) {
-                    System.out.print("--SLavg:" + lapExtraRecords.get(i).avgStrokeLen);
-                    System.out.print(" max:" + lapExtraRecords.get(i).maxStrokeLen);
+                if (fitFile.getLapExtraRecords().get(i).getAvgStrokeLen() != null) {
+                    System.out.print("--SLavg:" + fitFile.getLapExtraRecords().get(i).getAvgStrokeLen());
+                    System.out.print(" max:" + fitFile.getLapExtraRecords().get(i).getMaxStrokeLen());
                 }
-                */
+               
 
                 System.out.println();
             }
@@ -536,152 +601,208 @@ public class LapReportGenerator {
         }
     }
 
-    public String createLapSummery() {
-        String tempString = "";
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public String printActiveRestLapSummery() {
+        return printActiveRestLapSummeryWithPrintOption(true);
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public String printActiveRestLapSummeryWithPrintOption(Boolean printToConsoleAndSaveToLog) {
+        fitFile.clearTempUpdateLogg();
+
         try {
-            tempString += "---- ACTIVE LAPS ----" + System.lineSeparator();
+            fitFile.appendTempUpdateLoggLn("---- ACTIVE LAPS ----");
             int i = 0;
             int lapNo = 1;
-            for (Mesg mesg : fitFile.getLapMesg()) {
-
-                Short intensityVal = (Short) mesg.getFieldValue(FitFile.LAP_INTENSITY);
-                String intensity = intensityVal != null ? Intensity.getStringFromValue(Intensity.getByValue(intensityVal)) : "UNKNOWN";
+            for (Mesg record : fitFile.getLapMesg()) { // Generic Mesg type
+                Short intensityVal = record.getFieldShortValue(fitFile.LAP_INTENSITY);
+                String intensity = intensityVal != null ? Intensity.getStringFromValue(Intensity.getByValue(intensityVal)) : "";
 
                 if ("ACTIVE".equals(intensity)) {
-                    tempString += "Lap" + lapNo;
+                    fitFile.appendTempUpdateLogg("Lap" + lapNo);
 
-                    // --- lapExtra commented out ---
-                    // if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
-                    //     if (isTreadmillFile()) {
-                    //         tempString += " " + lapExtraRecords.get(i).level.intValue() + "%";
-                    //     } else {
-                    //         tempString += " lv" + lapExtraRecords.get(i).level.intValue();
-                    //     }
-                    // }
-
-                    tempString += " HR";
-                    // tempString += ">st" + lapExtraRecords.get(i).hrStart;
-
-                    Short hrMax = mesg.getFieldShortValue(FitFile.LAP_MHR);
-                    if (hrMax != null) {
-                        tempString += "->max" + hrMax;
-                    }
-                    // tempString += " end" + lapExtraRecords.get(i).hrEnd;
-
-                    Float timer = mesg.getFieldFloatValue(FitFile.LAP_TIMER);
-                    if (timer != null) {
-                        tempString += " " + PehoUtils.sec2minSecShort(timer) + "min";
-                    }
-
-                    Short cadence = mesg.getFieldShortValue(FitFile.LAP_CAD);
-                    if (cadence != null) {
-                        tempString += " " + cadence + "spm";
-                    }
-
-                    Float speed = mesg.getFieldFloatValue(FitFile.LAP_ESPEED);
-                    if (speed != null) {
-                        if (fitFile.isSkiErgFile()) {
-                            tempString += " " + PehoUtils.sec2minSecLong(500 / speed) + "min/500m";
-                        } else {
-                            tempString += " " + PehoUtils.sec2minSecLong(1000 / speed) + "min/km";
-                            tempString += " " + String.format("%.1fkm/h", speed * 3.60);
+                    if (fitFile.getLapExtraRecords().get(i).getLevel() != null) {
+                        if (fitFile.getMySport() == FitFile.MySport.TREADMILL) {
+                            fitFile.appendTempUpdateLogg(" " + fitFile.getLapExtraRecords().get(i).getLevel().intValue() + "%");
+                        } else 
+                        if (fitFile.getMySport() == FitFile.MySport.ELLIPTICAL) {
+                            fitFile.appendTempUpdateLogg(" lv" + fitFile.getLapExtraRecords().get(i).getLevel().intValue());
                         }
                     }
 
-                    Integer power = mesg.getFieldIntegerValue(FitFile.LAP_POW);
-                    if (power != null) {
-                        tempString += " " + power + "W";
+                    Short hrMin = 0;
+                    if (i > 0) {
+                        hrMin = fitFile.getLapExtraRecords().get(i - 1).getHrMin();
+                        fitFile.appendTempUpdateLogg(" HRmin" + hrMin);
+                    } else {
+                        fitFile.appendTempUpdateLogg(" HR");
                     }
 
-                    Float dist = mesg.getFieldFloatValue(FitFile.LAP_DIST);
+                    Short hrStart = fitFile.getLapExtraRecords().get(i).getHrStart();
+                    fitFile.appendTempUpdateLogg(">st" + hrStart);
+                    if ((hrStart - hrMin) > 20) {
+                        hrMin = hrStart;;
+                    }
+
+                    Short maxHr = record.getFieldShortValue(fitFile.LAP_MHR);
+                    if (maxHr != null) {
+                        fitFile.appendTempUpdateLogg("+" + (maxHr - hrMin));
+                        fitFile.appendTempUpdateLogg("->max" + maxHr);
+                    }
+
+                    fitFile.appendTempUpdateLogg(" end" + fitFile.getLapExtraRecords().get(i).getHrEnd());
+
+                    Float totalTime = record.getFieldFloatValue(fitFile.LAP_TIMER);
+                    if (totalTime != null) {
+                        fitFile.appendTempUpdateLogg(" " + PehoUtils.sec2minSecShort(totalTime) + "min");
+                    }
+
+                    Short avgCad = record.getFieldShortValue(fitFile.LAP_CAD);
+                    if (avgCad != null) {
+                        fitFile.appendTempUpdateLogg(" " + avgCad + "spm");
+                    }
+
+                    Float avgSpeed = record.getFieldFloatValue(fitFile.LAP_ESPEED);
+                    if (avgSpeed != null) {
+                        if (fitFile.getMySport() == FitFile.MySport.SKIERG) {
+                            fitFile.appendTempUpdateLogg(" " + PehoUtils.sec2minSecLong(500 / avgSpeed) + "min/500m");
+                        } else {
+                            fitFile.appendTempUpdateLogg(" " + PehoUtils.sec2minSecLong(1000 / avgSpeed) + "min/km");
+                            fitFile.appendTempUpdateLogg(" " + String.format("%.1fkm/h", avgSpeed * 3.60));
+                        }
+                    }
+
+                    Integer avgPower = record.getFieldIntegerValue(fitFile.LAP_POW);
+                    if (avgPower != null) {
+                        fitFile.appendTempUpdateLogg(" " + avgPower + "W");
+                    }
+
+                    Double dist = record.getFieldDoubleValue(fitFile.LAP_DIST);
                     if (dist != null) {
-                        tempString += " " + String.format("%.1fkm", dist / 1000);
+                        fitFile.appendTempUpdateLogg(" " + String.format("%.1fkm", dist / 1000));
                     }
 
-                    // --- lapExtra commented out ---
-                    // if (lapExtraRecords.get(i).avgDragFactor != null && isSkiErgFile()) {
-                    //     tempString += " df" + (int) Math.round(lapExtraRecords.get(i).avgDragFactor);
-                    // }
+                    if (fitFile.getLapExtraRecords().get(i).getAvgDragFactor() != null
+                         && fitFile.getMySport() == FitFile.MySport.SKIERG) {
+                        fitFile.appendTempUpdateLogg(" df" + Math.round(fitFile.getLapExtraRecords().get(i).getAvgDragFactor()));
+                    }
+                    if (fitFile.getLapExtraRecords().get(i).getAvgStrokeLen() != null
+                     && fitFile.getMySport() == FitFile.MySport.SKIERG) {
+                        fitFile.appendTempUpdateLogg(" sl" + fitFile.getLapExtraRecords().get(i).getAvgStrokeLen());
+                    }
+                    if (fitFile.getLapExtraRecords().get(i).getStepLen() != null
+                     && fitFile.getMySport() != FitFile.MySport.SKIERG) {
+                        fitFile.appendTempUpdateLogg(" step" + (int) (fitFile.getLapExtraRecords().get(i).getStepLen() * 100) + "cm");
+                    }
 
-                    tempString += System.lineSeparator();
+                    fitFile.appendTempUpdateLoggLn("");
                 }
                 i++;
                 lapNo++;
             }
-            tempString += lapEndSum2String(fitFile.getActiveAvgCad(), fitFile.getActiveAvgSpeed(), fitFile.getActiveAvgPower(), fitFile.getActiveDist());
 
-            tempString += "---- REST LAPS ----" + System.lineSeparator();
+            fitFile.appendTempUpdateLogg(
+                lapEndSum2String(
+                    fitFile.getActiveAvgCad(), 
+                    fitFile.getActiveAvgSpeed(), 
+                    fitFile.getActiveAvgPower(), 
+                    fitFile.getActiveDist()
+                )
+            );
+
+            // ================= REST LAPS =================
+            fitFile.appendTempUpdateLoggLn("---- REST LAPS ----");
             i = 0;
             lapNo = 1;
-            for (Mesg mesg : fitFile.getLapMesg()) {
-
-                Short intensityVal = (Short) mesg.getFieldValue(FitFile.LAP_INTENSITY);
-                String intensity = intensityVal != null ? Intensity.getStringFromValue(Intensity.getByValue(intensityVal)) : "UNKNOWN";
+            for (Mesg record : fitFile.getLapMesg()) {
+                Short intensityVal = record.getFieldShortValue(fitFile.LAP_INTENSITY);
+                String intensity = intensityVal != null ? Intensity.getStringFromValue(Intensity.getByValue(intensityVal)) : "";
 
                 if ("REST".equals(intensity) || "RECOVERY".equals(intensity)) {
-                    tempString += "Lap" + lapNo;
+                    fitFile.appendTempUpdateLogg("Lap" + lapNo);
 
-                    // --- lapExtra commented out ---
-                    // if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
-                    //     if (isTreadmillFile()) {
-                    //         tempString += " " + lapExtraRecords.get(i).level.intValue() + "%";
-                    //     } else {
-                    //         tempString += " lv" + lapExtraRecords.get(i).level.intValue();
-                    //     }
-                    // }
-
-                    tempString += " HRst?";
-                    Short hrMax = mesg.getFieldShortValue(FitFile.LAP_MHR);
-                    if (hrMax != null) {
-                        tempString += "->max" + hrMax;
-                    }
-
-                    Float timer = mesg.getFieldFloatValue(FitFile.LAP_TIMER);
-                    if (timer != null) {
-                        tempString += " " + PehoUtils.sec2minSecShort(timer) + "min";
-                    }
-
-                    Short cadence = mesg.getFieldShortValue(FitFile.LAP_CAD);
-                    if (cadence != null) {
-                        tempString += " " + cadence + "spm";
-                    }
-
-                    Float speed = mesg.getFieldFloatValue(FitFile.LAP_ESPEED);
-                    if (speed != null) {
-                        if (fitFile.isSkiErgFile()) {
-                            tempString += " " + PehoUtils.sec2minSecLong(500 / speed) + "min/500m";
+                    if (fitFile.getLapExtraRecords().get(i).getLevel() != null) {
+                        if (fitFile.getMySport() == FitFile.MySport.TREADMILL) {
+                            fitFile.appendTempUpdateLogg(" " + fitFile.getLapExtraRecords().get(i).getLevel().intValue() + "%");
                         } else {
-                            tempString += " " + PehoUtils.sec2minSecLong(1000 / speed) + "min/km";
-                            tempString += " " + String.format("%.1fkm/h", speed * 3.60);
+                            fitFile.appendTempUpdateLogg(" lv" + fitFile.getLapExtraRecords().get(i).getLevel().intValue());
                         }
                     }
 
-                    Integer power = mesg.getFieldIntegerValue(FitFile.LAP_POW);
-                    if (power != null) {
-                        tempString += " " + power + "W";
+                    fitFile.appendTempUpdateLogg(" HRst" + fitFile.getLapExtraRecords().get(i).getHrStart());
+
+                    Integer maxHr = record.getFieldIntegerValue(fitFile.LAP_MHR);
+                    if (maxHr != null) {
+                        fitFile.appendTempUpdateLogg(">max" + maxHr);
+                        fitFile.appendTempUpdateLogg("" + (fitFile.getLapExtraRecords().get(i).getHrMin() - maxHr));
+                        fitFile.appendTempUpdateLogg("->min" + fitFile.getLapExtraRecords().get(i).getHrMin());
                     }
 
-                    Float dist = mesg.getFieldFloatValue(FitFile.LAP_DIST);
+                    fitFile.appendTempUpdateLogg(" end" + fitFile.getLapExtraRecords().get(i).getHrEnd());
+
+                    Float totalTime = record.getFieldFloatValue(fitFile.LAP_TIMER);
+                    if (totalTime != null) {
+                        fitFile.appendTempUpdateLogg(" " + PehoUtils.sec2minSecShort(totalTime) + "min");
+                    }
+
+                    Short avgCad = record.getFieldShortValue(fitFile.LAP_CAD);
+                    if (avgCad != null) {
+                        fitFile.appendTempUpdateLogg(" " + avgCad + "spm");
+                    }
+
+                    Float avgSpeed = record.getFieldFloatValue(fitFile.LAP_ESPEED);
+                    if (avgSpeed != null) {
+                        if (fitFile.getMySport() == FitFile.MySport.SKIERG) {
+                            fitFile.appendTempUpdateLogg(" " + PehoUtils.sec2minSecLong(500 / avgSpeed) + "min/500m");
+                        } else {
+                            fitFile.appendTempUpdateLogg(" " + PehoUtils.sec2minSecLong(1000 / avgSpeed) + "min/km");
+                            fitFile.appendTempUpdateLogg(" " + String.format("%.1fkm/h", avgSpeed * 3.60));
+                        }
+                    }
+
+                    Integer avgPower = record.getFieldIntegerValue(fitFile.LAP_POW);
+                    if (avgPower != null) {
+                        fitFile.appendTempUpdateLogg(" " + avgPower + "W");
+                    }
+
+                    Double dist = record.getFieldDoubleValue(fitFile.LAP_DIST);
                     if (dist != null) {
-                        tempString += " " + String.format("%.1fkm", dist / 1000);
+                        fitFile.appendTempUpdateLogg(" " + String.format("%.1fkm", dist / 1000));
                     }
 
-                    tempString += System.lineSeparator();
+                    if (fitFile.getLapExtraRecords().get(i).getStepLen() != null
+                     && fitFile.getMySport() != FitFile.MySport.SKIERG) {
+                        fitFile.appendTempUpdateLogg(" step" + (int) (fitFile.getLapExtraRecords().get(i).getStepLen() * 100) + "cm");
+                    }
+
+                    fitFile.appendTempUpdateLoggLn("");
                 }
                 i++;
                 lapNo++;
             }
-            tempString += lapEndSum2String(fitFile.getRestAvgCad(), fitFile.getRestAvgSpeed(), fitFile.getRestAvgPower(), fitFile.getRestDist());
-        }
-        catch (FitRuntimeException e) {
+
+            fitFile.appendTempUpdateLogg(
+                lapEndSum2String(
+                    fitFile.getRestAvgCad(), 
+                    fitFile.getRestAvgSpeed(), 
+                    fitFile.getRestAvgPower(), 
+                    fitFile.getRestDist()));
+
+                    //asasas
+
+        } catch (FitRuntimeException e) {
             System.out.println("LAP ERROR!!!!");
         }
-        return tempString;
+        if (printToConsoleAndSaveToLog) {
+            fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
+            System.out.println(fitFile.getTempUpdateLogg());
+        }
+        return fitFile.getTempUpdateLogg();
     }
-    //=============================================================================
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     // Debug method to print lap and record details for verification
-    //=============================================================================
-    public void debugLapRecords(List<Mesg> lapMesgs, List<Mesg> recordMesgs) {
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        public void debugLapRecords(List<Mesg> lapMesgs, List<Mesg> recordMesgs) {
         System.out.println("-------------------------------------------");
         System.out.println("----- L A P   R E C O R D   D E B U G -----");
         System.out.printf("Laps: %d  Records: %d%n%n", lapMesgs.size(), recordMesgs.size());
@@ -793,6 +914,7 @@ public class LapReportGenerator {
         }
     }
 
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private static void printRecord(Mesg r, long lapStart) {
         Long ts = getLongField(r, "timestamp", null);
         double dist = getFloatField(r, "distance", 0f);
@@ -804,7 +926,9 @@ public class LapReportGenerator {
             (ts - lapStart), ts, dist, spd, enhSpd);
     }
 
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     // safe field helpers
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private static Long getLongField(Mesg m, String name, Long defVal) {
         if (m == null) return defVal;
         try {
@@ -813,6 +937,7 @@ public class LapReportGenerator {
         } catch (Exception e) { return defVal; }
     }
 
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private static Float getFloatField(Mesg m, String name, Float defVal) {
         if (m == null) return defVal;
         try {
@@ -820,4 +945,5 @@ public class LapReportGenerator {
             return v != null ? v : defVal;
         } catch (Exception e) { return defVal; }
     }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 }

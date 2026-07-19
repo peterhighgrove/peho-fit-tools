@@ -3,7 +3,7 @@ New file info AFTER update:
 ==================================================
 --------------------------------------------------
  --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v23.18
- --> Sport:RUNNING, SubSport:TRAIL, SportProfile:Trail Run Cassis-Calanques park west 15.3km, WktName:null
+ --> Sport:RUNNING, SubSport:TRAIL, SportProfile:Trail Run Cassis-Calanques park west 15.3km, WktName:
  --> Org activity dateTime Local:2025-10-02-11-33-35
  --> New activity dateTime Local:2025-10-02-11-36-35
  --> Org activity DateTime UTC:  2025-10-02-09-33-35
@@ -12,17 +12,17 @@ New file info AFTER update:
  --> New start datetime UTC:     2025-10-02-09-36-35
 --------------------------------------------------
 ---- ACTIVE LAPS ----
-Lap7 HR->max133 10:11min 67spm 10:12min/km 5.9km/h 221W 1.0km
-Lap8 HR->max133 7:19min 75spm 7:19min/km 8.2km/h 237W 1.0km
-Lap9 HR->max136 5:49min 84spm 5:49min/km 10.3km/h 287W 1.0km
-Lap10 HR->max139 5:42min 83spm 5:42min/km 10.5km/h 245W 1.0km
-Lap11 HR->max131 5:54min 79spm 5:53min/km 10.2km/h 215W 1.0km
-Lap12 HR->max127 5:34min 82spm 5:34min/km 10.8km/h 227W 1.0km
-Lap13 HR->max141 5:43min 78spm 6:56min/km 8.7km/h 242W 0.8km
-Lap14 HR->max113 15:10min 50spm 15:11min/km 4.0km/h 100W 1.0km
-Lap15 HR->max133 10:06min 64spm 10:06min/km 5.9km/h 161W 1.0km
-Lap16 HR->max108 12:11min 50spm 14:33min/km 4.1km/h 101W 0.8km
-avgCad: 0spm, avgPace: 2147483647:2147483647min/km, avgSp: 0.0km/h, sumDist: 0.0km
+Lap7 HRmin72>st123+10->max133 end119 10:11min 67spm 10:12min/km 5.9km/h 221W 1.0km step146cm
+Lap8 HRmin95>st119+14->max133 end133 7:19min 75spm 7:19min/km 8.2km/h 237W 1.0km step182cm
+Lap9 HRmin89>st133+3->max136 end134 5:49min 84spm 5:49min/km 10.3km/h 287W 1.0km step204cm
+Lap10 HRmin126>st134+13->max139 end124 5:42min 83spm 5:42min/km 10.5km/h 245W 1.0km step211cm
+Lap11 HRmin109>st124+22->max131 end100 5:54min 79spm 5:53min/km 10.2km/h 215W 1.0km step214cm
+Lap12 HRmin93>st101+34->max127 end127 5:34min 82spm 5:34min/km 10.8km/h 227W 1.0km step218cm
+Lap13 HRmin97>st127+14->max141 end128 5:43min 78spm 6:56min/km 8.7km/h 242W 0.8km step184cm
+Lap14 HRmin60>st75+53->max113 end89 15:10min 50spm 15:11min/km 4.0km/h 100W 1.0km step131cm
+Lap15 HRmin75>st88+58->max133 end83 10:06min 64spm 10:06min/km 5.9km/h 161W 1.0km step154cm
+Lap16 HRmin83>st83+25->max108 end102 12:11min 50spm 14:33min/km 4.1km/h 101W 0.8km step137cm
+avgCad: 67spm, avgPace: 8:39min/km, avgSp: 6.9km/h, sumDist: 9.7km
 ---- REST LAPS ----
-avgCad: 0spm, avgPace: 2147483647:2147483647min/km, avgSp: 0.0km/h, sumDist: 0.0km
+avgCad: 0spm, avgPace: 0:00min/km, avgSp: NaNkm/h, sumDist: 0.0km
 ==================================================

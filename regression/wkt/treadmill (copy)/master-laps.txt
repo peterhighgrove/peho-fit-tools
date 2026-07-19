@@ -1,0 +1,24 @@
+--------------------------------------------------
+ --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v25.11
+ --> Sport:RUNNING, SubSport:TREADMILL, SportProfile:Löpband, WktName:null
+ --> Org activity dateTime Local:2026-01-30-17-30-41
+ --> New activity dateTime Local:2026-01-30-17-30-41
+ --> Org activity DateTime UTC:  2026-01-30-16-30-41
+ --> timeZone:                   +01:00
+ --> Org start datetime UTC:     2026-01-30-16-30-41
+ --> New start datetime UTC:     2026-01-30-16-30-41
+--------------------------------------------------
+--------------------------------------------------
+ --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v25.11
+ --> Sport:RUNNING, SubSport:TREADMILL, SportProfile:Löpband Friskis Orminge 3km, WktName:null
+ --> Org activity dateTime Local:2026-01-30-17-30-41
+ --> New activity dateTime Local:2026-01-30-17-32-41
+ --> Org activity DateTime UTC:  2026-01-30-16-30-41
+ --> timeZone:                   +01:00
+ --> Org start datetime UTC:     2026-01-30-16-30-41
+ --> New start datetime UTC:     2026-01-30-16-32-41
+--------------------------------------------------
+---- ACTIVE LAPS ----
+avgCad: 0spm, avgPace: 0:00min/km, avgSp: NaNkm/h, sumDist: 0.0km
+---- REST LAPS ----
+avgCad: 0spm, avgPace: 0:00min/km, avgSp: NaNkm/h, sumDist: 0.0km

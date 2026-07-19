@@ -1,3 +1,8 @@
+FIT SDK profile version: 21.205 Release (21205)
+FIT file successfully read. Total records: 4659, Time between: 2026-04-06-10-08-18 -- 2026-04-06-11-53-36
+CHECK/FIX RECORD TIMES
+----------------------
+Completed REC_TIME check/fix. Updated 0 null value(s).
 
 PAUSE - SHORTEN@end, forgot to resume timer after pause
 --------------------------------------------

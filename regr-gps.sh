@@ -225,6 +225,9 @@ EOF
 
     local log_file="$run_dir/run.log"
 
+    echo ""
+    echo "=================================================================="
+    echo "=================================================================="
     echo "[RUN ] $case_name"
     (cd "$run_dir" && java -jar "$JAR_PATH" < "$rendered_inputs" > "$log_file" 2>&1)
     local run_exit=$?
@@ -267,45 +270,57 @@ EOF
 
     local case_ok=true
 
-    if ! cmp -s "$new_fit" "$master"; then
+    if ! cmp -s "$master" "$new_fit"; then
         case_ok=false
         echo "======= (FIT differs) ====================================="
         echo "[FAIL] $case_name (fit differs)"
-        echo "       new:    $new_fit"
         echo "       master: $master"
-        if command -v sha256sum >/dev/null 2>&1; then
-            echo "       hashes:"
-            sha256sum "$new_fit" "$master" | sed 's/^/         /'
-        fi
-        if [[ "$FIT_MSG_DIFF" == "true" ]]; then
-            run_fit_message_diff "$new_fit" "$master" "$run_dir" "$case_name"
-        fi
+        echo "       new:    $new_fit"
+        # if command -v sha256sum >/dev/null 2>&1; then
+        #     echo "       hashes:"
+        #     sha256sum "$master" "$new_fit" | sed 's/^/         /'
+        # fi
+        # if [[ "$FIT_MSG_DIFF" == "true" ]]; then
+        #     run_fit_message_diff "$master" "$new_fit" "$run_dir" "$case_name"
+        # fi
+        echo "--- vvv RUN BELOW vvv---"
+        echo "/home/hoglund/dev/peho-fit-tools/diff-fit-messages.sh \\"
+        echo "\"$master\" \\"
+        echo "\"$new_fit\""
         echo "--------------------------------------------"
     fi
 
-    if ! cmp -s "$new_after" "$master_after"; then
+    if ! cmp -s "$master_after" "$new_after"; then
         case_ok=false
         echo "======= (-AFTER.TXT differs) ====================================="
         echo "[FAIL] $case_name (-after.txt differs)"
-        echo "       new:    $new_after"
         echo "       master: $master_after"
-        if command -v sha256sum >/dev/null 2>&1; then
-            echo "       hashes:"
-            sha256sum "$new_after" "$master_after" | sed 's/^/         /'
-        fi
+        echo "       new:    $new_after"
+        # if command -v sha256sum >/dev/null 2>&1; then
+        #     echo "       hashes:"
+        #     sha256sum "$master_after" "$new_after" | sed 's/^/         /'
+        # fi
+        echo "--- vvv RUN BELOW vvv---"
+        echo "diff -u \\"
+        echo "\"$master_after\" \\"
+        echo "\"$new_after\""
         echo "--------------------------------------------"
     fi
 
-    if ! cmp -s "$new_log" "$master_log"; then
+    if ! cmp -s "$master_log" "$new_log"; then
         case_ok=false
         echo "======= (-LOG.TXT differs) ====================================="
         echo "[FAIL] $case_name (-log.txt differs)"
-        echo "       new:    $new_log"
         echo "       master: $master_log"
-        if command -v sha256sum >/dev/null 2>&1; then
-            echo "       hashes:"
-            sha256sum "$new_log" "$master_log" | sed 's/^/         /'
-        fi
+        echo "       new:    $new_log"
+        # if command -v sha256sum >/dev/null 2>&1; then
+        #     echo "       hashes:"
+        #     sha256sum "$master_log" "$new_log" | sed 's/^/         /'
+        # fi
+        echo "--- vvv RUN BELOW vvv---"
+        echo "diff -u \\"
+        echo "\"$master_log\" \\"
+        echo "\"$new_log\""
         echo "--------------------------------------------"
     fi
 
@@ -315,7 +330,7 @@ EOF
     fi
 
     echo "       run log: $log_file"
-    echo "--------------------------------------------"
+    echo "=================================================================="
     return 1
 }
 

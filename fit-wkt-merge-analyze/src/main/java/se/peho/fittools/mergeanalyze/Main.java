@@ -78,7 +78,7 @@ public class Main {
             // ================================
             // ELLIPTICAL
             // ================================
-            if (watchFitFile.checkIfEllipticalFile()) {
+            if (watchFitFile.getMySport() == FitFileForIndoor.MySport.ELLIPTICAL) {
                 System.out.println("======== isElliptical YES ==========");
 
                 hasManualLapsTxt = watchFitFile.hasManualLapsFile(conf.getExtraFilename());
@@ -111,7 +111,7 @@ public class Main {
             // ================================
             // SKIERG
             // ================================
-            else if (watchFitFile.checkIfSkiErgFile()) {
+            else if (watchFitFile.getMySport() == FitFileForIndoor.MySport.SKIERG) {
 
                 System.out.println("======== isSkiErgFile YES ==========");
 
@@ -174,7 +174,7 @@ public class Main {
             // ================================
             // TREADMILL
             // ================================
-            else if (watchFitFile.checkIfTreadmillFile()) {
+            else if (watchFitFile.getMySport() == FitFileForIndoor.MySport.TREADMILL) {
                 System.out.println("======== isTreadmillFile YES ==========");
 
                 hasManualLapsTxt = watchFitFile.hasManualLapsFile(conf.getExtraFilename());
@@ -312,7 +312,7 @@ public class Main {
         if (conf.isDebugSplit()) watchFitFile.printSplitRecords();
         if (conf.isDebugSplit()) watchFitFile.printSplitSumRecords();
 
-        if (conf.isDebugLaps()) watchFitFile.printLapAllSummaryAllMesg2();
+        if (conf.isDebugLaps()) watchFitFile.getLapReportGenerator().printLapAllSummary();
 
         if (conf.isDebugLaps()) watchFitFile.getLapReportGenerator().printLapLongSummery();
         //watchFitFile.printCourse();
@@ -322,7 +322,12 @@ public class Main {
         if (conf.isDebugWkt()) watchFitFile.printWktInfo();
         if (conf.isDebugWkt()) watchFitFile.printWktSessionInfo();
         if (conf.isDebugWkt()) watchFitFile.printWktStepInfo();
-        watchFitFile.printWriteLapSummery(watchFilePathWithNewTime + "-merged" + (int)(conf.getTimeOffsetSec()/60) + "min-laps.txt");
+
+        System.out.print(watchFitFile.savedStrOrgFileInfo);
+        watchFitFile.getLapReportGenerator().printActiveRestLapSummery();
+        watchFitFile.saveLapSummery(watchFilePathWithNewTime + "-merged" + (int)(conf.getTimeOffsetSec()/60) + "min-laps.txt");
+        //watchFitFile.getLapReportGenerator().printLapReport1();
+
     }
 
 }

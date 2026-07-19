@@ -1,3 +1,8 @@
+FIT SDK profile version: 21.205 Release (21205)
+FIT file successfully read. Total records: 5871, Time between: 2026-03-09-10-40-18 -- 2026-03-09-13-09-01
+CHECK/FIX RECORD TIMES
+----------------------
+Completed REC_TIME check/fix. Updated 0 null value(s).
 Adding activity from another file
 Selected segment in second file: ix 29 to 7542 (7514 messages)
 Adjusted TIME_IN_ZONE reference_index by +18 for 9 message(s).

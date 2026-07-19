@@ -12,36 +12,36 @@ New file info AFTER update:
  --> New start datetime UTC:     2026-05-14-08-30-23
 --------------------------------------------------
 ---- ACTIVE LAPS ----
-Lap1 HR->max97 2:08min 49spm 3:16min/500m 62W 0.3km
-Lap3 HR->max103 1min 50spm 2:30min/500m 102W 0.2km
-Lap5 HR->max107 1min 53spm 2:23min/500m 115W 0.2km
-Lap8 HR->max129 4min 52spm 2:16min/500m 141W 0.9km
-Lap10 HR->max131 3min 53spm 2:13min/500m 147W 0.7km
-Lap12 HR->max133 3min 53spm 2:14min/500m 147W 0.7km
-Lap14 HR->max131 3min 53spm 2:15min/500m 143W 0.7km
-Lap16 HR->max133 2min 55spm 2:13min/500m 151W 0.5km
-Lap18 HR->max135 2min 56spm 2:12min/500m 151W 0.5km
-Lap20 HR->max135 2min 54spm 2:12min/500m 148W 0.5km
-Lap22 HR->max136 2min 54spm 2:12min/500m 153W 0.5km
-Lap24 HR->max134 1min 56spm 2:09min/500m 162W 0.2km
-Lap26 HR->max138 1min 57spm 2:06min/500m 177W 0.2km
-Lap28 HR->max140 1min 57spm 2:02min/500m 182W 0.2km
-Lap30 HR->max138 1min 58spm 2:06min/500m 174W 0.2km
-Lap32 HR->max139 1min 58spm 2:07min/500m 173W 0.2km
-avgCad: 0spm, avgPace: 2147483647:2147483647min/500m, avgPow: 0W, sumDist: 0.0km
+Lap1 HR>st69+28->max97 end97 2:08min 49spm 3:16min/500m 62W 0.3km df98 sl0.63
+Lap3 HRmin74>st95+8->max103 end101 1min 50spm 2:30min/500m 102W 0.2km df100 sl0.7
+Lap5 HRmin93>st96+14->max107 end107 1min 53spm 2:23min/500m 115W 0.2km df100 sl0.71
+Lap8 HRmin82>st110+19->max129 end127 4min 52spm 2:16min/500m 141W 0.9km df122 sl0.69
+Lap10 HRmin110>st113+21->max131 end130 3min 53spm 2:13min/500m 147W 0.7km df122 sl0.68
+Lap12 HRmin108>st111+25->max133 end132 3min 53spm 2:14min/500m 147W 0.7km df123 sl0.69
+Lap14 HRmin109>st109+22->max131 end130 3min 53spm 2:15min/500m 143W 0.7km df123 sl0.68
+Lap16 HRmin113>st117+20->max133 end133 2min 55spm 2:13min/500m 151W 0.5km df123 sl0.67
+Lap18 HRmin115>st117+20->max135 end134 2min 56spm 2:12min/500m 151W 0.5km df123 sl0.66
+Lap20 HRmin114>st115+21->max135 end135 2min 54spm 2:12min/500m 148W 0.5km df123 sl0.67
+Lap22 HRmin112>st112+24->max136 end136 2min 54spm 2:12min/500m 153W 0.5km df123 sl0.67
+Lap24 HRmin115>st115+19->max134 end134 1min 56spm 2:09min/500m 162W 0.2km df123 sl0.68
+Lap26 HRmin119>st121+19->max138 end138 1min 57spm 2:06min/500m 177W 0.2km df123 sl0.68
+Lap28 HRmin119>st119+21->max140 end140 1min 57spm 2:02min/500m 182W 0.2km df122 sl0.71
+Lap30 HRmin123>st124+15->max138 end138 1min 58spm 2:06min/500m 174W 0.2km df121 sl0.69
+Lap32 HRmin124>st125+15->max139 end139 1min 58spm 2:07min/500m 173W 0.2km df121 sl0.69
+avgCad: 54spm, avgPace: 2:16min/500m, avgPow: 143W, sumDist: 6.6km
 ---- REST LAPS ----
-Lap4 HRst?->max101 1min 48spm 2:43min/500m 86W 0.2km
-Lap9 HRst?->max127 1min 49spm 2:47min/500m 75W 0.2km
-Lap11 HRst?->max130 1min 49spm 3:21min/500m 53W 0.1km
-Lap13 HRst?->max132 1min 49spm 3:31min/500m 45W 0.1km
-Lap15 HRst?->max131 1min 48spm 3:15min/500m 55W 0.2km
-Lap17 HRst?->max133 1min 48spm 3:28min/500m 51W 0.1km
-Lap19 HRst?->max134 1min 48spm 3:26min/500m 51W 0.1km
-Lap21 HRst?->max134 1min 48spm 3:53min/500m 37W 0.1km
-Lap23 HRst?->max136 1min 47spm 3:42min/500m 41W 0.1km
-Lap25 HRst?->max134 1min 52spm 3:33min/500m 44W 0.1km
-Lap27 HRst?->max138 1min 48spm 3:47min/500m 45W 0.1km
-Lap29 HRst?->max141 1min 48spm 3:56min/500m 42W 0.1km
-Lap31 HRst?->max139 1min 48spm 3:42min/500m 51W 0.1km
-avgCad: 0spm, avgPace: 2147483647:2147483647min/500m, avgPow: 0W, sumDist: 0.0km
+Lap4 HRst101>max101-8->min93 end95 1min 48spm 2:43min/500m 86W 0.2km
+Lap9 HRst127>max127-17->min110 end113 1min 49spm 2:47min/500m 75W 0.2km
+Lap11 HRst130>max130-22->min108 end111 1min 49spm 3:21min/500m 53W 0.1km
+Lap13 HRst132>max132-23->min109 end109 1min 49spm 3:31min/500m 45W 0.1km
+Lap15 HRst130>max131-18->min113 end117 1min 48spm 3:15min/500m 55W 0.2km
+Lap17 HRst133>max133-18->min115 end118 1min 48spm 3:28min/500m 51W 0.1km
+Lap19 HRst134>max134-20->min114 end115 1min 48spm 3:26min/500m 51W 0.1km
+Lap21 HRst134>max134-22->min112 end112 1min 48spm 3:53min/500m 37W 0.1km
+Lap23 HRst136>max136-21->min115 end115 1min 47spm 3:42min/500m 41W 0.1km
+Lap25 HRst133>max134-15->min119 end121 1min 52spm 3:33min/500m 44W 0.1km
+Lap27 HRst137>max138-19->min119 end119 1min 48spm 3:47min/500m 45W 0.1km
+Lap29 HRst140>max141-18->min123 end124 1min 48spm 3:56min/500m 42W 0.1km
+Lap31 HRst139>max139-15->min124 end125 1min 48spm 3:42min/500m 51W 0.1km
+avgCad: 48spm, avgPace: 3:26min/500m, avgPow: 52W, sumDist: 1.9km
 ==================================================

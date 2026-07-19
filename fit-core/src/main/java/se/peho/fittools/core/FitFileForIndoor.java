@@ -33,7 +33,8 @@ public class FitFileForIndoor extends FitFile {
     public Long getDiffMinutesLocalUTC() { return diffMinutesLocalUTC; }
     public void setDiffMinutesLocalUTC(Long diffMinutesLocalUTC) { this.diffMinutesLocalUTC = diffMinutesLocalUTC; }
  */
-    private Boolean isSkiErg = false;
+
+/*     private Boolean isSkiErg = false;
     private Boolean isElliptical = false;
     private Boolean isTreadmill = false;
     public Boolean getIsSkiErg() { return isSkiErg; }
@@ -42,7 +43,7 @@ public class FitFileForIndoor extends FitFile {
     public void setIsSkiErg(Boolean isSkiErg) { this.isSkiErg = isSkiErg; }
     public void setIsElliptical(Boolean isElliptical) { this.isElliptical = isElliptical; }
     public void setIsTreadmill(Boolean isTreadmill) { this.isTreadmill = isTreadmill; }
-
+ */
     public String savedStrOrgFileInfo = "";
 
     int numberOfDevFields;
@@ -260,7 +261,7 @@ public class FitFileForIndoor extends FitFile {
         // Find The place to add WKT messages
         //----------------------
         int insertIx = 0;
-        for (Mesg mesg : allMesg) {
+        for (Mesg mesg : getAllMesg()) {
             if (mesg.getNum() == MesgNum.RECORD) {
                 break;
             }
@@ -280,27 +281,27 @@ public class FitFileForIndoor extends FitFile {
         // ADD wktName if not empty in arguments
         //----------------------
         if (!wktName.equals("")) {
-            wktRecordMesg.get(0).setFieldValue(WKT_NAME, wktName);
+            getWktRecordMesg().get(0).setFieldValue(WKT_NAME, wktName);
         }
 
         // ADD wktSession Record if EMPTY
         //----------------------
         /* if (wktSessionMesg.isEmpty()) {
             Mesg wktSessionRecord = new WorkoutSessionMesg();
-            wktSessionMesg.add(wktSessionRecord);
-            allMesg.add(insertIx, wktSessionRecord);
+            getWktSessionMesg().add(wktSessionRecord);
+            getAllMesg().add(insertIx, wktSessionRecord);
             insertIx++;
             System.out.println("---------> NO wktSession, ADDING!");
         } */
 
         // ADD wktStepRecords if EMPTY
         //----------------------
-        if (wktStepMesg.isEmpty()) {
-            for (Mesg lap : lapMesg) {
+        if (getWktStepMesg().isEmpty()) {
+            for (Mesg lap : getLapMesg()) {
                 System.out.println("---------> Adding wktStep for lap!");
                 Mesg wktStepRecord = new WorkoutStepMesg();
-                wktStepMesg.add(wktStepRecord);
-                allMesg.add(insertIx, wktStepRecord);
+                getWktStepMesg().add(wktStepRecord);
+                getAllMesg().add(insertIx, wktStepRecord);
                 insertIx++;
             }
             System.out.println("---------> NO wktSteps, ADDING!");
@@ -309,7 +310,7 @@ public class FitFileForIndoor extends FitFile {
         System.out.println("---------> StepIntensity changing to: " + wktSteps);
 
         int recordIx = 0;
-        for (Mesg lap : lapMesg) {
+        for (Mesg lap : getLapMesg()) {
             switch (wktSteps.toLowerCase()) {
 
                 case "allactive":
@@ -329,7 +330,7 @@ public class FitFileForIndoor extends FitFile {
                     if (recordIx == 0) {
                         lap.setFieldValue(LAP_INTENSITY, Intensity.WARMUP);
                     }
-                    if (recordIx+1 == lapMesg.size()) {
+                    if (recordIx+1 == getLapMesg().size()) {
                         lap.setFieldValue(LAP_INTENSITY, Intensity.COOLDOWN);
                     }
                     break;
@@ -341,7 +342,7 @@ public class FitFileForIndoor extends FitFile {
                     if (((recordIx+1) % 2) == 1) {
                         lap.setFieldValue(LAP_INTENSITY, Intensity.RECOVERY);
                     }
-                    if ((recordIx+1) == lapMesg.size()) {
+                    if ((recordIx+1) == getLapMesg().size()) {
                         lap.setFieldValue(LAP_INTENSITY, Intensity.COOLDOWN);
                     }
                     break;
@@ -353,7 +354,7 @@ public class FitFileForIndoor extends FitFile {
                     if (((recordIx+1) % 2) == 1) {
                         lap.setFieldValue(LAP_INTENSITY, Intensity.ACTIVE);
                     }
-                    if ((recordIx+1) == lapMesg.size()) {
+                    if ((recordIx+1) == getLapMesg().size()) {
                         lap.setFieldValue(LAP_INTENSITY, Intensity.COOLDOWN);
                     }
                     break;
@@ -371,7 +372,7 @@ public class FitFileForIndoor extends FitFile {
                     if (recordIx == 1) {
                         lap.setFieldValue(LAP_INTENSITY, Intensity.WARMUP);
                     }
-                    if ((recordIx+1) == lapMesg.size()) {
+                    if ((recordIx+1) == getLapMesg().size()) {
                         lap.setFieldValue(LAP_INTENSITY, Intensity.COOLDOWN);
                     }
                     break;
@@ -603,8 +604,8 @@ public class FitFileForIndoor extends FitFile {
     public void removeDevFieldDescr() {
 
         removeDeveloperFieldDefinitions(
-            allMesg,
-            fieldDescrMesg,
+            getAllMesg(),
+            getFieldDescrMesg(),
             devAppToModify,
             devFieldsToRemove
         );
@@ -678,48 +679,48 @@ public class FitFileForIndoor extends FitFile {
         }
     } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public Boolean checkIfSkiErgFile() {
-        System.out.println("======== isSkiErgFile TEST ==========");
-        System.out.println("   SportProfile: " + sportProfile);
-        Boolean isTrue = false;
-        if (sportProfile.toLowerCase().contains("skierg")
-            || sportProfile.toLowerCase().contains("row")
-            ) {
-                isTrue = true;
-                setIsSkiErg(true);
-         }
-        return isTrue;
-    }
+    // public Boolean checkIfSkiErgFile() {
+    //     System.out.println("======== isSkiErgFile TEST ==========");
+    //     System.out.println("   SportProfile: " + sportProfile);
+    //     Boolean isTrue = false;
+    //     if (sportProfile.toLowerCase().contains("skierg")
+    //         || sportProfile.toLowerCase().contains("row")
+    //         ) {
+    //             isTrue = true;
+    //             setIsSkiErg(true);
+    //      }
+    //     return isTrue;
+    // }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public Boolean checkIfTreadmillFile() {
-        System.out.println("======== isTreadmillFile TEST ==========");
-        System.out.println("   SportProfile: " + sportProfile);
-        Boolean isTrue = false;
-        if (sportProfile.toLowerCase().contains("löpband") 
-            || sportProfile.toLowerCase().contains("pband")
-            || sportProfile.toLowerCase().contains("mill")
-            || sportProfile.toLowerCase().contains("tread")
-            ) {
-                isTrue = true;
-                setIsTreadmill(true);
-        }
-        return isTrue;
-    }
+    // public Boolean checkIfTreadmillFile() {
+    //     System.out.println("======== isTreadmillFile TEST ==========");
+    //     System.out.println("   SportProfile: " + sportProfile);
+    //     Boolean isTrue = false;
+    //     if (sportProfile.toLowerCase().contains("löpband") 
+    //         || sportProfile.toLowerCase().contains("pband")
+    //         || sportProfile.toLowerCase().contains("mill")
+    //         || sportProfile.toLowerCase().contains("tread")
+    //         ) {
+    //             isTrue = true;
+    //             setIsTreadmill(true);
+    //     }
+    //     return isTrue;
+    // }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public Boolean checkIfEllipticalFile() {
-        System.out.println("======== isEllipticalFile TEST ==========");
-        System.out.println("   SportProfile: " + sportProfile);
-        Boolean isTrue = false;
-        if (sportProfile.toLowerCase().contains("ellipt")
-            || sportProfile.toLowerCase().contains("gymbike")
-            || sportProfile.toLowerCase().contains("spinbike")
-            || sportProfile.toLowerCase().contains("ct")
-            ) {
-                isTrue = true;
-                setIsElliptical(true);
-        }
-        return isTrue;
-    }
+    // public Boolean checkIfEllipticalFile() {
+    //     System.out.println("======== isEllipticalFile TEST ==========");
+    //     System.out.println("   SportProfile: " + sportProfile);
+    //     Boolean isTrue = false;
+    //     if (sportProfile.toLowerCase().contains("ellipt")
+    //         || sportProfile.toLowerCase().contains("gymbike")
+    //         || sportProfile.toLowerCase().contains("spinbike")
+    //         || sportProfile.toLowerCase().contains("ct")
+    //         ) {
+    //             isTrue = true;
+    //             setIsElliptical(true);
+    //     }
+    //     return isTrue;
+    // }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 /*     public void checkC2StartDist () {
         // sdsd
@@ -746,22 +747,22 @@ public class FitFileForIndoor extends FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void setNewSport(Sport sport, SubSport subsport) {
 
-        if (!wktRecordMesg.isEmpty()) {
-            wktRecordMesg.get(0).setFieldValue(WKT_SPORT, sport.getValue());
-            wktRecordMesg.get(0).setFieldValue(WKT_SUBSPORT, subsport.getValue());
+        if (!getWktRecordMesg().isEmpty()) {
+            getWktRecordMesg().get(0).setFieldValue(WKT_SPORT, sport.getValue());
+            getWktRecordMesg().get(0).setFieldValue(WKT_SUBSPORT, subsport.getValue());
         }
 
-        sessionMesg.get(0).setFieldValue(SES_SPORT, sport.getValue());
-        sessionMesg.get(0).setFieldValue(SES_SUBSPORT, subsport.getValue());
+        getSessionMesg().get(0).setFieldValue(SES_SPORT, sport.getValue());
+        getSessionMesg().get(0).setFieldValue(SES_SUBSPORT, subsport.getValue());
 
-        for (Mesg lap : lapMesg) {
+        for (Mesg lap : getLapMesg()) {
             lap.setFieldValue(LAP_SPORT, sport.getValue());
             lap.setFieldValue(LAP_SUBSPORT, subsport.getValue());
         }
 
         // --- NEW: also update "Activity Metrics" message if present ---
         Field sportField;
-        for (Mesg mesg : allMesg) {
+        for (Mesg mesg : getAllMesg()) {
             switch (mesg.getNum()) {
                 case 140:  // undocumented Activity Metrics
                     sportField = mesg.getField(11);
@@ -826,11 +827,11 @@ public class FitFileForIndoor extends FitFile {
         boolean lookingInBeginningForEmptyDragFactor = true;
         boolean lookingInBeginningForEmptyTrainingSession = true;
         
-        if (numberOfRecords < maxIxFixEmptyBeginning) {
-            maxIxFixEmptyBeginning = numberOfRecords - 1;
+        if (getNumberOfRecords() < maxIxFixEmptyBeginning) {
+            maxIxFixEmptyBeginning = getNumberOfRecords() - 1;
         }
 
-        for (Mesg record : recordMesg) {
+        for (Mesg record : getRecordMesg()) {
 
             Float distFromDevField = 0f;
             Float speedFromDevField = 0f;
@@ -841,7 +842,7 @@ public class FitFileForIndoor extends FitFile {
             //--------------
             // Initiate secExtraRecords
             int lapNo = 1; // only for INIT of secExtraRecords for now
-            secExtraRecords.add(new RecordExtraMesg(lapNo, C2DateTime));
+            getSecExtraRecords().add(new RecordExtraMesg(lapNo, C2DateTime));
             
             //--------------
             // Look for HR drop outs
@@ -849,7 +850,7 @@ public class FitFileForIndoor extends FitFile {
             if (hr == null) {
                 System.out.println(">>>>>>> HR EMPTY.  recordIx:" + recordIx);
                 if (recordIx > 0) {
-                    Short hrPrev = recordMesg.get(recordIx - 1).getFieldShortValue(REC_HR);
+                    Short hrPrev = getRecordMesg().get(recordIx - 1).getFieldShortValue(REC_HR);
                     if (hrPrev != null) {
                         record.setFieldValue(REC_HR, hrPrev);
                     }
@@ -907,13 +908,13 @@ public class FitFileForIndoor extends FitFile {
             // =========== Distance Smoothing =============
             // Smoothing distance records if 2 following record are the same, then calc avg for the one before and after the 2
             // ============================================
-            if (recordIx >= 3 && recordIx < numberOfRecords-2) {
+            if (recordIx >= 3 && recordIx < getNumberOfRecords()-2) {
                 Float distCurrent = record.getFieldFloatValue(REC_DIST);
-                Float distPrev = recordMesg.get(recordIx-1).getFieldFloatValue(REC_DIST);
+                Float distPrev = getRecordMesg().get(recordIx-1).getFieldFloatValue(REC_DIST);
 
                 if (distCurrent != null && distPrev != null && distCurrent.equals(distPrev)) {
 
-                    Mesg recordNext = recordMesg.get(recordIx+1);
+                    Mesg recordNext = getRecordMesg().get(recordIx+1);
                     Float distNextFromDevField = 0f;
 
                     //System.out.println("==========> Same dist in a row: " + recordIx + ", " + sameDistCounter + " @ " + currentDist + ", " + record.getTimestamp());
@@ -926,14 +927,14 @@ public class FitFileForIndoor extends FitFile {
                         }
                     }
                     
-                    Mesg recordPrev1 = recordMesg.get(recordIx-1);
-                    Mesg recordPrev2 = recordMesg.get(recordIx-2);
+                    Mesg recordPrev1 = getRecordMesg().get(recordIx-1);
+                    Mesg recordPrev2 = getRecordMesg().get(recordIx-2);
                     Float distPrev2 = recordPrev2.getFieldFloatValue(REC_DIST);
                     Float distStepNew = (distNextFromDevField - distPrev2) / 3;
                     
                     recordPrev1.setFieldValue(REC_DIST, distPrev2 + distStepNew);
                     record.setFieldValue(REC_DIST, distPrev2 + distStepNew*2);
-                    //System.out.println("-------->" + recordMesg.get(recordIx-2).getFieldFloatValue(REC_DIST) + " " + currentDistBack1 + "->" + recordMesg.get(recordIx-1).getFieldFloatValue(REC_DIST) + " " + currentDist + "->" + record.getFieldFloatValue(REC_DIST) + " " + currentDistNext);
+                    //System.out.println("-------->" + getRecordMesg().get(recordIx-2).getFieldFloatValue(REC_DIST) + " " + currentDistBack1 + "->" + getRecordMesg().get(recordIx-1).getFieldFloatValue(REC_DIST) + " " + currentDist + "->" + record.getFieldFloatValue(REC_DIST) + " " + currentDistNext);
                     sameDistCounter++;
                 }
                 else {
@@ -943,12 +944,12 @@ public class FitFileForIndoor extends FitFile {
 
             // =========== MERGE/Import C2 fitfile =============
             // =================================================
-            while (c2FitFile.recordMesg.get(c2RecordIx).getFieldFloatValue(REC_DIST) - 0.5 <= record.getFieldFloatValue(REC_DIST) - C2FitFileDistanceStartCorrection) {
-                record.setFieldValue(REC_CAD, c2FitFile.recordMesg.get(c2RecordIx).getFieldShortValue(REC_CAD));
-                //record.setFieldValue(REC_POW, c2FitFile.recordMesg.get(c2RecordIx).getFieldIntegerValue(REC_POW));
-                secExtraRecords.get(recordIx).setC2DateTime(c2FitFile.recordMesg.get(c2RecordIx).getFieldLongValue(REC_TIME));
+            while (c2FitFile.getRecordMesg().get(c2RecordIx).getFieldFloatValue(REC_DIST) - 0.5 <= record.getFieldFloatValue(REC_DIST) - C2FitFileDistanceStartCorrection) {
+                record.setFieldValue(REC_CAD, c2FitFile.getRecordMesg().get(c2RecordIx).getFieldShortValue(REC_CAD));
+                //record.setFieldValue(REC_POW, c2FitFile.getRecordMesg().get(c2RecordIx).getFieldIntegerValue(REC_POW));
+                getSecExtraRecords().get(recordIx).setC2DateTime(c2FitFile.getRecordMesg().get(c2RecordIx).getFieldLongValue(REC_TIME));
                 c2RecordIx++;
-                if (c2RecordIx > c2FitFile.numberOfRecords - 1) {
+                if (c2RecordIx > c2FitFile.getNumberOfRecords() - 1) {
                     c2RecordIx--;
                     break;
                 }
@@ -962,7 +963,7 @@ public class FitFileForIndoor extends FitFile {
                     if (speed != null && speed != 0f) {
                         if (debugFixData) System.out.println("========= FIXED Beginning SPEED, first value: " + speed + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
-                            Mesg recordToFix = recordMesg.get(i);
+                            Mesg recordToFix = getRecordMesg().get(i);
                             if (debugFixData) System.out.println("========= FIXING SPEED, value: " + recordToFix.getFieldFloatValue(REC_ESPEED) + "->" + speed + " @" + i);
                             recordToFix.setFieldValue(REC_SPEED, speed);
                             recordToFix.setFieldValue(REC_ESPEED, speed);
@@ -977,7 +978,7 @@ public class FitFileForIndoor extends FitFile {
                     if (cad != null && cad != 0) {
                         if (debugFixData) System.out.println("========= FIXED Beginning CADENCE, first value: " + cad + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
-                            Mesg recordToFix = recordMesg.get(i);
+                            Mesg recordToFix = getRecordMesg().get(i);
                             if (debugFixData) System.out.println("========= FIXING CADENCE, value: " + recordToFix.getFieldShortValue(REC_CAD) + "->" + cad + " @" + i);
                             recordToFix.setFieldValue(REC_CAD, cad);
                         }
@@ -990,7 +991,7 @@ public class FitFileForIndoor extends FitFile {
                     if (power != null && power != 0) {
                         if (debugFixData) System.out.println("========= FIXED Beginning POWER, first value: " + power + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
-                            Mesg recordToFix = recordMesg.get(i);
+                            Mesg recordToFix = getRecordMesg().get(i);
                             if (debugFixData) System.out.println("========= FIXING POWER, value: " + recordToFix.getFieldIntegerValue(REC_POW) + "->" + power + " @" + i);
                             recordToFix.setFieldValue(REC_POW, power);
                         }
@@ -1002,7 +1003,7 @@ public class FitFileForIndoor extends FitFile {
                     if ((strokeLengthFromDevField!=null && strokeLengthFromDevField!=0)) {
                         if (debugFixData) System.out.println("========= FIXED Beginning STROKE LENGTH, first value: " + strokeLengthFromDevField + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
-                            Mesg recordToFix = recordMesg.get(i);
+                            Mesg recordToFix = getRecordMesg().get(i);
                             for (DeveloperField field : recordToFix.getDeveloperFields()) {
                                 if ("StrokeLength".equals(field.getName())) {
                                     if (debugFixData) System.out.println("========= FIXING STROKE LENGTH, value: " + field.getValue() + "->" + strokeLengthFromDevField + " @" + i);
@@ -1018,7 +1019,7 @@ public class FitFileForIndoor extends FitFile {
                     if ((dragFactorFromDevField!=null && (dragFactorFromDevField!=1 && dragFactorFromDevField!=0))) {
                         if (debugFixData) System.out.println("========= FIXED Beginning DRAG FACTOR, first value: " + dragFactorFromDevField + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
-                            Mesg recordToFix = recordMesg.get(i);
+                            Mesg recordToFix = getRecordMesg().get(i);
                             for (DeveloperField field : recordToFix.getDeveloperFields()) {
                                 if ("DragFactor".equals(field.getName())) {
                                     if (debugFixData) System.out.println("========= FIXING DRAG FACTOR, value: " + field.getValue() + "->" + dragFactorFromDevField + " @" + i);
@@ -1034,7 +1035,7 @@ public class FitFileForIndoor extends FitFile {
                     if ((trainingSessionFromDevField!=null && trainingSessionFromDevField!=1)) {
                         if (debugFixData) System.out.println("========= FIXED Beginning TRAINING_SESSION, first value: " + trainingSessionFromDevField + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
-                            Mesg recordToFix = recordMesg.get(i);
+                            Mesg recordToFix = getRecordMesg().get(i);
                             for (DeveloperField field : recordToFix.getDeveloperFields()) {
                                 if ("Training_session".equals(field.getName())) {
                                     if (debugFixData) System.out.println("========= FIXING TRAINING_SESSION, value: " + field.getValue() + "->" + trainingSessionFromDevField + " @" + i);
@@ -1063,17 +1064,17 @@ public class FitFileForIndoor extends FitFile {
                         record.setFieldValue(REC_POW, 0);
                         if (noneC2dataCounter == 7 && recordIx > 4) {
                             System.out.println("===>>>>>>>>> START PAUSE C2time null 7 times. recordIx: " + recordIx);
-                            Mesg recordPrev1 = recordMesg.get(recordIx-1);
+                            Mesg recordPrev1 = getRecordMesg().get(recordIx-1);
                             recordPrev1.setFieldValue(REC_SPEED, 0f);
                             recordPrev1.setFieldValue(REC_ESPEED, 0f);
                             recordPrev1.setFieldValue(REC_CAD, (short)0);
                             recordPrev1.setFieldValue(REC_POW, 0);
-                            Mesg recordPrev2 = recordMesg.get(recordIx-2);
+                            Mesg recordPrev2 = getRecordMesg().get(recordIx-2);
                             recordPrev2.setFieldValue(REC_SPEED, 0f);
                             recordPrev2.setFieldValue(REC_ESPEED, 0f);
                             recordPrev2.setFieldValue(REC_CAD, (short)0);
                             recordPrev2.setFieldValue(REC_POW, 0);
-                            Mesg recordPrev3 = recordMesg.get(recordIx-3);
+                            Mesg recordPrev3 = getRecordMesg().get(recordIx-3);
                             recordPrev3.setFieldValue(REC_SPEED, 0f);
                             recordPrev3.setFieldValue(REC_ESPEED, 0f);
                             recordPrev3.setFieldValue(REC_CAD, (short)0);
@@ -1095,14 +1096,14 @@ public class FitFileForIndoor extends FitFile {
             // ========================================================
             Short cadFixGaps = record.getFieldShortValue(REC_CAD);
             if (cadFixGaps == null) {
-                Short prevCad = recordIx > 0 ? recordMesg.get(recordIx-1).getFieldShortValue(REC_CAD) : null;
+                Short prevCad = recordIx > 0 ? getRecordMesg().get(recordIx-1).getFieldShortValue(REC_CAD) : null;
                 if (prevCad != null) {
                     record.setFieldValue(REC_CAD, prevCad);
                 }
             }
             Integer pwr = record.getFieldIntegerValue(REC_POW);
             if (pwr == null) {
-                Integer prevPow = recordIx > 0 ? recordMesg.get(recordIx-1).getFieldIntegerValue(REC_POW) : null;
+                Integer prevPow = recordIx > 0 ? getRecordMesg().get(recordIx-1).getFieldIntegerValue(REC_POW) : null;
                 if (prevPow != null) {
                     record.setFieldValue(REC_POW, prevPow);
                 }
@@ -1111,7 +1112,7 @@ public class FitFileForIndoor extends FitFile {
             // ==============================================
             if (recordIx>0) {
                 Short cadFixSpike = record.getFieldShortValue(REC_CAD);
-                Short cadLastFixSpike = recordMesg.get(recordIx-1).getFieldShortValue(REC_CAD);
+                Short cadLastFixSpike = getRecordMesg().get(recordIx-1).getFieldShortValue(REC_CAD);
 
                 if ((cadFixSpike > maxCadenceValue) || (((cadFixSpike - cadLastFixSpike) > 9) && (cadLastFixSpike > 45))) {
                     if (debugFixData) System.out.println("=======>>> Fixed Cadence PEAK from: " + cadFixSpike + "->" + cadLastFixSpike);
@@ -1404,6 +1405,13 @@ public class FitFileForIndoor extends FitFile {
         int tempC2SyncSecondsC2File = 0;
         int tempC2SyncSecondsLapDistCalc = 0;
          
+        Float activeSumSpeed = 0f;
+        Float activeSumCad = 0f;
+        Float activeSumPower = 0f;
+        Float restSumSpeed = 0f;
+        Float restSumCad = 0f;
+        Float restSumPower = 0f;
+
         Float lastActiveFakeSumSpeed = 0f;
         Float lastActiveFakeSumCad = 0f;
         Float lastActiveFakeSumPower = 0f;
@@ -1414,7 +1422,7 @@ public class FitFileForIndoor extends FitFile {
 
         // TEST RUN FOR 10 TIMES TO SEE BEST/HIGHEST VALUE FOR ACTIVE LAPS
         // ================================================================
-        for (i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
 
             activeFakeSumSpeed = 0f;
             activeFakeSumCad = 0f;
@@ -1446,15 +1454,15 @@ public class FitFileForIndoor extends FitFile {
             int currentSessionSumPower = 0;
 
             // nextLapStartTime from lapMesg start time field
-            nextLapStartTime = lapMesg.get(0).getFieldLongValue(LAP_STIME);
+            nextLapStartTime = getLapMesg().get(0).getFieldLongValue(LAP_STIME);
 
             // Init session "max" fields (mapped to average constants if dedicated max constants not present)
-            sessionMesg.get(0).setFieldValue(SES_MSPEED, 0f);    // used as max speed placeholder
-            sessionMesg.get(0).setFieldValue(SES_EMSPEED, 0f);   // used as enhanced max speed placeholder
-            sessionMesg.get(0).setFieldValue(SES_MCAD, (short) 0); // used as max cadence placeholder
-            sessionMesg.get(0).setFieldValue(SES_MPOW, 0);      // used as max power placeholder
+            getSessionMesg().get(0).setFieldValue(SES_MSPEED, 0f);    // used as max speed placeholder
+            getSessionMesg().get(0).setFieldValue(SES_EMSPEED, 0f);   // used as enhanced max speed placeholder
+            getSessionMesg().get(0).setFieldValue(SES_MCAD, (short) 0); // used as max cadence placeholder
+            getSessionMesg().get(0).setFieldValue(SES_MPOW, 0);      // used as max power placeholder
 
-            for (Mesg record : recordMesg) {
+            for (Mesg record : getRecordMesg()) {
 
                 // --------------
                 // IF LAP START
@@ -1462,108 +1470,108 @@ public class FitFileForIndoor extends FitFile {
                 if (currentTimeStamp.equals(nextLapStartTime)) {
 
                     // Initiate lap max fields
-                    lapMesg.get(lapIx).setFieldValue(LAP_MSPEED, 0f);
-                    lapMesg.get(lapIx).setFieldValue(LAP_EMSPEED, 0f);
-                    lapMesg.get(lapIx).setFieldValue(LAP_MCAD, (short) 0);
-                    lapMesg.get(lapIx).setFieldValue(LAP_MPOW, 0);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_MSPEED, 0f);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_EMSPEED, 0f);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_MCAD, (short) 0);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_MPOW, 0);
 
                     // Save HR and recordIx START
                     Short hrStart = record.getFieldShortValue(REC_HR);
-                    lapExtraRecords.get(lapIx).setHrStart(hrStart);
-                    lapExtraRecords.get(lapIx).setRecordIxStart(recordIx);
+                    getLapExtraRecords().get(lapIx).setHrStart(hrStart);
+                    getLapExtraRecords().get(lapIx).setRecordIxStart(recordIx);
 
                     // Get LAP DATA to be used to find lap-start-end
-                    Float lapTotalTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
+                    Float lapTotalTimer = getLapMesg().get(lapIx).getFieldFloatValue(LAP_TIMER);
                     currentLapTime = (lapTotalTimer == null) ? 0f : lapTotalTimer; // in sec
 
-                    Short lapIntensityShort = lapMesg.get(lapIx).getFieldShortValue(LAP_INTENSITY);
+                    Short lapIntensityShort = getLapMesg().get(lapIx).getFieldShortValue(LAP_INTENSITY);
                     Intensity lapIntensity = (lapIntensityShort == null) ? Intensity.INVALID : Intensity.getByValue(lapIntensityShort);
                     currentLapIntensity = Intensity.getStringFromValue(lapIntensity);
 
-                    if (lapNo < numberOfLaps) {
-                        currentLapTimeEnd = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
-                        nextLapStartTime = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME);
+                    if (lapNo < getNumberOfLaps()) {
+                        currentLapTimeEnd = getLapMesg().get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
+                        nextLapStartTime = getLapMesg().get(lapIx + 1).getFieldLongValue(LAP_STIME);
                     } else {
                         currentLapTimeEnd = timeLastRecord;
                     }
                     // Save LAP END to table (DateTime)
-                    lapExtraRecords.get(lapIx).setTimeEnd(currentLapTimeEnd);
+                    getLapExtraRecords().get(lapIx).setTimeEnd(currentLapTimeEnd);
                 }
 
                 // Calc LAP HR min
                 Short recHr = record.getFieldShortValue(REC_HR);
                 if (recHr == null) {
                     if (recordIx > 0) {
-                        Short prevHr = recordMesg.get(recordIx - 1).getFieldShortValue(REC_HR);
+                        Short prevHr = getRecordMesg().get(recordIx - 1).getFieldShortValue(REC_HR);
                         record.setFieldValue(REC_HR, (prevHr == null) ? (short) 60 : prevHr);
                         recHr = record.getFieldShortValue(REC_HR);
                     } else {
                         record.setFieldValue(REC_HR, (short) 60);
                         recHr = record.getFieldShortValue(REC_HR);
                     }
-                } else if (recHr < lapExtraRecords.get(lapIx).getHrMin()) {
-                    lapExtraRecords.get(lapIx).setHrMin(recHr);
+                } else if (recHr < getLapExtraRecords().get(lapIx).getHrMin()) {
+                    getLapExtraRecords().get(lapIx).setHrMin(recHr);
                 }
 
                 // --------------
                 // Calculate LAP MAX - initialize if null
                 Float recEnhancedSpeed = record.getFieldFloatValue(REC_ESPEED);
-                Float lapEnhancedMaxSpeed = lapMesg.get(lapIx).getFieldFloatValue(LAP_EMSPEED);
+                Float lapEnhancedMaxSpeed = getLapMesg().get(lapIx).getFieldFloatValue(LAP_EMSPEED);
                 if (recEnhancedSpeed > lapEnhancedMaxSpeed) {
-                    lapMesg.get(lapIx).setFieldValue(LAP_EMSPEED, recEnhancedSpeed);
-                    lapMesg.get(lapIx).setFieldValue(LAP_MSPEED, recEnhancedSpeed);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_EMSPEED, recEnhancedSpeed);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_MSPEED, recEnhancedSpeed);
                 }
 
-                /* Float lapEnhancedMaxSpeed = lapMesg.get(lapIx).getFieldFloatValue(LAP_EMSPEED);
+                /* Float lapEnhancedMaxSpeed = getLapMesg().get(lapIx).getFieldFloatValue(LAP_EMSPEED);
                 if (lapEnhancedMaxSpeed == null) {
-                    lapMesg.get(lapIx).setFieldValue(LAP_EMSPEED, 0f);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_EMSPEED, 0f);
                     lapEnhancedMaxSpeed = 0f;
                 }
-                Float lapMaxSpeed = lapMesg.get(lapIx).getFieldFloatValue(LAP_MSPEED);
+                Float lapMaxSpeed = getLapMesg().get(lapIx).getFieldFloatValue(LAP_MSPEED);
                 if (lapMaxSpeed == null) {
-                    lapMesg.get(lapIx).setFieldValue(LAP_MSPEED, 0f);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_MSPEED, 0f);
                     lapMaxSpeed = 0f;
                 }
 
                 Float recEnhancedSpeed = record.getFieldFloatValue(REC_ESPEED);
                 if (recEnhancedSpeed != null && recEnhancedSpeed > lapEnhancedMaxSpeed) {
-                    lapMesg.get(lapIx).setFieldValue(LAP_EMSPEED, recEnhancedSpeed);
-                    lapMesg.get(lapIx).setFieldValue(LAP_MSPEED, recEnhancedSpeed);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_EMSPEED, recEnhancedSpeed);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_MSPEED, recEnhancedSpeed);
                 } */
 
                 // --------------
                 // Calc LAPSUM MAX CAD POWER (take values from a shifted sec/record index if available)
-                if (recordIx < (numberOfRecords - tempC2SyncSecondsC2File - 1)) {
-                    Short shiftedCad = recordMesg.get(recordIx + tempC2SyncSecondsC2File).getFieldShortValue(REC_CAD);
-                    Integer shiftedPow = recordMesg.get(recordIx + tempC2SyncSecondsC2File).getFieldIntegerValue(REC_POW);
+                if (recordIx < (getNumberOfRecords() - tempC2SyncSecondsC2File - 1)) {
+                    Short shiftedCad = getRecordMesg().get(recordIx + tempC2SyncSecondsC2File).getFieldShortValue(REC_CAD);
+                    Integer shiftedPow = getRecordMesg().get(recordIx + tempC2SyncSecondsC2File).getFieldIntegerValue(REC_POW);
                     if (shiftedCad != null) currentLapSumCadence += shiftedCad;
                     if (shiftedPow != null) currentLapSumPower += shiftedPow;
                 }
 
                 // ensure lap max cadence is initialized
-                Short lapMaxCad = lapMesg.get(lapIx).getFieldShortValue(LAP_MCAD);
+                Short lapMaxCad = getLapMesg().get(lapIx).getFieldShortValue(LAP_MCAD);
                 if (lapMaxCad == null) {
-                    lapMesg.get(lapIx).setFieldValue(LAP_MCAD, (short) 0);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_MCAD, (short) 0);
                     lapMaxCad = 0;
                 }
                 Short recCad = record.getFieldShortValue(REC_CAD);
                 if (recCad != null && recCad > lapMaxCad) {
-                    lapMesg.get(lapIx).setFieldValue(LAP_MCAD, recCad);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_MCAD, recCad);
                 }
 
                 // ensure lap max power initialized
-                Integer lapMaxPow = lapMesg.get(lapIx).getFieldIntegerValue(LAP_MPOW);
+                Integer lapMaxPow = getLapMesg().get(lapIx).getFieldIntegerValue(LAP_MPOW);
                 if (lapMaxPow == null) {
-                    lapMesg.get(lapIx).setFieldValue(LAP_MPOW, 0);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_MPOW, 0);
                     lapMaxPow = 0;
                 }
                 Integer recPow = record.getFieldIntegerValue(REC_POW);
                 if (recPow != null && recPow > lapMaxPow) {
-                    lapMesg.get(lapIx).setFieldValue(LAP_MPOW, recPow);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_MPOW, recPow);
                 }
 
                 // Developer fields for stroke length / drag factor (reading from recordMesg at recordIx)
-                for (DeveloperField field : recordMesg.get(recordIx).getDeveloperFields()) {
+                for (DeveloperField field : getRecordMesg().get(recordIx).getDeveloperFields()) {
                     if ("StrokeLength".equals(field.getName())) {
                         Float f = field.getFloatValue();
                         if (f != null) {
@@ -1582,25 +1590,25 @@ public class FitFileForIndoor extends FitFile {
 
                 // --------------
                 // Calculate SESSION SUM & MAX
-                Float sessionEnhancedMaxSpeed = sessionMesg.get(0).getFieldFloatValue(SES_ESPEED);
+                Float sessionEnhancedMaxSpeed = getSessionMesg().get(0).getFieldFloatValue(SES_ESPEED);
                 if (sessionEnhancedMaxSpeed == null) sessionEnhancedMaxSpeed = 0f;
                 if (recEnhancedSpeed != null && recEnhancedSpeed > sessionEnhancedMaxSpeed) {
-                    sessionMesg.get(0).setFieldValue(SES_ESPEED, recEnhancedSpeed);
-                    sessionMesg.get(0).setFieldValue(SES_SPEED, recEnhancedSpeed); // also set "max" speed placeholder
+                    getSessionMesg().get(0).setFieldValue(SES_ESPEED, recEnhancedSpeed);
+                    getSessionMesg().get(0).setFieldValue(SES_SPEED, recEnhancedSpeed); // also set "max" speed placeholder
                 }
 
                 if (recCad != null) currentSessionSumCadence += recCad;
-                Short sessionMaxCadence = sessionMesg.get(0).getFieldShortValue(SES_CAD);
+                Short sessionMaxCadence = getSessionMesg().get(0).getFieldShortValue(SES_CAD);
                 if (sessionMaxCadence == null) sessionMaxCadence = 0;
                 if (recCad != null && recCad > sessionMaxCadence) {
-                    sessionMesg.get(0).setFieldValue(SES_CAD, recCad); // used as max cadence placeholder
+                    getSessionMesg().get(0).setFieldValue(SES_CAD, recCad); // used as max cadence placeholder
                 }
 
                 if (recPow != null) currentSessionSumPower += recPow;
-                Integer sessionMaxPow = sessionMesg.get(0).getFieldIntegerValue(SES_POW);
+                Integer sessionMaxPow = getSessionMesg().get(0).getFieldIntegerValue(SES_POW);
                 if (sessionMaxPow == null) sessionMaxPow = 0;
                 if (recPow != null && recPow > sessionMaxPow) {
-                    sessionMesg.get(0).setFieldValue(SES_POW, recPow); // used as max power placeholder
+                    getSessionMesg().get(0).setFieldValue(SES_POW, recPow); // used as max power placeholder
                 }
 
                 // LAPTIME for active laps TO CIQ defined in devFieldNamesToRename 
@@ -1619,55 +1627,55 @@ public class FitFileForIndoor extends FitFile {
                 if (currentTimeStamp.equals(currentLapTimeEnd)) {
 
                     // Save HR and recordIx END
-                    lapExtraRecords.get(lapIx).setHrEnd(record.getFieldShortValue(REC_HR));
-                    lapExtraRecords.get(lapIx).setRecordIxEnd(recordIx);
-                    lapExtraRecords.get(lapIx).setTimeEnd(record.getFieldLongValue(REC_TIME));
+                    getLapExtraRecords().get(lapIx).setHrEnd(record.getFieldShortValue(REC_HR));
+                    getLapExtraRecords().get(lapIx).setRecordIxEnd(recordIx);
+                    getLapExtraRecords().get(lapIx).setTimeEnd(record.getFieldLongValue(REC_TIME));
 
                     // Calc LAP DISTANCE & AVG SPEED
-                    if (lapNo == numberOfLaps || recordIx > (numberOfRecords - tempC2SyncSecondsLapDistCalc - 1)) {
+                    if (lapNo == getNumberOfLaps() || recordIx > (getNumberOfRecords() - tempC2SyncSecondsLapDistCalc - 1)) {
                         tempC2SyncSecondsLapDistCalc = 0;
                     }
-                    Float shiftedDistance = recordMesg.get(recordIx + tempC2SyncSecondsLapDistCalc).getFieldFloatValue(REC_DIST);
+                    Float shiftedDistance = getRecordMesg().get(recordIx + tempC2SyncSecondsLapDistCalc).getFieldFloatValue(REC_DIST);
                     if (shiftedDistance == null) shiftedDistance = 0f;
                     Float lapTotalDistance = shiftedDistance - lastLapTotalDistance;
-                    lapMesg.get(lapIx).setFieldValue(LAP_DIST, lapTotalDistance);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_DIST, lapTotalDistance);
                     lastLapTotalDistance = shiftedDistance;
 
                     // set avg speed = distance / timer
-                    Float lapTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
+                    Float lapTimer = getLapMesg().get(lapIx).getFieldFloatValue(LAP_TIMER);
                     Float avgSpeedVal = 0f;
                     if (lapTimer != null && lapTimer != 0f) {
                         avgSpeedVal = lapTotalDistance / lapTimer;
                     }
-                    lapMesg.get(lapIx).setFieldValue(LAP_SPEED, avgSpeedVal);
-                    lapMesg.get(lapIx).setFieldValue(LAP_ESPEED, avgSpeedVal);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_SPEED, avgSpeedVal);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_ESPEED, avgSpeedVal);
                     if (debugLaps) System.out.println("Lap " + lapNo + " Distance: " + lapTotalDistance 
-                    + ", Timer: " + lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER) 
-                    + ", AvgSpeed: " + lapMesg.get(lapIx).getFieldFloatValue(LAP_SPEED) 
-                    + ", avgEnhanced: " + lapMesg.get(lapIx).getFieldFloatValue(LAP_ESPEED));
+                    + ", Timer: " + getLapMesg().get(lapIx).getFieldFloatValue(LAP_TIMER) 
+                    + ", AvgSpeed: " + getLapMesg().get(lapIx).getFieldFloatValue(LAP_SPEED) 
+                    + ", avgEnhanced: " + getLapMesg().get(lapIx).getFieldFloatValue(LAP_ESPEED));
 
                     // Calc LAP SUM & LAP MAX
-                    int denom = (recordIx - lapExtraRecords.get(lapIx).getRecordIxStart() + 1);
+                    int denom = (recordIx - getLapExtraRecords().get(lapIx).getRecordIxStart() + 1);
                     if (denom <= 0) denom = 1;
                     short avgCad = (short) Math.round((float) currentLapSumCadence / denom);
-                    lapMesg.get(lapIx).setFieldValue(LAP_CAD, avgCad);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_CAD, avgCad);
                     currentLapSumCadence = 0;
 
                     int avgPow = Math.round((float) currentLapSumPower / denom);
-                    lapMesg.get(lapIx).setFieldValue(LAP_POW, avgPow);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_POW, avgPow);
                     currentLapSumPower = 0;
 
                     // Developer fields for last record of lap - update lapExtraRecords stroke/drag
-                    for (DeveloperField field : recordMesg.get(recordIx).getDeveloperFields()) {
+                    for (DeveloperField field : getRecordMesg().get(recordIx).getDeveloperFields()) {
                         if ("StrokeLength".equals(field.getName())) {
-                            lapExtraRecords.get(lapIx).setAvgStrokeLen((float) Math.round(100 * currentLapSumStrokeLen / denom) / 100);
-                            lapExtraRecords.get(lapIx).setMaxStrokeLen(currentLapMaxStrokeLen);
+                            getLapExtraRecords().get(lapIx).setAvgStrokeLen((float) Math.round(100 * currentLapSumStrokeLen / denom) / 100);
+                            getLapExtraRecords().get(lapIx).setMaxStrokeLen(currentLapMaxStrokeLen);
                             currentLapSumStrokeLen = 0f;
                             currentLapMaxStrokeLen = 0f;
                         }
                         if ("DragFactor".equals(field.getName())) {
-                            lapExtraRecords.get(lapIx).setAvgDragFactor((float) Math.round(100 * currentLapSumDragFactor / denom) / 100);
-                            lapExtraRecords.get(lapIx).setMaxDragFactor(currentLapMaxDragFactor);
+                            getLapExtraRecords().get(lapIx).setAvgDragFactor((float) Math.round(100 * currentLapSumDragFactor / denom) / 100);
+                            getLapExtraRecords().get(lapIx).setMaxDragFactor(currentLapMaxDragFactor);
                             currentLapSumDragFactor = 0f;
                             currentLapMaxDragFactor = 0f;
                         }
@@ -1676,14 +1684,15 @@ public class FitFileForIndoor extends FitFile {
                     // --------------
                     // Calculate ACTIVE LAP SUM & MAX
                     if ("ACTIVE".equals(currentLapIntensity)) {
-                        Float lapTotalTimerTime = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
-                        Float lapTotDist = lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST);
-                        Short lapAvgCad = lapMesg.get(lapIx).getFieldShortValue(LAP_CAD);
-                        Integer lapAvgPow = lapMesg.get(lapIx).getFieldIntegerValue(LAP_POW);
-                        Float lapAvgSpeedF = lapMesg.get(lapIx).getFieldFloatValue(LAP_SPEED);
+                        Float lapTotalTimerTime = getLapMesg().get(lapIx).getFieldFloatValue(LAP_TIMER);
+                        Float lapTotDist = getLapMesg().get(lapIx).getFieldFloatValue(LAP_DIST);
+                        Short lapAvgCad = getLapMesg().get(lapIx).getFieldShortValue(LAP_CAD);
+                        Integer lapAvgPow = getLapMesg().get(lapIx).getFieldIntegerValue(LAP_POW);
+                        Float lapAvgSpeedF = getLapMesg().get(lapIx).getFieldFloatValue(LAP_SPEED);
 
-                        if (lapTotalTimerTime != null) activeTime += lapTotalTimerTime;
-                        if (lapTotDist != null) activeDist += lapTotDist;
+                        if (lapTotalTimerTime != null) setActiveTime(getActiveTime() + lapTotalTimerTime);
+                        if (lapTotDist != null) setActiveDist(getActiveDist() + lapTotDist);
+
                         if (lapAvgSpeedF != null && lapTotalTimerTime != null) activeSumSpeed += lapAvgSpeedF * lapTotalTimerTime;
                         if (lapAvgCad != null && lapTotalTimerTime != null) activeSumCad += lapAvgCad * lapTotalTimerTime;
                         if (lapAvgPow != null && lapTotalTimerTime != null) activeSumPower += lapAvgPow * lapTotalTimerTime;
@@ -1705,14 +1714,15 @@ public class FitFileForIndoor extends FitFile {
 
                     // Calculate REST LAP SUM & MAX
                     if ("REST".equals(currentLapIntensity) || "RECOVERY".equals(currentLapIntensity)) {
-                        Float lapTotalTimerTime = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
-                        Float lapTotDist = lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST);
-                        Short lapAvgCad = lapMesg.get(lapIx).getFieldShortValue(LAP_CAD);
-                        Integer lapAvgPow = lapMesg.get(lapIx).getFieldIntegerValue(LAP_POW);
-                        Float lapAvgSpeedF = lapMesg.get(lapIx).getFieldFloatValue(LAP_SPEED);
+                        Float lapTotalTimerTime = getLapMesg().get(lapIx).getFieldFloatValue(LAP_TIMER);
+                        Float lapTotDist = getLapMesg().get(lapIx).getFieldFloatValue(LAP_DIST);
+                        Short lapAvgCad = getLapMesg().get(lapIx).getFieldShortValue(LAP_CAD);
+                        Integer lapAvgPow = getLapMesg().get(lapIx).getFieldIntegerValue(LAP_POW);
+                        Float lapAvgSpeedF = getLapMesg().get(lapIx).getFieldFloatValue(LAP_SPEED);
 
-                        if (lapTotalTimerTime != null) restTime += lapTotalTimerTime;
-                        if (lapTotDist != null) restDist += lapTotDist;
+                        if (lapTotalTimerTime != null) setRestTime(getRestTime() + lapTotalTimerTime);
+                        if (lapTotDist != null) setRestDist(getRestDist() + lapTotDist);
+                        
                         if (lapAvgSpeedF != null && lapTotalTimerTime != null) restSumSpeed += lapAvgSpeedF * lapTotalTimerTime;
                         if (lapAvgCad != null && lapTotalTimerTime != null) restSumCad += lapAvgCad * lapTotalTimerTime;
                         if (lapAvgPow != null && lapTotalTimerTime != null) restSumPower += lapAvgPow * lapTotalTimerTime;
@@ -1730,36 +1740,36 @@ public class FitFileForIndoor extends FitFile {
             recordIx--;
 
             // First DISTANCE to ZERO (recordMesg)
-            recordMesg.get(0).setFieldValue(REC_DIST, 0f);
+            getRecordMesg().get(0).setFieldValue(REC_DIST, 0f);
 
             // TOTAL DISTANCE activity
-            Float totalDistanceF = (Float) recordMesg.get(recordIx).getFieldFloatValue(REC_DIST);
+            Float totalDistanceF = (Float) getRecordMesg().get(recordIx).getFieldFloatValue(REC_DIST);
             if (totalDistanceF == null) totalDistanceF = 0f;
             totalDistance = totalDistanceF;
-            sessionMesg.get(0).setFieldValue(SES_DIST, totalDistance);
+            getSessionMesg().get(0).setFieldValue(SES_DIST, totalDistance);
 
             // TOTAL AVG SPEED activity
             avgSpeed = (float) (totalDistance / totalTimerTime);
-            sessionMesg.get(0).setFieldValue(SES_SPEED, avgSpeed);
-            sessionMesg.get(0).setFieldValue(SES_ESPEED, avgSpeed);
+            getSessionMesg().get(0).setFieldValue(SES_SPEED, avgSpeed);
+            getSessionMesg().get(0).setFieldValue(SES_ESPEED, avgSpeed);
 
             // TOTAL AVG CADENCE activity
             avgCadence = Math.round((float) currentSessionSumCadence / (recordIx));
-            sessionMesg.get(0).setFieldValue(SES_CAD, (short) avgCadence);
+            getSessionMesg().get(0).setFieldValue(SES_CAD, (short) avgCadence);
 
             // TOTAL AVG POWER activity
             avgPower = Math.round((float) currentSessionSumPower / (recordIx));
-            sessionMesg.get(0).setFieldValue(SES_POW, avgPower);
+            getSessionMesg().get(0).setFieldValue(SES_POW, avgPower);
 
             // Calculate ACTIVE LAP SUM & MAX
-            activeAvgSpeed = (float) (activeSumSpeed / activeTime);
-            activeAvgCad = (float) (activeSumCad / activeTime);
-            activeAvgPower = (float) (activeSumPower / activeTime);
+            setActiveAvgSpeed((float) (activeSumSpeed / getActiveTime()));
+            setActiveAvgCad((float) (activeSumCad / getActiveTime()));
+            setActiveAvgPower((float) (activeSumPower / getActiveTime()));
 
             // Calculate REST LAP SUM & MAX
-            restAvgSpeed = (float) (restSumSpeed / restTime);
-            restAvgCad = (float) (restSumCad / restTime);
-            restAvgPower = (float) (restSumPower / restTime);
+            setRestAvgSpeed((float) (restSumSpeed / getRestTime()));
+            setRestAvgCad((float) (restSumCad / getRestTime()));
+            setRestAvgPower((float) (restSumPower / getRestTime()));
 
             if (activeFakeSumSpeed > lastActiveFakeSumSpeed) {
                 c2SyncSecondsLapDistCalc = i;
@@ -1787,43 +1797,43 @@ public class FitFileForIndoor extends FitFile {
         //=====================================================================
         int recordIx = 0;
 
-        for (Mesg record : recordMesg) {
+        for (Mesg record : getRecordMesg()) {
 
             if (hasC2Fit) {
-                if (recordIx < (numberOfRecords-1-c2SyncSecondsLapDistCalc)) {
-                    Mesg recordToUpdate = recordMesg.get(recordIx + c2SyncSecondsLapDistCalc);
+                if (recordIx < (getNumberOfRecords()-1-c2SyncSecondsLapDistCalc)) {
+                    Mesg recordToUpdate = getRecordMesg().get(recordIx + c2SyncSecondsLapDistCalc);
                     record.setFieldValue(REC_DIST, recordToUpdate.getFieldFloatValue(REC_DIST));
                     record.setFieldValue(REC_SPEED, recordToUpdate.getFieldFloatValue(REC_SPEED));
                     record.setFieldValue(REC_ESPEED, recordToUpdate.getFieldFloatValue(REC_ESPEED));
                     record.setFieldValue(REC_POW, recordToUpdate.getFieldIntegerValue(REC_POW));
                 } else {
-                    Mesg recordLast = recordMesg.get(numberOfRecords-1);
+                    Mesg recordLast = getRecordMesg().get(getNumberOfRecords()-1);
                     record.setFieldValue(REC_DIST, recordLast.getFieldFloatValue(REC_DIST));
                     record.setFieldValue(REC_SPEED, recordLast.getFieldFloatValue(REC_SPEED));
                     record.setFieldValue(REC_ESPEED, recordLast.getFieldFloatValue(REC_ESPEED));
                     record.setFieldValue(REC_POW, recordLast.getFieldIntegerValue(REC_POW));
                 }
 
-                if (recordIx < (numberOfRecords-1-c2SyncSecondsC2File)) {
-                    Mesg recordToUpdate = recordMesg.get(recordIx + c2SyncSecondsC2File);
+                if (recordIx < (getNumberOfRecords()-1-c2SyncSecondsC2File)) {
+                    Mesg recordToUpdate = getRecordMesg().get(recordIx + c2SyncSecondsC2File);
                     record.setFieldValue(REC_CAD, recordToUpdate.getFieldIntegerValue(REC_CAD));
                     //record.setFieldValue(REC_POW, recordToUpdate.getFieldIntegerValue(REC_POW));
                 } else {
-                    Mesg recordLast = recordMesg.get(numberOfRecords-1);
+                    Mesg recordLast = getRecordMesg().get(getNumberOfRecords()-1);
                     record.setFieldValue(REC_CAD, recordLast.getFieldIntegerValue(REC_CAD));
                     //record.setFieldValue(REC_POW, recordLast.getFieldIntegerValue(REC_POW));
                 }
             } else {
                 // NO C2fit
-                if (recordIx<(numberOfRecords-1-c2SyncSecondsLapDistCalc)) {
-                    Mesg recordToUpdate = recordMesg.get(recordIx + c2SyncSecondsLapDistCalc);
+                if (recordIx<(getNumberOfRecords()-1-c2SyncSecondsLapDistCalc)) {
+                    Mesg recordToUpdate = getRecordMesg().get(recordIx + c2SyncSecondsLapDistCalc);
                     record.setFieldValue(REC_DIST, recordToUpdate.getFieldFloatValue(REC_DIST));
                     record.setFieldValue(REC_SPEED, recordToUpdate.getFieldFloatValue(REC_SPEED));
                     record.setFieldValue(REC_ESPEED, recordToUpdate.getFieldFloatValue(REC_ESPEED));
                     record.setFieldValue(REC_POW, recordToUpdate.getFieldIntegerValue(REC_POW));
                     //record.setFieldValue(REC_POW, recordMesg.get(recordIx+c2SyncSecondsC2File).getFieldIntegerValue(REC_POW));
                 } else {
-                    Mesg recordLast = recordMesg.get(numberOfRecords-1);
+                    Mesg recordLast = getRecordMesg().get(getNumberOfRecords()-1);
                     record.setFieldValue(REC_DIST, recordLast.getFieldFloatValue(REC_DIST));
                     record.setFieldValue(REC_SPEED, recordLast.getFieldFloatValue(REC_SPEED));
                     record.setFieldValue(REC_ESPEED, recordLast.getFieldFloatValue(REC_ESPEED));
@@ -1860,18 +1870,25 @@ public class FitFileForIndoor extends FitFile {
         int currentSessionSumCadence = 0;
         int currentSessionSumPower = 0;
         
-        activeFakeSumSpeed = 0f;
-        activeFakeSumCad = 0f;
-        activeFakeSumPower = 0f;
+        Float activeSumSpeed = 0f;
+        Float activeSumCad = 0f;
+        Float activeSumPower = 0f;
+        Float restSumSpeed = 0f;
+        Float restSumCad = 0f;
+        Float restSumPower = 0f;
+
+        Float activeFakeSumSpeed = 0f;
+        Float activeFakeSumCad = 0f;
+        Float activeFakeSumPower = 0f;
         
-        activeDist = 0f;
-        restDist = 0f;
+        setActiveDist(0f);
+        setRestDist(0f);
 
         // Get first lap start time (safe)
-        nextLapStartTime = lapMesg.get(0).getFieldLongValue(LAP_STIME);
+        nextLapStartTime = getLapMesg().get(0).getFieldLongValue(LAP_STIME);
 
         // Initialize session max metrics to zero safely
-        Mesg session = sessionMesg.get(0);
+        Mesg session = getSessionMesg().get(0);
         session.setFieldValue(SES_MSPEED, 0f);
         session.setFieldValue(SES_EMSPEED, 0f);
         session.setFieldValue(SES_MCAD, (short) 0);
@@ -1879,8 +1896,8 @@ public class FitFileForIndoor extends FitFile {
         
         System.out.println("______ before calcLapData - syncSeconds C2 (paw, cad): "+c2SyncSecondsC2File+" dist (speed): "+c2SyncSecondsLapDistCalc);
 
-        System.out.println("----- CALC LAP DATA FROM SEC RECORDS - TOTAL RECS: " + numberOfRecords + " LAPS: " + numberOfLaps);
-        for (Mesg record : recordMesg) {
+        System.out.println("----- CALC LAP DATA FROM SEC RECORDS - TOTAL RECS: " + getNumberOfRecords() + " LAPS: " + getNumberOfLaps());
+        for (Mesg record : getRecordMesg()) {
 
             //--------------
             // IF LAP START
@@ -1890,25 +1907,25 @@ public class FitFileForIndoor extends FitFile {
             if ( currentTimeStamp.equals(nextLapStartTime) ) {
 
                 // Initiate maxSpeed with 0 to be able to compare later
-                lapMesg.get(lapIx).setFieldValue(LAP_SPEED, 0f);
-                lapMesg.get(lapIx).setFieldValue(LAP_ESPEED, 0f);
-                lapMesg.get(lapIx).setFieldValue(LapMesg.MaxCadenceFieldNum, (short)0);
-                lapMesg.get(lapIx).setFieldValue(LapMesg.MaxPowerFieldNum, 0);
+                getLapMesg().get(lapIx).setFieldValue(LAP_SPEED, 0f);
+                getLapMesg().get(lapIx).setFieldValue(LAP_ESPEED, 0f);
+                getLapMesg().get(lapIx).setFieldValue(LapMesg.MaxCadenceFieldNum, (short)0);
+                getLapMesg().get(lapIx).setFieldValue(LapMesg.MaxPowerFieldNum, 0);
                 
                 // Save HR and recordIx START
                 Short hrStart = record.getFieldShortValue(REC_HR);
-                lapExtraRecords.get(lapIx).setHrStart(hrStart != null ? hrStart : 0);
-                lapExtraRecords.get(lapIx).setRecordIxStart(recordIx);
+                getLapExtraRecords().get(lapIx).setHrStart(hrStart != null ? hrStart : 0);
+                getLapExtraRecords().get(lapIx).setRecordIxStart(recordIx);
 
                 // Get LAP DATA to be used to find lap-start-end
-                Float lapTimerF = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
+                Float lapTimerF = getLapMesg().get(lapIx).getFieldFloatValue(LAP_TIMER);
                 currentLapTime = lapTimerF != null ? lapTimerF : 0f; // in sec
 
-                Short intensityVal = lapMesg.get(lapIx).getFieldShortValue(LapMesg.IntensityFieldNum);
+                Short intensityVal = getLapMesg().get(lapIx).getFieldShortValue(LapMesg.IntensityFieldNum);
                 currentLapIntensity = Intensity.getStringFromValue(Intensity.getByValue(intensityVal != null ? intensityVal : 0));
 
-                if (lapNo < numberOfLaps) {
-                    Long nextStart = lapMesg.get(lapIx+1).getFieldLongValue(LAP_STIME);
+                if (lapNo < getNumberOfLaps()) {
+                    Long nextStart = getLapMesg().get(lapIx+1).getFieldLongValue(LAP_STIME);
                     currentLapTimeEnd = nextStart != null ? nextStart - 1 : timeLastRecord;
                     nextLapStartTime = nextStart != null ? nextStart : nextLapStartTime;
                 } else {
@@ -1916,14 +1933,14 @@ public class FitFileForIndoor extends FitFile {
                 }
 
                 // Save LAP END to table
-                lapExtraRecords.get(lapIx).setTimeEnd(currentLapTimeEnd);
+                getLapExtraRecords().get(lapIx).setTimeEnd(currentLapTimeEnd);
             }
 
             // Calc LAP HR min
             Short recHr = record.getFieldShortValue(REC_HR);
             if (recHr == null) {
                 if (recordIx > 0) {
-                    Short prevHr = recordMesg.get(recordIx-1).getFieldShortValue(REC_HR);
+                    Short prevHr = getRecordMesg().get(recordIx-1).getFieldShortValue(REC_HR);
                     record.setFieldValue(REC_HR, prevHr != null ? prevHr : (short)60);
                     recHr = record.getFieldShortValue(REC_HR);
                 } else {
@@ -1931,27 +1948,27 @@ public class FitFileForIndoor extends FitFile {
                     recHr = 60;
                 }
             }
-            if ( recHr < lapExtraRecords.get(lapIx).getHrMin() ) {
-                lapExtraRecords.get(lapIx).setHrMin(recHr);
+            if ( recHr < getLapExtraRecords().get(lapIx).getHrMin() ) {
+                getLapExtraRecords().get(lapIx).setHrMin(recHr);
             }
 
             //--------------
             // Calculate LAP MAX
             Float recEnhSp = record.getFieldFloatValue(REC_ESPEED);
-            Float lapEnhMax = lapMesg.get(lapIx).getFieldFloatValue(LAP_EMSPEED);
+            Float lapEnhMax = getLapMesg().get(lapIx).getFieldFloatValue(LAP_EMSPEED);
             if (lapEnhMax == null) lapEnhMax = 0f;
             if (recEnhSp != null && recEnhSp > lapEnhMax) {
-                lapMesg.get(lapIx).setFieldValue(LAP_EMSPEED, recEnhSp);
-                lapMesg.get(lapIx).setFieldValue(LAP_MSPEED, recEnhSp);
+                getLapMesg().get(lapIx).setFieldValue(LAP_EMSPEED, recEnhSp);
+                getLapMesg().get(lapIx).setFieldValue(LAP_MSPEED, recEnhSp);
             }
             
             //--------------
             // Calc LAPSUM CAD POWER
             // SHIFTED
             int idxForC2Cad = recordIx + c2SyncSecondsC2File;
-            if (idxForC2Cad < recordMesg.size()) {
-                Short cadShift = recordMesg.get(idxForC2Cad).getFieldShortValue(REC_CAD);
-                Integer powShift = recordMesg.get(idxForC2Cad).getFieldIntegerValue(REC_POW);
+            if (idxForC2Cad < getRecordMesg().size()) {
+                Short cadShift = getRecordMesg().get(idxForC2Cad).getFieldShortValue(REC_CAD);
+                Integer powShift = getRecordMesg().get(idxForC2Cad).getFieldIntegerValue(REC_POW);
                 currentLapSumCadence += cadShift != null ? cadShift : 0;
                 currentLapSumPower += powShift != null ? powShift : 0;
             }
@@ -1959,24 +1976,24 @@ public class FitFileForIndoor extends FitFile {
             // NON-SHIFTED
             Short recCad = record.getFieldShortValue(REC_CAD);
             if (recCad != null) {
-                Short lapMaxCad = lapMesg.get(lapIx).getFieldShortValue(LAP_MCAD);
+                Short lapMaxCad = getLapMesg().get(lapIx).getFieldShortValue(LAP_MCAD);
                 if (lapMaxCad == null) lapMaxCad = 0;
                 if (recCad > lapMaxCad) {
-                    lapMesg.get(lapIx).setFieldValue(LAP_MCAD, recCad);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_MCAD, recCad);
                 }
             }
             Integer recPow = record.getFieldIntegerValue(REC_POW);
             if (recPow != null) {
-                Integer lapMaxPow = lapMesg.get(lapIx).getFieldIntegerValue(LAP_MPOW);
+                Integer lapMaxPow = getLapMesg().get(lapIx).getFieldIntegerValue(LAP_MPOW);
                 if (lapMaxPow == null) lapMaxPow = 0;
                 if (recPow > lapMaxPow) {
-                    lapMesg.get(lapIx).setFieldValue(LAP_MPOW, recPow);
+                    getLapMesg().get(lapIx).setFieldValue(LAP_MPOW, recPow);
                 }
             }
 
             // Calc LAPSUM & MLAPMAX for Developer fields from current record
             // NON-SHIFTED
-            Mesg secRecForDev = recordMesg.get(recordIx); // Why not just use 'record'???
+            Mesg secRecForDev = getRecordMesg().get(recordIx); // Why not just use 'record'???
             for (DeveloperField field : secRecForDev.getDeveloperFields()) {
                 if ("StrokeLength".equals(field.getName())) {
                     currentLapSumStrokeLen += field.getFloatValue();
@@ -1994,19 +2011,19 @@ public class FitFileForIndoor extends FitFile {
 
             //--------------
             // Calculate SESSION SUM & MAX
-            Float sessEnhMax = sessionMesg.get(0).getFieldFloatValue(SES_EMSPEED);
+            Float sessEnhMax = getSessionMesg().get(0).getFieldFloatValue(SES_EMSPEED);
             if (sessEnhMax == null) sessEnhMax = 0f;
             if (recEnhSp != null && recEnhSp > sessEnhMax) {
-                sessionMesg.get(0).setFieldValue(SES_EMSPEED, recEnhSp);
-                sessionMesg.get(0).setFieldValue(SES_MSPEED, recEnhSp);
+                getSessionMesg().get(0).setFieldValue(SES_EMSPEED, recEnhSp);
+                getSessionMesg().get(0).setFieldValue(SES_MSPEED, recEnhSp);
             }
             currentSessionSumCadence += recCad != null ? recCad : 0;
-            if (recCad != null && recCad > sessionMesg.get(0).getFieldShortValue(SES_MCAD)) {
-                sessionMesg.get(0).setFieldValue(SES_MCAD, recCad);
+            if (recCad != null && recCad > getSessionMesg().get(0).getFieldShortValue(SES_MCAD)) {
+                getSessionMesg().get(0).setFieldValue(SES_MCAD, recCad);
             }
             currentSessionSumPower += recPow != null ? recPow : 0;
-            if (recPow != null && recPow > sessionMesg.get(0).getFieldIntegerValue(SES_MPOW)) {
-                sessionMesg.get(0).setFieldValue(SES_MPOW, recPow);
+            if (recPow != null && recPow > getSessionMesg().get(0).getFieldIntegerValue(SES_MPOW)) {
+                getSessionMesg().get(0).setFieldValue(SES_MPOW, recPow);
             }
 
             // LAPTIME for active laps TO CIQ defined in devFieldNamesToRename 
@@ -2026,47 +2043,47 @@ public class FitFileForIndoor extends FitFile {
                 //System.out.println("LapEND " + lapIx + "  " + lapExtraRecords.get(lapIx).recordIxStart + "  " + recordIx);
 
                 // Save HR and recordIx END
-                lapExtraRecords.get(lapIx).setHrEnd(record.getFieldShortValue(REC_HR) != null ? record.getFieldShortValue(REC_HR) : 0);
-                lapExtraRecords.get(lapIx).setRecordIxEnd(recordIx);
-                lapExtraRecords.get(lapIx).setTimeEnd(currentTimeStamp);
+                getLapExtraRecords().get(lapIx).setHrEnd(record.getFieldShortValue(REC_HR) != null ? record.getFieldShortValue(REC_HR) : 0);
+                getLapExtraRecords().get(lapIx).setRecordIxEnd(recordIx);
+                getLapExtraRecords().get(lapIx).setTimeEnd(currentTimeStamp);
 
                 // Calc LAP DISTANCE & AVG SPEED
                 // SHIFTED
                 int idxForLapDist = recordIx + c2SyncSecondsLapDistCalc;
-                Float lapTotalDist = idxForLapDist < recordMesg.size() ? 
-                    recordMesg.get(idxForLapDist).getFieldFloatValue(REC_DIST) : 
-                    recordMesg.get(recordMesg.size()-1).getFieldFloatValue(REC_DIST);
+                Float lapTotalDist = idxForLapDist < getRecordMesg().size() ? 
+                    getRecordMesg().get(idxForLapDist).getFieldFloatValue(REC_DIST) : 
+                    getRecordMesg().get(getRecordMesg().size()-1).getFieldFloatValue(REC_DIST);
                 //Float lastLapTotalDistanceF = lastLapTotalDistance;
                 Float lapDist = (lapTotalDist != null ? lapTotalDist : 0f) - lastLapTotalDist;
-                lapMesg.get(lapIx).setFieldValue(LAP_DIST, lapDist);
+                getLapMesg().get(lapIx).setFieldValue(LAP_DIST, lapDist);
                 lastLapTotalDist = lapTotalDist != null ? lapTotalDist : lastLapTotalDist;
 
-                Float lapTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
-                //lapMesg.get(lapIx).setFieldValue(LapMesg.TotalMovingTimeFieldNum, lapTimer);
+                Float lapTimer = getLapMesg().get(lapIx).getFieldFloatValue(LAP_TIMER);
+                //getLapMesg().get(lapIx).setFieldValue(LapMesg.TotalMovingTimeFieldNum, lapTimer);
                 Float avgSp = lapTimer != null && lapTimer != 0 ? (float) (lapDist / lapTimer) : 0f;
-                lapMesg.get(lapIx).setFieldValue(LAP_SPEED, avgSp);
-                lapMesg.get(lapIx).setFieldValue(LAP_ESPEED, avgSp);
+                getLapMesg().get(lapIx).setFieldValue(LAP_SPEED, avgSp);
+                getLapMesg().get(lapIx).setFieldValue(LAP_ESPEED, avgSp);
                 
                 // Calc LAP SUM & LAP MAX
-                int lapRecCount = recordIx - lapExtraRecords.get(lapIx).getRecordIxStart() + 1;
+                int lapRecCount = recordIx - getLapExtraRecords().get(lapIx).getRecordIxStart() + 1;
                 short avgCad = lapRecCount > 0 ? (short) Math.round((float) currentLapSumCadence / lapRecCount) : 0;
-                lapMesg.get(lapIx).setFieldValue(LAP_CAD, avgCad);
+                getLapMesg().get(lapIx).setFieldValue(LAP_CAD, avgCad);
                 currentLapSumCadence = 0;
 
                 int avgPow = lapRecCount > 0 ? Math.round((float) currentLapSumPower / lapRecCount) : 0;
-                lapMesg.get(lapIx).setFieldValue(LAP_POW, avgPow);
+                getLapMesg().get(lapIx).setFieldValue(LAP_POW, avgPow);
                 currentLapSumPower = 0;
 
-                for (DeveloperField field : recordMesg.get(recordIx).getDeveloperFields()) {
+                for (DeveloperField field : getRecordMesg().get(recordIx).getDeveloperFields()) {
                     if ("StrokeLength".equals(field.getName())) {
-                        lapExtraRecords.get(lapIx).setAvgStrokeLen((float) Math.round(100 * currentLapSumStrokeLen / (recordIx-lapExtraRecords.get(lapIx).getRecordIxStart()+1)) /100);
-                        lapExtraRecords.get(lapIx).setMaxStrokeLen(currentLapMaxStrokeLen);
+                        getLapExtraRecords().get(lapIx).setAvgStrokeLen((float) Math.round(100 * currentLapSumStrokeLen / (recordIx-getLapExtraRecords().get(lapIx).getRecordIxStart()+1)) /100);
+                        getLapExtraRecords().get(lapIx).setMaxStrokeLen(currentLapMaxStrokeLen);
                         currentLapSumStrokeLen = 0f;
                         currentLapMaxStrokeLen = 0f;
                     }
                     if ("DragFactor".equals(field.getName())) {
-                        lapExtraRecords.get(lapIx).setAvgDragFactor((float) Math.round(100 * currentLapSumDragFactor / (recordIx-lapExtraRecords.get(lapIx).getRecordIxStart()+1)) /100);
-                        lapExtraRecords.get(lapIx).setMaxDragFactor(currentLapMaxDragFactor);
+                        getLapExtraRecords().get(lapIx).setAvgDragFactor((float) Math.round(100 * currentLapSumDragFactor / (recordIx-getLapExtraRecords().get(lapIx).getRecordIxStart()+1)) /100);
+                        getLapExtraRecords().get(lapIx).setMaxDragFactor(currentLapMaxDragFactor);
                         currentLapSumDragFactor = 0f;
                         currentLapMaxDragFactor = 0f;
                     }
@@ -2075,23 +2092,23 @@ public class FitFileForIndoor extends FitFile {
                 //--------------
                 // Calculate ACTIVE LAP SUM & MAX
                 if (currentLapIntensity.equals("ACTIVE")) {
-                    activeTime = activeTime + (lapTimer != null ? lapTimer : 0f);
-                    activeDist = activeDist + lapDist;
-                    activeSumSpeed = activeSumSpeed + (lapMesg.get(lapIx).getFieldFloatValue(LAP_SPEED) != null ? lapMesg.get(lapIx).getFieldFloatValue(LAP_SPEED) * (lapTimer != null ? lapTimer : 0f) : 0f);
-                    activeSumCad = activeSumCad + (float) ((lapMesg.get(lapIx).getFieldShortValue(LAP_CAD) != null ? lapMesg.get(lapIx).getFieldShortValue(LAP_CAD) : 0) * (lapTimer != null ? lapTimer : 0f));
-                    activeSumPower = activeSumPower + (lapMesg.get(lapIx).getFieldIntegerValue(LAP_POW) != null ? lapMesg.get(lapIx).getFieldIntegerValue(LAP_POW) * (lapTimer != null ? lapTimer : 0f) : 0f);
+                    setActiveTime(getActiveTime() + (lapTimer != null ? lapTimer : 0f));
+                    setActiveDist(getActiveDist() + lapDist);
+                    activeSumSpeed = activeSumSpeed + (getLapMesg().get(lapIx).getFieldFloatValue(LAP_SPEED) != null ? getLapMesg().get(lapIx).getFieldFloatValue(LAP_SPEED) * (lapTimer != null ? lapTimer : 0f) : 0f);
+                    activeSumCad = activeSumCad + (float) ((getLapMesg().get(lapIx).getFieldShortValue(LAP_CAD) != null ? getLapMesg().get(lapIx).getFieldShortValue(LAP_CAD) : 0) * (lapTimer != null ? lapTimer : 0f));
+                    activeSumPower = activeSumPower + (getLapMesg().get(lapIx).getFieldIntegerValue(LAP_POW) != null ? getLapMesg().get(lapIx).getFieldIntegerValue(LAP_POW) * (lapTimer != null ? lapTimer : 0f) : 0f);
 
-                    activeFakeSumSpeed = activeFakeSumSpeed + (lapMesg.get(lapIx).getFieldFloatValue(LAP_SPEED) != null ? lapMesg.get(lapIx).getFieldFloatValue(LAP_SPEED) : 0f);
-                    activeFakeSumCad = activeFakeSumCad + (lapMesg.get(lapIx).getFieldShortValue(LAP_CAD) != null ? lapMesg.get(lapIx).getFieldShortValue(LAP_CAD) : 0);
-                    activeFakeSumPower = activeFakeSumPower + (lapMesg.get(lapIx).getFieldIntegerValue(LAP_POW) != null ? lapMesg.get(lapIx).getFieldIntegerValue(LAP_POW) : 0);
+                    activeFakeSumSpeed = activeFakeSumSpeed + (getLapMesg().get(lapIx).getFieldFloatValue(LAP_SPEED) != null ? getLapMesg().get(lapIx).getFieldFloatValue(LAP_SPEED) : 0f);
+                    activeFakeSumCad = activeFakeSumCad + (getLapMesg().get(lapIx).getFieldShortValue(LAP_CAD) != null ? getLapMesg().get(lapIx).getFieldShortValue(LAP_CAD) : 0);
+                    activeFakeSumPower = activeFakeSumPower + (getLapMesg().get(lapIx).getFieldIntegerValue(LAP_POW) != null ? getLapMesg().get(lapIx).getFieldIntegerValue(LAP_POW) : 0);
                 }
                 // Calculate REST LAP SUM & MAX
                 if (currentLapIntensity.equals("REST") || currentLapIntensity.equals("RECOVERY")) {
-                    restTime = restTime + (lapTimer != null ? lapTimer : 0f);
-                    restDist = restDist + (lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) != null ? lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) : 0f);
-                    restSumSpeed = restSumSpeed + (lapMesg.get(lapIx).getFieldFloatValue(LAP_SPEED) != null ? lapMesg.get(lapIx).getFieldFloatValue(LAP_SPEED) * (lapTimer != null ? lapTimer : 0f) : 0f);
-                    restSumCad = restSumCad + (lapMesg.get(lapIx).getFieldShortValue(LAP_CAD) != null ? lapMesg.get(lapIx).getFieldShortValue(LAP_CAD) * (lapTimer != null ? lapTimer : 0f) : 0f);
-                    restSumPower = restSumPower + (lapMesg.get(lapIx).getFieldIntegerValue(LAP_POW) != null ? lapMesg.get(lapIx).getFieldIntegerValue(LAP_POW) * (lapTimer != null ? lapTimer : 0f) : 0f);
+                    setRestTime(getRestTime() + (lapTimer != null ? lapTimer : 0f));
+                    setRestDist(getRestDist() + (getLapMesg().get(lapIx).getFieldFloatValue(LAP_DIST) != null ? getLapMesg().get(lapIx).getFieldFloatValue(LAP_DIST) : 0f));
+                    restSumSpeed = restSumSpeed + (getLapMesg().get(lapIx).getFieldFloatValue(LAP_SPEED) != null ? getLapMesg().get(lapIx).getFieldFloatValue(LAP_SPEED) * (lapTimer != null ? lapTimer : 0f) : 0f);
+                    restSumCad = restSumCad + (getLapMesg().get(lapIx).getFieldShortValue(LAP_CAD) != null ? getLapMesg().get(lapIx).getFieldShortValue(LAP_CAD) * (lapTimer != null ? lapTimer : 0f) : 0f);
+                    restSumPower = restSumPower + (getLapMesg().get(lapIx).getFieldIntegerValue(LAP_POW) != null ? getLapMesg().get(lapIx).getFieldIntegerValue(LAP_POW) * (lapTimer != null ? lapTimer : 0f) : 0f);
                 }
 
                 lapIx++;
@@ -2106,35 +2123,35 @@ public class FitFileForIndoor extends FitFile {
         recordIx--;
         
         // First DISTANCE value to ZERO
-        recordMesg.get(0).setFieldValue(REC_DIST, 0f);
+        getRecordMesg().get(0).setFieldValue(REC_DIST, 0f);
 
         // TOTAL DISTANCE activity
-        Float distF = recordMesg.get(recordIx).getFieldFloatValue(REC_DIST);
+        Float distF = getRecordMesg().get(recordIx).getFieldFloatValue(REC_DIST);
         totalDistance = distF != null ? distF : 0f;
-        sessionMesg.get(0).setFieldValue(SES_DIST, totalDistance);
+        getSessionMesg().get(0).setFieldValue(SES_DIST, totalDistance);
 
         // TOTAL AVG SPEED activity
         avgSpeed = (float) (totalDistance / totalTimerTime);
-        sessionMesg.get(0).setFieldValue(SES_SPEED, avgSpeed);
-        sessionMesg.get(0).setFieldValue(SES_ESPEED, avgSpeed);
+        getSessionMesg().get(0).setFieldValue(SES_SPEED, avgSpeed);
+        getSessionMesg().get(0).setFieldValue(SES_ESPEED, avgSpeed);
 
         // TOTAL AVG CADENCE activity
         avgCadence = Math.round((float) currentSessionSumCadence / (recordIx));
-        sessionMesg.get(0).setFieldValue(SES_CAD, (short) avgCadence);
+        getSessionMesg().get(0).setFieldValue(SES_CAD, (short) avgCadence);
 
         // TOTAL AVG POWER activity
         avgPower = Math.round((float) currentSessionSumPower / (recordIx));
-        sessionMesg.get(0).setFieldValue(SES_POW, avgPower);
+        getSessionMesg().get(0).setFieldValue(SES_POW, avgPower);
 
         // Calculate ACTIVE LAP SUM & MAX
-        activeAvgSpeed = (float) (activeSumSpeed / activeTime);
-        activeAvgCad = (float) (activeSumCad / activeTime);
-        activeAvgPower = (float) (activeSumPower / activeTime);
+        setActiveAvgSpeed(getActiveTime() > 0 ? activeSumSpeed / getActiveTime() : 0f);
+        setActiveAvgCad(getActiveTime() > 0 ? activeSumCad / getActiveTime() : 0f);
+        setActiveAvgPower(getActiveTime() > 0 ? activeSumPower / getActiveTime() : 0f);
 
         // Calculate REST LAP SUM & MAX
-        restAvgSpeed = (float) (restSumSpeed / restTime);
-        restAvgCad = (float) (restSumCad / restTime);
-        restAvgPower = (float) (restSumPower / restTime);
+        setRestAvgSpeed(getRestTime() > 0 ? restSumSpeed / getRestTime() : 0f);
+        setRestAvgCad(getRestTime() > 0 ? restSumCad / getRestTime() : 0f);
+        setRestAvgPower(getRestTime() > 0 ? restSumPower / getRestTime() : 0f);
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -2142,21 +2159,21 @@ public class FitFileForIndoor extends FitFile {
 
         int lapIx = 0;
 
-        System.out.println("----- CALC SPLIT DATA FROM LAPS - TOTAL SPLITS: " + splitMesg.size() + " LAPS: " + lapMesg.size());
+        System.out.println("----- CALC SPLIT DATA FROM LAPS - TOTAL SPLITS: " + getSplitMesg().size() + " LAPS: " + getLapMesg().size());
 
-        if (lapMesg.isEmpty()) {
+        if (getLapMesg().isEmpty()) {
             if (debugSplit) System.out.println("----- No laps found, skipping split calc");
             return;
         }
-        if (splitMesg.isEmpty()) {
+        if (getSplitMesg().isEmpty()) {
             if (debugSplit) System.out.println("----- No splits found, skipping split calc");
             return;
         }
 
-        for (Mesg lap : lapMesg) {
+        for (Mesg lap : getLapMesg()) {
             Integer lapIxInSplitMesg = null;
-            for (int i = 0; i < splitMesg.size(); i++) {
-                Integer candidateLapIxInSplitMesg = splitMesg.get(i).getFieldIntegerValue(67);
+            for (int i = 0; i < getSplitMesg().size(); i++) {
+                Integer candidateLapIxInSplitMesg = getSplitMesg().get(i).getFieldIntegerValue(67);
                 if (candidateLapIxInSplitMesg != null && candidateLapIxInSplitMesg.equals(lapIx)) {
                     lapIxInSplitMesg = i;
                     if (debugSplit) System.out.println("----- Link SPLIT record " + i + " to LAP index " + lapIx);
@@ -2170,7 +2187,7 @@ public class FitFileForIndoor extends FitFile {
                 continue;
             }
 
-            if (lapIx >= lapExtraRecords.size()) {
+            if (lapIx >= getLapExtraRecords().size()) {
                 if (debugSplit) System.out.println("----- lapExtraRecords missing for LAP index " + lapIx + ", skipping");
                 lapIx++;
                 continue;
@@ -2180,21 +2197,21 @@ public class FitFileForIndoor extends FitFile {
             Float lapSpeed = lap.getFieldFloatValue(LAP_ESPEED);
             Float lapMaxSpeed = lap.getFieldFloatValue(LAP_EMSPEED);
             Float distAtLapStart = 0f;
-            Integer lapStartRecordIx = lapExtraRecords.get(lapIx).getRecordIxStart();
-            if (lapStartRecordIx != null && lapStartRecordIx >= 0 && lapStartRecordIx < recordMesg.size()) {
-                Float dist = recordMesg.get(lapStartRecordIx).getFieldFloatValue(REC_DIST);
+            Integer lapStartRecordIx = getLapExtraRecords().get(lapIx).getRecordIxStart();
+            if (lapStartRecordIx != null && lapStartRecordIx >= 0 && lapStartRecordIx < getRecordMesg().size()) {
+                Float dist = getRecordMesg().get(lapStartRecordIx).getFieldFloatValue(REC_DIST);
                 distAtLapStart = dist != null ? dist : 0f;
             }
             Integer lapPow = lap.getFieldIntegerValue(LAP_POW);
             Integer lapMaxPow = lap.getFieldIntegerValue(LAP_MPOW);
 
-            splitMesg.get(lapIxInSplitMesg).setFieldValue(SPL_DIST, lapDist!= null ? lapDist : 0f);
-            splitMesg.get(lapIxInSplitMesg).setFieldValue(SPL_SPEED, lapSpeed != null ? lapSpeed : 0f);
-            splitMesg.get(lapIxInSplitMesg).setFieldValue(SPL_MSPEED, lapMaxSpeed != null ? lapMaxSpeed : 0f);
-            splitMesg.get(lapIxInSplitMesg).setFieldValue(7, distAtLapStart != null ? distAtLapStart : 0f);
+            getSplitMesg().get(lapIxInSplitMesg).setFieldValue(SPL_DIST, lapDist!= null ? lapDist : 0f);
+            getSplitMesg().get(lapIxInSplitMesg).setFieldValue(SPL_SPEED, lapSpeed != null ? lapSpeed : 0f);
+            getSplitMesg().get(lapIxInSplitMesg).setFieldValue(SPL_MSPEED, lapMaxSpeed != null ? lapMaxSpeed : 0f);
+            getSplitMesg().get(lapIxInSplitMesg).setFieldValue(7, distAtLapStart != null ? distAtLapStart : 0f);
             
-            /* splitMesg.get(splitIx).setFieldValue(40, lapPow != null ? lapPow : 0);
-            splitMesg.get(splitIx).setFieldValue(41, lapMaxPow != null ? lapMaxPow : 0); */
+            /* getSplitMesg().get(splitIx).setFieldValue(40, lapPow != null ? lapPow : 0);
+            getSplitMesg().get(splitIx).setFieldValue(41, lapMaxPow != null ? lapMaxPow : 0); */
 
             lapIx++;
         }
@@ -2202,9 +2219,9 @@ public class FitFileForIndoor extends FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void calcSplitSummaryBasedOnSplits() {
         // NOT IMPLEMENTED YET
-        for (Mesg splitSumMesg : splitSummaryMesg) {
+        for (Mesg splitSumMesg : getSplitSummaryMesg()) {
             Short splitType = splitSumMesg.getFieldShortValue(SPLSUM_TYPE);
-            for (Mesg splitMesg : splitMesg) {
+            for (Mesg splitMesg : getSplitMesg()) {
                 // IF SPLIT TYPE MATCH
                 if (splitType != null && splitType.equals(splitMesg.getFieldShortValue(SPL_TYPE))) {
                     // ADD TO SUMMARY
@@ -2250,11 +2267,11 @@ public class FitFileForIndoor extends FitFile {
         boolean lookingInBeginningForEmptyDragFactor = true;
         boolean lookingInBeginningForEmptyTrainingSession = true;
         
-        if (numberOfRecords < maxIxFixEmptyBeginning) {
-            maxIxFixEmptyBeginning = numberOfRecords - 1;
+        if (getNumberOfRecords() < maxIxFixEmptyBeginning) {
+            maxIxFixEmptyBeginning = getNumberOfRecords() - 1;
         }
 
-        for (Mesg record : recordMesg) {
+        for (Mesg record : getRecordMesg()) {
             if (recordIx <= maxIxFixEmptyBeginning) {
                 // FIX CADENCE
                 if (lookingInBeginningForEmptyCadence) {
@@ -2262,8 +2279,8 @@ public class FitFileForIndoor extends FitFile {
                     if ((cad!=null && cad!=0 && cad>20)) {
                         if (debugFixData) System.out.println("========= FIXED Beginning CADENCE, first real value: " + cad + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
-                            if (debugFixData) System.out.println("========= FIXING CADENCE, value: " + recordMesg.get(i).getFieldValue(REC_CAD) + "->" + cad + " @" + i);
-                            recordMesg.get(i).setFieldValue(REC_CAD, cad);
+                            if (debugFixData) System.out.println("========= FIXING CADENCE, value: " + getRecordMesg().get(i).getFieldValue(REC_CAD) + "->" + cad + " @" + i);
+                            getRecordMesg().get(i).setFieldValue(REC_CAD, cad);
                         }
                         lookingInBeginningForEmptyCadence = false;
                     }
@@ -2289,11 +2306,11 @@ public class FitFileForIndoor extends FitFile {
         boolean lookingInBeginningForEmptyDragFactor = true;
         boolean lookingInBeginningForEmptyTrainingSession = true;
         
-        if (numberOfRecords < maxIxFixEmptyBeginning) {
-            maxIxFixEmptyBeginning = numberOfRecords - 1;
+        if (getNumberOfRecords() < maxIxFixEmptyBeginning) {
+            maxIxFixEmptyBeginning = getNumberOfRecords() - 1;
         }
 
-        for (Mesg record : recordMesg) {
+        for (Mesg record : getRecordMesg()) {
             if (recordIx <= maxIxFixEmptyBeginning) {
                 // FIX SPEED
                 if (lookingInBeginningForEmptySpeed) {
@@ -2301,9 +2318,9 @@ public class FitFileForIndoor extends FitFile {
                     if (speed!=null && speed!=0f && speed!=1 && speed<100f) {
                         if (debugFixData) System.out.println("========= FIXED Beginning SPEED, first value: " + speed + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
-                            if (debugFixData) System.out.println("========= FIXING SPEED, value: " + recordMesg.get(i).getFieldValue(REC_ESPEED) + "->" + speed + " @" + i);
-                            recordMesg.get(i).setFieldValue(REC_ESPEED, speed);
-                            recordMesg.get(i).setFieldValue(REC_SPEED, speed);
+                            if (debugFixData) System.out.println("========= FIXING SPEED, value: " + getRecordMesg().get(i).getFieldValue(REC_ESPEED) + "->" + speed + " @" + i);
+                            getRecordMesg().get(i).setFieldValue(REC_ESPEED, speed);
+                            getRecordMesg().get(i).setFieldValue(REC_SPEED, speed);
                         }
                         lookingInBeginningForEmptySpeed = false;
                     }
@@ -2314,8 +2331,8 @@ public class FitFileForIndoor extends FitFile {
                     if (cad!=null && cad!=0 && cad!=1 && cad<100) {
                         if (debugFixData) System.out.println("========= FIXED Beginning CADENCE, first value: " + cad + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
-                            if (debugFixData) System.out.println("========= FIXING CADENCE, value: " + recordMesg.get(i).getFieldValue(REC_CAD) + "->" + cad + " @" + i);
-                            recordMesg.get(i).setFieldValue(REC_CAD, cad);
+                            if (debugFixData) System.out.println("========= FIXING CADENCE, value: " + getRecordMesg().get(i).getFieldValue(REC_CAD) + "->" + cad + " @" + i);
+                            getRecordMesg().get(i).setFieldValue(REC_CAD, cad);
                         }
                         lookingInBeginningForEmptyCadence = false;
                     }
@@ -2326,8 +2343,8 @@ public class FitFileForIndoor extends FitFile {
                     if ((power!=null && power!=0)) {
                         if (debugFixData) System.out.println("========= FIXED Beginning POWER, first value: " + power + " @ " + recordIx);
                         for (int i = recordIx-1; i >= 0; i--) {
-                            if (debugFixData) System.out.println("========= FIXING POWER, value: " + recordMesg.get(i).getFieldValue(REC_POW) + "->" + power + " @" + i);
-                            recordMesg.get(i).setFieldValue(REC_POW, power);
+                            if (debugFixData) System.out.println("========= FIXING POWER, value: " + getRecordMesg().get(i).getFieldValue(REC_POW) + "->" + power + " @" + i);
+                            getRecordMesg().get(i).setFieldValue(REC_POW, power);
                         }
                         lookingInBeginningForEmptyPower = false;
                     }
@@ -2358,30 +2375,30 @@ public class FitFileForIndoor extends FitFile {
         Float speedLapSum = 0f;
         Float cadLapSum = 0f;
 
-        nextLapStartTime = lapMesg.get(0).getFieldLongValue(LAP_STIME);
+        nextLapStartTime = getLapMesg().get(0).getFieldLongValue(LAP_STIME);
 
-        for (Mesg record : recordMesg) {
+        for (Mesg record : getRecordMesg()) {
 
             //--------------
             // Initiate secExtraRecords
-            secExtraRecords.add(new RecordExtraMesg(lapNo, C2DateTime));
+            getSecExtraRecords().add(new RecordExtraMesg(lapNo, C2DateTime));
 
             //--------------
             // IF LAP START
             currentTimeStamp = record.getFieldLongValue(REC_TIME);
             if ( currentTimeStamp.equals(nextLapStartTime) ) {
                 // Get LAP DATA to be used to find lap-start-end
-                Float lapTotalTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
+                Float lapTotalTimer = getLapMesg().get(lapIx).getFieldFloatValue(LAP_TIMER);
                 currentLapTime = (lapTotalTimer == null) ? 0f : lapTotalTimer; // in sec
 
-                if (lapNo < numberOfLaps) {
-                    currentLapTimeEnd = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
-                    nextLapStartTime = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME);
+                if (lapNo < getNumberOfLaps()) {
+                    currentLapTimeEnd = getLapMesg().get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
+                    nextLapStartTime = getLapMesg().get(lapIx + 1).getFieldLongValue(LAP_STIME);
                 } else {
                     currentLapTimeEnd = timeLastRecord;
                 }
                 // Save LAP END to table
-                lapExtraRecords.get(lapIx).setTimeEnd(currentLapTimeEnd);
+                getLapExtraRecords().get(lapIx).setTimeEnd(currentLapTimeEnd);
             }
 
             //--------------
@@ -2389,7 +2406,7 @@ public class FitFileForIndoor extends FitFile {
             Short cadFixEmpty = record.getFieldShortValue(REC_CAD);
             if (cadFixEmpty == null) {
                 if (recordIx > 0) {
-                    Short cadPrevFixEmpty = recordMesg.get(recordIx-1).getFieldShortValue(REC_CAD);
+                    Short cadPrevFixEmpty = getRecordMesg().get(recordIx-1).getFieldShortValue(REC_CAD);
                     record.setFieldValue(REC_CAD, cadPrevFixEmpty != null ? cadPrevFixEmpty : (short) 60);
                 } else {
                     record.setFieldValue(REC_CAD, (short) 60);
@@ -2398,8 +2415,8 @@ public class FitFileForIndoor extends FitFile {
 
             //--------------
             // Calc LAP SUM SPEED or CADENCE
-            LapExtraMesg lapExtra = lapExtraRecords.get(lapIx);
-            if (getIsTreadmill() == true) {
+            LapExtraMesg lapExtra = getLapExtraRecords().get(lapIx);
+            if (getMySport() == FitFile.MySport.TREADMILL) {
                 // TREADMILL
                 Float speed = record.getFieldFloatValue(REC_ESPEED);
                 speedLapSum = lapExtra.getSpeedLapSum();
@@ -2419,8 +2436,8 @@ public class FitFileForIndoor extends FitFile {
             if ( currentTimeStamp.equals(currentLapTimeEnd) ) {
 
                 // Save recordIx END
-                lapExtraRecords.get(lapIx).setRecordIxEnd(recordIx);
-                lapExtraRecords.get(lapIx).setTimeEnd(record.getFieldLongValue(REC_TIME));
+                getLapExtraRecords().get(lapIx).setRecordIxEnd(recordIx);
+                getLapExtraRecords().get(lapIx).setTimeEnd(record.getFieldLongValue(REC_TIME));
 
                 // INIT of Variables
                 /* sumOfRecordDist = sumOfRecordDist - lapSumOfRecordDist;
@@ -2448,49 +2465,56 @@ public class FitFileForIndoor extends FitFile {
         String currentLapIntensity = "";
         Long currentLapTimeEnd = 0l;
 
-        nextLapStartTime = lapMesg.get(0).getFieldLongValue(LAP_STIME);
+        Float activeSumSpeed = 0f;
+        Float activeSumCad = 0f;
+        Float activeSumPower = 0f;
+        Float restSumSpeed = 0f;
+        Float restSumCad = 0f;
+        Float restSumPower = 0f;
 
-        sessionMesg.get(0).setFieldValue(SES_MSPEED, 0f);
-        sessionMesg.get(0).setFieldValue(SES_EMSPEED, 0f);
-        sessionMesg.get(0).setFieldValue(SES_MCAD, (short) 0);
-        sessionMesg.get(0).setFieldValue(SES_MPOW, 0);
+        nextLapStartTime = getLapMesg().get(0).getFieldLongValue(LAP_STIME);
 
-        for (Mesg record : recordMesg) {
+        getSessionMesg().get(0).setFieldValue(SES_MSPEED, 0f);
+        getSessionMesg().get(0).setFieldValue(SES_EMSPEED, 0f);
+        getSessionMesg().get(0).setFieldValue(SES_MCAD, (short) 0);
+        getSessionMesg().get(0).setFieldValue(SES_MPOW, 0);
+
+        for (Mesg record : getRecordMesg()) {
 
             //--------------
             // Initiate secExtraRecords
-            secExtraRecords.add(new RecordExtraMesg(lapNo, C2DateTime));
+            getSecExtraRecords().add(new RecordExtraMesg(lapNo, C2DateTime));
 
             //--------------
             // IF LAP START
             currentTimeStamp = record.getFieldLongValue(REC_TIME);
             if ( currentTimeStamp.equals(nextLapStartTime) ) {
-                //System.out.println("Lapstart lapIx: " + lapIx + " recordIxStart: " + lapExtraRecords.get(lapIx).recordIxStart + " recordIx: " + recordIx);
+                //System.out.println("Lapstart lapIx: " + lapIx + " recordIxStart: " + getLapExtraRecords().get(lapIx).recordIxStart + " recordIx: " + recordIx);
 
                 // Initiate maxSpeed with 0 to be able to compare later
-                lapMesg.get(lapIx).setFieldValue(LAP_MSPEED, 0f);
-                lapMesg.get(lapIx).setFieldValue(LAP_EMSPEED, 0f);
+                getLapMesg().get(lapIx).setFieldValue(LAP_MSPEED, 0f);
+                getLapMesg().get(lapIx).setFieldValue(LAP_EMSPEED, 0f);
                 
                 // Save HR and recordIx START
-                lapExtraRecords.get(lapIx).setHrStart(record.getFieldIntegerValue(REC_HR));
-                lapExtraRecords.get(lapIx).setRecordIxStart(recordIx);
+                getLapExtraRecords().get(lapIx).setHrStart(record.getFieldShortValue(REC_HR));
+                getLapExtraRecords().get(lapIx).setRecordIxStart(recordIx);
 
                 // Get LAP DATA to be used to find lap-start-end
-                Float lapTotalTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
+                Float lapTotalTimer = getLapMesg().get(lapIx).getFieldFloatValue(LAP_TIMER);
                 currentLapTime = (lapTotalTimer == null) ? 0f : lapTotalTimer; // in sec
 
-                Short lapIntensityShort = lapMesg.get(lapIx).getFieldShortValue(LAP_INTENSITY);
+                Short lapIntensityShort = getLapMesg().get(lapIx).getFieldShortValue(LAP_INTENSITY);
                 Intensity lapIntensity = (lapIntensityShort == null) ? Intensity.INVALID : Intensity.getByValue(lapIntensityShort);
                 currentLapIntensity = Intensity.getStringFromValue(lapIntensity);
 
-                if (lapNo < numberOfLaps) {
-                    currentLapTimeEnd = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
-                    nextLapStartTime = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME);
+                if (lapNo < getNumberOfLaps()) {
+                    currentLapTimeEnd = getLapMesg().get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
+                    nextLapStartTime = getLapMesg().get(lapIx + 1).getFieldLongValue(LAP_STIME);
                 } else {
                     currentLapTimeEnd = timeLastRecord;
                 }
                 // Save LAP END to table
-                lapExtraRecords.get(lapIx).setTimeEnd(currentLapTimeEnd);
+                getLapExtraRecords().get(lapIx).setTimeEnd(currentLapTimeEnd);
             }
 
             //--------------
@@ -2498,7 +2522,7 @@ public class FitFileForIndoor extends FitFile {
             Short cad = record.getFieldShortValue(REC_CAD);
             if (cad == null) {
                 if (recordIx > 0) {
-                    Short cadPrev = recordMesg.get(recordIx-1).getFieldShortValue(REC_CAD);
+                    Short cadPrev = getRecordMesg().get(recordIx-1).getFieldShortValue(REC_CAD);
                     record.setFieldValue(REC_CAD, cadPrev != null ? cadPrev : (short) 60);
                 } else {
                     record.setFieldValue(REC_CAD, (short) 60);
@@ -2507,15 +2531,15 @@ public class FitFileForIndoor extends FitFile {
             //--------------
             // Calculate DIST between RECORDS based on Cadence
             //recordDist = lapExtraRecords.get(lapIx).stepLen * cad / 60;
-            if (getIsTreadmill() == true) {
+            if (getMySport() == FitFile.MySport.TREADMILL) {
                 // TREADMILL
                 Float speed = record.getFieldFloatValue(REC_ESPEED);
-                Float speedLapSum = lapExtraRecords.get(lapIx).getSpeedLapSum();
-                recordDist = (speed == null) ? 0f : lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) * (speed / speedLapSum);
+                Float speedLapSum = getLapExtraRecords().get(lapIx).getSpeedLapSum();
+                recordDist = (speed == null) ? 0f : getLapMesg().get(lapIx).getFieldFloatValue(LAP_DIST) * (speed / speedLapSum);
                 //--System.out.println("RecordIx: " + recordIx + " Speed: " + speed + " SpeedLapSum: " + speedLapSum + " Dist: " + recordDist + " lapNo: " + lapNo);
             } else {
                 // ELLIPTICAL
-                recordDist = lapExtraRecords.get(lapIx).getStepLen() * cad / 60;
+                recordDist = getLapExtraRecords().get(lapIx).getStepLen() * cad / 60;
             }
             lapSumOfRecordDist += recordDist;
             sumOfRecordDist += recordDist;
@@ -2525,15 +2549,15 @@ public class FitFileForIndoor extends FitFile {
             Short recHr = record.getFieldShortValue(REC_HR);
             if (recHr == null) {
                 if (recordIx > 0) {
-                    Short prevHr = recordMesg.get(recordIx - 1).getFieldShortValue(REC_HR);
+                    Short prevHr = getRecordMesg().get(recordIx - 1).getFieldShortValue(REC_HR);
                     record.setFieldValue(REC_HR, (prevHr == null) ? (short) 60 : prevHr);
                     recHr = record.getFieldShortValue(REC_HR);
                 } else {
                     record.setFieldValue(REC_HR, (short) 60);
                     recHr = record.getFieldShortValue(REC_HR);
                 }
-            } else if (recHr < lapExtraRecords.get(lapIx).getHrMin()) {
-                lapExtraRecords.get(lapIx).setHrMin(recHr);
+            } else if (recHr < getLapExtraRecords().get(lapIx).getHrMin()) {
+                getLapExtraRecords().get(lapIx).setHrMin(recHr);
             }
 
             //--------------
@@ -2541,7 +2565,7 @@ public class FitFileForIndoor extends FitFile {
             // LAPTIME for active laps TO CIQ TrainingSess 
             for (DeveloperField field : record.getDeveloperFields()) {
                 if ("Level".equals(field.getName())) {
-                    field.setValue(lapExtraRecords.get(lapIx).getLevel());
+                    field.setValue(getLapExtraRecords().get(lapIx).getLevel());
                 }
                 if (devFieldNamesToUpdate.contains(field.getName())) {
                     if (currentLapIntensity.equals("ACTIVE")) {
@@ -2555,40 +2579,40 @@ public class FitFileForIndoor extends FitFile {
             //--------------
             // IF LAP END
             if ( currentTimeStamp.equals(currentLapTimeEnd) ) {
-                if (debugLaps) System.out.println("LapEND lapIx: " + lapIx + " recordIxStart: " + lapExtraRecords.get(lapIx).getRecordIxStart() + " recordIx: " + recordIx);
+                if (debugLaps) System.out.println("LapEND lapIx: " + lapIx + " recordIxStart: " + getLapExtraRecords().get(lapIx).getRecordIxStart() + " recordIx: " + recordIx);
 
                 // Save HR and recordIx END
-                lapExtraRecords.get(lapIx).setHrEnd(record.getFieldShortValue(REC_HR));
-                lapExtraRecords.get(lapIx).setRecordIxEnd(recordIx);
-                lapExtraRecords.get(lapIx).setTimeEnd(record.getFieldLongValue(REC_TIME));
+                getLapExtraRecords().get(lapIx).setHrEnd(record.getFieldShortValue(REC_HR));
+                getLapExtraRecords().get(lapIx).setRecordIxEnd(recordIx);
+                getLapExtraRecords().get(lapIx).setTimeEnd(record.getFieldLongValue(REC_TIME));
 
                 //--------------
                 // CORRECTION
                 // INIT of Variables
-                corrPerMeter = (lapSumOfRecordDist - lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST)) / lapSumOfRecordDist;
-                if (debugLaps) System.out.println("---- Before CORRECTION1 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
+                corrPerMeter = (lapSumOfRecordDist - getLapMesg().get(lapIx).getFieldFloatValue(LAP_DIST)) / lapSumOfRecordDist;
+                if (debugLaps) System.out.println("---- Before CORRECTION1 LapNo:" + lapNo + " LapDist:" + getLapMesg().get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
                 sumOfRecordDist = sumOfRecordDist - lapSumOfRecordDist;
-                if (debugLaps) System.out.println("---- Before CORRECTION2 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
+                if (debugLaps) System.out.println("---- Before CORRECTION2 LapNo:" + lapNo + " LapDist:" + getLapMesg().get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
                 lapSumOfRecordDist = 0f;
-                if (debugLaps) System.out.println("---- Before CORRECTION3 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
+                if (debugLaps) System.out.println("---- Before CORRECTION3 LapNo:" + lapNo + " LapDist:" + getLapMesg().get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
 
                 // CORRECTION RECAP LAP
-                for (int j=lapExtraRecords.get(lapIx).getRecordIxStart(); j<=lapExtraRecords.get(lapIx).getRecordIxEnd(); j++) {
-                    Mesg jRecord = recordMesg.get(j);
+                for (int j=getLapExtraRecords().get(lapIx).getRecordIxStart(); j<=getLapExtraRecords().get(lapIx).getRecordIxEnd(); j++) {
+                    Mesg jRecord = getRecordMesg().get(j);
                     //System.out.println("   j:"+j+" lapix:"+lapIx);
-                    //recordDist = lapExtraRecords.get(lapIx).stepLen * recordMesg.get(j).getFieldShortValue(REC_CAD) / 60;
+                    //recordDist = getLapExtraRecords().get(lapIx).stepLen * getRecordMesg().get(j).getFieldShortValue(REC_CAD) / 60;
                     //--------------
                     // Calculate DIST between RECORDS based on Cadence
-                    //recordDist = lapExtraRecords.get(lapIx).stepLen * cad / 60;
-                    if (getIsTreadmill() == true) {
+                    //recordDist = getLapExtraRecords().get(lapIx).stepLen * cad / 60;
+                    if (getMySport() == FitFile.MySport.TREADMILL) {
                         // TREADMILL
                         Float speed = jRecord.getFieldFloatValue(REC_ESPEED);
-                        Float speedLapSum = lapExtraRecords.get(lapIx).getSpeedLapSum();
-                        recordDist = (speed == null) ? 0f : lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) * (speed / speedLapSum);
+                        Float speedLapSum = getLapExtraRecords().get(lapIx).getSpeedLapSum();
+                        recordDist = (speed == null) ? 0f : getLapMesg().get(lapIx).getFieldFloatValue(LAP_DIST) * (speed / speedLapSum);
                         //--System.out.println("RecordIx: " + recordIx + " Speed: " + speed + " SpeedLapSum: " + speedLapSum + " Dist: " + recordDist + " lapNo: " + lapNo);
                     } else {
                         // ELLIPTICAL
-                        recordDist = lapExtraRecords.get(lapIx).getStepLen() * jRecord.getFieldShortValue(REC_CAD) / 60;
+                        recordDist = getLapExtraRecords().get(lapIx).getStepLen() * jRecord.getFieldShortValue(REC_CAD) / 60;
                     }
                     recordDist = recordDist - recordDist * corrPerMeter;
                     lapSumOfRecordDist += recordDist;
@@ -2596,7 +2620,7 @@ public class FitFileForIndoor extends FitFile {
                     jRecord.setFieldValue(REC_DIST, sumOfRecordDist);
 
                     if (j>0) {
-                        Float recDistPrev = recordMesg.get(j-1).getFieldFloatValue(REC_DIST);
+                        Float recDistPrev = getRecordMesg().get(j-1).getFieldFloatValue(REC_DIST);
                         if (recDistPrev == null) recDistPrev = 0f;
                         //--------------
                         // Calculate SPEED
@@ -2607,50 +2631,50 @@ public class FitFileForIndoor extends FitFile {
                         //--------------
                         // Calculate LAP MAX
                         if(newSpeed == null) newSpeed = 0f;
-                        Float lapEMSpeed = lapMesg.get(lapIx).getFieldFloatValue(LAP_EMSPEED);
+                        Float lapEMSpeed = getLapMesg().get(lapIx).getFieldFloatValue(LAP_EMSPEED);
                         if (lapEMSpeed == null) lapEMSpeed = 0f;
 
                         if (newSpeed > lapEMSpeed) {
-                            lapMesg.get(lapIx).setFieldValue(LAP_MSPEED, newSpeed);
-                            lapMesg.get(lapIx).setFieldValue(LAP_EMSPEED, newSpeed);
+                            getLapMesg().get(lapIx).setFieldValue(LAP_MSPEED, newSpeed);
+                            getLapMesg().get(lapIx).setFieldValue(LAP_EMSPEED, newSpeed);
                             //System.out.println("-----recIx:"+recordIx+" lapIx:"+lapIx+" Sp:"+record.getEnhancedSpeed()+"m/s "+mps2kmph(record.getEnhancedSpeed())+"km/h");
                         }
                         //--------------
                         // Calculate SESSION MAX
-                        Float sesEMSpeed = sessionMesg.get(0).getFieldFloatValue(SES_EMSPEED);
+                        Float sesEMSpeed = getSessionMesg().get(0).getFieldFloatValue(SES_EMSPEED);
                         if (sesEMSpeed == null) sesEMSpeed = 0f;
                         
                         if (newSpeed > sesEMSpeed) {
-                            sessionMesg.get(0).setFieldValue(SES_MSPEED, newSpeed);
-                            sessionMesg.get(0).setFieldValue(SES_EMSPEED, newSpeed);
+                            getSessionMesg().get(0).setFieldValue(SES_MSPEED, newSpeed);
+                            getSessionMesg().get(0).setFieldValue(SES_EMSPEED, newSpeed);
                             //System.out.println("-----recIx:"+recordIx+" 0:"+0+" Sp:"+record.getEnhancedSpeed()+"m/s "+mps2kmph(record.getEnhancedSpeed())+"km/h");
                         }
                     }
 
                 }
-                if (debugLaps) System.out.println("---- After CORRECTION1 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
+                if (debugLaps) System.out.println("---- After CORRECTION1 LapNo:" + lapNo + " LapDist:" + getLapMesg().get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
 
                 lapSumOfRecordDist = (float) Math.round(lapSumOfRecordDist);
                 sumOfRecordDist = (float) Math.round(sumOfRecordDist);
-                if (debugLaps) System.out.println("---- After CORRECTION2 LapNo:" + lapNo + " LapDist:" + lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
+                if (debugLaps) System.out.println("---- After CORRECTION2 LapNo:" + lapNo + " LapDist:" + getLapMesg().get(lapIx).getFieldFloatValue(LAP_DIST) + " lapSumOfRecordDist:" + lapSumOfRecordDist + " CorrPerMeter:" + corrPerMeter + " sumOfRecordDist:" + sumOfRecordDist);
 
                 //--------------
                 // Calculate ACTIVE LAP SUM & MAX
-                Float lapTotalTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
-                Float lapTotalDist = lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST);
-                Float lapAvgSpeed = lapMesg.get(lapIx).getFieldFloatValue(LAP_ESPEED);
-                Short lapAvgCad = lapMesg.get(lapIx).getFieldShortValue(LAP_CAD);
+                Float lapTotalTimer = getLapMesg().get(lapIx).getFieldFloatValue(LAP_TIMER);
+                Float lapTotalDist = getLapMesg().get(lapIx).getFieldFloatValue(LAP_DIST);
+                Float lapAvgSpeed = getLapMesg().get(lapIx).getFieldFloatValue(LAP_ESPEED);
+                Short lapAvgCad = getLapMesg().get(lapIx).getFieldShortValue(LAP_CAD);
 
                 if (currentLapIntensity.equals("ACTIVE")) {
-                    activeTime = activeTime + lapTotalTimer;
-                    activeDist = activeDist + lapTotalDist;
+                    setActiveTime(getActiveTime() + lapTotalTimer);
+                    setActiveDist(getActiveDist() + lapTotalDist);
                     activeSumSpeed = activeSumSpeed + lapAvgSpeed * lapTotalTimer;
                     activeSumCad = activeSumCad + (int) (lapAvgCad * lapTotalTimer);
                 }
                 // Calculate REST LAP SUM & MAX
                 if (currentLapIntensity.equals("REST") || currentLapIntensity.equals("RECOVERY")) {
-                    restTime = restTime + lapTotalTimer;
-                    restDist = restDist + lapTotalDist;
+                    setRestTime(getRestTime() + lapTotalTimer);
+                    setRestDist(getRestDist() + lapTotalDist);
                     restSumSpeed = restSumSpeed + lapAvgSpeed * lapTotalTimer;
                     restSumCad = restSumCad + (int) (lapAvgCad * lapTotalTimer);
                 }
@@ -2664,23 +2688,23 @@ public class FitFileForIndoor extends FitFile {
         }
 
         // First DISTANCE to ZERO
-        recordMesg.get(0).setFieldValue(REC_DIST, 0f);
+        getRecordMesg().get(0).setFieldValue(REC_DIST, 0f);
         // First SPEED to same value as second
-        recordMesg.get(0).setFieldValue(REC_SPEED, recordMesg.get(1).getFieldFloatValue(REC_SPEED));
-        recordMesg.get(0).setFieldValue(REC_ESPEED, recordMesg.get(1).getFieldFloatValue(REC_ESPEED));
+        getRecordMesg().get(0).setFieldValue(REC_SPEED, getRecordMesg().get(1).getFieldFloatValue(REC_SPEED));
+        getRecordMesg().get(0).setFieldValue(REC_ESPEED, getRecordMesg().get(1).getFieldFloatValue(REC_ESPEED));
 
         // Calculate ACTIVE LAPS AVG
-        activeAvgSpeed = activeSumSpeed / activeTime;
-        activeAvgCad = activeSumCad / activeTime;
+        setActiveAvgSpeed(getActiveTime() > 0 ? activeSumSpeed / getActiveTime() : 0f);
+        setActiveAvgCad(getActiveTime() > 0 ? activeSumCad / getActiveTime() : 0f);
 
         // Calculate REST LAPS AVG
-        restAvgSpeed = restSumSpeed / restTime;
-        restAvgCad = restSumCad / restTime;
+        setRestAvgSpeed(getRestTime() > 0 ? restSumSpeed / getRestTime() : 0f);
+        setRestAvgCad(getRestTime() > 0 ? restSumCad / getRestTime() : 0f);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void mergeLapDataFromTextFile(TextLapFile textLapFile) {
         int lapIx= 0;
-        for (Mesg lap : lapMesg) {
+        for (Mesg lap : getLapMesg()) {
 
             Float textLapDistFromStart = textLapFile.lapRecords.get(lapIx).getDistance();
             Float textLapDistFromStartPrev = (lapIx > 0) ? textLapFile.lapRecords.get(lapIx-1).getDistance() : 0f;
@@ -2695,26 +2719,26 @@ public class FitFileForIndoor extends FitFile {
             lap.setFieldValue(LAP_ESPEED, textLapDist / lapTimer);
 
             if (lapIx != 0) {
-                lapExtraRecords.get(lapIx-1).setTimeEnd(lapStartTime - 1); // 1 SEC
+                getLapExtraRecords().get(lapIx-1).setTimeEnd(lapStartTime - 1); // 1 SEC
             }
             //System.err.println(" === lapDist: " + record.getTotalDistance() + " lapTime: " + record.getTotalTimerTime() +" speed: " + mps2kmph3(record.getEnhancedAvgSpeed()));
-            lapExtraRecords.get(lapIx).setStepLen(textLapDist / ( lapCad * lapTimer / 60 )); // step length acc to FFRT
-            lapExtraRecords.get(lapIx).setLevel(textLapFile.lapRecords.get(lapIx).getLevel());
+            getLapExtraRecords().get(lapIx).setStepLen(textLapDist / ( lapCad * lapTimer / 60 )); // step length acc to FFRT
+            getLapExtraRecords().get(lapIx).setLevel(textLapFile.lapRecords.get(lapIx).getLevel());
             lapIx++;
         }
         // Set lapIx to last lap
         lapIx--;
 
         // Set Values for last lap
-        lapExtraRecords.get(lapIx).setTimeEnd(timeLastRecord);
+        getLapExtraRecords().get(lapIx).setTimeEnd(timeLastRecord);
 
         // Set values for session
         totalDistance = textLapFile.lapRecords.get(lapIx).getDistance();
-        sessionMesg.get(0).setFieldValue(SES_DIST, totalDistance);
+        getSessionMesg().get(0).setFieldValue(SES_DIST, totalDistance);
 
         avgSpeed = totalDistance / totalTimerTime;
-        sessionMesg.get(0).setFieldValue(SES_SPEED, avgSpeed);
-        sessionMesg.get(0).setFieldValue(SES_ESPEED, avgSpeed);
+        getSessionMesg().get(0).setFieldValue(SES_SPEED, avgSpeed);
+        getSessionMesg().get(0).setFieldValue(SES_ESPEED, avgSpeed);
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -2880,7 +2904,7 @@ public class FitFileForIndoor extends FitFile {
 
             encode = new FileEncoder(new java.io.File(outputFilePath), Fit.ProtocolVersion.V2_0);
 
-            for (Mesg record : allMesg) {
+            for (Mesg record : getAllMesg()) {
                 // if (record.getNum() != MesgNum.SPLIT &&
                 //    record.getNum() != MesgNum.SPLIT_SUMMARY) {
                 if (record.getNum() != MesgNum.SPLIT) {
@@ -3840,9 +3864,22 @@ public class FitFileForIndoor extends FitFile {
         }
     } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printWriteLapSummery (String filename) {
+    public void saveLapSummery (String filename) {
         
+        // System.out.print(savedStrLapsRestInfoShort);
         try {
+            FileWriter myWriter = new FileWriter(filename);
+            myWriter.write(savedStrOrgFileInfo);
+            myWriter.write(getTempUpdateLogg());
+            //myWriter.write(savedStrLapsRestInfoShort);
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+        // appendTempUpdateLogg(getLapReportGenerator().createActiveRestLapSummery());
+/*         try {
             savedStrLapsActiveInfoShort += "---- ACTIVE LAPS ----" + System.lineSeparator();
             int i = 0;
             int lapNo = 1;
@@ -3853,23 +3890,23 @@ public class FitFileForIndoor extends FitFile {
                 if ("ACTIVE".equals(intensity)) {
                     savedStrLapsActiveInfoShort += "Lap" + lapNo;
 
-                    if (lapExtraRecords.get(i).getLevel() != null && !getIsSkiErg()) {
+                    if (getLapExtraRecords().get(i).getLevel() != null && !getIsSkiErg()) {
                         if (getIsTreadmill()) {
-                            savedStrLapsActiveInfoShort += " " + lapExtraRecords.get(i).getLevel().intValue() + "%";
+                            savedStrLapsActiveInfoShort += " " + getLapExtraRecords().get(i).getLevel().intValue() + "%";
                         } else {
-                            savedStrLapsActiveInfoShort += " lv" + lapExtraRecords.get(i).getLevel().intValue();
+                            savedStrLapsActiveInfoShort += " lv" + getLapExtraRecords().get(i).getLevel().intValue();
                         }
                     }
 
                     Integer hrMin = 0;
                     if (i > 0) {
-                        hrMin = lapExtraRecords.get(i - 1).getHrMin();
+                        hrMin = getLapExtraRecords().get(i - 1).getHrMin();
                         savedStrLapsActiveInfoShort += " HRmin" + hrMin;
                     } else {
                         savedStrLapsActiveInfoShort += " HR";
                     }
 
-                    Integer hrStart = lapExtraRecords.get(i).getHrStart();
+                    Integer hrStart = getLapExtraRecords().get(i).getHrStart();
                     savedStrLapsActiveInfoShort += ">st" + hrStart;
                     if ((hrStart - hrMin) > 20) {
                         hrMin = hrStart;;
@@ -3881,7 +3918,7 @@ public class FitFileForIndoor extends FitFile {
                         savedStrLapsActiveInfoShort += "->max" + maxHr;
                     }
 
-                    savedStrLapsActiveInfoShort += " end" + lapExtraRecords.get(i).getHrEnd();
+                    savedStrLapsActiveInfoShort += " end" + getLapExtraRecords().get(i).getHrEnd();
 
                     Float totalTime = record.getFieldFloatValue(LAP_TIMER);
                     if (totalTime != null) {
@@ -4007,22 +4044,7 @@ public class FitFileForIndoor extends FitFile {
             System.out.println("LAP ERROR!!!!");
         }
 
-
-
-        System.out.print(savedStrOrgFileInfo);
-        System.out.print(savedStrLapsActiveInfoShort);
-        System.out.print(savedStrLapsRestInfoShort);
-        try {
-            FileWriter myWriter = new FileWriter(filename);
-            myWriter.write(savedStrOrgFileInfo);
-            myWriter.write(savedStrLapsActiveInfoShort);
-            myWriter.write(savedStrLapsRestInfoShort);
-            myWriter.close();
-            System.out.println("Successfully wrote to the file.");
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        }
+ */
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 /*     public void printRecordMesg (int ix1, int ix2) {
@@ -4094,7 +4116,7 @@ public class FitFileForIndoor extends FitFile {
     // Utility methods for printing and formatting lap and record summaries
     // ==============================================================================
 
-    public void printLapAllSummaryAllMesg2() {
+/*     public void printLapAllSummaryAllMesg2() {
         System.out.println("---printLapAllSummary-----------------------------------------------");
 
         int lapNo = 1;
@@ -4178,7 +4200,7 @@ public class FitFileForIndoor extends FitFile {
 
         System.out.println("--------------------------------------------------");
     }
-
+ */
 /*     private void appendIfNotNull(StringBuilder sb, String label, Object value) {
         if (value != null) sb.append(label).append(value);
     }
@@ -4343,7 +4365,7 @@ public class FitFileForIndoor extends FitFile {
         System.out.println(" File  between " + FitDateTime.toString(timeFirstRecord,getDiffMinutesLocalUTC()) + " >>>> " + FitDateTime.toString(timeLastRecord,getDiffMinutesLocalUTC()));
         System.out.println(String.format(" TotalTime:%1$smin Dist:%2$skm", PehoUtils.sec2minSecLong(totalTimerTime), PehoUtils.m2km2(totalDistance)));
         System.out.println("--------------------------------------------------");
-        for (Mesg mesg : splitMesg) {
+        for (Mesg mesg : getSplitMesg()) {
             // Display split number as one-based (i + 1) for user clarity
             System.out.print("No:" + (i + 1));
 
@@ -4408,7 +4430,7 @@ public class FitFileForIndoor extends FitFile {
         System.out.println(" File  between " + FitDateTime.toString(timeFirstRecord,getDiffMinutesLocalUTC()) + " >>>> " + FitDateTime.toString(timeLastRecord,getDiffMinutesLocalUTC()));
         System.out.println(String.format(" TotalTime:%1$smin Dist:%2$skm", PehoUtils.sec2minSecLong(totalTimerTime), PehoUtils.m2km2(totalDistance)));
         System.out.println("--------------------------------------------------");
-        for (Mesg mesg : splitSummaryMesg) {
+        for (Mesg mesg : getSplitSummaryMesg()) {
             // Display split number as one-based (i + 1) for user clarity
             System.out.print("No:" + (i + 1));
 

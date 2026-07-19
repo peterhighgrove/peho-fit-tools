@@ -1,0 +1,62 @@
+# ordered from most specific to least specific
+#Plotaroute newest abbr
+{,<
+},>
+[+,«
+]+,»
+《,«
+》,»
+(-,\
+)-,/
+(',(
+)',)
+(`,(
+)´,)
+||,|
+# Locus map
+continue straight,|
+# Plotaroute org
+Turn left onto,<
+Turn right onto,>
+Turn sharp left onto,«
+Turn sharp right onto,»
+Turn slight left onto,\
+Turn slight right onto,/
+Keep left onto,(
+Keep right onto,)
+Straight onto,|
+Turn left,<
+Turn right,>
+Turn sharp left,«
+Turn sharp right,»
+Turn slight left,\
+Turn slight right,/
+Keep left,(
+Keep right,)
+Straight ahead,|
+Straight,|
+# Locus map
+turn left,<
+turn right,>
+sharp left,«
+sharp right,»
+bear left,\
+bear right,/
+stay left,(
+stay right,)
+# Plotaroute oldest abbr
+slight left,\
+slight right,/
+Turn left,<
+Turn right,>
+Left,<
+Right,>
+ShL,«
+ShR,»
+SlL,\
+SlR,/
+KeL,(
+KeR,)
+Str,|
+L ,<
+R ,>

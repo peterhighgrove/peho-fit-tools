@@ -1,0 +1,5 @@
+filePathPrefix /home/hoglund/dev/peho-fit-tools/regression/wkt/treadmill/.run/
+inputFilePath /home/hoglund/dev/peho-fit-tools/regression/wkt/treadmill/.run/aaa.zip
+profileNameSuffix gym jobbet
+timeOffsetMin 6
+extraFilename /home/hoglund/dev/peho-fit-tools/regression/wkt/treadmill/.run/bbb.fit

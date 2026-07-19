@@ -1,24 +1,29 @@
 --------------------------------------------------
- --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v25.11
- --> Sport:RUNNING, SubSport:TREADMILL, SportProfile:Löpband, WktName:null
- --> Org activity dateTime Local:2026-01-30-17-30-41
- --> New activity dateTime Local:2026-01-30-17-30-41
- --> Org activity DateTime UTC:  2026-01-30-16-30-41
+ --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v23.41
+ --> Sport:RUNNING, SubSport:TREADMILL, SportProfile:Löpband, WktName:Run 3x1/2min
+ --> Org activity dateTime Local:2025-12-01-17-09-19
+ --> New activity dateTime Local:2025-12-01-17-09-19
+ --> Org activity DateTime UTC:  2025-12-01-16-09-19
  --> timeZone:                   +01:00
- --> Org start datetime UTC:     2026-01-30-16-30-41
- --> New start datetime UTC:     2026-01-30-16-30-41
+ --> Org start datetime UTC:     2025-12-01-16-09-19
+ --> New start datetime UTC:     2025-12-01-16-09-19
 --------------------------------------------------
 --------------------------------------------------
- --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v25.11
- --> Sport:RUNNING, SubSport:TREADMILL, SportProfile:Löpband Friskis Orminge 3km, WktName:null
- --> Org activity dateTime Local:2026-01-30-17-30-41
- --> New activity dateTime Local:2026-01-30-17-32-41
- --> Org activity DateTime UTC:  2026-01-30-16-30-41
+ --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v23.41
+ --> Sport:RUNNING, SubSport:TREADMILL, SportProfile:Löpband 3x1/2min gym jobbet 3km, WktName:Run 3x1/2min
+ --> Org activity dateTime Local:2025-12-01-17-09-19
+ --> New activity dateTime Local:2025-12-01-17-15-19
+ --> Org activity DateTime UTC:  2025-12-01-16-09-19
  --> timeZone:                   +01:00
- --> Org start datetime UTC:     2026-01-30-16-30-41
- --> New start datetime UTC:     2026-01-30-16-32-41
+ --> Org start datetime UTC:     2025-12-01-16-09-19
+ --> New start datetime UTC:     2025-12-01-16-15-19
 --------------------------------------------------
 ---- ACTIVE LAPS ----
-avgCad: 0spm, avgPace: 0:00min/km, avgSp: NaNkm/h, sumDist: 0.0km
+Lap2 0% HRmin56>st111+6->max117 end117 1min 86spm 5:16min/km 11.4km/h 251W 0.2km step220cm
+Lap4 0% HRmin110>st111+11->max121 end121 1min 86spm 5:16min/km 11.4km/h 272W 0.2km step220cm
+Lap6 0% HRmin117>st118+12->max129 end129 1min 88spm 4:33min/km 13.2km/h 286W 0.2km step250cm
+avgCad: 87spm, avgPace: 5:00min/km, avgSp: 12.0km/h, sumDist: 0.6km
 ---- REST LAPS ----
-avgCad: 0spm, avgPace: 0:00min/km, avgSp: NaNkm/h, sumDist: 0.0km
+Lap3 0% HRst117>max117-7->min110 end110 2min 85spm 5:53min/km 10.2km/h 242W 0.3km step200cm
+Lap5 0% HRst122>max123-6->min117 end118 2min 85spm 5:33min/km 10.8km/h 252W 0.4km step211cm
+avgCad: 85spm, avgPace: 5:43min/km, avgSp: 10.5km/h, sumDist: 0.7km

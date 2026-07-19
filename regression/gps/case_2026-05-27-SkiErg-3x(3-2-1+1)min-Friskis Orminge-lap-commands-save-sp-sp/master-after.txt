@@ -1,0 +1,28 @@
+==================================================
+New file info AFTER update:
+==================================================
+--------------------------------------------------
+ --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v26.09
+ --> Sport:FITNESS_EQUIPMENT, SubSport:INDOOR_ROWING, SportProfile:SkiErg 3x(3-2-1/1)min Friskis Orminge 4.7km regression, WktName:Custom 3x(3-2-1/1)min
+ --> Org activity dateTime Local:2026-05-27-18-44-48
+ --> New activity dateTime Local:2026-05-27-18-46-48
+ --> Org activity DateTime UTC:  2026-05-27-16-44-48
+ --> timeZone:                   +02:00
+ --> Org start datetime UTC:     2026-05-27-16-44-48
+ --> New start datetime UTC:     2026-05-27-16-46-48
+--------------------------------------------------
+---- ACTIVE LAPS ----
+Lap2 HRmin57>st101+24->max125 end125 3min 49spm 2:15min/500m 140W 0.7km df121 sl0.73
+Lap4 HRmin102>st105+26->max128 end128 2min 52spm 2:14min/500m 147W 0.4km df120 sl0.73
+Lap6 HRmin102>st102+25->max127 end127 1min 54spm 2:08min/500m 167W 0.2km df120 sl0.74
+Lap8 HRmin94>st101+31->max125 end118 3min 52spm 2:20min/500m 131W 0.6km df120 sl0.7
+Lap10 HRmin96>st95+-1->max95 end85 0:09min 16spm 17:33min/500m 0W 0.0km df76 sl0.42
+avgCad: 51spm, avgPace: 2:18min/500m, avgPow: 139W, sumDist: 2.0km
+---- REST LAPS ----
+Lap3 HRst125>max125-23->min102 end104 1min 48spm 2:54min/500m 78W 0.2km
+Lap5 HRst128>max128-26->min102 end102 1min 47spm 2:59min/500m 65W 0.2km
+Lap7 HRst128>max128-34->min94 end101 2min 45spm 3:09min/500m 62W 0.3km
+Lap9 HRst118>max118-22->min96 end96 1min 41spm 3:59min/500m 21W 0.1km
+Lap11 HRst85>max86-1->min85 end86 0:02min 0spm 2147483647:2147483647min/500m 0W 0.0km
+avgCad: 45spm, avgPace: 3:13min/500m, avgPow: 57W, sumDist: 0.8km
+==================================================

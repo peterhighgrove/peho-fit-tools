@@ -3,7 +3,7 @@ New file info AFTER update:
 ==================================================
 --------------------------------------------------
  --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v26.04
- --> Sport:CROSS_COUNTRY_SKIING, SubSport:GENERIC, SportProfile:XC Classic Ski Hållan-Malmbäcksstugan-Svalåtjärn-Bruksvallarna 24.3km, WktName:null
+ --> Sport:CROSS_COUNTRY_SKIING, SubSport:GENERIC, SportProfile:XC Classic Ski Hållan-Malmbäcksstugan-Svalåtjärn-Bruksvallarna 24.3km, WktName:
  --> Org activity dateTime Local:2026-03-12-10-03-11
  --> New activity dateTime Local:2026-03-12-10-06-11
  --> Org activity DateTime UTC:  2026-03-12-09-03-11
@@ -12,32 +12,32 @@ New file info AFTER update:
  --> New start datetime UTC:     2026-03-12-09-06-11
 --------------------------------------------------
 ---- ACTIVE LAPS ----
-Lap1 HR->max145 9:41min 9:41min/km 6.2km/h 144W 1.0km
-Lap2 HR->max144 5:36min 5:36min/km 10.7km/h 154W 1.0km
-Lap3 HR->max141 5:53min 5:53min/km 10.2km/h 98W 1.0km
-Lap4 HR->max126 4:43min 4:42min/km 12.7km/h 85W 1.0km
-Lap5 HR->max134 4:03min 4:03min/km 14.8km/h 104W 1.0km
-Lap6 HR->max121 6min 6:03min/km 9.9km/h 71W 1.0km
-Lap7 HR->max128 6:46min 6:46min/km 8.9km/h 84W 1.0km
-Lap8 HR->max123 3:49min 3:49min/km 15.7km/h 81W 1.0km
-Lap9 HR->max126 5:26min 5:28min/km 11.0km/h 99W 1.0km
-Lap10 HR->max128 3:01min 3:01min/km 19.9km/h 104W 1.0km
-Lap11 HR->max135 4:39min 4:39min/km 12.9km/h 97W 1.0km
-Lap12 HR->max139 8:30min 8:30min/km 7.1km/h 124W 1.0km
-Lap13 HR->max140 3:29min 3:29min/km 17.2km/h 85W 1.0km
-Lap14 HR->max139 4:14min 4:14min/km 14.2km/h 131W 1.0km
-Lap15 HR->max133 3:23min 3:23min/km 17.7km/h 70W 1.0km
-Lap16 HR->max134 5:34min 5:34min/km 10.8km/h 128W 1.0km
-Lap17 HR->max142 6:13min 6:13min/km 9.7km/h 174W 1.0km
-Lap18 HR->max136 3:05min 3:05min/km 19.4km/h 103W 1.0km
-Lap19 HR->max125 1:50min 1:50min/km 32.6km/h 34W 1.0km
-Lap20 HR->max124 1:52min 1:52min/km 32.0km/h 36W 1.0km
-Lap21 HR->max120 2:51min 2:51min/km 21.0km/h 56W 1.0km
-Lap22 HR->max113 2:17min 2:17min/km 26.3km/h 91W 1.0km
-Lap23 HR->max108 3:01min 3:01min/km 19.9km/h 98W 1.0km
-Lap24 HR->max134 5:46min 5:46min/km 10.4km/h 173W 1.0km
-Lap25 HR->max134 2:41min 7:58min/km 7.5km/h 162W 0.3km
-avgCad: 0spm, avgPace: 2147483647:2147483647min/km, avgSp: 0.0km/h, sumDist: 0.0km
+Lap1 HR>st128+17->max145 end108 9:41min 9:41min/km 6.2km/h 144W 1.0km
+Lap2 HRmin96>st106+48->max144 end142 5:36min 5:36min/km 10.7km/h 154W 1.0km
+Lap3 HRmin94>st140+1->max141 end125 5:53min 5:53min/km 10.2km/h 98W 1.0km
+Lap4 HRmin110>st125+16->max126 end111 4:43min 4:42min/km 12.7km/h 85W 1.0km
+Lap5 HRmin109>st111+25->max134 end107 4:03min 4:03min/km 14.8km/h 104W 1.0km
+Lap6 HRmin105>st108+16->max121 end97 6min 6:03min/km 9.9km/h 71W 1.0km
+Lap7 HRmin89>st98+39->max128 end100 6:46min 6:46min/km 8.9km/h 84W 1.0km
+Lap8 HRmin90>st99+33->max123 end107 3:49min 3:49min/km 15.7km/h 81W 1.0km
+Lap9 HRmin89>st107+37->max126 end126 5:26min 5:28min/km 11.0km/h 99W 1.0km
+Lap10 HRmin91>st126+2->max128 end119 3:01min 3:01min/km 19.9km/h 104W 1.0km
+Lap11 HRmin114>st118+21->max135 end125 4:39min 4:39min/km 12.9km/h 97W 1.0km
+Lap12 HRmin118>st125+21->max139 end136 8:30min 8:30min/km 7.1km/h 124W 1.0km
+Lap13 HRmin96>st136+4->max140 end114 3:29min 3:29min/km 17.2km/h 85W 1.0km
+Lap14 HRmin113>st113+26->max139 end133 4:14min 4:14min/km 14.2km/h 131W 1.0km
+Lap15 HRmin111>st132+1->max133 end110 3:23min 3:23min/km 17.7km/h 70W 1.0km
+Lap16 HRmin99>st110+35->max134 end132 5:34min 5:34min/km 10.8km/h 128W 1.0km
+Lap17 HRmin108>st132+10->max142 end136 6:13min 6:13min/km 9.7km/h 174W 1.0km
+Lap18 HRmin128>st136+8->max136 end110 3:05min 3:05min/km 19.4km/h 103W 1.0km
+Lap19 HRmin94>st110+31->max125 end117 1:50min 1:50min/km 32.6km/h 34W 1.0km
+Lap20 HRmin110>st116+14->max124 end119 1:52min 1:52min/km 32.0km/h 36W 1.0km
+Lap21 HRmin103>st119+17->max120 end96 2:51min 2:51min/km 21.0km/h 56W 1.0km
+Lap22 HRmin77>st96+36->max113 end92 2:17min 2:17min/km 26.3km/h 91W 1.0km
+Lap23 HRmin91>st90+17->max108 end101 3:01min 3:01min/km 19.9km/h 98W 1.0km
+Lap24 HRmin79>st101+33->max134 end131 5:46min 5:46min/km 10.4km/h 173W 1.0km
+Lap25 HRmin87>st131+3->max134 end129 2:41min 7:58min/km 7.5km/h 162W 0.3km
+avgCad: 0spm, avgPace: 4:42min/km, avgSp: 12.8km/h, sumDist: 24.3km
 ---- REST LAPS ----
-avgCad: 0spm, avgPace: 2147483647:2147483647min/km, avgSp: 0.0km/h, sumDist: 0.0km
+avgCad: 0spm, avgPace: 0:00min/km, avgSp: NaNkm/h, sumDist: 0.0km
 ==================================================

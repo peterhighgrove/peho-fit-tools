@@ -3,7 +3,7 @@ New file info AFTER update:
 ==================================================
 --------------------------------------------------
  --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v26.09
- --> Sport:RUNNING, SubSport:TRAIL, SportProfile:Trail Run Velamsund Insjöstigen 5.1km, WktName:null
+ --> Sport:RUNNING, SubSport:TRAIL, SportProfile:Trail Run Velamsund Insjöstigen 5.1km, WktName:
  --> Org activity dateTime Local:2026-04-11-14-12-34
  --> New activity dateTime Local:2026-04-11-14-14-34
  --> Org activity DateTime UTC:  2026-04-11-12-12-34
@@ -12,7 +12,7 @@ New file info AFTER update:
  --> New start datetime UTC:     2026-04-11-12-14-34
 --------------------------------------------------
 ---- ACTIVE LAPS ----
-avgCad: 0spm, avgPace: 2147483647:2147483647min/km, avgSp: 0.0km/h, sumDist: 0.0km
+avgCad: 0spm, avgPace: 0:00min/km, avgSp: NaNkm/h, sumDist: 0.0km
 ---- REST LAPS ----
-avgCad: 0spm, avgPace: 2147483647:2147483647min/km, avgSp: 0.0km/h, sumDist: 0.0km
+avgCad: 0spm, avgPace: 0:00min/km, avgSp: NaNkm/h, sumDist: 0.0km
 ==================================================

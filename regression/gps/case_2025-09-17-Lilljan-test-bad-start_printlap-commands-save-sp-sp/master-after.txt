@@ -1,0 +1,35 @@
+==================================================
+New file info AFTER update:
+==================================================
+--------------------------------------------------
+ --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v23.18
+ --> Sport:RUNNING, SubSport:GENERIC, SportProfile:Run regression 8.3km, WktName:
+ --> Org activity dateTime Local:2025-09-17-17-06-21
+ --> New activity dateTime Local:2025-09-17-17-08-21
+ --> Org activity DateTime UTC:  2025-09-17-15-06-21
+ --> timeZone:                   +02:00
+ --> Org start datetime UTC:     2025-09-17-15-06-21
+ --> New start datetime UTC:     2025-09-17-15-08-21
+--------------------------------------------------
+---- ACTIVE LAPS ----
+Lap3 HRmin122>st122+15->max137 end137 1:27min 87spm 4:46min/km 12.6km/h 340W 0.3km step241cm
+Lap5 HRmin130>st130+6->max136 end136 0:31min 87spm 4:45min/km 12.6km/h 232W 0.1km step241cm
+Lap7 HRmin133>st135+7->max140 end139 0:50min 86spm 4:33min/km 13.2km/h 317W 0.2km step255cm
+Lap9 HRmin129>st130+13->max142 end142 1:09min 87spm 4:33min/km 13.2km/h 313W 0.3km step252cm
+Lap11 HRmin139>st139+1->max140 end140 0:27min 86spm 4:15min/km 14.1km/h 251W 0.1km step273cm
+Lap13 HRmin124>st135+19->max143 end143 1:31min 86spm 4:31min/km 13.3km/h 316W 0.3km step257cm
+Lap15 HRmin135>st140+10->max145 end144 0:57min 88spm 4:04min/km 14.8km/h 336W 0.2km step279cm
+Lap17 HRmin144>st145+4->max148 end148 1:59min 87spm 4:23min/km 13.7km/h 322W 0.5km step262cm
+avgCad: 87spm, avgPace: 4:28min/km, avgSp: 13.4km/h, sumDist: 2.0km
+---- REST LAPS ----
+Lap4 HRst137>max141-11->min130 end130 3:21min 85spm 5:44min/km 10.5km/h 303W 0.6km step205cm
+Lap6 HRst136>max139-6->min133 end135 1:57min 84spm 5:50min/km 10.3km/h 317W 0.3km step204cm
+Lap8 HRst139>max145-16->min129 end131 4:02min 83spm 5:43min/km 10.5km/h 292W 0.7km step210cm
+Lap10 HRst141>max143-4->min139 end139 0:48min 83spm 5:40min/km 10.6km/h 313W 0.1km step212cm
+Lap12 HRst140>max142-18->min124 end135 3:26min 83spm 5:43min/km 10.5km/h 293W 0.6km step210cm
+Lap14 HRst143>max145-10->min135 end140 3:19min 83spm 6:09min/km 9.8km/h 301W 0.5km step196cm
+Lap16 HRst145>max145-1->min144 end145 0:37min 83spm 6:15min/km 9.6km/h 334W 0.1km step192cm
+Lap18 HRst148>max148-21->min127 end143 5:08min 84spm 5:08min/km 11.7km/h 284W 1.0km step232cm
+Lap19 HRst144>max144-18->min126 end143 2:15min 85spm 4:55min/km 12.2km/h 314W 0.5km step239cm
+avgCad: 84spm, avgPace: 5:35min/km, avgSp: 10.8km/h, sumDist: 4.5km
+==================================================

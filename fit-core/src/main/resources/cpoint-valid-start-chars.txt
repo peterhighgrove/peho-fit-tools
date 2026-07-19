@@ -1,0 +1,11 @@
+# chars that already at name start prohibit cpi insertion
+<
+>
+«
+»
+\
+/
+(
+)
+|
+^

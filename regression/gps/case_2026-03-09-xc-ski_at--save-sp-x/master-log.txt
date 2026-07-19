@@ -1,3 +1,18 @@
+FIT SDK profile version: 21.205 Release (21205)
+FIT file successfully read. Total records: 7544, Time between: 2026-03-09-06-16-18 -- 2026-03-09-09-40-48
+CHECK/FIX RECORD TIMES
+----------------------
+Completed REC_TIME check/fix. Updated 0 null value(s).
+--------------------------------------------------
+ --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v26.03
+ --> Sport:CROSS_COUNTRY_SKIING, SubSport:GENERIC, SportProfile:XC Classic Ski, WktName:
+ --> Org activity dateTime Local:2026-03-09-09-40-18
+ --> New activity dateTime Local:2026-03-09-09-40-18
+ --> Org activity DateTime UTC:  2026-03-09-13-04-48
+ --> timeZone:                   -03:24
+ --> Org start datetime UTC:     2026-03-09-09-40-18
+ --> New start datetime UTC:     2026-03-09-09-40-18
+--------------------------------------------------
 --------------------------------------------------
 Changing ACTIVITY time to first record time:
 --------------------------------------------------

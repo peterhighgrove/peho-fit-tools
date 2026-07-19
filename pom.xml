@@ -6,7 +6,7 @@
 
     <groupId>se.peho.fittools</groupId>
     <artifactId>peho-fit-tools</artifactId>
-    <version>2.52</version>
+    <version>2.71</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -14,6 +14,7 @@
         <module>fit-wkt-merge-analyze</module>
         <module>fit-fix-gps-activities</module>
         <module>fit-zip-renamer</module>
+        <module>fit-clean-cpoint-names</module>
         <module>garmin-wkt-fit-merge-analyze</module>
     </modules>
 

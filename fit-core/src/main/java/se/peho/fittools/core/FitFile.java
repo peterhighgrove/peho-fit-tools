@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Collections;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 public class FitFile {
 
     public static final int FID_CTIME = FileIdMesg.TimeCreatedFieldNum; //long
@@ -143,198 +145,237 @@ public class FitFile {
     public static final int TC_STIME = TimestampCorrelationMesg.SystemTimestampFieldNum; //long 1
     public static final int TC_LTIME = TimestampCorrelationMesg.LocalTimestampFieldNum; //long 3
 
+    private List<Mesg> allMesg = new ArrayList<>();
+    private List<Mesg> fileIdMesg = new ArrayList<>();
+    private List<Mesg> deviceInfoMesg = new ArrayList<>();
+    private List<Mesg> sportMesg = new ArrayList<>();
+    public List<Mesg> getAllMesg() { return allMesg; }
+    public List<Mesg> getFileIdMesg() { return fileIdMesg; }
+    public List<Mesg> getDeviceInfoMesg() { return deviceInfoMesg; }
+    public List<Mesg> getSportMesg() { return sportMesg; }
+
+    private List<Mesg> wktSessionMesg = new ArrayList<>();
+    private List<Mesg> wktStepMesg = new ArrayList<>();
+    private List<Mesg> wktRecordMesg = new ArrayList<>();
+    public List<Mesg> getWktSessionMesg() { return wktSessionMesg; }
+    public List<Mesg> getWktStepMesg() { return wktStepMesg; }
+    public List<Mesg> getWktRecordMesg() { return wktRecordMesg; }
+
+    private List<Mesg> activityMesg = new ArrayList<>();
+    private List<Mesg> sessionMesg = new ArrayList<>();
+    public List<Mesg> getActivityMesg() { return activityMesg; }
+    public List<Mesg> getSessionMesg() { return sessionMesg; }
+    
+    private List<Mesg> splitMesg = new ArrayList<>();
+    private List<Mesg> splitSummaryMesg = new ArrayList<>();
+    private List<Mesg> lapMesg = new ArrayList<>();
+    public List<Mesg> getSplitMesg() { return splitMesg; }
+    public List<Mesg> getSplitSummaryMesg() { return splitSummaryMesg; }
+    public List<Mesg> getLapMesg() { return lapMesg; }
+
+    private List<Mesg> eventMesg = new ArrayList<>();
+    private List<Mesg> eventTimerMesg = new ArrayList<>();
+    public List<Mesg> getEventMesg() { return eventMesg; }
+    public List<Mesg> getEventTimerMesg() { return eventTimerMesg; }
+
+    private List<Mesg> recordMesg = new ArrayList<>();
+    private List<Mesg> devDataIdMesg = new ArrayList<>();
+    //private List<Mesg> developerDataIdMesg = new ArrayList<>();
+    private List<Mesg> fieldDescrMesg = new ArrayList<>();
+    public List<Mesg> getRecordMesg() { return recordMesg; }
+    public List<Mesg> getDevDataIdMesg() { return devDataIdMesg; }
+    public List<Mesg> getFieldDescrMesg() { return fieldDescrMesg; }
+
+    private List<PauseMesg> pauseRecords = new ArrayList<>(); //Not Garmin SDK
+    private List<GapMesg> gapRecords = new ArrayList<>(); //Not Garmin SDK
+    private List<RecordMesgAddOnRecords> recordMesgAddOnRecords = new ArrayList<>(); //Not Garmin SDK
+    private List<RecordExtraMesg> secExtraRecords = new ArrayList<>(); //Not Garmin SDK
+    private List<LapExtraMesg> lapExtraRecords = new ArrayList<>(); //Not Garmin SDK
+    public List<PauseMesg> getPauseList() { return pauseRecords; }
+    public List<GapMesg> getGapList() { return gapRecords; }
+    public List<RecordMesgAddOnRecords> getRecordMesgAddOnRecords() { return recordMesgAddOnRecords; }
+    public List<RecordExtraMesg> getSecExtraRecords() { return secExtraRecords; }
+    public List<LapExtraMesg> getLapExtraRecords() { return lapExtraRecords; }
+
     private Integer manufacturerNo;
     private String manufacturer;
     private int productNo;
     private String product = "";
     private Float swVer;
+    public Integer getManufacturerNo() { return manufacturerNo; }
+    public void setManufacturerNo(Integer manufacturerNo) { this.manufacturerNo = manufacturerNo; }
+    public String getManufacturer() { return manufacturer; }
+    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
+    public int getProductNo() { return productNo; }
+    public void setProductNo(int productNo) { this.productNo = productNo; }
+    public String getProduct() { return product; }
+    public void setProduct(String product) { this.product = product; }
+    public Float getSwVer() { return swVer; }
+    public void setSwVer(Float swVer) { this.swVer = swVer; }
+
     private Long activityDateTimeUTC;  // Original file
     private Long activityDateTimeLocal; // Original file
     private Long activityDateTimeLocalOrg; // Original file
     private Long diffMinutesLocalUTC;
+    public Long getActivityDateTimeUTC() { return activityDateTimeUTC; }
+    public void setActivityDateTimeUTC(Long activityDateTimeUTC) { this.activityDateTimeUTC = activityDateTimeUTC; }
+    public Long getActivityDateTimeLocal() { return activityDateTimeLocal; }
+    public void setActivityDateTimeLocal(Long activityDateTimeLocal) { this.activityDateTimeLocal = activityDateTimeLocal; }
+    public Long getActivityDateTimeLocalOrg() { return activityDateTimeLocalOrg; }
+    public void setActivityDateTimeLocalOrg(Long activityDateTimeLocalOrg) { this.activityDateTimeLocalOrg = activityDateTimeLocalOrg; }
 
     Long timeFirstRecord;
     Long timeFirstRecordOrg;   // Original file
     Long timeLastRecord;
-    int numberOfRecords;
-    int numberOfLaps;
-    //int changedStartTimeBySec = 0;
+    public Long getTimeFirstRecord() { return timeFirstRecord; }
+    public void setTimeFirstRecord(Long timeFirstRecord) { this.timeFirstRecord = timeFirstRecord; }
+    public Long getTimeFirstRecordOrg() { return timeFirstRecordOrg; }
+    public void setTimeFirstRecordOrg(Long timeFirstRecordOrg) { this.timeFirstRecordOrg = timeFirstRecordOrg; }
+    public Long getTimeLastRecord() { return timeLastRecord; }
+    public void setTimeLastRecord(Long timeLastRecord) { this.timeLastRecord = timeLastRecord; }
+    public Long getDiffMinutesLocalUTC() { return diffMinutesLocalUTC; }
+    public void setDiffMinutesLocalUTC(Long diffMinutesLocalUTC) { this.diffMinutesLocalUTC = diffMinutesLocalUTC; }
+
+    private int numberOfRecords;
+    private int numberOfLaps;
+    public int getNumberOfRecords() { return numberOfRecords; }
+    public void setNumberOfRecords(int numberOfRecords) { this.numberOfRecords = numberOfRecords; }
+    public int getNumberOfLaps() { return numberOfLaps; }
+    public void setNumberOfLaps(int numberOfLaps) { this.numberOfLaps = numberOfLaps; }
 
     String wktName;
     Sport sport;
     SubSport subsport;
     String sportProfile;
+    public String getWktName() { return wktName; }
+    public void setWktName(String wktName) { this.wktName = wktName; }
+    public Sport getSport() { return sport; }
+    public void setSport(Sport sport) { this.sport = sport; }
+    public SubSport getSubsport() { return subsport; }
+    public void setSubsport(SubSport subsport) { this.subsport = subsport; }
+    public String getSportProfile() { 
+        return (sessionMesg.isEmpty() || sessionMesg.get(0).getFieldStringValue(SES_PROFILE) == null) ? 
+            "noProfile" : 
+            sessionMesg.get(0).getFieldStringValue(SES_PROFILE).trim(); }
+    public void setSportProfile(String sportProfile) { 
+        this.sportProfile = sportProfile; 
+        if (!sessionMesg.isEmpty()) {
+            this.sessionMesg.get(0).setFieldValue(SES_PROFILE, sportProfile);
+        }
+    }
+
     Float totalTimerTime; //ActivityMesg, excl pauses
     Float totalDistance;
     Float totalDistanceOrg;
+    public Float getTotalTimerTime() { return totalTimerTime; }
+    public void setTotalTimerTime(Float totalTimerTime) { this.totalTimerTime = totalTimerTime; }
+    public Float getTotalDistance() { return totalDistance; }
+    public void setTotalDistance(Float totalDistance) { this.totalDistance = totalDistance; }
+    public Float getTotalDistanceOrg() { return totalDistanceOrg; }
+    public void setTotalDistanceOrg(Float totalDistanceOrg) { this.totalDistanceOrg = totalDistanceOrg; }
+
     Float avgSpeed; // m/s
     Float maxSpeed; // m/s
     int avgCadence;
-    //int maxCadence;
     int avgPower;
-    //int maxPower;
+    public Float getAvgSpeed() { return avgSpeed; }
+    public void setAvgSpeed(Float avgSpeed) { this.avgSpeed = avgSpeed; }
+    public Float getMaxSpeed() { return maxSpeed; }
+    public void setMaxSpeed(Float maxSpeed) { this.maxSpeed = maxSpeed; }
+    public int getAvgCadence() { return avgCadence; }
+    public void setAvgCadence(int avgCadence) { this.avgCadence = avgCadence; }
+    public int getAvgPower() { return avgPower; }
+    public void setAvgPower(int avgPower) { this.avgPower = avgPower; }
 
-    private String savedFileInfoBefore = "";
-    private String savedFileInfoAfter = "";
-    private String updateLogg = "";
-    private String tempUpdateLogg = "";
-    String savedStrLapsActiveInfoShort = "";
-    String savedStrLapsRestInfoShort = "";
 
-    int i;
-    FileInputStream in;
-    Decode decode;
-    MesgBroadcaster broadcaster;
+    // private Boolean isSkiErg = false;
+    // private Boolean isElliptical = false;
+    // private Boolean isTreadmill = false;
+    // public Boolean getIsSkiErg() { return isSkiErg; }
+    // public Boolean getIsElliptical() { return isElliptical; }
+    // public Boolean getIsTreadmill() { return isTreadmill; }
+    // public void setIsSkiErg(Boolean isSkiErg) { this.isSkiErg = isSkiErg; }
+    // public void setIsElliptical(Boolean isElliptical) { this.isElliptical = isElliptical; }
+    // public void setIsTreadmill(Boolean isTreadmill) { this.isTreadmill = isTreadmill; }
 
-    List<Mesg> allMesg = new ArrayList<>();
-    List<Mesg> fileIdMesg = new ArrayList<>();
-    List<Mesg> deviceInfoMesg = new ArrayList<>();
-    List<Mesg> sportMesg = new ArrayList<>();
-    List<Mesg> wktSessionMesg = new ArrayList<>();
-    List<Mesg> wktStepMesg = new ArrayList<>();
-    List<Mesg> wktRecordMesg = new ArrayList<>();
-    List<Mesg> activityMesg = new ArrayList<>();
-    List<Mesg> sessionMesg = new ArrayList<>();
-    List<Mesg> splitMesg = new ArrayList<>();
-    List<Mesg> splitSummaryMesg = new ArrayList<>();
-    List<Mesg> lapMesg = new ArrayList<>();
-    List<Mesg> eventMesg = new ArrayList<>();
-    List<Mesg> eventTimerMesg = new ArrayList<>();
-    List<Mesg> recordMesg = new ArrayList<>();
-    List<Mesg> devDataIdMesg = new ArrayList<>();
-    //List<Mesg> developerDataIdMesg = new ArrayList<>();
-    List<Mesg> fieldDescrMesg = new ArrayList<>();
+    public enum MySport { SKIERG, ELLIPTICAL, TREADMILL, OTHER }
+    private MySport mySport = MySport.OTHER;
+    public MySport getMySport() { return mySport; }
+    public void setMySport(MySport mySport) { this.mySport = mySport; }
 
-    List<PauseMesg> pauseRecords = new ArrayList<>(); //Not Garmin SDK
-    List<GapMesg> gapRecords = new ArrayList<>(); //Not Garmin SDK
-    List<RecordMesgAddOnRecords> recordMesgAddOnRecords = new ArrayList<>(); //Not Garmin SDK
-    List<RecordExtraMesg> secExtraRecords = new ArrayList<>(); //Not Garmin SDK
-    List<LapExtraMesg> lapExtraRecords = new ArrayList<>(); //Not Garmin SDK
+    // SimpleDateFormat sweDateTime = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 
-    SimpleDateFormat sweDateTime = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-
-    int maxIxFixEmptyBeginning = 100;
-    int maxCadenceValue = 74;
-    boolean lookingInBeginningForEmptySpeed = true;
-    boolean lookingInBeginningForEmptyCadence = true;
-    boolean lookingInBeginningForEmptyPower = true;
-    boolean lookingInBeginningForEmptyStrokeLength = true;
-    boolean lookingInBeginningForEmptyDragFactor = true;
-    boolean lookingInBeginningForEmptyTrainingSession = true;
+    // int maxIxFixEmptyBeginning = 100;
+    // int maxCadenceValue = 74;
+    // boolean lookingInBeginningForEmptySpeed = true;
+    // boolean lookingInBeginningForEmptyCadence = true;
+    // boolean lookingInBeginningForEmptyPower = true;
+    // boolean lookingInBeginningForEmptyStrokeLength = true;
+    // boolean lookingInBeginningForEmptyDragFactor = true;
+    // boolean lookingInBeginningForEmptyTrainingSession = true;
     
-    Float activeTime = 0f;
-    Float restTime = 0f;
-    Float activeDist = 0f;
-    Float restDist = 0f;
+    private Float activeTime = 0f;
+    private Float restTime = 0f;
+    private Float activeDist = 0f;
+    private Float restDist = 0f;
+    public Float getActiveTime() { return activeTime; }
+    public void setActiveTime(Float activeTime) { this.activeTime = activeTime; }
+    public Float getRestTime() { return restTime; }
+    public void setRestTime(Float restTime) { this.restTime = restTime; }
+    public Float getActiveDist() { return activeDist; }
+    public void setActiveDist(Float activeDist) { this.activeDist = activeDist; }
+    public Float getRestDist() { return restDist; }
+    public void setRestDist(Float restDist) { this.restDist = restDist; }
 
-    Float activeSumSpeed = 0f;
-    Float activeSumCad = 0f;
-    Float activeSumPower = 0f;
-    Float restSumSpeed = 0f;
-    Float restSumCad = 0f;
-    Float restSumPower = 0f;
-
-    Float activeAvgSpeed = 0f;
-    Float activeAvgCad = 0f;
-    Float activeAvgPower = 0f;
-    Float restAvgSpeed = 0f;
-    Float restAvgCad = 0f;
-    Float restAvgPower = 0f;
-
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public FitFile () {
-    }
-
-    public Long getTimeFirstRecord() { return timeFirstRecord; }
-    public void setTimeFirstRecord(Long timeFirstRecord) { this.timeFirstRecord = timeFirstRecord; }
-
-    public Long getTimeLastRecord() { return timeLastRecord; }
-    public void setTimeLastRecord(Long timeLastRecord) { this.timeLastRecord = timeLastRecord; }
-
-    public Long getTimeFirstRecordOrg() { return timeFirstRecordOrg; }
-    public void setTimeFirstRecordOrg(Long timeFirstRecordOrg) { this.timeFirstRecordOrg = timeFirstRecordOrg; }
-
-    public Long getActivityDateTimeUTC() { return activityDateTimeUTC; }
-    public void setActivityDateTimeUTC(Long activityDateTimeUTC) { this.activityDateTimeUTC = activityDateTimeUTC; }
-
-    public Long getActivityDateTimeLocal() { return activityDateTimeLocal; }
-    public void setActivityDateTimeLocal(Long activityDateTimeLocal) { this.activityDateTimeLocal = activityDateTimeLocal; }
-
-    public Long getActivityDateTimeLocalOrg() { return activityDateTimeLocalOrg; }
-    public void setActivityDateTimeLocalOrg(Long activityDateTimeLocalOrg) { this.activityDateTimeLocalOrg = activityDateTimeLocalOrg; }
+    private Float activeAvgSpeed = 0f;
+    private Float activeAvgCad = 0f;
+    private Float activeAvgPower = 0f;
+    private Float restAvgSpeed = 0f;
+    private Float restAvgCad = 0f;
+    private Float restAvgPower = 0f;
+    public Float getActiveAvgSpeed() { return activeAvgSpeed; }
+    public void setActiveAvgSpeed(Float activeAvgSpeed) { this.activeAvgSpeed = activeAvgSpeed; }
+    public Float getActiveAvgCad() { return activeAvgCad; }
+    public void setActiveAvgCad(Float activeAvgCad) { this.activeAvgCad = activeAvgCad; }
+    public Float getActiveAvgPower() { return activeAvgPower; }
+    public void setActiveAvgPower(Float activeAvgPower) { this.activeAvgPower = activeAvgPower; }
+    public Float getRestAvgCad() { return restAvgCad; }
+    public void setRestAvgCad(Float restAvgCad) { this.restAvgCad = restAvgCad; }
+    public Float getRestAvgSpeed() { return restAvgSpeed; }
+    public void setRestAvgSpeed(Float restAvgSpeed) { this.restAvgSpeed = restAvgSpeed; }
+    public Float getRestAvgPower() { return restAvgPower; }
+    public void setRestAvgPower(Float restAvgPower) { this.restAvgPower = restAvgPower; }
 
     private String activityNameSuffix;
     public String getActivityNameSuffix() { return activityNameSuffix; }
     public void setActivityNameSuffix(String activityNameSuffix) { this.activityNameSuffix = activityNameSuffix; }
 
-    public Long getDiffMinutesLocalUTC() { return diffMinutesLocalUTC; }
-    public void setDiffMinutesLocalUTC(Long diffMinutesLocalUTC) { this.diffMinutesLocalUTC = diffMinutesLocalUTC; }
+    private String savedFileInfoBefore = "";
+    public String getSavedFileInfoBefore() { return savedFileInfoBefore; }
+    public void setSavedFileInfoBefore(String savedFileInfoBefore) { this.savedFileInfoBefore = savedFileInfoBefore; }
+    public void appendSavedFileInfoBefore(String text) { this.savedFileInfoBefore += text; }
+    public void appendSavedFileInfoBeforeLn(String text) { this.savedFileInfoBefore += text + System.lineSeparator(); }
+    public void clearSavedFileInfoBefore() { this.savedFileInfoBefore = ""; }
+    
+    private String savedFileInfoAfter = "";
+    public String getSavedFileInfoAfter() { return savedFileInfoAfter; }
+    public void setSavedFileInfoAfter(String savedFileInfoAfter) { this.savedFileInfoAfter = savedFileInfoAfter; }
+    public void appendSavedFileInfoAfter(String text) { this.savedFileInfoAfter += text; }
+    public void appendSavedFileInfoAfterLn(String text) { this.savedFileInfoAfter += text + System.lineSeparator(); }
+    public void clearSavedFileInfoAfter() { this.savedFileInfoAfter = ""; }
 
-    public int getNumberOfRecords() { return numberOfRecords; }
-    public void setNumberOfRecords(int numberOfRecords) { this.numberOfRecords = numberOfRecords; }
 
-    public Float getTotalDistance() { return totalDistance; }
-    public void setTotalDistance(Float totalDistance) { this.totalDistance = totalDistance; }
+    private String savedStrLapsActiveInfoShort = "";
+    private String savedStrLapsRestInfoShort = "";
 
-    public Float getTotalDistanceOrg() { return totalDistanceOrg; }
-    public void setTotalDistanceOrg(Float totalDistanceOrg) { this.totalDistanceOrg = totalDistanceOrg; }
-
-    public Integer getManufacturerNo() { return manufacturerNo; }
-    public void setManufacturerNo(Integer manufacturerNo) { this.manufacturerNo = manufacturerNo; }
-
-    public String getManufacturer() { return manufacturer; }
-    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
-
-    public int getProductNo() { return productNo; }
-    public void setProductNo(int productNo) { this.productNo = productNo; }
-
-    public String getProduct() { return product; }
-    public void setProduct(String product) { this.product = product; }
-
-    public Float getSwVer() { return swVer; }
-    public void setSwVer(Float swVer) { this.swVer = swVer; }
-
-    public String getWktName() { return wktName; }
-    public void setWktName(String wktName) { this.wktName = wktName; }
-
-    public Sport getSport() { return sport; }
-    public void setSport(Sport sport) { this.sport = sport; }
-
-    public SubSport getSubsport() { return subsport; }
-    public void setSubsport(SubSport subsport) { this.subsport = subsport; }
-
-    public String getSportProfile() { 
-        return this.sessionMesg.get(0).getFieldStringValue(SES_PROFILE); 
-    }
-    public void setSportProfile(String sportProfile) { 
-        this.sportProfile = sportProfile; 
-        this.sessionMesg.get(0).setFieldValue(SES_PROFILE, sportProfile);
-    }
-
-    public Float getTotalTimerTime() { return totalTimerTime; }
-    public void setTotalTimerTime(Float totalTimerTime) { this.totalTimerTime = totalTimerTime; }
-
-    public Float getAvgSpeed() { return avgSpeed; }
-    public void setAvgSpeed(Float avgSpeed) { this.avgSpeed = avgSpeed; }
-
-    public Float getMaxSpeed() { return maxSpeed; }
-    public void setMaxSpeed(Float maxSpeed) { this.maxSpeed = maxSpeed; }
-
-    public int getAvgCadence() { return avgCadence; }
-    public void setAvgCadence(int avgCadence) { this.avgCadence = avgCadence; }
-
-    public int getAvgPower() { return avgPower; }
-    public void setAvgPower(int avgPower) { this.avgPower = avgPower; }
-
-    public int getNumberOfLaps() { return numberOfLaps; }
-    public void setNumberOfLaps(int numberOfLaps) { this.numberOfLaps = numberOfLaps; }
-
+    private String updateLogg = "";
     public String getUpdateLogg() { return updateLogg; }
     public void setUpdateLogg(String savedFileUpdateLogg) { this.updateLogg = savedFileUpdateLogg; }
     public void appendUpdateLogg(String text) { this.updateLogg += text; }
     public void appendUpdateLoggLn(String text) { this.updateLogg += text + System.lineSeparator(); }
     public void clearUpdateLogg() { this.updateLogg = ""; }
 
+    private String tempUpdateLogg = "";
     public String getTempUpdateLogg() { return tempUpdateLogg; }
     public void setTempUpdateLogg(String tempUpdateLogg) { this.tempUpdateLogg = tempUpdateLogg; }
     public void appendTempUpdateLogg(String text) { this.tempUpdateLogg += text; }
@@ -344,39 +385,16 @@ public class FitFile {
     //public int getChangedStartTimeBySec() { return changedStartTimeBySec; }
     //public void setChangedStartTimeBySec(int changedStartTimeBySec) { this.changedStartTimeBySec = changedStartTimeBySec; }
     
-    public List<PauseMesg> getPauseList() { return pauseRecords; }
-    public List<GapMesg> getGapList() { return gapRecords; }
-    public List<RecordMesgAddOnRecords> getRecordMesgAddOnRecords() { return recordMesgAddOnRecords; }
-    public List<Mesg> getAllMesg() { return allMesg; }
-    public List<Mesg> getFileIdMesg() { return fileIdMesg; }
-    public List<Mesg> getDeviceInfoMesg() { return deviceInfoMesg; }
-    public List<Mesg> getSportMesg() { return sportMesg; }
-    public List<Mesg> getWktSessionMesg() { return wktSessionMesg; }
-    public List<Mesg> getWktStepMesg() { return wktStepMesg; }
-    public List<Mesg> getWktRecordMesg() { return wktRecordMesg; }
-    public List<Mesg> getActivityMesg() { return activityMesg; }
-    public List<Mesg> getSessionMesg() { return sessionMesg; }
-    public List<Mesg> getSplitMesg() { return splitMesg; }
-    public List<Mesg> getLapMesg() { return lapMesg; }
-    public List<Mesg> getEventMesg() { return eventMesg; }
-    public List<Mesg> getEventTimerMesg() { return eventTimerMesg; }
-    public List<Mesg> getRecordMesg() { return recordMesg; }
-    public List<Mesg> getDevDataIdMesg() { return devDataIdMesg; }
-    public List<Mesg> getFieldDescrMesg() { return fieldDescrMesg; }
-
-    public Float getActiveAvgCad() { return activeAvgCad; }
-    public Float getActiveAvgSpeed() { return activeAvgSpeed; }
-    public Float getActiveAvgPower() { return activeAvgPower; }
-    public Float getActiveDist() { return activeDist; }
-    public Float getRestAvgCad() { return restAvgCad; }
-    public Float getRestAvgSpeed() { return restAvgSpeed; }
-    public Float getRestAvgPower() { return restAvgPower; }
-    public Float getRestDist() { return restDist; }
-
     public LapReportGenerator getLapReportGenerator() { return new LapReportGenerator(this); }
     public PauseReportGenerator getPauseReportGenerator() { return new PauseReportGenerator(this); }
+    public CPointReportGenerator getCPointReportGenerator() { return new CPointReportGenerator(this); }
     public LapFix getLapFix() { return new LapFix(this); }
     public PauseFix getPauseFix() { return new PauseFix(this); }
+    public CPointFix getCPointFix() { return new CPointFix(this); }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public FitFile () {
+    }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public class GapMesg {
@@ -572,9 +590,9 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     class LapExtraMesg {
-        private int hrStart;
-        private int hrEnd;
-        private int hrMin;
+        private Short hrStart;
+        private Short hrEnd;
+        private Short hrMin;
         private Long timeEnd;
         private int lapNo;
         private int recordIxStart;
@@ -588,7 +606,9 @@ public class FitFile {
         private Float speedLapSum;
         private Float cadLapSum;
 
-        public LapExtraMesg(int hrStart, int hrEnd, int hrMin, Long timeEnd, int lapNo, int recordIxStart, 
+        public LapExtraMesg() {
+        }
+        public LapExtraMesg(Short hrStart, Short hrEnd, Short hrMin, Long timeEnd, int lapNo, int recordIxStart, 
                 int recordIxEnd, Float stepLen, Float level, Float avgStrokeLen, Float maxStrokeLen, Float avgDragFactor, Float maxDragFactor) {
             this.hrStart = hrStart;
             this.hrEnd = hrEnd;
@@ -605,12 +625,12 @@ public class FitFile {
             this.maxDragFactor = maxDragFactor;
         }
 
-        public int getHrStart() { return hrStart; }
-        public void setHrStart(int hrStart) { this.hrStart = hrStart; }
-        public int getHrEnd() { return hrEnd; }
-        public void setHrEnd(int hrEnd) { this.hrEnd = hrEnd; }
-        public int getHrMin() { return hrMin; }
-        public void setHrMin(int hrMin) { this.hrMin = hrMin; }
+        public Short getHrStart() { return hrStart; }
+        public void setHrStart(Short hrStart) { this.hrStart = hrStart; }
+        public Short getHrEnd() { return hrEnd; }
+        public void setHrEnd(Short hrEnd) { this.hrEnd = hrEnd; }
+        public Short getHrMin() { return hrMin; }
+        public void setHrMin(Short hrMin) { this.hrMin = hrMin; }
         public Long getTimeEnd() { return timeEnd; }
         public void setTimeEnd(Long timeEnd) { this.timeEnd = timeEnd; }
         public int getLapNo() { return lapNo; }
@@ -656,7 +676,7 @@ public class FitFile {
 
         System.out.println("----- INIT LapExtra Records for ALL MESG -----");
         for (Mesg record : lapMesg) {
-            LapExtraMesg newLapExtra = new LapExtraMesg(hrStart, hrEnd, hrMin, timeEnd, recordIxStart, recordIxEnd, lapNo, stepLen, level, avgStrokeLen, maxStrokeLen, avgDragFactor, maxDragFactor);
+            LapExtraMesg newLapExtra = new LapExtraMesg((short) hrStart, (short) hrEnd, (short) hrMin, timeEnd, lapNo, recordIxStart, recordIxEnd, stepLen, level, avgStrokeLen, maxStrokeLen, avgDragFactor, maxDragFactor);
             newLapExtra.setSpeedLapSum(0f);
             newLapExtra.setCadLapSum(0f);
             lapExtraRecords.add(newLapExtra);
@@ -700,38 +720,198 @@ public class FitFile {
         public void setLapNo(int lapNo) { this.lapNo = lapNo; }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    /* class LapExtraMesg {
-        int hrStart;
-        int hrEnd;
-        int hrMin;
-        DateTime timeEnd;
-        int lapNo;
-        int recordIxStart;
-        int recordIxEnd;
-        Float stepLen;
-        Float level;
-        Float avgStrokeLen;
-        Float maxStrokeLen;
-        Float avgDragFactor;
-        Float maxDragFactor;
+    public void fillLapExtraRecords() {
+        int recordIx = 0;
+        int lapIx = 0;
+        int lapNo = 1;
+        Long currentTimeStamp = 0L;
+        Long nextLapStartTime = 0L;
+        Float currentLapTime = 0f;
+        String currentLapIntensity = "";
+        Long currentLapTimeEnd = 0L;
+        Float lastLapTotalDistance = 0f;
 
-        public LapExtraMesg(int hrStart, int hrEnd, int hrMin, DateTime timeEnd, int lapNo, int recordIxStart, 
-                int recordIxEnd, Float stepLen, Float level, Float avgStrokeLen, Float maxStrokeLen, Float avgDragFactor, Float maxDragFactor) {
-            this.hrStart = hrStart;
-            this.hrEnd = hrEnd;
-            this.hrMin = hrMin;
-            this.timeEnd = timeEnd;
-            this.lapNo = lapNo;
-            this.recordIxStart = recordIxStart;
-            this.recordIxEnd = recordIxEnd;
-            this.stepLen = stepLen;
-            this.level = level;
-            this.avgStrokeLen = avgStrokeLen;
-            this.maxStrokeLen = maxStrokeLen;
-            this.avgDragFactor = avgDragFactor;
-            this.maxDragFactor = maxDragFactor;
-        }
-    } */
+        int currentLapSumCadence = 0;
+        int currentLapSumPower = 0;
+        Float currentLapSumStrokeLen = 0f;
+        Float currentLapSumDragFactor = 0f;
+        Float currentLapMaxStrokeLen = 0f;
+        Float currentLapMaxDragFactor = 0f;
+
+        Float activeSumSpeed = 0f;
+        Float activeSumCad = 0f;
+        Float activeSumPower = 0f;
+        Float restSumSpeed = 0f;
+        Float restSumCad = 0f;
+        Float restSumPower = 0f;
+        setActiveTime(0f);
+        setRestTime(0f);
+        setActiveDist(0f);
+        setRestDist(0f);
+
+        lapExtraRecords.clear();
+
+        // nextLapStartTime from lapMesg start time field
+        nextLapStartTime = (lapMesg.isEmpty() || lapMesg.get(0).getFieldLongValue(LAP_STIME) == null) ? 
+            getTimeFirstRecord() : 
+            lapMesg.get(0).getFieldLongValue(LAP_STIME);
+
+        Boolean nextRecordLastInLap = false;
+
+        for (Mesg record : recordMesg) {
+
+            Short currentHr = record.getFieldShortValue(REC_HR) == null ? (short) 60 : record.getFieldShortValue(REC_HR);
+            //--------------
+            // IF LAP START
+            currentTimeStamp = record.getFieldLongValue(REC_TIME);
+            if (currentTimeStamp != null && nextLapStartTime != null && currentTimeStamp.equals(nextLapStartTime)) {
+
+                LapExtraMesg newLapExtra = new LapExtraMesg();
+                lapExtraRecords.add(newLapExtra);
+
+                // Save HR and recordIx START
+                lapExtraRecords.get(lapIx).setHrStart(currentHr);
+                lapExtraRecords.get(lapIx).setRecordIxStart(recordIx);
+
+                // Get LAP DATA to be used to find lap-start-end
+                Float lapTotalTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
+                currentLapTime = (lapTotalTimer == null) ? 0f : lapTotalTimer;
+
+                Short lapIntensityShort = lapMesg.get(lapIx).getFieldShortValue(LAP_INTENSITY);
+                Intensity lapIntensity = (lapIntensityShort == null) ? Intensity.INVALID : Intensity.getByValue(lapIntensityShort);
+                currentLapIntensity = Intensity.getStringFromValue(lapIntensity);
+
+                // Save LAP END to table (DateTime)
+                lapExtraRecords.get(lapIx).setTimeEnd(currentLapTimeEnd);
+                if (lapNo < numberOfLaps) {
+                    currentLapTimeEnd = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
+                    nextLapStartTime = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME);
+                } else {
+                    currentLapTimeEnd = timeLastRecord;
+                }
+
+                // Save LAP END to table (DateTime)
+                lapExtraRecords.get(lapIx).setTimeEnd(currentLapTimeEnd);
+            }
+
+            // Find out if next record is first record in next Lap
+            if ((recordIx + 1 >= recordMesg.size()) || 
+                    (recordMesg.get(recordIx + 1).getFieldLongValue(REC_TIME) > currentLapTimeEnd)) {
+                nextRecordLastInLap = true;
+            } else {
+                nextRecordLastInLap = false;
+            }
+
+            // Calc LAP HR min
+            if (lapExtraRecords.get(lapIx).getHrMin() == null) {
+                lapExtraRecords.get(lapIx).setHrMin(currentHr);
+            } else if (currentHr < lapExtraRecords.get(lapIx).getHrMin()) {
+                lapExtraRecords.get(lapIx).setHrMin(currentHr);
+            }
+
+            // Calc LAPSUM & MLAPMAX for Developer fields from current record
+            Mesg secRecForDev = record; // Mesg.get(recordIx); // Why not just use 'record'???
+            for (DeveloperField field : secRecForDev.getDeveloperFields()) {
+                if ("StrokeLength".equals(field.getName())) {
+                    currentLapSumStrokeLen += field.getFloatValue();
+                    if (field.getFloatValue() > currentLapMaxStrokeLen) {
+                        currentLapMaxStrokeLen = field.getFloatValue();
+                    }
+                }
+                if ("DragFactor".equals(field.getName())) {
+                    currentLapSumDragFactor += field.getFloatValue();
+                    if (field.getFloatValue() > currentLapMaxDragFactor) {
+                        currentLapMaxDragFactor = field.getFloatValue();
+                    }
+                }
+            }
+
+            // --------------
+            // IF LAP END
+            //if (currentTimeStamp != null && currentLapTimeEnd != null && currentTimeStamp.equal(currentLapTimeEnd)) {
+            if (currentTimeStamp != null && currentLapTimeEnd != null && nextRecordLastInLap) {
+
+                // Save HR and recordIx END
+                lapExtraRecords.get(lapIx).setHrEnd(currentHr);
+                lapExtraRecords.get(lapIx).setRecordIxEnd(recordIx);
+                lapExtraRecords.get(lapIx).setTimeEnd(record.getFieldLongValue(REC_TIME));
+
+                Float lapCad = lapMesg.get(lapIx).getFieldFloatValue(LAP_CAD);
+                Float lapTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
+                Float lapDist = lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST);
+                if (lapCad != null && lapCad > 0 && lapTimer != null && lapTimer > 0 && lapDist != null && lapDist > 0) {
+                    getLapExtraRecords().get(lapIx).setStepLen(lapDist / ( lapCad * lapTimer / 60 )); // step length acc to FFRT
+                }
+
+                // Calc LAP SUM & LAP MAX
+                for (DeveloperField field : recordMesg.get(recordIx).getDeveloperFields()) {
+                    if ("StrokeLength".equals(field.getName())) {
+                        lapExtraRecords.get(lapIx).setAvgStrokeLen(
+                            (float) Math.round(100 * currentLapSumStrokeLen 
+                                / (recordIx-lapExtraRecords.get(lapIx).getRecordIxStart()+1)) 
+                                /100);
+                        lapExtraRecords.get(lapIx).setMaxStrokeLen(currentLapMaxStrokeLen);
+                        currentLapSumStrokeLen = 0f;
+                        currentLapMaxStrokeLen = 0f;
+                    }
+                    if ("DragFactor".equals(field.getName())) {
+                        lapExtraRecords.get(lapIx).setAvgDragFactor(
+                            (float) Math.round(100 * currentLapSumDragFactor 
+                                / (recordIx-lapExtraRecords.get(lapIx).getRecordIxStart()+1)) 
+                                /100);
+                        lapExtraRecords.get(lapIx).setMaxDragFactor(currentLapMaxDragFactor);
+                        currentLapSumDragFactor = 0f;
+                        currentLapMaxDragFactor = 0f;
+                    }
+                    if ("Level".equals(field.getName())) {
+                        getLapExtraRecords().get(lapIx).setLevel(field.getFloatValue());
+                    }
+                }
+
+                Float lapTotalTimerTime = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
+                Float lapTotDist = lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST);
+                Short lapAvgCad = lapMesg.get(lapIx).getFieldShortValue(LAP_CAD);
+                Integer lapAvgPow = lapMesg.get(lapIx).getFieldIntegerValue(LAP_POW);
+                Float lapAvgSpeedF = lapMesg.get(lapIx).getFieldFloatValue(LAP_SPEED);
+
+                // --------------
+                // Calculate ACTIVE LAP SUM & MAX
+                if ("ACTIVE".equals(currentLapIntensity)) {
+                    if (lapTotalTimerTime != null) setActiveTime(getActiveTime() + lapTotalTimerTime);
+                    if (lapTotDist != null) setActiveDist(getActiveDist() + lapTotDist);
+                    if (lapAvgSpeedF != null && lapTotalTimerTime != null) activeSumSpeed += lapAvgSpeedF * lapTotalTimerTime;
+                    if (lapAvgCad != null && lapTotalTimerTime != null) activeSumCad += lapAvgCad * lapTotalTimerTime;
+                    if (lapAvgPow != null && lapTotalTimerTime != null) activeSumPower += lapAvgPow * lapTotalTimerTime;
+                }
+
+                // Calculate REST LAP SUM & MAX
+                if ("REST".equals(currentLapIntensity) || "RECOVERY".equals(currentLapIntensity)) {
+                    if (lapTotalTimerTime != null) setRestTime(getRestTime() + lapTotalTimerTime);
+                    if (lapTotDist != null) setRestDist(getRestDist() + lapTotDist);
+                    if (lapAvgSpeedF != null && lapTotalTimerTime != null) restSumSpeed += lapAvgSpeedF * lapTotalTimerTime;
+                    if (lapAvgCad != null && lapTotalTimerTime != null) restSumCad += lapAvgCad * lapTotalTimerTime;
+                    if (lapAvgPow != null && lapTotalTimerTime != null) restSumPower += lapAvgPow * lapTotalTimerTime;
+                }
+
+                lapIx++;
+                lapNo++;
+            } // IF LAP END END
+
+            recordIx++;
+        }  // FOR LOOP END
+        
+        // Calculate ACTIVE LAP SUM & MAX
+        // activeAvgSpeed = (float) (activeSumSpeed / getActiveTime());
+        activeAvgSpeed = (float) (getActiveDist() / getActiveTime());
+        activeAvgCad = (float) (activeSumCad / getActiveTime());
+        activeAvgPower = (float) (activeSumPower / getActiveTime());
+
+        // Calculate REST LAP SUM & MAX
+        restAvgSpeed = (float) (getRestDist() / getRestTime());
+        restAvgCad = (float) (restSumCad / getRestTime());
+        restAvgPower = (float) (restSumPower / getRestTime());
+
+    }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void addTimeToLapAndSession(int lapIx, Float timeToAdd) {
         // Updating LAP DATA
@@ -1845,6 +2025,284 @@ public class FitFile {
         return result.hasUnmatchedEnd();
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void checkAndFixNullRecordTimes() {
+        clearTempUpdateLogg();
+        appendTempUpdateLoggLn("CHECK/FIX RECORD TIMES");
+        appendTempUpdateLoggLn("----------------------");
+
+        if (recordMesg == null || recordMesg.isEmpty()) {
+            logTimeFix("No records found. Nothing to check.");
+            appendUpdateLogg(getTempUpdateLogg());
+            return;
+        }
+
+        Long prevNonNullTime = null;
+        int fixedCount = 0;
+
+        int i = 0;
+        while (i < recordMesg.size()) {
+            Long currentTime = recordMesg.get(i).getFieldLongValue(REC_TIME);
+
+            // Duplicate timestamps are resolved by deleting the second record.
+            if (currentTime != null && prevNonNullTime != null && currentTime.equals(prevNonNullTime)) {
+                logTimeFix("Duplicate REC_TIME found at recIx=" + i
+                        + " time=" + currentTime
+                        + " (" + FitDateTime.toStringTime(currentTime, diffMinutesLocalUTC) + ")"
+                        + ". Deleting second record.");
+                removeRecordMesgAtIndex(i);
+                continue;
+            }
+
+            // Out-of-order timestamps are reported and processing stops.
+            if (currentTime != null && prevNonNullTime != null && currentTime < prevNonNullTime) {
+                logTimeFix("ERROR: REC_TIME out of order at recIx=" + i
+                        + " prev=" + prevNonNullTime
+                        + " curr=" + currentTime
+                        + " (" + FitDateTime.toStringTime(currentTime, diffMinutesLocalUTC) + ")");
+                logTimeFix("Stopping without changing more records.");
+                appendUpdateLogg(getTempUpdateLogg());
+                return;
+            }
+
+            if (currentTime != null) {
+                prevNonNullTime = currentTime;
+                i++;
+                continue;
+            }
+
+            int nullStart = i;
+            while (i < recordMesg.size() && recordMesg.get(i).getFieldLongValue(REC_TIME) == null) {
+                i++;
+            }
+            int nullEnd = i - 1;
+            int nullCount = nullEnd - nullStart + 1;
+
+            if (nullCount == 1) {
+                logTimeFix("Found 1 null REC_TIME at recIx=" + nullStart);
+            } else {
+                logTimeFix("Found " + nullCount + " null REC_TIME in a row at recIx=" + nullStart + ".." + nullEnd);
+            }
+
+            int beforeIx = nullStart - 1;
+            int afterIx = i;
+
+            // Trailing null timestamps at end-of-file are handled against the last STOP event.
+            if (afterIx >= recordMesg.size()) {
+                Long beforeTime = beforeIx >= 0 ? recordMesg.get(beforeIx).getFieldLongValue(REC_TIME) : null;
+                if (beforeTime == null) {
+                    logTimeFix("Cannot fill trailing null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
+                            + " (missing previous non-null REC_TIME).");
+                    break;
+                }
+
+                Mesg lastStopEventMesg = findLastTimerStopEventMesg();
+                Long stopEventTime = lastStopEventMesg != null ? lastStopEventMesg.getFieldLongValue(EVE_TIME) : null;
+
+                long trailingLastTime;
+                boolean useStopEventAsLastRecord = (stopEventTime != null && stopEventTime > beforeTime);
+                if (useStopEventAsLastRecord) {
+                    trailingLastTime = stopEventTime;
+                    logTimeFix("Trailing null REC_TIME range uses last STOP event time=" + stopEventTime
+                            + " (" + FitDateTime.toStringTime(stopEventTime, diffMinutesLocalUTC) + ")");
+                } else {
+                    if (stopEventTime == null) {
+                        logTimeFix("Last STOP event has empty timestamp. Filling trailing null REC_TIME using +1s steps.");
+                    } else {
+                        logTimeFix("Last STOP event time is not after last valid REC_TIME (stop=" + stopEventTime
+                                + ", prev=" + beforeTime + "). Filling trailing null REC_TIME using +1s steps.");
+                    }
+
+                    trailingLastTime = beforeTime + nullCount;
+                    if (lastStopEventMesg != null) {
+                        lastStopEventMesg.setFieldValue(EVE_TIME, trailingLastTime);
+                        logTimeFix("Updated last STOP event REC_TIME to " + trailingLastTime
+                                + " (" + FitDateTime.toStringTime(trailingLastTime, diffMinutesLocalUTC) + ")");
+                    } else {
+                        logTimeFix("No STOP event found to update with trailing REC_TIME.");
+                    }
+                }
+
+                boolean canUseDistTrailing = false;
+                if (useStopEventAsLastRecord && nullCount > 1) {
+                    Float beforeDist = recordMesg.get(beforeIx).getFieldFloatValue(REC_DIST);
+                    Float lastDist = recordMesg.get(nullEnd).getFieldFloatValue(REC_DIST);
+                    canUseDistTrailing = beforeDist != null && lastDist != null && lastDist > beforeDist;
+                    if (canUseDistTrailing) {
+                        for (int j = nullStart; j <= nullEnd; j++) {
+                            if (recordMesg.get(j).getFieldFloatValue(REC_DIST) == null) {
+                                canUseDistTrailing = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                long span = trailingLastTime - beforeTime;
+                long lastAssigned = beforeTime;
+                for (int j = 1; j <= nullCount; j++) {
+                    int recIx = nullStart + (j - 1);
+                    long candidate;
+
+                    if (canUseDistTrailing) {
+                        float beforeDistVal = recordMesg.get(beforeIx).getFieldFloatValue(REC_DIST);
+                        float lastDistVal = recordMesg.get(nullEnd).getFieldFloatValue(REC_DIST);
+                        float recDistVal = recordMesg.get(recIx).getFieldFloatValue(REC_DIST);
+                        double ratio = (recDistVal - beforeDistVal) / (lastDistVal - beforeDistVal);
+                        if (ratio < 0d) ratio = 0d;
+                        if (ratio > 1d) ratio = 1d;
+                        candidate = beforeTime + Math.round(span * ratio);
+                    } else {
+                        candidate = beforeTime + Math.round((double) span * j / nullCount);
+                    }
+
+                    long minAllowed = lastAssigned + 1;
+                    long maxAllowed = trailingLastTime - (nullCount - j);
+                    if (candidate < minAllowed) candidate = minAllowed;
+                    if (candidate > maxAllowed) candidate = maxAllowed;
+
+                    recordMesg.get(recIx).setFieldValue(REC_TIME, candidate);
+                    fixedCount++;
+                    lastAssigned = candidate;
+
+                    logTimeFix("  recIx=" + recIx + " REC_TIME set to " + candidate
+                            + " (" + FitDateTime.toStringTime(candidate, diffMinutesLocalUTC) + ")");
+                }
+
+                prevNonNullTime = trailingLastTime;
+                break;
+            }
+
+            if (beforeIx < 0 || afterIx >= recordMesg.size()) {
+                logTimeFix("Cannot interpolate null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
+                        + " (missing boundary record before/after).");
+                continue;
+            }
+
+            Long beforeTime = recordMesg.get(beforeIx).getFieldLongValue(REC_TIME);
+            Long afterTime = recordMesg.get(afterIx).getFieldLongValue(REC_TIME);
+            if (beforeTime == null || afterTime == null) {
+                logTimeFix("Cannot interpolate null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
+                        + " (boundary REC_TIME missing).");
+                continue;
+            }
+            if (afterTime <= beforeTime) {
+                logTimeFix("ERROR: Boundary REC_TIME invalid for null range recIx=" + nullStart + ".." + nullEnd
+                        + " before=" + beforeTime + " after=" + afterTime);
+                logTimeFix("Stopping without changing more records.");
+                appendUpdateLogg(getTempUpdateLogg());
+                return;
+            }
+
+            boolean canUseDist = true;
+            Float beforeDist = recordMesg.get(beforeIx).getFieldFloatValue(REC_DIST);
+            Float afterDist = recordMesg.get(afterIx).getFieldFloatValue(REC_DIST);
+            if (beforeDist == null || afterDist == null) {
+                canUseDist = false;
+            }
+            if (canUseDist) {
+                for (int j = nullStart; j <= nullEnd; j++) {
+                    if (recordMesg.get(j).getFieldFloatValue(REC_DIST) == null) {
+                        canUseDist = false;
+                        break;
+                    }
+                }
+            }
+
+            long totalTimeSpan = afterTime - beforeTime;
+            int pointsToFill = nullCount;
+
+            if (canUseDist) {
+                float totalDistSpan = afterDist - beforeDist;
+                if (totalDistSpan <= 0f) {
+                    canUseDist = false;
+                }
+            }
+
+            String method = canUseDist ? "distance-proportional" : "even";
+            logTimeFix("Interpolating null REC_TIME range recIx=" + nullStart + ".." + nullEnd
+                    + " using " + method + " spread.");
+
+            long lastAssigned = beforeTime;
+            for (int j = 1; j <= pointsToFill; j++) {
+                int recIx = nullStart + (j - 1);
+                long candidate;
+
+                if (canUseDist) {
+                    float beforeDistVal = recordMesg.get(beforeIx).getFieldFloatValue(REC_DIST);
+                    float afterDistVal = recordMesg.get(afterIx).getFieldFloatValue(REC_DIST);
+                    float recDistVal = recordMesg.get(recIx).getFieldFloatValue(REC_DIST);
+
+                    double ratio = (recDistVal - beforeDistVal) / (afterDistVal - beforeDistVal);
+                    if (ratio < 0d) ratio = 0d;
+                    if (ratio > 1d) ratio = 1d;
+                    candidate = beforeTime + Math.round(totalTimeSpan * ratio);
+                } else {
+                    candidate = beforeTime + Math.round((double) totalTimeSpan * j / (pointsToFill + 1));
+                }
+
+                // Keep strict order after rounding so REC_TIME never regresses or duplicates in this segment.
+                long minAllowed = lastAssigned + 1;
+                long maxAllowed = afterTime - (pointsToFill - j + 1);
+                if (candidate < minAllowed) candidate = minAllowed;
+                if (candidate > maxAllowed) candidate = maxAllowed;
+
+                recordMesg.get(recIx).setFieldValue(REC_TIME, candidate);
+                fixedCount++;
+                lastAssigned = candidate;
+
+                logTimeFix("  recIx=" + recIx + " REC_TIME set to " + candidate
+                        + " (" + FitDateTime.toStringTime(candidate, diffMinutesLocalUTC) + ")");
+            }
+
+            prevNonNullTime = afterTime;
+        }
+
+        logTimeFix("Completed REC_TIME check/fix. Updated " + fixedCount + " null value(s).");
+        appendUpdateLogg(getTempUpdateLogg());
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private void logTimeFix(String text) {
+        appendTempUpdateLoggLn(text);
+        System.out.println(text);
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private Mesg findLastTimerStopEventMesg() {
+        for (int i = eventTimerMesg.size() - 1; i >= 0; i--) {
+            Mesg eventMesg = eventTimerMesg.get(i);
+            if (eventMesg.getFieldValue(EVE_TYPE) != null
+                    && eventMesg.getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
+                return eventMesg;
+            }
+        }
+        return null;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private void removeRecordMesgAtIndex(int recordIx) {
+        if (recordIx < 0 || recordIx >= recordMesg.size()) {
+            return;
+        }
+
+        Mesg mesgToRemove = recordMesg.get(recordIx);
+        recordMesg.remove(recordIx);
+
+        boolean removedFromAllMesg = false;
+        for (int i = 0; i < allMesg.size(); i++) {
+            if (allMesg.get(i) == mesgToRemove) {
+                allMesg.remove(i);
+                removedFromAllMesg = true;
+                break;
+            }
+        }
+
+        if (!removedFromAllMesg) {
+            logTimeFix("WARNING: Deleted duplicate record from recordMesg, but matching Mesg instance was not found in allMesg.");
+        }
+
+        if (numberOfRecords > 0) {
+            numberOfRecords--;
+        }
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void createTimerList() {
         Long timerCounter = -1l;
@@ -1862,48 +2320,53 @@ public class FitFile {
 
             increaseTimer = true;
 
-            if (eventTimerMesg.size() > 0 ) { // More than First START and last STOP
+            if (eventTimerMesg.size() > 0 ) { // Not empty eventTimerMesg list
 
-                // If record time is the same or more than NEXT eventTimer mesg
-                // ------------------------------------------------------------
-                if (eventTimerIx < eventTimerMesg.size() && record.getFieldLongValue(REC_TIME) >= eventTimerMesg.get(eventTimerIx).getFieldLongValue(EVE_TIME)) {
-                    isEventTImerTime = true;
-                            /* System.out.println();
-                            System.out.println("==> EVENT TIMER MESG Ix:" + eventTimerIx + " @"
-                                + EventType.getByValue(eventTimerMesg.get(eventTimerIx).getFieldShortValue(EVE_TYPE)) + " @time: "
-                                + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC)); */
+                if (eventTimerMesg.size() > 2 ) { // More than First START and last STOP
+                        
+                    // If record time is the same or more than NEXT eventTimer mesg
+                    // ------------------------------------------------------------
+                    if (eventTimerIx < eventTimerMesg.size()
+                        && record.getFieldLongValue(REC_TIME)
+                        >= eventTimerMesg.get(eventTimerIx).getFieldLongValue(EVE_TIME)) {
+                        isEventTImerTime = true;
+                                /* System.out.println();
+                                System.out.println("==> EVENT TIMER MESG Ix:" + eventTimerIx + " @"
+                                    + EventType.getByValue(eventTimerMesg.get(eventTimerIx).getFieldShortValue(EVE_TYPE)) + " @time: "
+                                    + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC)); */
 
-                    if (eventTimerMesg.get(eventTimerIx).getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
-                        // If inPause - warning
-                        if (inPause) {
-                            /* System.out.println("==> WARNING - STOP AGAIN when already in pause, STOP event w/o Starting first @"
-                                + eventTimerIx + " @time: "
-                                + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC)); */
-                        } else {
-                            /* System.out.println("==> EVENT TIMER STOP MESG @"
-                                + eventTimerIx + " @time: "
-                                + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC)); */
-                            inPause = true;
-                            increaseTimer = true;
+                        if (eventTimerMesg.get(eventTimerIx).getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
+                            // If inPause - warning
+                            if (inPause) {
+                                /* System.out.println("==> WARNING - STOP AGAIN when already in pause, STOP event w/o Starting first @"
+                                    + eventTimerIx + " @time: "
+                                    + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC)); */
+                            } else {
+                                /* System.out.println("==> EVENT TIMER STOP MESG @"
+                                    + eventTimerIx + " @time: "
+                                    + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC)); */
+                                inPause = true;
+                                increaseTimer = true;
+                            }
                         }
+                        
+                        if (eventTimerMesg.get(eventTimerIx).getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
+                            // If not inPause - warning
+                            if (!inPause) {
+                                System.out.println("==> WARNING - START when not in pause, START event w/o Stopping first @"
+                                    + eventTimerIx + " @time: "
+                                    + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
+                            } else {
+                                /* System.out.println("==> EVENT TIMER START MESG @"
+                                    + eventTimerIx + " @time: "
+                                    + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC)); */
+                                inPause = false;
+                                increaseTimer = false;
+                            }
+                        } 
+                        
+                        eventTimerIx += 1;
                     }
-                    
-                    if (eventTimerMesg.get(eventTimerIx).getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
-                        // If not inPause - warning
-                        if (!inPause) {
-                            System.out.println("==> WARNING - START when not in pause, START event w/o Stopping first @"
-                                + eventTimerIx + " @time: "
-                                + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
-                        } else {
-                            /* System.out.println("==> EVENT TIMER START MESG @"
-                                + eventTimerIx + " @time: "
-                                + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC)); */
-                            inPause = false;
-                            increaseTimer = false;
-                        }
-                    } 
-                    
-                    eventTimerIx += 1;
                 }
 
                 // If record not the same as event timer
@@ -3500,40 +3963,71 @@ public class FitFile {
         return outputFilenameBase;
     } */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public Boolean isSkiErgFile() {
-        //System.out.println("======== isSkiErgFile TEST ==========");
-        Boolean isTrue = false;
-        if (sportProfile != null && sportProfile.toLowerCase().contains("skierg")
+    public void detectAndSetMySport() {
+        String profile = sportProfile != null ? sportProfile.toLowerCase() : "";
+        if     (profile.contains("skierg")
+             || profile.contains("row")
             ) {
-                isTrue = true;
+            mySport = MySport.SKIERG;
+        } else if (profile.contains("löpband")
+                || profile.contains("pband")
+                || profile.contains("mill")
+                || profile.contains("tread")
+            ) {
+            mySport = MySport.TREADMILL;
+        } else if (profile.contains("ellipt")
+                || profile.contains("gymbike")
+                || profile.contains("spinbike")
+                || profile.contains("ct")
+            ) {
+            mySport = MySport.ELLIPTICAL;
+        } else {
+            mySport = MySport.OTHER;
         }
-        return isTrue;
+        System.out.println("======== detectAndSetMySport: " + mySport + " (profile: '" + sportProfile + "')");
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public Boolean isTreadmillFile() {
-        //System.out.println("======== isSkiErgFile TEST ==========");
-        Boolean isTrue = false;
-        if (sportProfile != null && sportProfile.toLowerCase().contains("löpband") 
-            || sportProfile.contains("treadmill")
-            ) {
-                isTrue = true;
-        }
-        return isTrue;
-    }
+    // public Boolean isSkiErgFile() {
+    //     System.out.println("======== isSkiErgFile TEST ==========");
+    //     Boolean isTrue = false;
+    //     if (sportProfile != null && (sportProfile.toLowerCase().contains("skierg")
+    //         )) {
+    //             isTrue = true;
+    //     }
+    //     appendTempUpdateLogg("======== isSkiErgFile TEST RESULT: " + isTrue);
+    //     System.out.println("======== isSkiErgFile TEST RESULT: " + isTrue);
+    //     return isTrue;
+    // }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public Boolean isEllipticalFile() {
-        //System.out.println("======== isEllipticalFile TEST ==========");
-        Boolean isTrue = false;
-        if (sportProfile != null && sportProfile.toLowerCase().contains("ellipt")
-            || sportProfile.toLowerCase().contains("gymbike")
-            || sportProfile.toLowerCase().contains("spinbike")
-            || sportProfile.toLowerCase().contains("ct")) {
-                isTrue = true;
-        }
-        return isTrue;
-    }
+    // public Boolean isTreadmillFile() {
+    //     System.out.println("======== isTreadmillFile TEST ==========");
+    //     Boolean isTrue = false;
+    //     if (sportProfile != null && (sportProfile.toLowerCase().contains("löpband") 
+    //         || sportProfile.toLowerCase().contains("treadmill")
+    //         )) {
+    //             isTrue = true;
+    //     }
+    //     return isTrue;
+    // }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    // public Boolean isEllipticalFile() {
+    //     System.out.println("======== isEllipticalFile TEST ==========");
+    //     Boolean isTrue = false;
+    //     if (sportProfile != null && (sportProfile.toLowerCase().contains("ellipt")
+    //         || sportProfile.toLowerCase().contains("gymbike")
+    //         || sportProfile.toLowerCase().contains("spinbike")
+    //         || sportProfile.toLowerCase().contains("ct")
+    //     )) {
+    //             isTrue = true;
+    //     }
+    //     return isTrue;
+    // }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void readFitFile (String inputFilePath) {
+
+        clearTempUpdateLogg();
+
+        FileInputStream in;
         try {
             // Verify the file exists and is a valid FIT file
             File file = new File(inputFilePath);
@@ -3547,9 +4041,12 @@ public class FitFile {
         }
 
         try {
+
             // Create a Decode object
+            Decode decode;
             decode = new Decode();
-            System.out.println("FIT SDK profile version: "
+
+            appendTempUpdateLoggLn("FIT SDK profile version: "
                     + Fit.PROFILE_VERSION_MAJOR + "." + Fit.PROFILE_VERSION_MINOR
                     + " " + Fit.PROFILE_TYPE
                     + " (" + Fit.PROFILE_VERSION + ")");
@@ -3609,7 +4106,7 @@ public class FitFile {
                             fieldDescrMesg.add(mesg);
                             break;
                         case 132:
-                            System.out.println("Heart Rate Mesg found, but not added to list. Mesg ix: " + mesg.getFieldLongValue(253));
+                            appendTempUpdateLoggLn("Heart Rate Mesg found, but not added to list. Mesg ix: " + mesg.getFieldLongValue(253));
                             break;
                         default:
                             break;
@@ -3636,49 +4133,74 @@ public class FitFile {
                 }
             }
 
-            setSwVer(deviceInfoMesg.get(0).getFieldFloatValue(DINFO_SWVER));
+            if (!deviceInfoMesg.isEmpty()) {
+                Float swVer = deviceInfoMesg.get(0).getFieldFloatValue(DINFO_SWVER);
+                setSwVer(swVer == null ? 0f : swVer);
+            } else {
+                setSwVer(0f);
+            }
+            
             setTimeFirstRecord(recordMesg.get(0).getFieldLongValue(REC_TIME));
 
-            if (activityMesg.get(0).getFieldLongValue(ACT_TIME) == null) {
-                activityMesg.get(0).setFieldValue(ACT_TIME, timeFirstRecord);
+            if (!activityMesg.isEmpty()) {
+                if (activityMesg.get(0).getFieldLongValue(ACT_TIME) == null) {
+                    activityMesg.get(0).setFieldValue(ACT_TIME, getTimeFirstRecord());
+                }
+                setActivityDateTimeUTC(activityMesg.get(0).getFieldLongValue(ACT_TIME));
+                if (activityMesg.get(0).getFieldLongValue(ACT_LOCTIME) == null) {
+                    activityMesg.get(0).setFieldValue(ACT_LOCTIME, getTimeFirstRecord());
+                }
+                setActivityDateTimeLocal(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME));
+                setDiffMinutesLocalUTC((getActivityDateTimeLocal() - getActivityDateTimeUTC()) / 60);
+                setActivityDateTimeLocalOrg(getActivityDateTimeLocal());
+            } else {
+                setActivityDateTimeUTC(getTimeFirstRecord());
+                setActivityDateTimeLocal(getTimeFirstRecord());
+                setDiffMinutesLocalUTC(0L);
+                setActivityDateTimeLocalOrg(getActivityDateTimeLocal());
             }
-            setActivityDateTimeUTC(activityMesg.get(0).getFieldLongValue(ACT_TIME));
-            if (activityMesg.get(0).getFieldLongValue(ACT_LOCTIME) == null) {
-                activityMesg.get(0).setFieldValue(ACT_LOCTIME, timeFirstRecord);
-            }
-            setActivityDateTimeLocal(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME));
-            setDiffMinutesLocalUTC((getActivityDateTimeLocal() - getActivityDateTimeUTC()) / 60);
-            setActivityDateTimeLocalOrg(getActivityDateTimeLocal());
 
             if (!wktRecordMesg.isEmpty()) {
                 if (wktRecordMesg.get(0).getFieldStringValue(WKT_NAME) != null) {
                     setWktName(wktRecordMesg.get(0).getFieldStringValue(WKT_NAME));
                 }
+            } else {
+                setWktName("");
             }
 
-            if (sessionMesg.get(0).getFieldValue(SES_SPORT) != null) {
-                setSport(Sport.getByValue(sessionMesg.get(0).getFieldShortValue(SES_SPORT)));
-            }
-            if (sessionMesg.get(0).getFieldValue(SES_SUBSPORT) != null) {
-                setSubsport(SubSport.getByValue(sessionMesg.get(0).getFieldShortValue(SES_SUBSPORT)));
-            }
-            if (sessionMesg.get(0).getFieldStringValue(SES_PROFILE) == null) {
-                sessionMesg.get(0).setFieldValue(SES_PROFILE, "noProfile");
+            if (!sessionMesg.isEmpty()) {
+                if (sessionMesg.get(0).getFieldValue(SES_SPORT) != null) {
+                    setSport(Sport.getByValue(sessionMesg.get(0).getFieldShortValue(SES_SPORT)));
+                }
+                if (sessionMesg.get(0).getFieldValue(SES_SUBSPORT) != null) {
+                    setSubsport(SubSport.getByValue(sessionMesg.get(0).getFieldShortValue(SES_SUBSPORT)));
+                }
+                if (sessionMesg.get(0).getFieldStringValue(SES_PROFILE) == null) {
+                    sessionMesg.get(0).setFieldValue(SES_PROFILE, "noProfile");
+                } else {
+                    setSportProfile(sessionMesg.get(0).getFieldStringValue(SES_PROFILE).trim());
+                }
+                if (sessionMesg.get(0).getFieldFloatValue(SES_TIMER) != null) {
+                    setTotalTimerTime(sessionMesg.get(0).getFieldFloatValue(SES_TIMER));
+                }
+                if (sessionMesg.get(0).getFieldFloatValue(SES_DIST) != null) {
+                    setTotalDistance(sessionMesg.get(0).getFieldFloatValue(SES_DIST));
+                    setTotalDistanceOrg(sessionMesg.get(0).getFieldFloatValue(SES_DIST));
+                }
+                if (sessionMesg.get(0).getFieldFloatValue(SES_SPEED) != null) {
+                    setAvgSpeed(sessionMesg.get(0).getFieldFloatValue(SES_SPEED));
+                }
+                if (sessionMesg.get(0).getFieldFloatValue(SES_ESPEED) != null) {
+                    setAvgSpeed(sessionMesg.get(0).getFieldFloatValue(SES_ESPEED));
+                }
             } else {
-                setSportProfile(sessionMesg.get(0).getFieldStringValue(SES_PROFILE).trim());
-            }
-            if (sessionMesg.get(0).getFieldFloatValue(SES_TIMER) != null) {
-                setTotalTimerTime(sessionMesg.get(0).getFieldFloatValue(SES_TIMER));
-            }
-            if (sessionMesg.get(0).getFieldFloatValue(SES_DIST) != null) {
-                setTotalDistance(sessionMesg.get(0).getFieldFloatValue(SES_DIST));
-                setTotalDistanceOrg(sessionMesg.get(0).getFieldFloatValue(SES_DIST));
-            }
-            if (sessionMesg.get(0).getFieldFloatValue(SES_SPEED) != null) {
-                setAvgSpeed(sessionMesg.get(0).getFieldFloatValue(SES_SPEED));
-            }
-            if (sessionMesg.get(0).getFieldFloatValue(SES_ESPEED) != null) {
-                setAvgSpeed(sessionMesg.get(0).getFieldFloatValue(SES_ESPEED));
+                setSport(Sport.INVALID);
+                setSubsport(SubSport.INVALID);
+                setSportProfile("noProfile");
+                setTotalTimerTime(0f);
+                setTotalDistance(0f);
+                setTotalDistanceOrg(0f);
+                setAvgSpeed(0f);
             }
 
             setNumberOfLaps(lapMesg.size());
@@ -3686,12 +4208,21 @@ public class FitFile {
             setTimeFirstRecordOrg(timeFirstRecord);
             setTimeLastRecord(recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
             setNumberOfRecords(recordMesg.size());
+            detectAndSetMySport();
 
-            System.out.println("FIT file successfully read. Total records: " + numberOfRecords + " -- " + FitDateTime.toString(timeLastRecord,0));
+            appendTempUpdateLoggLn("FIT file successfully read. Total records: "
+              + numberOfRecords
+              + ", Time between: "
+              + FitDateTime.toString(getTimeFirstRecord(), getDiffMinutesLocalUTC())
+              + " -- "
+              + FitDateTime.toString(getTimeLastRecord(), getDiffMinutesLocalUTC())
+            );
 
         } catch (FitRuntimeException e) {
             System.err.println("Error processing FIT file: " + e.getMessage());
         }
+        System.out.println(getTempUpdateLogg());
+        appendUpdateLogg(getTempUpdateLogg());
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -3855,7 +4386,10 @@ public class FitFile {
         }
         setTimeFirstRecord(recordMesg.get(0).getFieldLongValue(REC_TIME));
         setTimeLastRecord(recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
-        setActivityDateTimeLocal(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME));
+
+        if (!activityMesg.isEmpty()) {
+            setActivityDateTimeLocal(activityMesg.get(0).getFieldLongValue(ACT_LOCTIME));
+        }
         //setChangedStartTimeBySec(getChangedStartTimeBySec() + changeSeconds);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -4168,23 +4702,6 @@ public class FitFile {
 
         System.out.println(getTempUpdateLogg());
         return (getTempUpdateLogg());
-    }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public String createFileSummary() {
-        String tempFileInfo = "";
-        tempFileInfo += "--------------------------------------------------" + System.lineSeparator();
-        tempFileInfo += " --> Manufacturer:" + getManufacturer() + ", " + getProduct() + "(" + getProductNo() + ")" + ", SW: v" + getSwVer() + System.lineSeparator();
-        tempFileInfo += " --> Sport:" + getSport() + ", SubSport:" + getSubsport() + ", SportProfile:" + getSportProfile() + ", WktName:" + getWktName() + System.lineSeparator();
-        tempFileInfo += " --> Org activity dateTime Local:" + FitDateTime.toString(getActivityDateTimeLocalOrg()) + System.lineSeparator();
-        tempFileInfo += " --> New activity dateTime Local:" + FitDateTime.toString(getActivityDateTimeLocal()) + System.lineSeparator();
-        tempFileInfo += " --> Org activity DateTime UTC:  " + FitDateTime.toString(getActivityDateTimeUTC()) + System.lineSeparator();
-        tempFileInfo += " --> timeZone:                   " + FitDateTime.offsetToTimeZoneString(getDiffMinutesLocalUTC()) + System.lineSeparator();
-        tempFileInfo += " --> Org start datetime UTC:     " + FitDateTime.toString(getTimeFirstRecordOrg()) + System.lineSeparator();
-        tempFileInfo += " --> New start datetime UTC:     " + FitDateTime.toString(getTimeFirstRecord()) + System.lineSeparator();
-        
-        tempFileInfo += "--------------------------------------------------" + System.lineSeparator();
-
-        return tempFileInfo;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printFileIdInfo() {
@@ -4887,58 +5404,58 @@ public class FitFile {
         }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printLapAvgMaxSpeed (Float avgSpeed, Float maxSpeed) {
-        if (avgSpeed != null) {
-            if (isSkiErgFile()) {
-                System.out.print("--Sp avg:" + PehoUtils.mps2minp500m(avgSpeed));
-                System.out.print(" max:" + PehoUtils.mps2minp500m(maxSpeed));
-            } else {
-                System.out.print("--Sp avg:" + PehoUtils.mps2minpkm(avgSpeed));
-                System.out.print(" max:" + PehoUtils.mps2minpkm(maxSpeed));
-            }
-        }
-    }
+    // public void printLapAvgMaxSpeed (Float avgSpeed, Float maxSpeed) {
+    //     if (avgSpeed != null) {
+    //         if (isSkiErgFile()) {
+    //             System.out.print("--Sp avg:" + PehoUtils.mps2minp500m(avgSpeed));
+    //             System.out.print(" max:" + PehoUtils.mps2minp500m(maxSpeed));
+    //         } else {
+    //             System.out.print("--Sp avg:" + PehoUtils.mps2minpkm(avgSpeed));
+    //             System.out.print(" max:" + PehoUtils.mps2minpkm(maxSpeed));
+    //         }
+    //     }
+    // }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printLapAvgSpeed (Float avgSpeed) {
-        if (avgSpeed != null) {
-            if (isSkiErgFile()) {
-                System.out.print(" " + PehoUtils.mps2minp500m(avgSpeed) + "min/500m");
-            } else {
-                System.out.print(" " + PehoUtils.mps2minpkm(avgSpeed) + "min/km");
-                System.out.print(" " + PehoUtils.mps2kmph1(avgSpeed) + "km/h");
-            }
-        }
-    }
+    // public void printLapAvgSpeed (Float avgSpeed) {
+    //     if (avgSpeed != null) {
+    //         if (isSkiErgFile()) {
+    //             System.out.print(" " + PehoUtils.mps2minp500m(avgSpeed) + "min/500m");
+    //         } else {
+    //             System.out.print(" " + PehoUtils.mps2minpkm(avgSpeed) + "min/km");
+    //             System.out.print(" " + PehoUtils.mps2kmph1(avgSpeed) + "km/h");
+    //         }
+    //     }
+    // }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public String lapAvgSpeed (Float avgSpeed) {
-        String tempString = "";
-        if (avgSpeed != null) {
-            if (isSkiErgFile()) {
-                tempString += " " + PehoUtils.mps2minp500m(avgSpeed) + "min/500m";
-            } else {
-                tempString += " " + PehoUtils.mps2minpkm(avgSpeed) + "min/km";
-                tempString += " " + PehoUtils.mps2kmph1(avgSpeed) + "km/h";
-            }
-        }
-        return tempString;
-    }
+    // public String lapAvgSpeed (Float avgSpeed) {
+    //     String tempString = "";
+    //     if (avgSpeed != null) {
+    //         if (isSkiErgFile()) {
+    //             tempString += " " + PehoUtils.mps2minp500m(avgSpeed) + "min/500m";
+    //         } else {
+    //             tempString += " " + PehoUtils.mps2minpkm(avgSpeed) + "min/km";
+    //             tempString += " " + PehoUtils.mps2kmph1(avgSpeed) + "km/h";
+    //         }
+    //     }
+    //     return tempString;
+    // }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public String lapEndSum2String (Float avgCad, Float avgSpeed, Float avgPower, Float dist) {
-        String tempString = "";
-        tempString += "avgCad: " + (int) Math.round(avgCad) + "spm";
-        if (isSkiErgFile()) {
-            tempString += ", avgPace: " + PehoUtils.mps2minp500m(avgSpeed) + "min/500m";
-            tempString += ", avgPow: " + (int) Math.round(avgPower) + "W";
-        } else {
-            tempString += ", avgPace: " + PehoUtils.mps2minpkm(avgSpeed) + "min/km";
-            tempString += String.format(", avgSp: %.1fkm/h", avgSpeed * 3.60);
-        }
-        tempString += String.format(", sumDist: %.1fkm", + dist / 1000);
-        tempString += System.lineSeparator();
-        return tempString;
-    }
+    // public String lapEndSum2String (Float avgCad, Float avgSpeed, Float avgPower, Float dist) {
+    //     String tempString = "";
+    //     tempString += "avgCad: " + (int) Math.round(avgCad) + "spm";
+    //     if (isSkiErgFile()) {
+    //         tempString += ", avgPace: " + PehoUtils.mps2minp500m(avgSpeed) + "min/500m";
+    //         tempString += ", avgPow: " + (int) Math.round(avgPower) + "W";
+    //     } else {
+    //         tempString += ", avgPace: " + PehoUtils.mps2minpkm(avgSpeed) + "min/km";
+    //         tempString += String.format(", avgSp: %.1fkm/h", avgSpeed * 3.60);
+    //     }
+    //     tempString += String.format(", sumDist: %.1fkm", + dist / 1000);
+    //     tempString += System.lineSeparator();
+    //     return tempString;
+    // }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printLapAllSummary() {
+/*     public void printLapAllSummary() {
         int i = 0;
         int lapNo = 1;
         System.out.println();
@@ -4953,15 +5470,13 @@ public class FitFile {
                 System.out.print(" StartTime:" + FitDateTime.toString(startTime, diffMinutesLocalUTC));
             }
 
-            /*
-            // Extra fields: level and step length (skip if SkiErg)
-            if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
-                System.out.print(" lv" + lapExtraRecords.get(i).level.intValue());
-            }
-            if (lapExtraRecords.get(i).stepLen != null && !isSkiErgFile()) {
-                System.out.print(" steplen" + (int) (lapExtraRecords.get(i).stepLen * 100) + "cm");
-            }
-            */
++           // Extra fields: level and step length (skip if SkiErg)
+            // if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
+            //     System.out.print(" lv" + lapExtraRecords.get(i).level.intValue());
+            // }
+            // if (lapExtraRecords.get(i).stepLen != null && !isSkiErgFile()) {
+            //     System.out.print(" steplen" + (int) (lapExtraRecords.get(i).stepLen * 100) + "cm");
+            // }
 
             // Total timer
             Float totalTimer = mesg.getFieldFloatValue(LAP_TIMER);
@@ -4973,23 +5488,21 @@ public class FitFile {
 
             System.out.print(" WktIntensity: " + intensity);
 
-            /*
             // Heart rate logic
-            Integer maxHr = mesg.getFieldIntegerValue(LAP_MAX_HR);
-            if ("ACTIVE".equals(intensityLabel) || "WARMUP".equals(intensityLabel)) {
-                System.out.print(" HR start:" + lapExtraRecords.get(i).hrStart);
-                System.out.print(" min:" + lapExtraRecords.get(i).hrMin);
-                System.out.print("+" + ((maxHr != null ? maxHr : 0) - lapExtraRecords.get(i).hrMin));
-                System.out.print("-->max:" + (maxHr != null ? maxHr : "N/A"));
-                System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
-            } else {
-                System.out.print(" HR start:" + lapExtraRecords.get(i).hrStart);
-                System.out.print(" max:" + (maxHr != null ? maxHr : "N/A"));
-                System.out.print("" + (lapExtraRecords.get(i).hrMin - (maxHr != null ? maxHr : 0)));
-                System.out.print("-->min:" + lapExtraRecords.get(i).hrMin);
-                System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
-            }
-            */
+            // Integer maxHr = mesg.getFieldIntegerValue(LAP_MAX_HR);
+            // if ("ACTIVE".equals(intensityLabel) || "WARMUP".equals(intensityLabel)) {
+            //     System.out.print(" HR start:" + lapExtraRecords.get(i).hrStart);
+            //     System.out.print(" min:" + lapExtraRecords.get(i).hrMin);
+            //     System.out.print("+" + ((maxHr != null ? maxHr : 0) - lapExtraRecords.get(i).hrMin));
+            //     System.out.print("-->max:" + (maxHr != null ? maxHr : "N/A"));
+            //     System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
+            // } else {
+            //     System.out.print(" HR start:" + lapExtraRecords.get(i).hrStart);
+            //     System.out.print(" max:" + (maxHr != null ? maxHr : "N/A"));
+            //     System.out.print("" + (lapExtraRecords.get(i).hrMin - (maxHr != null ? maxHr : 0)));
+            //     System.out.print("-->min:" + lapExtraRecords.get(i).hrMin);
+            //     System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
+            // }
 
             // Distance
             Float totalDist = mesg.getFieldFloatValue(LAP_DIST);
@@ -5016,25 +5529,24 @@ public class FitFile {
                 System.out.print(" max:" + (maxPower != null ? maxPower : "N/A"));
             }
 
-            /*
             // Extra lap info: Drag Factor and Stroke Length
-            if (lapExtraRecords.get(i).avgDragFactor != null) {
-                System.out.print("--DFavg:" + (int) Math.round(lapExtraRecords.get(i).avgDragFactor));
-                System.out.print(" max:" + (int) Math.round(lapExtraRecords.get(i).maxDragFactor));
-            }
-            if (lapExtraRecords.get(i).avgStrokeLen != null) {
-                System.out.print("--SLavg:" + lapExtraRecords.get(i).avgStrokeLen);
-                System.out.print(" max:" + lapExtraRecords.get(i).maxStrokeLen);
-            }
-            */
+            // if (lapExtraRecords.get(i).avgDragFactor != null) {
+            //     System.out.print("--DFavg:" + (int) Math.round(lapExtraRecords.get(i).avgDragFactor));
+            //     System.out.print(" max:" + (int) Math.round(lapExtraRecords.get(i).maxDragFactor));
+            // }
+            // if (lapExtraRecords.get(i).avgStrokeLen != null) {
+            //     System.out.print("--SLavg:" + lapExtraRecords.get(i).avgStrokeLen);
+            //     System.out.print(" max:" + lapExtraRecords.get(i).maxStrokeLen);
+            // }
 
             System.out.println();
             i++;
             lapNo++;
         }
     }
+ */    
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void printLapLongSummery() {
+/*     public void printLapLongSummery() {
         System.out.println();
         System.out.println("================================================");
         System.out.println("====LAPS IN FILE (lap3-LapLongSummary)");
@@ -5054,7 +5566,6 @@ public class FitFile {
                 if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
                     System.out.print(" lv" + lapExtraRecords.get(i).level.intValue());
                 }
-                */
 
                 Float totalTimer = mesg.getFieldFloatValue(LAP_TIMER);
                 if (totalTimer != null) {
@@ -5072,7 +5583,6 @@ public class FitFile {
                 System.out.print("+" + (mesg.getFieldIntegerValue(LAP_MAX_HR) - lapExtraRecords.get(i).hrMin));
                 System.out.print("-->max:" + mesg.getFieldIntegerValue(LAP_MAX_HR));
                 System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
-                */
 
                 Float totalDist = mesg.getFieldFloatValue(LAP_DIST);
                 if (totalDist != null) System.out.print("--Dist:" + totalDist);
@@ -5104,7 +5614,6 @@ public class FitFile {
                     System.out.print("--SLavg:" + lapExtraRecords.get(i).avgStrokeLen);
                     System.out.print(" max:" + lapExtraRecords.get(i).maxStrokeLen);
                 }
-                */
 
                 System.out.println();
             }
@@ -5128,7 +5637,6 @@ public class FitFile {
                 if (lapExtraRecords.get(i).level != null && !isSkiErgFile()) {
                     System.out.print(" lv" + lapExtraRecords.get(i).level.intValue());
                 }
-                */
 
                 Float totalTimer = mesg.getFieldFloatValue(LAP_TIMER);
                 if (totalTimer != null) {
@@ -5141,7 +5649,6 @@ public class FitFile {
                 System.out.print("" + (lapExtraRecords.get(i).hrMin - mesg.getFieldIntegerValue(LAP_MAX_HR)));
                 System.out.print("-->min:" + lapExtraRecords.get(i).hrMin);
                 System.out.print(" end:" + lapExtraRecords.get(i).hrEnd);
-                */
 
                 Float totalDist = mesg.getFieldFloatValue(LAP_DIST);
                 if (totalDist != null) System.out.print("--Dist:" + totalDist);
@@ -5173,7 +5680,6 @@ public class FitFile {
                     System.out.print("--SLavg:" + lapExtraRecords.get(i).avgStrokeLen);
                     System.out.print(" max:" + lapExtraRecords.get(i).maxStrokeLen);
                 }
-                */
 
                 System.out.println();
             }
@@ -5181,8 +5687,9 @@ public class FitFile {
             lapNo++;
         }
     }
+ */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public String createLapSummery() {
+/*     public String createLapSummery() {
         String tempString = "";
         try {
             tempString += "---- ACTIVE LAPS ----" + System.lineSeparator();
@@ -5324,37 +5831,65 @@ public class FitFile {
         }
         return tempString;
     }
+ */
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String saveFileInfoBefore() {
-        savedFileInfoBefore += "==================================================" + System.lineSeparator();
-        savedFileInfoBefore += "Original file info BEFORE update:" + System.lineSeparator();
-        savedFileInfoBefore += "==================================================" + System.lineSeparator();
-        savedFileInfoBefore += saveFileInfo();
-        savedFileInfoBefore += "==================================================" + System.lineSeparator();
-        return savedFileInfoBefore;
+        clearSavedFileInfoBefore();
+        appendSavedFileInfoBeforeLn("==================================================");
+        appendSavedFileInfoBeforeLn("Original file info BEFORE update:");
+        appendSavedFileInfoBeforeLn("==================================================");
+        appendSavedFileInfoBefore(printFileSummary(false));
+        appendSavedFileInfoBefore(getLapReportGenerator().printActiveRestLapSummeryWithPrintOption(false));
+        appendSavedFileInfoBeforeLn("==================================================");
+        return getSavedFileInfoBefore() ;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String saveFileInfoAfter() {
-        savedFileInfoAfter += "==================================================" + System.lineSeparator();
-        savedFileInfoAfter += "New file info AFTER update:" + System.lineSeparator();
-        savedFileInfoAfter += "==================================================" + System.lineSeparator();
-        savedFileInfoAfter += saveFileInfo();
-        savedFileInfoAfter += "==================================================" + System.lineSeparator();
-        return savedFileInfoAfter;
+        appendSavedFileInfoAfterLn("==================================================");
+        appendSavedFileInfoAfterLn("New file info AFTER update:");
+        appendSavedFileInfoAfterLn("==================================================");
+        appendSavedFileInfoAfter(printFileSummary(false));
+        appendSavedFileInfoAfter(getLapReportGenerator().printActiveRestLapSummeryWithPrintOption(false));
+        appendSavedFileInfoAfterLn("==================================================");
+        return getSavedFileInfoAfter();
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public String saveFileInfo() {
-        String tempString = "";
-        tempString += createFileSummary();
-        tempString += createLapSummery();
-        return tempString;
+    public String printFileSummary() {
+        return printFileSummary(true);
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public String printFileSummary(Boolean printToConsoleAndSaveToLog) {
+        clearTempUpdateLogg();
+        appendTempUpdateLoggLn("--------------------------------------------------");
+        appendTempUpdateLoggLn(" --> Manufacturer:" + getManufacturer()
+         + ", " + getProduct() + "(" + getProductNo() + ")"
+          + ", SW: v" + getSwVer());
+        appendTempUpdateLoggLn(" --> Sport:" + getSport()
+         + ", SubSport:" + getSubsport()
+          + ", SportProfile:" + getSportProfile()
+           + ", WktName:" + getWktName());
+        appendTempUpdateLoggLn(" --> Org activity dateTime Local:" + FitDateTime.toString(getActivityDateTimeLocalOrg()));
+        appendTempUpdateLoggLn(" --> New activity dateTime Local:" + FitDateTime.toString(getActivityDateTimeLocal()));
+        appendTempUpdateLoggLn(" --> Org activity DateTime UTC:  " + FitDateTime.toString(getActivityDateTimeUTC()));
+        appendTempUpdateLoggLn(" --> timeZone:                   "
+         + FitDateTime.offsetToTimeZoneString(getDiffMinutesLocalUTC()));
+        appendTempUpdateLoggLn(" --> Org start datetime UTC:     " + FitDateTime.toString(getTimeFirstRecordOrg()));
+        appendTempUpdateLoggLn(" --> New start datetime UTC:     " + FitDateTime.toString(getTimeFirstRecord()));
+        
+        appendTempUpdateLoggLn("--------------------------------------------------");
+
+        if (printToConsoleAndSaveToLog) {
+            appendUpdateLogg(getTempUpdateLogg());
+            System.out.println(getTempUpdateLogg());
+        }
+        return getTempUpdateLogg();
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printActivityTimeInfo() {
         System.out.println("================================================");
         System.out.println("Activity time info:");
         System.out.println("================================================");
-        System.out.print(createFileSummary());
+        printFileSummary();
         printSessionInfo();
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -5362,7 +5897,7 @@ public class FitFile {
         System.out.println("================================================");
         System.out.println("Detailed file info:");
         System.out.println("================================================");
-        System.out.print(createFileSummary());
+        printFileSummary();
         printFileIdInfo();
         printDeviceInfo();
         printWktInfo();
@@ -5376,7 +5911,7 @@ public class FitFile {
         getLapReportGenerator().printLapReport1();
         getLapReportGenerator().printLapAllSummary();
         getLapReportGenerator().printLapLongSummery();
-        System.out.print(getLapReportGenerator().createLapSummery());
+        getLapReportGenerator().printActiveRestLapSummery();
         printSecRecords0();
         printSecRecords();
         printSessionInfo();
@@ -5437,6 +5972,12 @@ public class FitFile {
             String watchFilePathWithNewTime = ""
                 + conf.getFilePathPrefix() 
                 + new SanitizedFilename(watchFilenameWithNewTime).get();
+
+            if (isCourseFile()) {
+                String courseFilenamePrefix = createCourseOutputPrefix(conf.getInputFilePath());
+                watchFilePathWithOrgTime = conf.getFilePathPrefix() + courseFilenamePrefix;
+                watchFilePathWithNewTime = conf.getFilePathPrefix() + courseFilenamePrefix;
+            }
                 
             System.out.println("---> Output watch filename base org time: " + watchFilePathWithOrgTime);
             System.out.println("---> Output watch filename base new time: " + watchFilePathWithNewTime);
@@ -5465,7 +6006,7 @@ public class FitFile {
 
         try {
             FileWriter myWriter = new FileWriter(watchFilePathWithNewTime + "-before.txt");
-            myWriter.write(savedFileInfoBefore);
+            myWriter.write(getSavedFileInfoBefore());
             myWriter.close();
         } catch (IOException e) {
             System.out.println("An error occurred saving before file.");
@@ -5481,15 +6022,32 @@ public class FitFile {
         }
         try {
             FileWriter myWriter = new FileWriter(watchFilePathWithNewTime + "-after.txt");
-            myWriter.write(savedFileInfoAfter);
-            myWriter.write(savedStrLapsActiveInfoShort);
-            myWriter.write(savedStrLapsRestInfoShort);
+            myWriter.write(getSavedFileInfoAfter());
+            // myWriter.write(savedStrLapsActiveInfoShort);
+            // myWriter.write(savedStrLapsRestInfoShort);
             myWriter.close();
         } catch (IOException e) {
             System.out.println("An error occurred saving after file.");
             e.printStackTrace();
         }
         
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private boolean isCourseFile() {
+        for (Mesg mesg : allMesg) {
+            if (mesg.getNum() == MesgNum.COURSE) {
+                return true;
+            }
+        }
+        return false;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private String createCourseOutputPrefix(String inputFilePath) {
+        String inputFilename = new File(inputFilePath).getName();
+        int dotIx = inputFilename.lastIndexOf('.');
+        String baseName = dotIx > 0 ? inputFilename.substring(0, dotIx) : inputFilename;
+        String nowDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"));
+        return SanitizedFilename.get(baseName + "_now." + nowDateTime);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void appendIfNotNull(StringBuilder sb, String label, Object value) {
@@ -5631,7 +6189,7 @@ public class FitFile {
     }*/
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printRecordMesg (int ix1, int ix2) {
-        for (i=ix1; i<=ix2; i++) {
+        for (int i=ix1; i<=ix2; i++) {
             System.out.print(FitDateTime.toString(new DateTime(recordMesg.get(i).getFieldLongValue(REC_TIME))));
             System.out.print(((recordMesg.get(i).getFieldLongValue(REC_LAT))));
             System.out.print(((recordMesg.get(i).getFieldLongValue(REC_LON))));

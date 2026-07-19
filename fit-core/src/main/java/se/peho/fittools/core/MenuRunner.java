@@ -47,9 +47,19 @@ public class MenuRunner {
             new LapShowList2Command(),
             new LapShowList3Command(),
             new LapShowList4Command(),
+            new LapShowListIntervalCommand(),
             new LapShowListDebugCommand(),
             new LapMergeCommand(),
             new SplitShowListCommand(),
+            new CPointShowListCommand(),
+            new CPointGenericShowListCommand(),
+            new CPointRenameCommand(),
+            new CPointAbbrevCommand(),
+            new CPointBackCommand(),
+            new CPointShiftCommand(),
+            new CPointInsertCharCommand(),
+            new CPointTypeChangeCommand(),
+            new CPointCleanNamePrefixesCommand(),
             new PrintRecordsCommand(),
             new RecDeleteCreateGapCommand(),
             new RecStartCommand(),
@@ -69,13 +79,15 @@ public class MenuRunner {
         // READING FIT FILE
         watchFitFile.readFitFile (conf.getInputFilePath());
 
+        // CHECK AND FIX NULL RECORD TIMES
+        watchFitFile.checkAndFixNullRecordTimes();
+
         // SAVE INFO ABOUT FILE BEFORE UPDATIING
         watchFitFile.saveFileInfoBefore();
+        
         watchFitFile.createTimerList();
         watchFitFile.createPauseList();
         watchFitFile.createGapList();
-
-        boolean firstTime = true;
 
         while (true) {
             printMainMenu();
