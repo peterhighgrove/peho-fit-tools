@@ -53,8 +53,7 @@ public class Main {
         //watchFitFile.printSecRecords0();
         //watchFitFile.printSecRecords();
         if (conf.isDebugLaps()) watchFitFile.getLapReportGenerator().debugLapRecords(watchFitFile.getLapMesg(), watchFitFile.getRecordMesg());
-        //watchFitFile.printSplitRecords();
-        //watchFitFile.printSplitSumRecords();
+        //watchFitFile.printSplitSummary();
 
         // STOP program after print methods if INFO COMMAND
         if (conf.getCommand().toLowerCase().equals("info")) {
@@ -309,8 +308,7 @@ public class Main {
         watchFitFile.createFileSummaryIndoor();
         //watchFitFile.printSecRecords2();
         if (conf.isDebugLaps()) watchFitFile.getLapReportGenerator().printLapRecords();
-        if (conf.isDebugSplit()) watchFitFile.printSplitRecords();
-        if (conf.isDebugSplit()) watchFitFile.printSplitSumRecords();
+        if (conf.isDebugSplit()) watchFitFile.printSplitSummary();
 
         if (conf.isDebugLaps()) watchFitFile.getLapReportGenerator().printLapAllSummary();
 

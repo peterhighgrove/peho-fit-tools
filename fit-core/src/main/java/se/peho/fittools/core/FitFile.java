@@ -5278,6 +5278,9 @@ public class FitFile {
             System.out.println();
             i++;
         }
+        System.out.println("---- END SPLITS ---------");
+        System.out.println();
+        System.out.println("-------------------------");
         System.out.println("---- SPLIT SUMMARIES ----");
         for (Mesg mesg : allMesg) {
             if (mesg.getNum() != MesgNum.SPLIT_SUMMARY) {
@@ -5292,6 +5295,9 @@ public class FitFile {
                 System.out.print(" Type:" + SplitType.getByValue(splitSummaryType));
             }
 
+            Float totalTimer = mesg.getFieldFloatValue(SPLSUM_TIMER);
+            if (totalTimer != null)  System.out.print(" SplTime:" + PehoUtils.sec2minSecLong(totalTimer) + "min");
+
             Float summaryDistance = mesg.getFieldFloatValue(SPLSUM_DIST);
             if (summaryDistance != null) {
                 System.out.print(" TotalDist:" + PehoUtils.m2km2(summaryDistance) + "km");
@@ -5304,6 +5310,24 @@ public class FitFile {
             if (summaryAvgSpeed != null) {
                 System.out.print(" AvgSpeed:" + String.format("%.2f", summaryAvgSpeed) + "m/s");
             }
+
+            Float avgPace = mesg.getFieldFloatValue(SPLSUM_SPEED);
+            if (avgPace != null) System.out.print(" AvgPace:" + PehoUtils.mps2minpkm(avgPace));
+
+            Float maxPace = mesg.getFieldFloatValue(SPLSUM_MSPEED);
+            if (maxPace != null) System.out.print(" MaxPace:" + PehoUtils.mps2minpkm(maxPace));
+
+            Integer ascent = mesg.getFieldIntegerValue(SPLSUM_ASC);
+            if (ascent != null) System.out.print(" Asc:" + ascent + "m");
+
+            Integer descent = mesg.getFieldIntegerValue(SPL_DESC);
+            if (descent != null) System.out.print(" Desc:" + descent + "m");
+
+            Float vertSpeed = mesg.getFieldFloatValue(SPL_VSPEED);
+            if (vertSpeed != null) System.out.print(" AvgVertSpeed: " + vertSpeed + " m/s");
+
+            Float movingTime = mesg.getFieldFloatValue(SPLSUM_MTIMER);
+            if (movingTime != null) System.out.print(" MovingTime: " + PehoUtils.sec2minSecShort(movingTime));
 
             System.out.println();
         }

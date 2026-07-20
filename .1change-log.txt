@@ -76,6 +76,12 @@ SAME LOGIC FOR
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public String printFileSummary(Boolean printToConsoleAndSaveToLog) 
 
+regr wkt/gps -bless
+
+--> Build v2.71
+
+Removed all commented out and print split/splitsum in FitFileForIndoor
+
 BUGGAR
 !!fitFile.findTimerBasedOnTime(startTime); do not work on treadmill files
     LapReportGenerator 
@@ -85,7 +91,10 @@ BUGGAR
 
 TODO
 All print methods use appendTempUpdateLog and return String and (Boolean printToConsoleAndSaveToLog)
+MAYBE to change to (Boolean printToConsole, Boolean saveToLog)
 
 Add the menu inputs to tempUpdateLogg
 
 Change updateLogg to updateLog
+
+
