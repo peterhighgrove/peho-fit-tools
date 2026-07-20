@@ -2425,7 +2425,7 @@ public class FitFileForIndoor extends FitFile {
         try {
             FileWriter myWriter = new FileWriter(filename);
             myWriter.write(savedStrOrgFileInfo);
-            myWriter.write(getTempUpdateLogg());
+            myWriter.write(getTempUpdateLog());
             //myWriter.write(savedStrLapsRestInfoShort);
             myWriter.close();
             System.out.println("Successfully wrote to the file.");

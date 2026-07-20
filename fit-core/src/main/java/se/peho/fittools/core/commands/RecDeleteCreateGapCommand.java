@@ -71,10 +71,10 @@ public class RecDeleteCreateGapCommand implements Command {
                 return;
             }
 
-            watchFitFile.clearTempUpdateLogg();
-            watchFitFile.appendTempUpdateLogg("-------------------------" + System.lineSeparator());
-            watchFitFile.appendTempUpdateLogg("Deleting records to create a GAP" + System.lineSeparator());
-            watchFitFile.appendTempUpdateLogg("-------------------------" + System.lineSeparator());
+            watchFitFile.clearTempUpdateLog();
+            watchFitFile.appendTempUpdateLog("-------------------------" + System.lineSeparator());
+            watchFitFile.appendTempUpdateLog("Deleting records to create a GAP" + System.lineSeparator());
+            watchFitFile.appendTempUpdateLog("-------------------------" + System.lineSeparator());
 
             watchFitFile.deleteRecordsCreateGap(startGapTimer, stopGapTimer);
 

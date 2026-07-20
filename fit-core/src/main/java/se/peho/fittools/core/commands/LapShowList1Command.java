@@ -19,6 +19,7 @@ public class LapShowList1Command implements Command {
     public void run(Scanner sc, FitFile watchFitFile) {
 
         watchFitFile.getLapReportGenerator().printLapReport1();
-        watchFitFile.getLapReportGenerator().printLapReport1AllMesg();
+        //If want to see if lapMesg is consistens w allMesg, then uncomment below
+        //watchFitFile.getLapReportGenerator().printLapReportFromAllMesg();
     }
 }

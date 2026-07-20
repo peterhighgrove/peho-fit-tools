@@ -56,14 +56,14 @@ public class CPointFix {
             CoursePoint oldType = typedCoursePointMesg.getType();
             coursePointMesg.setFieldValue(CoursePointMesg.TypeFieldNum, newType.getValue());
 
-            fitFile.clearTempUpdateLogg();
-            fitFile.appendTempUpdateLoggLn("COURSE POINT - CHANGE TYPE");
-            fitFile.appendTempUpdateLoggLn("--------------------------------");
-            fitFile.appendTempUpdateLoggLn("Changed CPoint no: " + cPointNo);
-            fitFile.appendTempUpdateLoggLn("-- Type changed from " + coursePointName(oldType) + " to " + coursePointName(newType));
+            fitFile.clearTempUpdateLog();
+            fitFile.appendTempUpdateLogLn("COURSE POINT - CHANGE TYPE");
+            fitFile.appendTempUpdateLogLn("--------------------------------");
+            fitFile.appendTempUpdateLogLn("Changed CPoint no: " + cPointNo);
+            fitFile.appendTempUpdateLogLn("-- Type changed from " + coursePointName(oldType) + " to " + coursePointName(newType));
 
-            System.out.println(fitFile.getTempUpdateLogg());
-            fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
+            System.out.println(fitFile.getTempUpdateLog());
+            fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
         }
     }
     // =================================================================================
@@ -84,14 +84,14 @@ public class CPointFix {
 
             coursePointMesg.setFieldValue(CoursePointMesg.NameFieldNum, newName);
 
-            fitFile.clearTempUpdateLogg();
-            fitFile.appendTempUpdateLoggLn("COURSE POINT - CHANGE NAME");
-            fitFile.appendTempUpdateLoggLn("--------------------------------");
-            fitFile.appendTempUpdateLoggLn("Changed CPoint no: " + cPointNo);
-            fitFile.appendTempUpdateLoggLn("-- Name changed from '" + (oldName != null ? oldName : "") + "' to '" + newName + "'");
+            fitFile.clearTempUpdateLog();
+            fitFile.appendTempUpdateLogLn("COURSE POINT - CHANGE NAME");
+            fitFile.appendTempUpdateLogLn("--------------------------------");
+            fitFile.appendTempUpdateLogLn("Changed CPoint no: " + cPointNo);
+            fitFile.appendTempUpdateLogLn("-- Name changed from '" + (oldName != null ? oldName : "") + "' to '" + newName + "'");
 
-            System.out.println(fitFile.getTempUpdateLogg());
-            fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
+            System.out.println(fitFile.getTempUpdateLog());
+            fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
             return;
         }
     }
@@ -103,9 +103,9 @@ public class CPointFix {
             return;
         }
 
-        fitFile.clearTempUpdateLogg();
-        fitFile.appendTempUpdateLoggLn("COURSE POINT - ABBREVIATE NAMES");
-        fitFile.appendTempUpdateLoggLn("--------------------------------");
+        fitFile.clearTempUpdateLog();
+        fitFile.appendTempUpdateLogLn("COURSE POINT - ABBREVIATE NAMES");
+        fitFile.appendTempUpdateLogLn("--------------------------------");
 
         int changedCount = 0;
         int coursePointNo = 0;
@@ -132,12 +132,12 @@ public class CPointFix {
 
             mesg.setFieldValue(CoursePointMesg.NameFieldNum, newName);
             changedCount++;
-            fitFile.appendTempUpdateLoggLn("CPoint no: " + coursePointNo + " -> " + originalName + " => " + newName);
+            fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " -> " + originalName + " => " + newName);
         }
 
-        fitFile.appendTempUpdateLoggLn("-- Changed course point names: " + changedCount);
-        System.out.println(fitFile.getTempUpdateLogg());
-        fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
+        fitFile.appendTempUpdateLogLn("-- Changed course point names: " + changedCount);
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
     // =================================================================================
     public void insertTypeCharInCPointNames() {
@@ -153,9 +153,9 @@ public class CPointFix {
             return;
         }
 
-        fitFile.clearTempUpdateLogg();
-        fitFile.appendTempUpdateLoggLn("COURSE POINT - INSERT TYPE PREFIX");
-        fitFile.appendTempUpdateLoggLn("--------------------------------");
+        fitFile.clearTempUpdateLog();
+        fitFile.appendTempUpdateLogLn("COURSE POINT - INSERT TYPE PREFIX");
+        fitFile.appendTempUpdateLogLn("--------------------------------");
 
         int changedCount = 0;
         int coursePointNo = 0;
@@ -188,15 +188,15 @@ public class CPointFix {
             String newName = matchedRule.insertChar + originalName;
             mesg.setFieldValue(CoursePointMesg.NameFieldNum, newName);
 
-            fitFile.appendTempUpdateLoggLn("CPoint no: " + coursePointNo
+            fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo
                 + " type:" + coursePointName(coursePointType)
                 + " -> " + originalName + " => " + newName);
             changedCount++;
         }
 
-        fitFile.appendTempUpdateLoggLn("-- Changed course point names: " + changedCount);
-        System.out.println(fitFile.getTempUpdateLogg());
-        fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
+        fitFile.appendTempUpdateLogLn("-- Changed course point names: " + changedCount);
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
     // =================================================================================
     public void moveCPointsBack(Scanner sc) {
@@ -210,11 +210,11 @@ public class CPointFix {
         String updateGpsAnswer = InputHelper.askForString("Also update GPS point (y/n)", "n", sc);
         if (updateGpsAnswer == null) return;
 
-        fitFile.clearTempUpdateLogg();
-        fitFile.appendTempUpdateLoggLn("COURSE POINT - MOVE BACK");
-        fitFile.appendTempUpdateLoggLn("--------------------------------");
-        fitFile.appendTempUpdateLoggLn("Move all course points back by: " + metersToMove + "m");
-        fitFile.appendTempUpdateLoggLn("Update GPS points: " + updateGpsAnswer);
+        fitFile.clearTempUpdateLog();
+        fitFile.appendTempUpdateLogLn("COURSE POINT - MOVE BACK");
+        fitFile.appendTempUpdateLogLn("--------------------------------");
+        fitFile.appendTempUpdateLogLn("Move all course points back by: " + metersToMove + "m");
+        fitFile.appendTempUpdateLogLn("Update GPS points: " + updateGpsAnswer);
 
         int changedCount = 0;
         int coursePointNo = 0;
@@ -228,13 +228,13 @@ public class CPointFix {
             CoursePoint oldType = typedCoursePointMesg.getType();
             Float oldDistance = typedCoursePointMesg.getDistance();
             if (oldDistance == null) {
-                fitFile.appendTempUpdateLoggLn("CPoint no: " + coursePointNo + " skipped because distance is missing");
+                fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " skipped because distance is missing");
                 continue;
             }
 
             float newDistance = oldDistance - metersToMove;
             if (newDistance < 0f) {
-                fitFile.appendTempUpdateLoggLn("CPoint no: " + coursePointNo + " skipped because new distance would be negative");
+                fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " skipped because new distance would be negative");
                 continue;
             }
 
@@ -268,25 +268,25 @@ public class CPointFix {
                             mesg.setFieldValue(CoursePointMesg.PositionLongFieldNum, GeoUtils.toSemicircles(movedCoords[1]));
                             newPosition = String.format("%.5f, %.5f", movedCoords[0], movedCoords[1]);
                         } else {
-                            fitFile.appendTempUpdateLoggLn("CPoint no: " + coursePointNo + " GPS update skipped because the anchor records have no GPS data");
+                            fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " GPS update skipped because the anchor records have no GPS data");
                         }
                     } else {
-                        fitFile.appendTempUpdateLoggLn("CPoint no: " + coursePointNo + " GPS update skipped because no previous GPS record was found");
+                        fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " GPS update skipped because no previous GPS record was found");
                     }
                 } else {
-                    fitFile.appendTempUpdateLoggLn("CPoint no: " + coursePointNo + " GPS update skipped because no anchor record was found");
+                    fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " GPS update skipped because no anchor record was found");
                 }
             }
 
-            fitFile.appendTempUpdateLoggLn("CPoint no: " + coursePointNo + " -> " + oldName + " / " + coursePointName(oldType));
-            fitFile.appendTempUpdateLoggLn("-- Distance changed from " + oldDistance + "m to " + newDistance + "m");
-            fitFile.appendTempUpdateLoggLn("-- Position: " + oldPosition + " -> " + newPosition);
+            fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " -> " + oldName + " / " + coursePointName(oldType));
+            fitFile.appendTempUpdateLogLn("-- Distance changed from " + oldDistance + "m to " + newDistance + "m");
+            fitFile.appendTempUpdateLogLn("-- Position: " + oldPosition + " -> " + newPosition);
             changedCount++;
         }
 
-        fitFile.appendTempUpdateLoggLn("-- Changed course points: " + changedCount);
-        System.out.println(fitFile.getTempUpdateLogg());
-        fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
+        fitFile.appendTempUpdateLogLn("-- Changed course points: " + changedCount);
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
     // =================================================================================
     public void shiftGpsPointsSideways(Scanner sc) {
@@ -305,11 +305,11 @@ public class CPointFix {
             originalRecordGps.add(OriginalGpsPoint.fromRecord(record));
         }
 
-        fitFile.clearTempUpdateLogg();
-        fitFile.appendTempUpdateLoggLn("COURSE POINT - SHIFT ROUTE SIDEWAYS");
-        fitFile.appendTempUpdateLoggLn("--------------------------------");
-        fitFile.appendTempUpdateLoggLn("Shift side: " + shiftSide);
-        fitFile.appendTempUpdateLoggLn("Shift distance: " + metersToShift + "m");
+        fitFile.clearTempUpdateLog();
+        fitFile.appendTempUpdateLogLn("COURSE POINT - SHIFT ROUTE SIDEWAYS");
+        fitFile.appendTempUpdateLogLn("--------------------------------");
+        fitFile.appendTempUpdateLogLn("Shift side: " + shiftSide);
+        fitFile.appendTempUpdateLogLn("Shift distance: " + metersToShift + "m");
 
         Map<GpsKey, ShiftedPoint> shiftedRecordLookup = new HashMap<>();
         int changedRecords = 0;
@@ -322,7 +322,7 @@ public class CPointFix {
 
             ShiftedPoint shiftedPoint = shiftPointForRecord(recordIx, originalRecordGps, metersToShift, shiftSide);
             if (shiftedPoint == null) {
-                fitFile.appendTempUpdateLoggLn("Record no: " + (recordIx + 1) + " skipped because route direction could not be determined");
+                fitFile.appendTempUpdateLogLn("Record no: " + (recordIx + 1) + " skipped because route direction could not be determined");
                 continue;
             }
 
@@ -331,7 +331,7 @@ public class CPointFix {
             shiftedRecordLookup.putIfAbsent(originalPoint.key(), shiftedPoint);
             changedRecords++;
 
-            fitFile.appendTempUpdateLoggLn("Record no: " + (recordIx + 1)
+            fitFile.appendTempUpdateLogLn("Record no: " + (recordIx + 1)
                 + " -> " + formatGpsPoint(originalPoint.lat, originalPoint.lon)
                 + " => " + formatGpsPoint(shiftedPoint.lat, shiftedPoint.lon));
         }
@@ -347,7 +347,7 @@ public class CPointFix {
             Integer originalLatSemi = mesg.getFieldIntegerValue(CoursePointMesg.PositionLatFieldNum);
             Integer originalLonSemi = mesg.getFieldIntegerValue(CoursePointMesg.PositionLongFieldNum);
             if (originalLatSemi == null || originalLonSemi == null) {
-                fitFile.appendTempUpdateLoggLn("CPoint no: " + coursePointNo + " skipped because GPS position is missing");
+                fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " skipped because GPS position is missing");
                 continue;
             }
 
@@ -358,13 +358,13 @@ public class CPointFix {
             if (shiftedPoint == null) {
                 int closestRecordIx = findClosestGpsRecordIndex(originalLatSemi, originalLonSemi, originalRecordGps);
                 if (closestRecordIx < 0) {
-                    fitFile.appendTempUpdateLoggLn("CPoint no: " + coursePointNo + " skipped because no nearby record GPS was found");
+                    fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " skipped because no nearby record GPS was found");
                     continue;
                 }
 
                 shiftedPoint = shiftPointAtLocation(originalLatSemi, originalLonSemi, closestRecordIx, originalRecordGps, metersToShift, shiftSide);
                 if (shiftedPoint == null) {
-                    fitFile.appendTempUpdateLoggLn("CPoint no: " + coursePointNo + " skipped because nearby record direction could not be determined");
+                    fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " skipped because nearby record direction could not be determined");
                     continue;
                 }
 
@@ -375,15 +375,15 @@ public class CPointFix {
             mesg.setFieldValue(CoursePointMesg.PositionLongFieldNum, GeoUtils.toSemicircles(shiftedPoint.lon));
             changedCoursePoints++;
 
-            fitFile.appendTempUpdateLoggLn("CPoint no: " + coursePointNo
+            fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo
                 + " (" + shiftSource + ") -> " + formatGpsPoint(GeoUtils.fromSemicircles(originalLatSemi), GeoUtils.fromSemicircles(originalLonSemi))
                 + " => " + formatGpsPoint(shiftedPoint.lat, shiftedPoint.lon));
         }
 
-        fitFile.appendTempUpdateLoggLn("-- Changed record GPS points: " + changedRecords);
-        fitFile.appendTempUpdateLoggLn("-- Changed course points: " + changedCoursePoints);
-        System.out.println(fitFile.getTempUpdateLogg());
-        fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
+        fitFile.appendTempUpdateLogLn("-- Changed record GPS points: " + changedRecords);
+        fitFile.appendTempUpdateLogLn("-- Changed course points: " + changedCoursePoints);
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
     // =================================================================================
     public void cleanCPointNamePrefixes() {
@@ -393,14 +393,14 @@ public class CPointFix {
             return;
         }
 
-        fitFile.clearTempUpdateLogg();
-        fitFile.appendTempUpdateLoggLn("COURSE POINT - CLEAN NAME PREFIXES");
-        fitFile.appendTempUpdateLoggLn("--------------------------------");
-        fitFile.appendTempUpdateLoggLn("Prefixes to remove:");
+        fitFile.clearTempUpdateLog();
+        fitFile.appendTempUpdateLogLn("COURSE POINT - CLEAN NAME PREFIXES");
+        fitFile.appendTempUpdateLogLn("--------------------------------");
+        fitFile.appendTempUpdateLogLn("Prefixes to remove:");
         for (String prefix : prefixes) {
-            fitFile.appendTempUpdateLoggLn("  '" + prefix + "'");
+            fitFile.appendTempUpdateLogLn("  '" + prefix + "'");
         }
-        fitFile.appendTempUpdateLoggLn("--------------------------------");
+        fitFile.appendTempUpdateLogLn("--------------------------------");
 
         int changedCount = 0;
         int coursePointNo = 0;
@@ -422,12 +422,12 @@ public class CPointFix {
 
             mesg.setFieldValue(CoursePointMesg.NameFieldNum, newName);
             changedCount++;
-            fitFile.appendTempUpdateLoggLn("CPoint no: " + coursePointNo + " -> '" + originalName + "' => '" + newName + "'");
+            fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " -> '" + originalName + "' => '" + newName + "'");
         }
 
-        fitFile.appendTempUpdateLoggLn("-- Changed course point names: " + changedCount);
-        System.out.println(fitFile.getTempUpdateLogg());
-        fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
+        fitFile.appendTempUpdateLogLn("-- Changed course point names: " + changedCount);
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
 
     // =================================================================================

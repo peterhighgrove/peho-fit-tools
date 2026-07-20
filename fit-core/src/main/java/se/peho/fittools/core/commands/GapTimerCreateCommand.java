@@ -34,15 +34,15 @@ public class GapTimerCreateCommand implements Command {
             Long gapStart = watchFitFile.getGapList().get(gapNo - 1).getTimeStart();
             Long gapStop = watchFitFile.getGapList().get(gapNo - 1).getTimeStop();
 
-            watchFitFile.clearTempUpdateLogg();
-            watchFitFile.appendTempUpdateLoggLn("-------------------------");
-            watchFitFile.appendTempUpdateLoggLn("Creating timer events in GAP to create a PAUSE");
-            watchFitFile.appendTempUpdateLoggLn("For GAP no: " + gapNo);
-            watchFitFile.appendTempUpdateLoggLn("-------------------------");
+            watchFitFile.clearTempUpdateLog();
+            watchFitFile.appendTempUpdateLogLn("-------------------------");
+            watchFitFile.appendTempUpdateLogLn("Creating timer events in GAP to create a PAUSE");
+            watchFitFile.appendTempUpdateLogLn("For GAP no: " + gapNo);
+            watchFitFile.appendTempUpdateLogLn("-------------------------");
 
             watchFitFile.createEvent(gapStart, Event.TIMER, EventType.STOP_ALL);
             watchFitFile.createEvent(gapStop, Event.TIMER, EventType.START);
-            watchFitFile.appendTempUpdateLoggLn("==>> Created Timer events between "
+            watchFitFile.appendTempUpdateLogLn("==>> Created Timer events between "
                  + FitDateTime.toString(gapStart, watchFitFile.getDiffMinutesLocalUTC())
                  + " and "
                  + FitDateTime.toString(gapStop, watchFitFile.getDiffMinutesLocalUTC())
@@ -50,8 +50,8 @@ public class GapTimerCreateCommand implements Command {
 
             watchFitFile.updateActivityInfoWhenDeletingGapToPause(gapNo - 1);
 
-            System.out.println(watchFitFile.getTempUpdateLogg());
-            watchFitFile.appendUpdateLogg(watchFitFile.getTempUpdateLogg());
+            System.out.println(watchFitFile.getTempUpdateLog());
+            watchFitFile.appendUpdateLog(watchFitFile.getTempUpdateLog());
 
             watchFitFile.createTimerList();
             watchFitFile.createPauseList();

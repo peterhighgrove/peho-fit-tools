@@ -82,6 +82,18 @@ regr wkt/gps -bless
 
 Removed all commented out and print split/splitsum in FitFileForIndoor
 
+--> Build v2.72
+
+Changed tempUpdateLog/updateLog logg->log
+Commented out the printing of laps from allMesg in lap1 command
+
+--> Build v2.73
+--> regr wkt/gps ok
+--> git sync
+
+
+
+
 BUGGAR
 !!fitFile.findTimerBasedOnTime(startTime); do not work on treadmill files
     LapReportGenerator 
@@ -94,6 +106,9 @@ All print methods use appendTempUpdateLog and return String and (Boolean printTo
 MAYBE to change to (Boolean printToConsole, Boolean saveToLog)
 
 Add the menu inputs to tempUpdateLogg
+
+
+DONE
 
 Change updateLogg to updateLog
 

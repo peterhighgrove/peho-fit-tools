@@ -49,13 +49,13 @@ public class PauseFix {
         // Power Value always missing in record after Pause
         stopGapRecord.setFieldValue(FitFile.REC_POW, stopGapPow);
 
-        fitFile.clearTempUpdateLogg();
-        fitFile.appendTempUpdateLoggLn("");
-        fitFile.appendTempUpdateLoggLn("PAUSE - SHORTEN@end, forgot to resume timer after pause");
-        fitFile.appendTempUpdateLoggLn("--------------------------------------------");
-        fitFile.appendTempUpdateLoggLn("Shortened pause no: " + pauseNo);
-        fitFile.appendTempUpdateLoggLn("-- Pause decreased from " + pauseToShorten.getTimePause() + "sec to " + newPauseTime + "sec");
-        fitFile.appendTempUpdateLoggLn("-->"
+        fitFile.clearTempUpdateLog();
+        fitFile.appendTempUpdateLogLn("");
+        fitFile.appendTempUpdateLogLn("PAUSE - SHORTEN@end, forgot to resume timer after pause");
+        fitFile.appendTempUpdateLogLn("--------------------------------------------");
+        fitFile.appendTempUpdateLogLn("Shortened pause no: " + pauseNo);
+        fitFile.appendTempUpdateLogLn("-- Pause decreased from " + pauseToShorten.getTimePause() + "sec to " + newPauseTime + "sec");
+        fitFile.appendTempUpdateLogLn("-->"
             + "new speed:" + PehoUtils.mps2minpkm(startGapSpeed) + "min/km" 
             + " / " + PehoUtils.mps2kmph3(startGapSpeed) + "km/h"
             + " dist:" + pauseToShorten.getDistPause() + "m"
@@ -109,16 +109,16 @@ public class PauseFix {
         fitFile.setAvgSpeed(fitFile.getTotalDistance() / fitFile.getTotalTimerTime());
         fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_SPEED, fitFile.getAvgSpeed());
         fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_ESPEED, fitFile.getAvgSpeed());
-        fitFile.appendTempUpdateLogg("Increasing SESSION_SPEED from " + oldAvgSpeed + "m/s" 
+        fitFile.appendTempUpdateLog("Increasing SESSION_SPEED from " + oldAvgSpeed + "m/s" 
             + " / " + PehoUtils.mps2minpkm(oldAvgSpeed) + "min/km");
-        fitFile.appendTempUpdateLoggLn(" to " + fitFile.getAvgSpeed() + "m/s" 
+        fitFile.appendTempUpdateLogLn(" to " + fitFile.getAvgSpeed() + "m/s" 
             + " / " + PehoUtils.mps2minpkm(fitFile.getAvgSpeed()) + "min/km");
 
         // Delete all events in new gap because those event time will be out of order after shortening the pause, and can cause issues in Garmin Connect when uploading the file.
         fitFile.deleteEvents(startGapTime, stopGapTime, Event.INVALID, EventType.INVALID);
 
-        System.out.println(fitFile.getTempUpdateLogg());
-        fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
 
     public void pauseIncrease(int pauseNo, Long secondsToPutIntoPause) {
@@ -156,17 +156,17 @@ public class PauseFix {
         }
         fitFile.setNumberOfRecords(fitFile.getNumberOfRecords() - i);
 
-        fitFile.clearTempUpdateLogg();
-        fitFile.appendTempUpdateLoggLn("PAUSE - INCREASE, forgot to stop before");
-        fitFile.appendTempUpdateLoggLn("---------------------------------------");
-        fitFile.appendTempUpdateLoggLn("Increased pause no: " + pauseNo);
-        fitFile.appendTempUpdateLoggLn("-- Pause increased with " + secondsToPutIntoPause + "sec to " + PehoUtils.sec2minSecLong(pauseToIncrease.getTimePause()+secondsToPutIntoPause) + "min");
+        fitFile.clearTempUpdateLog();
+        fitFile.appendTempUpdateLogLn("PAUSE - INCREASE, forgot to stop before");
+        fitFile.appendTempUpdateLogLn("---------------------------------------");
+        fitFile.appendTempUpdateLogLn("Increased pause no: " + pauseNo);
+        fitFile.appendTempUpdateLogLn("-- Pause increased with " + secondsToPutIntoPause + "sec to " + PehoUtils.sec2minSecLong(pauseToIncrease.getTimePause()+secondsToPutIntoPause) + "min");
 
         // Increase distance after the shortened pause, starting from 1 after pause stop
         // ------------------------------------------------------
         Float newStartPauseDist = fitFile.getRecordMesg().get(recordToDeleteIx).getFieldFloatValue(FitFile.REC_DIST);
         Float distChangeValue = newStartPauseDist-orgStartPauseDist; // Will be negative
-        fitFile.appendTempUpdateLoggLn("Dist:"+orgStartPauseDist+"-"+newStartPauseDist+"="+distChangeValue);
+        fitFile.appendTempUpdateLogLn("Dist:"+orgStartPauseDist+"-"+newStartPauseDist+"="+distChangeValue);
         fitFile.addDistToRecords(recordToDeleteIx+1, distChangeValue);
 
         // Updating LAP DATA
@@ -204,31 +204,31 @@ public class PauseFix {
         fitFile.setAvgSpeed(fitFile.getTotalDistance() / fitFile.getTotalTimerTime());
         fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_SPEED, fitFile.getAvgSpeed());
         fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_ESPEED, fitFile.getAvgSpeed());
-        fitFile.appendTempUpdateLogg("Increasing SESSION_SPEED from " + oldAvgSpeed + "m/s" 
+        fitFile.appendTempUpdateLog("Increasing SESSION_SPEED from " + oldAvgSpeed + "m/s" 
             + " / " + PehoUtils.mps2minpkm(oldAvgSpeed) + "min/km");
-        fitFile.appendTempUpdateLoggLn(" to " + fitFile.getAvgSpeed() + "m/s" 
+        fitFile.appendTempUpdateLogLn(" to " + fitFile.getAvgSpeed() + "m/s" 
             + " / " + PehoUtils.mps2minpkm(fitFile.getAvgSpeed()) + "min/km");
 
-        System.out.println(fitFile.getTempUpdateLogg());
-        fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
 
     public void pauseToGap(int pauseNo) {
 
-        fitFile.clearTempUpdateLogg();
-        fitFile.appendTempUpdateLoggLn("-------------------------");
-        fitFile.appendTempUpdateLoggLn("Deleting TIMER events in pause " + pauseNo + " to create a GAP");
-        fitFile.appendTempUpdateLoggLn("-------------------------");
+        fitFile.clearTempUpdateLog();
+        fitFile.appendTempUpdateLogLn("-------------------------");
+        fitFile.appendTempUpdateLogLn("Deleting TIMER events in pause " + pauseNo + " to create a GAP");
+        fitFile.appendTempUpdateLogLn("-------------------------");
 
         Long pauseStart = fitFile.getPauseList().get(pauseNo - 1).getTimeStart();
         Long pauseStop = fitFile.getPauseList().get(pauseNo - 1).getTimeStop();
 
         fitFile.deleteEvents(pauseStart, pauseStop, Event.TIMER, EventType.INVALID);
-        fitFile.appendTempUpdateLoggLn("==>> Deleted Timer events between " + FitDateTime.toString(pauseStart, fitFile.getDiffMinutesLocalUTC()) + " and " + FitDateTime.toStringTime(pauseStop, fitFile.getDiffMinutesLocalUTC()) + " (inclusive).");
+        fitFile.appendTempUpdateLogLn("==>> Deleted Timer events between " + FitDateTime.toString(pauseStart, fitFile.getDiffMinutesLocalUTC()) + " and " + FitDateTime.toStringTime(pauseStop, fitFile.getDiffMinutesLocalUTC()) + " (inclusive).");
 
         fitFile.updateActivityInfoWhenDeletingPauseToGap(pauseNo - 1);
 
-        System.out.println(fitFile.getTempUpdateLogg());
-        fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
 }

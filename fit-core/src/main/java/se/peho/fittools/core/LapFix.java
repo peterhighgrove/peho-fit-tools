@@ -44,7 +44,7 @@ public class LapFix {
         Byte tempMaxOfLaps = 0;
         Byte tempMinOfLaps = 0;
 
-        fitFile.clearTempUpdateLogg();
+        fitFile.clearTempUpdateLog();
 
         // int tempLapIx = 0;
         // for (Mesg mesg : fitFile.getAllMesg()) {
@@ -257,8 +257,8 @@ public class LapFix {
             fitFile.getLapMesg().get(toLap-1).setFieldValue(FitFile.LAP_SLON, lonStart);
         }
 
-        fitFile.appendTempUpdateLoggLn("Merged laps: " + fromLap + " to " + toLap);
-        fitFile.appendTempUpdateLoggLn("-- New lap " + (toLap-1) + " time: " + PehoUtils.sec2minSecLong(timerSumOfLaps) + " min, dist: " + Math.round(distSumOfLaps) + " m");
+        fitFile.appendTempUpdateLogLn("Merged laps: " + fromLap + " to " + toLap);
+        fitFile.appendTempUpdateLogLn("-- New lap " + (toLap-1) + " time: " + PehoUtils.sec2minSecLong(timerSumOfLaps) + " min, dist: " + Math.round(distSumOfLaps) + " m");
 
         // Deleting the merged laps (fromLap to toLap-1)
         //-----------------------------------------------
@@ -267,23 +267,23 @@ public class LapFix {
         for (int deleteCounter = 0; deleteCounter < deleteCount; deleteCounter++) {
             int lapAllMesgIx = findLapMesgIndexInAllMesgByLapIx(targetLapIx);
             if (lapAllMesgIx < 0) {
-                fitFile.appendTempUpdateLoggLn("-- Could not find LAP mesg in allMesg for lap ix:" + targetLapIx);
+                fitFile.appendTempUpdateLogLn("-- Could not find LAP mesg in allMesg for lap ix:" + targetLapIx);
                 continue;
             }
 
             Mesg lapMesgToDelete = fitFile.getAllMesg().get(lapAllMesgIx);
-            fitFile.appendTempUpdateLoggLn("-- Deleting lap ix:" + targetLapIx + " time:"
+            fitFile.appendTempUpdateLogLn("-- Deleting lap ix:" + targetLapIx + " time:"
                 + FitDateTime.toString(lapMesgToDelete.getFieldLongValue(FitFile.LAP_STIME), fitFile.getDiffMinutesLocalUTC()));
 
             int timeInZoneIx = findLinkedTimeInZoneMesgIndex(lapAllMesgIx, targetLapIx);
             if (timeInZoneIx >= 0) {
-                fitFile.appendTempUpdateLoggLn("-- Deleting linked TIME_IN_ZONE mesg for lap ix:" + targetLapIx);
+                fitFile.appendTempUpdateLogLn("-- Deleting linked TIME_IN_ZONE mesg for lap ix:" + targetLapIx);
                 int firstRemoveIx = Math.max(lapAllMesgIx, timeInZoneIx);
                 int secondRemoveIx = Math.min(lapAllMesgIx, timeInZoneIx);
                 fitFile.getAllMesg().remove(firstRemoveIx);
                 fitFile.getAllMesg().remove(secondRemoveIx);
             } else {
-                fitFile.appendTempUpdateLoggLn("-- Could not find linked TIME_IN_ZONE mesg for lap ix:" + targetLapIx);
+                fitFile.appendTempUpdateLogLn("-- Could not find linked TIME_IN_ZONE mesg for lap ix:" + targetLapIx);
                 fitFile.getAllMesg().remove(lapAllMesgIx);
             }
 
@@ -302,8 +302,8 @@ public class LapFix {
         }
 
         // Print and save logs
-        System.out.println(fitFile.getTempUpdateLogg());
-        fitFile.appendUpdateLogg(fitFile.getTempUpdateLogg());
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
 
     private int findLapMesgIndexInAllMesgByLapIx(int lapIx) {

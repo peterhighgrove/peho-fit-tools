@@ -11,7 +11,7 @@
       //"args": "\"Friskis Orminge\" 2 \"2026-05-14-10-16-40-SkiErg-TestRow Custom Workout-0km-4.46min-garmin-e2pro-v26.09-renamed.zip\" \"2026-05-14-10-16-40-indoor_skiing-1km-4.57min-c2-org.fit\""
       "args": "\"Friskis Orminge\" 8 \
       \"2025-12-30-16-31-30-Elliptical-2x(3-2-1min)-0km-33.54min-garmin-e2pro-v25.03-renamed.zip\" \
-      \"2025-12-30-16-31-30-Elliptical-2x(3-2-1min)-Friskis Orminge-7.1km-33.54min-garmin-e2pro-v25.03-manualLaps.txt\""
+      \"2025-12-30-16-31-30-Elliptical-2x(3-2-1min)-Friskis Orminge-7.1km-33.54min-garmin-e2pro-v25.03-manualLaps.txt\" --debugDevfields"
       //"args": "\"Friskis Orminge\""
     },
     {
@@ -20,7 +20,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"TEST\" 2 \"add2.fit\""
+      "args": "\"TEST\" 3 \"2026-03-08-14-46-10-XC Classic Ski-TEST-19.6km-1.36.52h-garmin-e2pro-v26.03-org.fit\""
     },
     {
       "type": "java",
