@@ -20,7 +20,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"TEST\" 0 \"Söderbysjön-Ältasjön-Ulvsjön.fit\""
+      "args": "\"TEST\" 0 \"input.fit\""
     },
     {
       "type": "java",

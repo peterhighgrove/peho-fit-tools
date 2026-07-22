@@ -676,12 +676,14 @@ public class CPointFix {
         fitFile.clearTempUpdateLog();
         fitFile.appendTempUpdateLogLn("COURSE POINT - MATCH TO CLOSEST RECORD");
         fitFile.appendTempUpdateLogLn("--------------------------------");
+        fitFile.appendTempUpdateLogLn("Matching mode: forward-only along record sequence");
 
         int changedCoursePoints = 0;
         int changedTimes = 0;
         int changedDistances = 0;
         int skippedCoursePoints = 0;
         int coursePointNo = 0;
+        int searchStartRecordIx = 0;
 
         for (Mesg mesg : fitFile.getAllMesg()) {
             if (mesg.getNum() != MesgNum.COURSE_POINT) {
@@ -697,12 +699,20 @@ public class CPointFix {
                 continue;
             }
 
-            int closestRecordIx = findClosestGpsRecordIndexInRecords(cPointLatSemi, cPointLonSemi, fitFile.getRecordMesg());
+            int closestRecordIx = findClosestGpsRecordIndexInRecords(
+                cPointLatSemi,
+                cPointLonSemi,
+                fitFile.getRecordMesg(),
+                searchStartRecordIx);
             if (closestRecordIx < 0) {
                 fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " skipped because no nearby record GPS was found");
                 skippedCoursePoints++;
                 continue;
             }
+
+            // Keep course-point matching moving forward so repeated route locations
+            // (for example start/end overlap) don't snap back to an earlier pass.
+            searchStartRecordIx = closestRecordIx;
 
             Mesg closestRecord = fitFile.getRecordMesg().get(closestRecordIx);
             Integer recordLatSemi = closestRecord.getFieldIntegerValue(FitFile.REC_LAT);
@@ -1119,10 +1129,19 @@ public class CPointFix {
     }
     // =================================================================================
     private int findClosestGpsRecordIndexInRecords(Integer lat, Integer lon, List<Mesg> recordMesgList) {
+        return findClosestGpsRecordIndexInRecords(lat, lon, recordMesgList, 0);
+    }
+    // =================================================================================
+    private int findClosestGpsRecordIndexInRecords(Integer lat, Integer lon, List<Mesg> recordMesgList, int startIndex) {
+        if (recordMesgList == null || recordMesgList.isEmpty()) {
+            return -1;
+        }
+
+        int boundedStart = Math.max(0, startIndex);
         int closestIndex = -1;
         double closestDistance = Double.MAX_VALUE;
 
-        for (int i = 0; i < recordMesgList.size(); i++) {
+        for (int i = boundedStart; i < recordMesgList.size(); i++) {
             Mesg record = recordMesgList.get(i);
             Integer recordLatSemi = record.getFieldIntegerValue(FitFile.REC_LAT);
             Integer recordLonSemi = record.getFieldIntegerValue(FitFile.REC_LON);

@@ -80,10 +80,47 @@ public class CPointFixTest {
         assertTrue(record1Lat < 59.0);
     }
 
+    @Test
+    public void syncCPointTimeAndDistanceToClosestRecordByGps_keepsForwardProgressWhenGpsRepeats() {
+        FitFile fitFile = new FitFile();
+
+        fitFile.getRecordMesg().add(record(59.00000, 18.00000, 100L, 0f));
+        fitFile.getRecordMesg().add(record(59.00010, 18.00010, 110L, 100f));
+        fitFile.getRecordMesg().add(record(59.00020, 18.00020, 120L, 200f));
+        fitFile.getRecordMesg().add(record(59.00030, 18.00030, 130L, 300f));
+        fitFile.getRecordMesg().add(record(59.00000, 18.00000, 140L, 400f));
+
+        CoursePointMesg cpStart = coursePoint(59.00000, 18.00000);
+        CoursePointMesg cpMiddle = coursePoint(59.00030, 18.00030);
+        CoursePointMesg cpEnd = coursePoint(59.00000, 18.00000);
+
+        fitFile.getAllMesg().add((Mesg) cpStart);
+        fitFile.getAllMesg().add((Mesg) cpMiddle);
+        fitFile.getAllMesg().add((Mesg) cpEnd);
+
+        fitFile.getCPointFix().syncCPointTimeAndDistanceToClosestRecordByGps();
+
+        assertEquals(Long.valueOf(100L), cpStart.getFieldLongValue(CoursePointMesg.TimestampFieldNum));
+        assertEquals(Float.valueOf(0f), cpStart.getFieldFloatValue(CoursePointMesg.DistanceFieldNum));
+
+        assertEquals(Long.valueOf(130L), cpMiddle.getFieldLongValue(CoursePointMesg.TimestampFieldNum));
+        assertEquals(Float.valueOf(300f), cpMiddle.getFieldFloatValue(CoursePointMesg.DistanceFieldNum));
+
+        assertEquals(Long.valueOf(140L), cpEnd.getFieldLongValue(CoursePointMesg.TimestampFieldNum));
+        assertEquals(Float.valueOf(400f), cpEnd.getFieldFloatValue(CoursePointMesg.DistanceFieldNum));
+    }
+
     private RecordMesg record(double lat, double lon) {
         RecordMesg recordMesg = new RecordMesg();
         recordMesg.setFieldValue(FitFile.REC_LAT, GeoUtils.toSemicircles(lat));
         recordMesg.setFieldValue(FitFile.REC_LON, GeoUtils.toSemicircles(lon));
+        return recordMesg;
+    }
+
+    private RecordMesg record(double lat, double lon, long timestamp, float distance) {
+        RecordMesg recordMesg = record(lat, lon);
+        recordMesg.setFieldValue(FitFile.REC_TIME, timestamp);
+        recordMesg.setFieldValue(FitFile.REC_DIST, distance);
         return recordMesg;
     }
 

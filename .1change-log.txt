@@ -112,6 +112,16 @@ new (cpace) Set course pace and recalculate record times
 new (recfix) Apply automatic REC_TIME fixes
 
 --> Build v2.76
+--> regr wkt/gps ok ->bless
+--> git sync
+
+Fix for courses that has the same first and last part when using 
+(cpct) Match CPoint time/dist to closest record GPS
+
+--> Build v2.77
+--> regr wkt/gps ok ->bless
+--> git sync
+
 
 BUGGAR
 !!fitFile.findTimerBasedOnTime(startTime); do not work on treadmill files
