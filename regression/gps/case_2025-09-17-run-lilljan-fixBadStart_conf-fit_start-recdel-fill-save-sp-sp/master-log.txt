@@ -1,8 +1,8 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 2626, Time between: 2025-09-17-17-06-21 -- 2025-09-17-17-51-03
-CHECK/FIX RECORD TIMES
-----------------------
-Completed REC_TIME check/fix. Updated 0 null value(s).
+CHECK/FIX NULL RECORD TIMES
+---------------------------
+Completed REC_TIME startup check/fix. Filled 0 null REC_TIME value(s). Duplicates kept=0, out-of-order points detected=0.
 -- New START coordinates:59.34934, 18.09934
     Decimal Degrees: Lat 59.34934000, Lon 18.09934000
     Garmin Semicircles: Lat 708065206, Lon 215933537

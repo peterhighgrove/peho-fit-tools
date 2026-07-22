@@ -1,8 +1,8 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 2626, Time between: 2025-09-17-17-06-21 -- 2025-09-17-17-51-03
-CHECK/FIX RECORD TIMES
-----------------------
-Completed REC_TIME check/fix. Updated 0 null value(s).
+CHECK/FIX NULL RECORD TIMES
+---------------------------
+Completed REC_TIME startup check/fix. Filled 0 null REC_TIME value(s). Duplicates kept=0, out-of-order points detected=0.
 ---- ACTIVE LAPS ----
 Lap3 HRmin122>st122+15->max137 end137 1:27min 87spm 4:46min/km 12.6km/h 340W 0.3km step241cm
 Lap5 HRmin130>st130+6->max136 end136 0:31min 87spm 4:45min/km 12.6km/h 232W 0.1km step241cm

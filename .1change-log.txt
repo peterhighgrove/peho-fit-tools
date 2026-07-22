@@ -91,8 +91,27 @@ Commented out the printing of laps from allMesg in lap1 command
 --> regr wkt/gps ok
 --> git sync
 
+(cpct) Match CPoint time/dist to closest record GPS
+(cprt) Change record/CPoint dates to today
+(cpcn) Change Course name in COURSE mesg
 
+--> Build v2.74
 
+new (cpm) Check/move CPoints after records
+
+--> Build v2.75
+
+Start do not fix for duplicates only for missing record time values
+Lot of new commands for courses
+-- Course points --
+upd (cpr) Show Course points list
+new (cpcn) Change Course name in COURSE mesg
+upd (cpt) Change Course point type
+new (cptg) Change Generic Course point types (loop)
+new (cpace) Set course pace and recalculate record times
+new (recfix) Apply automatic REC_TIME fixes
+
+--> Build v2.76
 
 BUGGAR
 !!fitFile.findTimerBasedOnTime(startTime); do not work on treadmill files

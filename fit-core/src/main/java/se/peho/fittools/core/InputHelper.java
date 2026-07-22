@@ -96,8 +96,7 @@ public class InputHelper {
 
     public static String askForString(String prompt, String defaultValue, Scanner sc) {
         while (true) {
-            System.out.println("Default value: " + defaultValue);
-            System.out.print(prompt + " (b = back): ");
+            System.out.print(prompt + " [default: " + defaultValue + "] (b = back): ");
             String input = sc.nextLine().trim();
             if (input.equalsIgnoreCase("b")) return null;
             if (input.equals("")) input = defaultValue;

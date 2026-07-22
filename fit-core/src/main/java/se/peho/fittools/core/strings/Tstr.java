@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 public class Tstr {
 
     private final long FIT_EPOCH_OFFSET = 631065600L; // seconds
-    private final String formatPattern = "HH-mm-ss";
+    private final String formatPattern = "HH:mm:ss";
 
     private String TimeStr = null;
 

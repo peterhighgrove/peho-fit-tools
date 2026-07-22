@@ -54,13 +54,20 @@ public class MenuRunner {
             new CPointShowListCommand(),
             new CPointGenericShowListCommand(),
             new CPointRenameCommand(),
+            new CPointCourseNameCommand(),
             new CPointAbbrevCommand(),
             new CPointBackCommand(),
+            new CPointMoveAfterRecordsCommand(),
             new CPointShiftCommand(),
+            new CPointTimeToClosestRecordCommand(),
+            new CPointRecordTimesToTodayCommand(),
             new CPointInsertCharCommand(),
             new CPointTypeChangeCommand(),
+            new CPointTypeGenericLoopCommand(),
             new CPointCleanNamePrefixesCommand(),
             new PrintRecordsCommand(),
+            new CoursePaceCommand(),
+            new RecFixCommand(),
             new RecDeleteCreateGapCommand(),
             new RecStartCommand(),
             new WktShowCommand(),
@@ -79,7 +86,7 @@ public class MenuRunner {
         // READING FIT FILE
         watchFitFile.readFitFile (conf.getInputFilePath());
 
-        // CHECK AND FIX NULL RECORD TIMES
+        // CHECK NULL RECORD TIMES (warnings only)
         watchFitFile.checkAndFixNullRecordTimes();
 
         // SAVE INFO ABOUT FILE BEFORE UPDATIING

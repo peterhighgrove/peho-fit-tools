@@ -1,8 +1,8 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 6975, Time between: 2026-03-12-10-03-11 -- 2026-03-12-13-57-52
-CHECK/FIX RECORD TIMES
-----------------------
-Completed REC_TIME check/fix. Updated 0 null value(s).
+CHECK/FIX NULL RECORD TIMES
+---------------------------
+Completed REC_TIME startup check/fix. Filled 0 null REC_TIME value(s). Duplicates kept=0, out-of-order points detected=0.
 PAUSE - INCREASE, forgot to stop before
 ---------------------------------------
 Increased pause no: 7

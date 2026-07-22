@@ -5,16 +5,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.garmin.fit.CourseMesg;
 import com.garmin.fit.CoursePoint;
 import com.garmin.fit.CoursePointMesg;
+import com.garmin.fit.Event;
+import com.garmin.fit.EventMesg;
+import com.garmin.fit.EventType;
 import com.garmin.fit.Mesg;
 import com.garmin.fit.MesgNum;
 
@@ -43,17 +51,32 @@ public class CPointFix {
                 continue;
             }
 
-            Integer typeValue = InputHelper.askForNumber("Enter new CPoint type number", sc);
-            if (typeValue == null) return;
-
-            CoursePoint newType = CoursePoint.getByValue(typeValue.shortValue());
-            if (newType == CoursePoint.INVALID) {
-                System.out.println("==XX> Not a valid CPoint type number. Enter a new CPoint type number.");
-                continue;
-            }
-
             CoursePointMesg typedCoursePointMesg = new CoursePointMesg(coursePointMesg);
             CoursePoint oldType = typedCoursePointMesg.getType();
+            if (oldType == null || oldType == CoursePoint.INVALID) {
+                oldType = CoursePoint.GENERIC;
+            }
+
+            CoursePoint newType;
+            while (true) {
+                String typeInput = InputHelper.askForString(
+                    "Enter new CPoint type (number/text)",
+                    coursePointName(oldType),
+                    sc);
+                if (typeInput == null) {
+                    return;
+                }
+
+                TypeResolution resolution = resolveCoursePointTypeInput(typeInput);
+                if (!resolution.valid) {
+                    System.out.println("==XX> " + resolution.message);
+                    continue;
+                }
+
+                newType = resolution.coursePoint;
+                break;
+            }
+
             coursePointMesg.setFieldValue(CoursePointMesg.TypeFieldNum, newType.getValue());
 
             fitFile.clearTempUpdateLog();
@@ -65,6 +88,74 @@ public class CPointFix {
             System.out.println(fitFile.getTempUpdateLog());
             fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
         }
+    }
+
+    // =================================================================================
+    public void changeGenericCPointTypes(Scanner sc) {
+
+        CPointReportGenerator reportGenerator = new CPointReportGenerator(fitFile);
+        reportGenerator.printGenericCPointsInputList();
+
+        List<GenericCPointEntry> genericCoursePoints = collectGenericCoursePoints();
+        if (genericCoursePoints.isEmpty()) {
+            System.out.println("==XX> No generic course points found in file.");
+            return;
+        }
+
+        printCPointTypeOptions();
+
+        fitFile.clearTempUpdateLog();
+        fitFile.appendTempUpdateLogLn("COURSE POINT - CHANGE TYPE GENERIC LOOP");
+        fitFile.appendTempUpdateLogLn("--------------------------------");
+
+        int changedCount = 0;
+        for (GenericCPointEntry entry : genericCoursePoints) {
+            CoursePointMesg coursePointMesg = new CoursePointMesg(entry.mesg);
+            CoursePoint oldType = coursePointMesg.getType();
+            if (oldType == null || oldType == CoursePoint.INVALID) {
+                oldType = CoursePoint.GENERIC;
+            }
+
+            String shortLabel = buildShortLabel(coursePointMesg.getName());
+
+            while (true) {
+                String typeInput = InputHelper.askForString(
+                    "[" + shortLabel + "] CPoint no " + entry.coursePointNo + " new type (number/text)",
+                    coursePointName(oldType),
+                    sc);
+                if (typeInput == null) {
+                    fitFile.appendTempUpdateLogLn("Stopped by user.");
+                    fitFile.appendTempUpdateLogLn("-- Changed course points: " + changedCount);
+                    System.out.println(fitFile.getTempUpdateLog());
+                    fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
+                    return;
+                }
+
+                TypeResolution resolution = resolveCoursePointTypeInput(typeInput);
+                if (!resolution.valid) {
+                    System.out.println("==XX> " + resolution.message);
+                    continue;
+                }
+
+                CoursePoint newType = resolution.coursePoint;
+                if (newType == oldType) {
+                    fitFile.appendTempUpdateLogLn("CPoint no: " + entry.coursePointNo
+                        + " [" + shortLabel + "] unchanged (" + coursePointName(oldType) + ")");
+                } else {
+                    entry.mesg.setFieldValue(CoursePointMesg.TypeFieldNum, newType.getValue());
+                    changedCount++;
+                    System.out.println("CPoint no: " + entry.coursePointNo
+                        + " [" + shortLabel + "] " + coursePointName(oldType) + " -> " + coursePointName(newType));
+                    fitFile.appendTempUpdateLogLn("CPoint no: " + entry.coursePointNo
+                        + " [" + shortLabel + "] " + coursePointName(oldType) + " -> " + coursePointName(newType));
+                }
+                break;
+            }
+        }
+
+        fitFile.appendTempUpdateLogLn("-- Changed course points: " + changedCount);
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
     // =================================================================================
     public void changeCPointName(Scanner sc) {
@@ -79,7 +170,7 @@ public class CPointFix {
             }
 
             String oldName = coursePointMesg.getFieldStringValue(CoursePointMesg.NameFieldNum);
-            String newName = InputHelper.askForString("Enter new CPoint name", sc);
+            String newName = InputHelper.askForString("Enter new CPoint name", oldName != null ? oldName : "", sc);
             if (newName == null) return;
 
             coursePointMesg.setFieldValue(CoursePointMesg.NameFieldNum, newName);
@@ -94,6 +185,156 @@ public class CPointFix {
             fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
             return;
         }
+    }
+    // =================================================================================
+    public void changeCourseName(Scanner sc) {
+        String currentName = null;
+        int courseMesgCount = 0;
+        for (Mesg mesg : fitFile.getAllMesg()) {
+            if (mesg.getNum() != MesgNum.COURSE) {
+                continue;
+            }
+
+            courseMesgCount++;
+            if (currentName == null) {
+                currentName = mesg.getFieldStringValue(CourseMesg.NameFieldNum);
+            }
+        }
+
+        if (courseMesgCount == 0) {
+            System.out.println("==XX> No COURSE message found in file.");
+            return;
+        }
+
+        String newName = InputHelper.askForString("Enter new Course name", currentName != null ? currentName : "", sc);
+        if (newName == null) {
+            return;
+        }
+
+        int changedCount = 0;
+        for (Mesg mesg : fitFile.getAllMesg()) {
+            if (mesg.getNum() != MesgNum.COURSE) {
+                continue;
+            }
+
+            mesg.setFieldValue(CourseMesg.NameFieldNum, newName);
+            changedCount++;
+        }
+
+        fitFile.clearTempUpdateLog();
+        fitFile.appendTempUpdateLogLn("COURSE - CHANGE NAME");
+        fitFile.appendTempUpdateLogLn("--------------------------------");
+        fitFile.appendTempUpdateLogLn("Changed COURSE messages: " + changedCount);
+        fitFile.appendTempUpdateLogLn("-- Name changed from '" + (currentName != null ? currentName : "") + "' to '" + newName + "'");
+
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
+    }
+    // =================================================================================
+    public void checkAndMoveCPointsAfterRecords(Scanner sc) {
+        List<Mesg> allMesg = fitFile.getAllMesg();
+
+        int firstRecordIx = findFirstMesgIndex(allMesg, MesgNum.RECORD);
+        int lastRecordIx = findLastMesgIndex(allMesg, MesgNum.RECORD);
+        if (firstRecordIx < 0 || lastRecordIx < 0) {
+            System.out.println("==XX> No RECORD messages found in file.");
+            return;
+        }
+
+        List<Integer> coursePointIndices = new ArrayList<>();
+        for (int i = 0; i < allMesg.size(); i++) {
+            if (allMesg.get(i).getNum() == MesgNum.COURSE_POINT) {
+                coursePointIndices.add(i);
+            }
+        }
+
+        if (coursePointIndices.isEmpty()) {
+            System.out.println("==XX> No COURSE_POINT messages found in file.");
+            return;
+        }
+
+        int beforeCount = 0;
+        int betweenCount = 0;
+        int afterCount = 0;
+        for (Integer cPointIx : coursePointIndices) {
+            if (cPointIx < firstRecordIx) {
+                beforeCount++;
+            } else if (cPointIx > lastRecordIx) {
+                afterCount++;
+            } else {
+                betweenCount++;
+            }
+        }
+
+        String placement;
+        if (beforeCount == coursePointIndices.size()) {
+            placement = "ALL BEFORE FIRST RECORD";
+        } else if (betweenCount == coursePointIndices.size()) {
+            placement = "ALL BETWEEN RECORDS";
+        } else if (afterCount == coursePointIndices.size()) {
+            placement = "ALL AFTER LAST RECORD";
+        } else {
+            placement = "MIXED";
+        }
+
+        fitFile.clearTempUpdateLog();
+        fitFile.appendTempUpdateLogLn("COURSE POINT - CHECK/MOVE POSITION");
+        fitFile.appendTempUpdateLogLn("--------------------------------");
+        fitFile.appendTempUpdateLogLn("Record range in allMesg: " + firstRecordIx + ".." + lastRecordIx);
+        fitFile.appendTempUpdateLogLn("Course points total: " + coursePointIndices.size());
+        fitFile.appendTempUpdateLogLn("-- Before first record: " + beforeCount);
+        fitFile.appendTempUpdateLogLn("-- Between records: " + betweenCount);
+        fitFile.appendTempUpdateLogLn("-- After last record: " + afterCount);
+        fitFile.appendTempUpdateLogLn("Placement result: " + placement);
+        System.out.println(fitFile.getTempUpdateLog());
+
+        String answer = InputHelper.askForString(
+            "Move all course points to after records and before last timer stop event (y/n)",
+            "n",
+            sc);
+        if (answer == null || !answer.equalsIgnoreCase("y")) {
+            fitFile.appendTempUpdateLogLn("No move done.");
+            fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
+            return;
+        }
+
+        List<Mesg> coursePointMesgs = new ArrayList<>();
+        for (Mesg mesg : allMesg) {
+            if (mesg.getNum() == MesgNum.COURSE_POINT) {
+                coursePointMesgs.add(mesg);
+            }
+        }
+
+        allMesg.removeIf(mesg -> mesg.getNum() == MesgNum.COURSE_POINT);
+
+        int lastRecordIxAfterRemoval = findLastMesgIndex(allMesg, MesgNum.RECORD);
+        if (lastRecordIxAfterRemoval < 0) {
+            fitFile.appendTempUpdateLogLn("==XX> Move aborted: records disappeared unexpectedly.");
+            System.out.println(fitFile.getTempUpdateLog());
+            fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
+            return;
+        }
+
+        int lastTimerStopIx = findLastTimerStopEventIndex(allMesg);
+        int insertIx = lastRecordIxAfterRemoval + 1;
+
+        if (lastTimerStopIx >= 0 && lastTimerStopIx > lastRecordIxAfterRemoval) {
+            insertIx = lastTimerStopIx;
+        } else if (lastTimerStopIx >= 0) {
+            fitFile.appendTempUpdateLogLn("Warning: last timer stop event is not after records; inserting directly after last record.");
+        } else {
+            fitFile.appendTempUpdateLogLn("Warning: no timer stop event (STOP_ALL/STOP_DISABLE_ALL) found; inserting directly after last record.");
+        }
+
+        allMesg.addAll(insertIx, coursePointMesgs);
+
+        fitFile.appendTempUpdateLogLn("Moved course points: " + coursePointMesgs.size());
+        fitFile.appendTempUpdateLogLn("Inserted at allMesg index: " + insertIx);
+        fitFile.appendTempUpdateLogLn("-- After last record index: " + lastRecordIxAfterRemoval);
+        fitFile.appendTempUpdateLogLn("-- Last timer stop index: " + lastTimerStopIx);
+
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
     // =================================================================================
     public void changeCPointNamesFromAbbrevList() {
@@ -431,6 +672,158 @@ public class CPointFix {
     }
 
     // =================================================================================
+    public void syncCPointTimeAndDistanceToClosestRecordByGps() {
+        fitFile.clearTempUpdateLog();
+        fitFile.appendTempUpdateLogLn("COURSE POINT - MATCH TO CLOSEST RECORD");
+        fitFile.appendTempUpdateLogLn("--------------------------------");
+
+        int changedCoursePoints = 0;
+        int changedTimes = 0;
+        int changedDistances = 0;
+        int skippedCoursePoints = 0;
+        int coursePointNo = 0;
+
+        for (Mesg mesg : fitFile.getAllMesg()) {
+            if (mesg.getNum() != MesgNum.COURSE_POINT) {
+                continue;
+            }
+
+            coursePointNo++;
+            Integer cPointLatSemi = mesg.getFieldIntegerValue(CoursePointMesg.PositionLatFieldNum);
+            Integer cPointLonSemi = mesg.getFieldIntegerValue(CoursePointMesg.PositionLongFieldNum);
+            if (cPointLatSemi == null || cPointLonSemi == null) {
+                fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " skipped because GPS position is missing");
+                skippedCoursePoints++;
+                continue;
+            }
+
+            int closestRecordIx = findClosestGpsRecordIndexInRecords(cPointLatSemi, cPointLonSemi, fitFile.getRecordMesg());
+            if (closestRecordIx < 0) {
+                fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " skipped because no nearby record GPS was found");
+                skippedCoursePoints++;
+                continue;
+            }
+
+            Mesg closestRecord = fitFile.getRecordMesg().get(closestRecordIx);
+            Integer recordLatSemi = closestRecord.getFieldIntegerValue(FitFile.REC_LAT);
+            Integer recordLonSemi = closestRecord.getFieldIntegerValue(FitFile.REC_LON);
+            double gpsGapMeters = 0d;
+            if (recordLatSemi != null && recordLonSemi != null) {
+                gpsGapMeters = GeoUtils.distCalc(
+                    GeoUtils.fromSemicircles(cPointLatSemi),
+                    GeoUtils.fromSemicircles(cPointLonSemi),
+                    GeoUtils.fromSemicircles(recordLatSemi),
+                    GeoUtils.fromSemicircles(recordLonSemi));
+            }
+
+            Long oldTimestamp = mesg.getFieldLongValue(CoursePointMesg.TimestampFieldNum);
+            Long recordTimestamp = closestRecord.getFieldLongValue(FitFile.REC_TIME);
+            Float oldDistance = mesg.getFieldFloatValue(CoursePointMesg.DistanceFieldNum);
+            Float recordDistance = closestRecord.getFieldFloatValue(FitFile.REC_DIST);
+
+            boolean changed = false;
+            if (recordTimestamp != null && !recordTimestamp.equals(oldTimestamp)) {
+                mesg.setFieldValue(CoursePointMesg.TimestampFieldNum, recordTimestamp);
+                changedTimes++;
+                changed = true;
+            }
+
+            if (recordDistance != null && (oldDistance == null || Math.abs(oldDistance - recordDistance) > 0.01f)) {
+                mesg.setFieldValue(CoursePointMesg.DistanceFieldNum, recordDistance);
+                changedDistances++;
+                changed = true;
+            }
+
+            if (changed) {
+                changedCoursePoints++;
+                fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " -> closest record no: " + (closestRecordIx + 1)
+                    + " (gps gap: " + String.format("%.1f", gpsGapMeters) + "m)");
+                if (recordTimestamp != null && !recordTimestamp.equals(oldTimestamp)) {
+                    fitFile.appendTempUpdateLogLn("-- Timestamp: " + FitDateTime.toString(oldTimestamp)
+                        + " -> " + FitDateTime.toString(recordTimestamp));
+                }
+                if (recordDistance != null && (oldDistance == null || Math.abs(oldDistance - recordDistance) > 0.01f)) {
+                    fitFile.appendTempUpdateLogLn("-- Distance: " + oldDistance + "m -> " + recordDistance + "m");
+                }
+            }
+        }
+
+        fitFile.appendTempUpdateLogLn("-- Updated course points: " + changedCoursePoints);
+        fitFile.appendTempUpdateLogLn("-- Updated timestamps: " + changedTimes);
+        fitFile.appendTempUpdateLogLn("-- Updated distances: " + changedDistances);
+        fitFile.appendTempUpdateLogLn("-- Skipped course points: " + skippedCoursePoints);
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
+    }
+
+    // =================================================================================
+    public void changeRecordAndCPointTimesToTodayDate() {
+        LocalDate today = LocalDate.now();
+
+        fitFile.clearTempUpdateLog();
+        fitFile.appendTempUpdateLogLn("COURSE POINT/RECORD - CHANGE DATE TO TODAY");
+        fitFile.appendTempUpdateLogLn("--------------------------------");
+        fitFile.appendTempUpdateLogLn("Today date: " + today);
+
+        int changedRecords = 0;
+        int changedCoursePoints = 0;
+        int skippedTimestamps = 0;
+
+        int recordNo = 0;
+        for (Mesg record : fitFile.getRecordMesg()) {
+            recordNo++;
+            Long oldTimestamp = record.getFieldLongValue(FitFile.REC_TIME);
+            Long newTimestamp = replaceDateWithToday(oldTimestamp, today);
+
+            if (newTimestamp == null) {
+                skippedTimestamps++;
+                continue;
+            }
+
+            if (!newTimestamp.equals(oldTimestamp)) {
+                record.setFieldValue(FitFile.REC_TIME, newTimestamp);
+                changedRecords++;
+                fitFile.appendTempUpdateLogLn("Record no: " + recordNo + " -> "
+                    + FitDateTime.toString(oldTimestamp) + " => " + FitDateTime.toString(newTimestamp));
+            }
+        }
+
+        int coursePointNo = 0;
+        for (Mesg mesg : fitFile.getAllMesg()) {
+            if (mesg.getNum() != MesgNum.COURSE_POINT) {
+                continue;
+            }
+
+            coursePointNo++;
+            Long oldTimestamp = mesg.getFieldLongValue(CoursePointMesg.TimestampFieldNum);
+            Long newTimestamp = replaceDateWithToday(oldTimestamp, today);
+
+            if (newTimestamp == null) {
+                skippedTimestamps++;
+                continue;
+            }
+
+            if (!newTimestamp.equals(oldTimestamp)) {
+                mesg.setFieldValue(CoursePointMesg.TimestampFieldNum, newTimestamp);
+                changedCoursePoints++;
+                fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " -> "
+                    + FitDateTime.toString(oldTimestamp) + " => " + FitDateTime.toString(newTimestamp));
+            }
+        }
+
+        if (!fitFile.getRecordMesg().isEmpty()) {
+            fitFile.setTimeFirstRecord(fitFile.getRecordMesg().get(0).getFieldLongValue(FitFile.REC_TIME));
+            fitFile.setTimeLastRecord(fitFile.getRecordMesg().get(fitFile.getRecordMesg().size() - 1).getFieldLongValue(FitFile.REC_TIME));
+        }
+
+        fitFile.appendTempUpdateLogLn("-- Updated records: " + changedRecords);
+        fitFile.appendTempUpdateLogLn("-- Updated course points: " + changedCoursePoints);
+        fitFile.appendTempUpdateLogLn("-- Skipped timestamps: " + skippedTimestamps);
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
+    }
+
+    // =================================================================================
 
     private void printCPointTypeOptions() {
         System.out.println();
@@ -470,8 +863,168 @@ public class CPointFix {
         return null;
     }
     // =================================================================================
+    private int findFirstMesgIndex(List<Mesg> mesgs, int mesgNum) {
+        for (int i = 0; i < mesgs.size(); i++) {
+            if (mesgs.get(i).getNum() == mesgNum) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    // =================================================================================
+    private int findLastMesgIndex(List<Mesg> mesgs, int mesgNum) {
+        for (int i = mesgs.size() - 1; i >= 0; i--) {
+            if (mesgs.get(i).getNum() == mesgNum) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    // =================================================================================
+    private int findLastTimerStopEventIndex(List<Mesg> mesgs) {
+        for (int i = mesgs.size() - 1; i >= 0; i--) {
+            Mesg mesg = mesgs.get(i);
+            if (mesg.getNum() != MesgNum.EVENT) {
+                continue;
+            }
+
+            Short eventValue = mesg.getFieldShortValue(EventMesg.EventFieldNum);
+            Short eventTypeValue = mesg.getFieldShortValue(EventMesg.EventTypeFieldNum);
+            if (eventValue == null || eventTypeValue == null) {
+                continue;
+            }
+
+            if (!eventValue.equals(Event.TIMER.getValue())) {
+                continue;
+            }
+
+            EventType eventType = EventType.getByValue(eventTypeValue);
+            String eventTypeName = eventType != null ? String.valueOf(eventType) : "";
+            if ("STOP_ALL".equals(eventTypeName) || "STOP_DISABLE_ALL".equals(eventTypeName)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    // =================================================================================
     private String coursePointName(CoursePoint coursePoint) {
         return coursePoint != null ? CoursePoint.getStringFromValue(coursePoint) : "-";
+    }
+
+    // =================================================================================
+    private List<GenericCPointEntry> collectGenericCoursePoints() {
+        List<GenericCPointEntry> genericEntries = new ArrayList<>();
+
+        int coursePointNo = 0;
+        for (Mesg mesg : fitFile.getAllMesg()) {
+            if (mesg.getNum() != MesgNum.COURSE_POINT) {
+                continue;
+            }
+
+            coursePointNo++;
+            CoursePointMesg coursePointMesg = new CoursePointMesg(mesg);
+            if (coursePointMesg.getType() == CoursePoint.GENERIC) {
+                genericEntries.add(new GenericCPointEntry(coursePointNo, mesg));
+            }
+        }
+
+        return genericEntries;
+    }
+
+    // =================================================================================
+    private TypeResolution resolveCoursePointTypeInput(String input) {
+        if (input == null) {
+            return TypeResolution.invalid("No type entered.");
+        }
+
+        String trimmed = input.trim();
+        if (trimmed.isEmpty()) {
+            return TypeResolution.invalid("No type entered.");
+        }
+
+        try {
+            int typeValue = Integer.parseInt(trimmed);
+            CoursePoint coursePointByValue = CoursePoint.getByValue((short) typeValue);
+            if (coursePointByValue == null || coursePointByValue == CoursePoint.INVALID) {
+                return TypeResolution.invalid("Not a valid CPoint type number: " + typeValue);
+            }
+            return TypeResolution.valid(coursePointByValue);
+        } catch (NumberFormatException ignore) {
+            // Continue with text-based type parsing.
+        }
+
+        String normalizedInput = normalizeTypeToken(trimmed);
+        if (normalizedInput.isEmpty()) {
+            return TypeResolution.invalid("Type text contains no letters or numbers.");
+        }
+
+        Map<String, CoursePoint> exactByName = new LinkedHashMap<>();
+        List<CoursePoint> prefixMatches = new ArrayList<>();
+
+        for (CoursePoint type : CoursePoint.values()) {
+            if (type == CoursePoint.INVALID) {
+                continue;
+            }
+
+            String normalizedTypeName = normalizeTypeToken(coursePointName(type));
+            if (normalizedTypeName.equals(normalizedInput)) {
+                exactByName.put(normalizedTypeName, type);
+            }
+            if (normalizedTypeName.startsWith(normalizedInput)) {
+                prefixMatches.add(type);
+            }
+        }
+
+        if (!exactByName.isEmpty()) {
+            return TypeResolution.valid(exactByName.values().iterator().next());
+        }
+
+        if (prefixMatches.isEmpty()) {
+            return TypeResolution.invalid("No CPoint type matches text: '" + input + "'");
+        }
+
+        if (prefixMatches.size() > 1) {
+            return TypeResolution.invalid("Ambiguous CPoint type text '" + input + "'. Matches: " + formatTypeChoices(prefixMatches));
+        }
+
+        return TypeResolution.valid(prefixMatches.get(0));
+    }
+
+    // =================================================================================
+    private String normalizeTypeToken(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        StringBuilder normalized = new StringBuilder();
+        for (char c : value.toLowerCase().toCharArray()) {
+            if (Character.isLetterOrDigit(c)) {
+                normalized.append(c);
+            }
+        }
+        return normalized.toString();
+    }
+
+    // =================================================================================
+    private String formatTypeChoices(List<CoursePoint> coursePoints) {
+        List<String> choices = new ArrayList<>();
+        for (CoursePoint coursePoint : coursePoints) {
+            choices.add(coursePointName(coursePoint) + "(" + coursePoint.getValue() + ")");
+        }
+        return String.join(", ", choices);
+    }
+
+    // =================================================================================
+    private String buildShortLabel(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return "-";
+        }
+
+        String cleaned = name.replaceAll("[^A-Za-z0-9åäöÅÄÖ]", "");
+        if (cleaned.isEmpty()) {
+            return "-";
+        }
+        return cleaned.length() <= 12 ? cleaned : cleaned.substring(0, 12);
     }
     // =================================================================================
     private String formatCoursePointPosition(CoursePointMesg coursePointMesg) {
@@ -563,6 +1116,49 @@ public class CPointFix {
         }
 
         return closestIndex;
+    }
+    // =================================================================================
+    private int findClosestGpsRecordIndexInRecords(Integer lat, Integer lon, List<Mesg> recordMesgList) {
+        int closestIndex = -1;
+        double closestDistance = Double.MAX_VALUE;
+
+        for (int i = 0; i < recordMesgList.size(); i++) {
+            Mesg record = recordMesgList.get(i);
+            Integer recordLatSemi = record.getFieldIntegerValue(FitFile.REC_LAT);
+            Integer recordLonSemi = record.getFieldIntegerValue(FitFile.REC_LON);
+            if (recordLatSemi == null || recordLonSemi == null) {
+                continue;
+            }
+
+            double distance = GeoUtils.distCalc(
+                GeoUtils.fromSemicircles(lat),
+                GeoUtils.fromSemicircles(lon),
+                GeoUtils.fromSemicircles(recordLatSemi),
+                GeoUtils.fromSemicircles(recordLonSemi));
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestIndex = i;
+            }
+        }
+
+        return closestIndex;
+    }
+    // =================================================================================
+    private Long replaceDateWithToday(Long fitTimestamp, LocalDate today) {
+        if (fitTimestamp == null || today == null) {
+            return null;
+        }
+
+        long unixSeconds = fitTimestamp + FitDateTime.FIT_EPOCH_OFFSET;
+        LocalDateTime dateTimeUtc = LocalDateTime.ofEpochSecond(unixSeconds, 0, ZoneOffset.UTC);
+        LocalDateTime updatedDateTimeUtc = LocalDateTime.of(today, dateTimeUtc.toLocalTime());
+        long updatedUnixSeconds = updatedDateTimeUtc.toEpochSecond(ZoneOffset.UTC);
+        long updatedFitSeconds = updatedUnixSeconds - FitDateTime.FIT_EPOCH_OFFSET;
+
+        if (updatedFitSeconds < 0) {
+            return null;
+        }
+        return updatedFitSeconds;
     }
     // =================================================================================
     private ShiftedPoint shiftPointForRecord(int recordIx, List<OriginalGpsPoint> originalRecordGps, int metersToShift, ShiftSide shiftSide) {
@@ -915,6 +1511,38 @@ public class CPointFix {
         private TypeInsertRule(CoursePoint coursePointType, String insertChar) {
             this.coursePointType = coursePointType;
             this.insertChar = insertChar;
+        }
+    }
+
+    // =================================================================================
+    private static class GenericCPointEntry {
+        private final int coursePointNo;
+        private final Mesg mesg;
+
+        private GenericCPointEntry(int coursePointNo, Mesg mesg) {
+            this.coursePointNo = coursePointNo;
+            this.mesg = mesg;
+        }
+    }
+
+    // =================================================================================
+    private static class TypeResolution {
+        private final boolean valid;
+        private final CoursePoint coursePoint;
+        private final String message;
+
+        private TypeResolution(boolean valid, CoursePoint coursePoint, String message) {
+            this.valid = valid;
+            this.coursePoint = coursePoint;
+            this.message = message;
+        }
+
+        private static TypeResolution valid(CoursePoint coursePoint) {
+            return new TypeResolution(true, coursePoint, "");
+        }
+
+        private static TypeResolution invalid(String message) {
+            return new TypeResolution(false, null, message);
         }
     }
 

@@ -20,7 +20,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"TEST\" 3 \"2026-03-08-14-46-10-XC Classic Ski-TEST-19.6km-1.36.52h-garmin-e2pro-v26.03-org.fit\""
+      "args": "\"TEST\" 0 \"Söderbysjön-Ältasjön-Ulvsjön.fit\""
     },
     {
       "type": "java",

@@ -2027,6 +2027,309 @@ public class FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void checkAndFixNullRecordTimes() {
         clearTempUpdateLog();
+        appendTempUpdateLogLn("CHECK/FIX NULL RECORD TIMES");
+        appendTempUpdateLogLn("---------------------------");
+
+        if (recordMesg == null || recordMesg.isEmpty()) {
+            logTimeFix("No records found. Nothing to check.");
+            appendUpdateLog(getTempUpdateLog());
+            return;
+        }
+
+        Long prevNonNullTime = null;
+        int fixedCount = 0;
+        int duplicateCount = 0;
+        int outOfOrderCount = 0;
+
+        int i = 0;
+        while (i < recordMesg.size()) {
+            Long currentTime = recordMesg.get(i).getFieldLongValue(REC_TIME);
+
+            if (currentTime != null && prevNonNullTime != null && currentTime.equals(prevNonNullTime)) {
+                duplicateCount++;
+                logTimeFix("WARNING: Duplicate REC_TIME found at recIx=" + i
+                        + " time=" + currentTime
+                        + " (" + FitDateTime.toStringTime(currentTime, diffMinutesLocalUTC) + ")"
+                        + ". Keeping duplicate (no delete in startup check).");
+                prevNonNullTime = currentTime;
+                i++;
+                continue;
+            }
+
+            if (currentTime != null && prevNonNullTime != null && currentTime < prevNonNullTime) {
+                outOfOrderCount++;
+                logTimeFix("WARNING: REC_TIME out of order at recIx=" + i
+                        + " prev=" + prevNonNullTime
+                        + " curr=" + currentTime
+                        + " (" + FitDateTime.toStringTime(currentTime, diffMinutesLocalUTC) + ")"
+                        + ". Keeping value unchanged.");
+                prevNonNullTime = currentTime;
+                i++;
+                continue;
+            }
+
+            if (currentTime != null) {
+                prevNonNullTime = currentTime;
+                i++;
+                continue;
+            }
+
+            int nullStart = i;
+            while (i < recordMesg.size() && recordMesg.get(i).getFieldLongValue(REC_TIME) == null) {
+                i++;
+            }
+            int nullEnd = i - 1;
+            int nullCount = nullEnd - nullStart + 1;
+
+            if (nullCount == 1) {
+                logTimeFix("Found 1 null REC_TIME at recIx=" + nullStart);
+            } else {
+                logTimeFix("Found " + nullCount + " null REC_TIME in a row at recIx="
+                        + nullStart + ".." + nullEnd);
+            }
+
+            int beforeIx = nullStart - 1;
+            int afterIx = i;
+
+            if (beforeIx < 0 && afterIx < recordMesg.size()) {
+                Long afterTime = recordMesg.get(afterIx).getFieldLongValue(REC_TIME);
+                if (afterTime == null) {
+                    logTimeFix("Cannot fill leading null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
+                            + " (missing next non-null REC_TIME).");
+                    continue;
+                }
+
+                long startCandidate = afterTime - nullCount;
+                if (startCandidate < 1L) {
+                    startCandidate = 1L;
+                }
+
+                logTimeFix("Filling leading null REC_TIME range recIx=" + nullStart + ".." + nullEnd
+                        + " using even +1s spread before next record.");
+
+                long lastAssigned = startCandidate - 1;
+                for (int j = 0; j < nullCount; j++) {
+                    int recIx = nullStart + j;
+                    long candidate = startCandidate + j;
+                    if (candidate <= lastAssigned) {
+                        candidate = lastAssigned + 1;
+                    }
+
+                    recordMesg.get(recIx).setFieldValue(REC_TIME, candidate);
+                    fixedCount++;
+                    lastAssigned = candidate;
+
+                    logTimeFix("  recIx=" + recIx + " REC_TIME set to " + candidate
+                            + " (" + FitDateTime.toStringTime(candidate, diffMinutesLocalUTC) + ")");
+                }
+
+                // Keep previous time on the last value written in the null range.
+                // The next loop iteration starts at afterIx, so using afterTime here can self-match and create false duplicate warnings.
+                prevNonNullTime = lastAssigned;
+                continue;
+            }
+
+            if (afterIx >= recordMesg.size()) {
+                Long beforeTime = beforeIx >= 0 ? recordMesg.get(beforeIx).getFieldLongValue(REC_TIME) : null;
+                Mesg lastStopEventMesg = findLastTimerStopEventMesg();
+                Long stopEventTime = lastStopEventMesg != null ? lastStopEventMesg.getFieldLongValue(EVE_TIME) : null;
+
+                if (beforeTime == null) {
+                    logTimeFix("Trailing null REC_TIME range without previous boundary at recIx="
+                            + nullStart + ".." + nullEnd + ". Filling from +1s.");
+                    for (int j = 1; j <= nullCount; j++) {
+                        int recIx = nullStart + (j - 1);
+                        long candidate = j;
+                        recordMesg.get(recIx).setFieldValue(REC_TIME, candidate);
+                        fixedCount++;
+                        logTimeFix("  recIx=" + recIx + " REC_TIME set to " + candidate
+                                + " (" + FitDateTime.toStringTime(candidate, diffMinutesLocalUTC) + ")");
+                    }
+                    prevNonNullTime = (long) nullCount;
+                    break;
+                }
+
+                long trailingLastTime;
+                boolean useStopEventAsLastRecord = (stopEventTime != null && stopEventTime > beforeTime);
+                if (useStopEventAsLastRecord) {
+                    trailingLastTime = stopEventTime;
+                    logTimeFix("Trailing null REC_TIME range uses last STOP event time=" + stopEventTime
+                            + " (" + FitDateTime.toStringTime(stopEventTime, diffMinutesLocalUTC) + ")");
+                } else {
+                    if (stopEventTime == null) {
+                        logTimeFix("Last STOP event has empty timestamp. Filling trailing null REC_TIME using +1s steps.");
+                    } else {
+                        logTimeFix("Last STOP event time is not after last valid REC_TIME (stop=" + stopEventTime
+                                + ", prev=" + beforeTime + "). Filling trailing null REC_TIME using +1s steps.");
+                    }
+
+                    trailingLastTime = beforeTime + nullCount;
+                    if (lastStopEventMesg != null) {
+                        lastStopEventMesg.setFieldValue(EVE_TIME, trailingLastTime);
+                        logTimeFix("Updated last STOP event REC_TIME to " + trailingLastTime
+                                + " (" + FitDateTime.toStringTime(trailingLastTime, diffMinutesLocalUTC) + ")");
+                    } else {
+                        logTimeFix("No STOP event found to update with trailing REC_TIME.");
+                    }
+                }
+
+                boolean canUseDistTrailing = false;
+                if (useStopEventAsLastRecord && nullCount > 1) {
+                    Float beforeDist = recordMesg.get(beforeIx).getFieldFloatValue(REC_DIST);
+                    Float lastDist = recordMesg.get(nullEnd).getFieldFloatValue(REC_DIST);
+                    canUseDistTrailing = beforeDist != null && lastDist != null && lastDist > beforeDist;
+                    if (canUseDistTrailing) {
+                        for (int j = nullStart; j <= nullEnd; j++) {
+                            if (recordMesg.get(j).getFieldFloatValue(REC_DIST) == null) {
+                                canUseDistTrailing = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                long span = trailingLastTime - beforeTime;
+                long lastAssigned = beforeTime;
+                for (int j = 1; j <= nullCount; j++) {
+                    int recIx = nullStart + (j - 1);
+                    long candidate;
+
+                    if (canUseDistTrailing) {
+                        float beforeDistVal = recordMesg.get(beforeIx).getFieldFloatValue(REC_DIST);
+                        float lastDistVal = recordMesg.get(nullEnd).getFieldFloatValue(REC_DIST);
+                        float recDistVal = recordMesg.get(recIx).getFieldFloatValue(REC_DIST);
+                        double ratio = (recDistVal - beforeDistVal) / (lastDistVal - beforeDistVal);
+                        if (ratio < 0d) ratio = 0d;
+                        if (ratio > 1d) ratio = 1d;
+                        candidate = beforeTime + Math.round(span * ratio);
+                    } else {
+                        candidate = beforeTime + Math.round((double) span * j / nullCount);
+                    }
+
+                    long minAllowed = lastAssigned + 1;
+                    long maxAllowed = trailingLastTime - (nullCount - j);
+                    if (candidate < minAllowed) candidate = minAllowed;
+                    if (candidate > maxAllowed) candidate = maxAllowed;
+
+                    recordMesg.get(recIx).setFieldValue(REC_TIME, candidate);
+                    fixedCount++;
+                    lastAssigned = candidate;
+
+                    logTimeFix("  recIx=" + recIx + " REC_TIME set to " + candidate
+                            + " (" + FitDateTime.toStringTime(candidate, diffMinutesLocalUTC) + ")");
+                }
+
+                prevNonNullTime = trailingLastTime;
+                break;
+            }
+
+            if (beforeIx < 0 || afterIx >= recordMesg.size()) {
+                logTimeFix("Cannot interpolate null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
+                        + " is missing boundary record before/after.");
+                continue;
+            }
+
+            Long beforeTime = recordMesg.get(beforeIx).getFieldLongValue(REC_TIME);
+            Long afterTime = recordMesg.get(afterIx).getFieldLongValue(REC_TIME);
+            if (beforeTime == null || afterTime == null) {
+                logTimeFix("Cannot interpolate null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
+                        + " (boundary REC_TIME missing).");
+                continue;
+            }
+
+            if (afterTime <= beforeTime) {
+                logTimeFix("WARNING: Invalid boundary order for null range recIx=" + nullStart + ".." + nullEnd
+                        + " (before=" + beforeTime + ", after=" + afterTime + ")."
+                        + " Filling with +1s from before boundary.");
+
+                long lastAssigned = beforeTime;
+                for (int j = 1; j <= nullCount; j++) {
+                    int recIx = nullStart + (j - 1);
+                    long candidate = lastAssigned + 1;
+                    recordMesg.get(recIx).setFieldValue(REC_TIME, candidate);
+                    fixedCount++;
+                    lastAssigned = candidate;
+                    logTimeFix("  recIx=" + recIx + " REC_TIME set to " + candidate
+                            + " (" + FitDateTime.toStringTime(candidate, diffMinutesLocalUTC) + ")");
+                }
+
+                prevNonNullTime = lastAssigned;
+                continue;
+            }
+
+            boolean canUseDist = true;
+            Float beforeDist = recordMesg.get(beforeIx).getFieldFloatValue(REC_DIST);
+            Float afterDist = recordMesg.get(afterIx).getFieldFloatValue(REC_DIST);
+            if (beforeDist == null || afterDist == null) {
+                canUseDist = false;
+            }
+            if (canUseDist) {
+                for (int j = nullStart; j <= nullEnd; j++) {
+                    if (recordMesg.get(j).getFieldFloatValue(REC_DIST) == null) {
+                        canUseDist = false;
+                        break;
+                    }
+                }
+            }
+
+            long totalTimeSpan = afterTime - beforeTime;
+            int pointsToFill = nullCount;
+
+            if (canUseDist) {
+                float totalDistSpan = afterDist - beforeDist;
+                if (totalDistSpan <= 0f) {
+                    canUseDist = false;
+                }
+            }
+
+            String method = canUseDist ? "distance-proportional" : "even";
+            logTimeFix("Interpolating null REC_TIME range recIx=" + nullStart + ".." + nullEnd
+                    + " using " + method + " spread.");
+
+            long lastAssigned = beforeTime;
+            for (int j = 1; j <= pointsToFill; j++) {
+                int recIx = nullStart + (j - 1);
+                long candidate;
+
+                if (canUseDist) {
+                    float beforeDistVal = recordMesg.get(beforeIx).getFieldFloatValue(REC_DIST);
+                    float afterDistVal = recordMesg.get(afterIx).getFieldFloatValue(REC_DIST);
+                    float recDistVal = recordMesg.get(recIx).getFieldFloatValue(REC_DIST);
+
+                    double ratio = (recDistVal - beforeDistVal) / (afterDistVal - beforeDistVal);
+                    if (ratio < 0d) ratio = 0d;
+                    if (ratio > 1d) ratio = 1d;
+                    candidate = beforeTime + Math.round(totalTimeSpan * ratio);
+                } else {
+                    candidate = beforeTime + Math.round((double) totalTimeSpan * j / (pointsToFill + 1));
+                }
+
+                long minAllowed = lastAssigned + 1;
+                long maxAllowed = afterTime - (pointsToFill - j + 1);
+                if (candidate < minAllowed) candidate = minAllowed;
+                if (candidate > maxAllowed) candidate = maxAllowed;
+
+                recordMesg.get(recIx).setFieldValue(REC_TIME, candidate);
+                fixedCount++;
+                lastAssigned = candidate;
+
+                logTimeFix("  recIx=" + recIx + " REC_TIME set to " + candidate
+                        + " (" + FitDateTime.toStringTime(candidate, diffMinutesLocalUTC) + ")");
+            }
+
+            // The next iteration starts at afterIx, so keep the previous timestamp at last interpolated point.
+            prevNonNullTime = lastAssigned;
+        }
+
+        logTimeFix("Completed REC_TIME startup check/fix. Filled " + fixedCount + " null REC_TIME value(s)."
+                + " Duplicates kept=" + duplicateCount
+                + ", out-of-order points detected=" + outOfOrderCount + ".");
+
+        appendUpdateLog(getTempUpdateLog());
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void fixNullRecordTimes() {
+        clearTempUpdateLog();
         appendTempUpdateLogLn("CHECK/FIX RECORD TIMES");
         appendTempUpdateLogLn("----------------------");
 
@@ -2038,6 +2341,8 @@ public class FitFile {
 
         Long prevNonNullTime = null;
         int fixedCount = 0;
+        int duplicateRemovedCount = 0;
+        int outOfOrderCount = 0;
 
         int i = 0;
         while (i < recordMesg.size()) {
@@ -2050,11 +2355,13 @@ public class FitFile {
                         + " (" + FitDateTime.toStringTime(currentTime, diffMinutesLocalUTC) + ")"
                         + ". Deleting second record.");
                 removeRecordMesgAtIndex(i);
+                duplicateRemovedCount++;
                 continue;
             }
 
             // Out-of-order timestamps are reported and processing stops.
             if (currentTime != null && prevNonNullTime != null && currentTime < prevNonNullTime) {
+                outOfOrderCount++;
                 logTimeFix("ERROR: REC_TIME out of order at recIx=" + i
                         + " prev=" + prevNonNullTime
                         + " curr=" + currentTime
@@ -2254,10 +2561,149 @@ public class FitFile {
                         + " (" + FitDateTime.toStringTime(candidate, diffMinutesLocalUTC) + ")");
             }
 
-            prevNonNullTime = afterTime;
+            // The next iteration starts at afterIx, so keep the previous timestamp at last interpolated point.
+            prevNonNullTime = lastAssigned;
         }
 
-        logTimeFix("Completed REC_TIME check/fix. Updated " + fixedCount + " null value(s).");
+        logTimeFix("Completed REC_TIME check/fix. Updated " + fixedCount + " null value(s)."
+            + " Duplicates removed=" + duplicateRemovedCount
+            + ", out-of-order points detected=" + outOfOrderCount + ".");
+        appendUpdateLog(getTempUpdateLog());
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void applyConstantPaceToRecordTimesFromGps(String paceMinPerKm) {
+        clearTempUpdateLog();
+        appendTempUpdateLogLn("RECALCULATE RECORD TIMES FROM GPS PACE");
+        appendTempUpdateLogLn("-------------------------------------");
+
+        if (recordMesg == null || recordMesg.size() < 2) {
+            appendTempUpdateLogLn("Not enough records found. Need at least 2 records.");
+            System.out.println(getTempUpdateLog());
+            appendUpdateLog(getTempUpdateLog());
+            return;
+        }
+
+        String paceInput = paceMinPerKm == null ? "" : paceMinPerKm.trim();
+        if (!paceInput.matches("\\d{1,3}:[0-5]\\d")) {
+            appendTempUpdateLogLn("Invalid pace format '" + paceMinPerKm + "'. Expected mm:ss.");
+            System.out.println(getTempUpdateLog());
+            appendUpdateLog(getTempUpdateLog());
+            return;
+        }
+
+        String[] paceParts = paceInput.split(":");
+        int paceMinutes = Integer.parseInt(paceParts[0]);
+        int paceSecondsPart = Integer.parseInt(paceParts[1]);
+        int paceSecondsPerKm = paceMinutes * 60 + paceSecondsPart;
+
+        if (paceSecondsPerKm <= 0) {
+            appendTempUpdateLogLn("Pace must be greater than 00:00 min/km.");
+            System.out.println(getTempUpdateLog());
+            appendUpdateLog(getTempUpdateLog());
+            return;
+        }
+
+        Long startTime = recordMesg.get(0).getFieldLongValue(REC_TIME);
+        if (startTime == null) {
+            appendTempUpdateLogLn("First record has null REC_TIME. Run recfix first.");
+            System.out.println(getTempUpdateLog());
+            appendUpdateLog(getTempUpdateLog());
+            return;
+        }
+
+        double secondsPerMeter = paceSecondsPerKm / 1000.0;
+        double cumulativeSeconds = 0.0;
+        double cumulativeGpsMeters = 0.0;
+        Long lastAssignedTime = startTime;
+
+        int updatedRecords = 0;
+        int gpsSegmentCount = 0;
+        int fallbackDistSegmentCount = 0;
+        int missingDistanceSegmentCount = 0;
+        int checkedDistanceSegments = 0;
+        int distanceMismatchCount = 0;
+        double maxDistanceDiffMeters = 0.0;
+
+        appendTempUpdateLogLn("Target pace: " + paceInput + " min/km (" + paceSecondsPerKm + " s/km)");
+        appendTempUpdateLogLn("Keeping first REC_TIME unchanged at " + startTime
+                + " (" + FitDateTime.toStringTime(startTime, diffMinutesLocalUTC) + ")");
+
+        for (int i = 1; i < recordMesg.size(); i++) {
+            Mesg prev = recordMesg.get(i - 1);
+            Mesg curr = recordMesg.get(i);
+
+            Integer prevLat = prev.getFieldIntegerValue(REC_LAT);
+            Integer prevLon = prev.getFieldIntegerValue(REC_LON);
+            Integer currLat = curr.getFieldIntegerValue(REC_LAT);
+            Integer currLon = curr.getFieldIntegerValue(REC_LON);
+
+            Double segmentMeters = null;
+            if (prevLat != null && prevLon != null && currLat != null && currLon != null) {
+                double gpsMeters = GeoUtils.distCalc(prevLat, prevLon, currLat, currLon);
+                if (!Double.isNaN(gpsMeters) && !Double.isInfinite(gpsMeters) && gpsMeters >= 0d) {
+                    segmentMeters = gpsMeters;
+                    gpsSegmentCount++;
+                }
+            }
+
+            if (segmentMeters == null) {
+                Float prevDist = prev.getFieldFloatValue(REC_DIST);
+                Float currDist = curr.getFieldFloatValue(REC_DIST);
+                if (prevDist != null && currDist != null) {
+                    double distDelta = currDist - prevDist;
+                    if (distDelta < 0d) {
+                        distDelta = 0d;
+                    }
+                    segmentMeters = distDelta;
+                    fallbackDistSegmentCount++;
+                } else {
+                    segmentMeters = 0d;
+                    missingDistanceSegmentCount++;
+                }
+            }
+
+            cumulativeGpsMeters += segmentMeters;
+            cumulativeSeconds += segmentMeters * secondsPerMeter;
+
+            Long oldTime = curr.getFieldLongValue(REC_TIME);
+            long candidateTime = startTime + Math.round(cumulativeSeconds);
+
+            if (candidateTime <= lastAssignedTime) {
+                candidateTime = lastAssignedTime + 1;
+            }
+
+            if (oldTime == null || oldTime.longValue() != candidateTime) {
+                curr.setFieldValue(REC_TIME, candidateTime);
+                updatedRecords++;
+            }
+            lastAssignedTime = candidateTime;
+
+            Float prevDist = prev.getFieldFloatValue(REC_DIST);
+            Float currDist = curr.getFieldFloatValue(REC_DIST);
+            if (prevDist != null && currDist != null) {
+                checkedDistanceSegments++;
+                double distDelta = currDist - prevDist;
+                double diff = Math.abs(distDelta - segmentMeters);
+                if (diff > maxDistanceDiffMeters) {
+                    maxDistanceDiffMeters = diff;
+                }
+                if (diff > 5.0d) {
+                    distanceMismatchCount++;
+                }
+            }
+        }
+
+        appendTempUpdateLogLn("Updated REC_TIME on " + updatedRecords + " record(s). Total records: " + recordMesg.size());
+        appendTempUpdateLogLn("Distance source used: gpsSegments=" + gpsSegmentCount
+                + ", fallbackRecDistSegments=" + fallbackDistSegmentCount
+                + ", missingDistanceSegments=" + missingDistanceSegmentCount);
+        appendTempUpdateLogLn("Distance check: checkedSegments=" + checkedDistanceSegments
+                + ", mismatches(>5m)=" + distanceMismatchCount
+                + ", maxDiff=" + String.format("%.2f", maxDistanceDiffMeters) + "m");
+        appendTempUpdateLogLn("Computed path distance=" + String.format("%.1f", cumulativeGpsMeters) + "m, total time="
+                + PehoUtils.sec2minSecLong(Math.round(cumulativeSeconds)));
+
+        System.out.println(getTempUpdateLog());
         appendUpdateLog(getTempUpdateLog());
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -2493,12 +2939,21 @@ public class FitFile {
             if (record.distGap >= minDistToShow) {
                 System.out.print("   Gap (" + record.no + ")");
                 System.out.print(String.format(" %1$dsec %2$.0fm ele%3$.1fm", record.timeGap, record.distGap, record.altGap));
-                hrDiff = recordMesg.get(record.ixStop).getFieldIntegerValue(REC_HR) - recordMesg.get(record.ixStart).getFieldIntegerValue(REC_HR);
-                if (hrDiff>=0) {
-                    hrSign = "+";
+                Integer startHr = recordMesg.get(record.ixStart).getFieldIntegerValue(REC_HR);
+                Integer stopHr = recordMesg.get(record.ixStop).getFieldIntegerValue(REC_HR);
+                if (startHr != null && stopHr != null) {
+                    hrDiff = stopHr - startHr;
+                    hrSign = hrDiff >= 0 ? "+" : "";
+                    System.out.print(String.format(" HR:%1$d%2$s%3$d", startHr, hrSign, hrDiff));
+                } else {
+                    System.out.print(" HR:-");
                 }
-                System.out.print(String.format(" HR:%1$d%2$s%3$d", recordMesg.get(record.ixStart).getFieldIntegerValue(REC_HR), hrSign, hrDiff));
-                System.out.print(" @time:" + PehoUtils.sec2minSecShort(recordMesgAddOnRecords.get(record.getIxStart()).getTimer()));
+
+                Long timerValue = null;
+                if (record.getIxStart() >= 0 && record.getIxStart() < recordMesgAddOnRecords.size()) {
+                    timerValue = recordMesgAddOnRecords.get(record.getIxStart()).getTimer();
+                }
+                System.out.print(" @time:" + (timerValue == null ? "-" : PehoUtils.sec2minSecShort(timerValue)));
                 System.out.print(String.format(" @dist:%1$.0fm", record.getDistStart()));
 
                 if (gapCommandInput == null) {
@@ -6067,11 +6522,28 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private String createCourseOutputPrefix(String inputFilePath) {
-        String inputFilename = new File(inputFilePath).getName();
-        int dotIx = inputFilename.lastIndexOf('.');
-        String baseName = dotIx > 0 ? inputFilename.substring(0, dotIx) : inputFilename;
+        String baseName = getCourseName();
+        if (baseName == null || baseName.isBlank()) {
+            String inputFilename = new File(inputFilePath).getName();
+            int dotIx = inputFilename.lastIndexOf('.');
+            baseName = dotIx > 0 ? inputFilename.substring(0, dotIx) : inputFilename;
+        }
         String nowDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"));
         return SanitizedFilename.get(baseName + "_now." + nowDateTime);
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private String getCourseName() {
+        for (Mesg mesg : allMesg) {
+            if (mesg.getNum() != MesgNum.COURSE) {
+                continue;
+            }
+
+            String courseName = mesg.getFieldStringValue(CourseMesg.NameFieldNum);
+            if (courseName != null && !courseName.isBlank()) {
+                return courseName;
+            }
+        }
+        return null;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void appendIfNotNull(StringBuilder sb, String label, Object value) {

@@ -6,6 +6,7 @@ import com.garmin.fit.CoursePoint;
 import com.garmin.fit.CoursePointMesg;
 import com.garmin.fit.Mesg;
 import com.garmin.fit.MesgNum;
+import se.peho.fittools.core.strings.Tstr;
 
 public class CPointReportGenerator {
 
@@ -35,31 +36,23 @@ public class CPointReportGenerator {
         List<Mesg> allMesg = fitFile.getAllMesg();
 
         System.out.println();
-        System.out.println("===========================================");
+        System.out.println("=".repeat(3+13+19+7+8));
         System.out.println(title);
-        System.out.println("-------------------------------------------");
-        // System.out.printf("%-3s %-15s %-22s %-7s %s%n",
-        //     "No",
-        //     "Type",
-        //     "Name",
-        //     "Dist",
-        //     "Position");
-        System.out.printf("%-3s %-13s %-19s%-7s%n",
+        System.out.println("-".repeat(3+13+19+7+8));
+        System.out.printf("%-3s%-13s%-19s%-7s%-8s%n",
             "No",
             "Type",
             "Name",
-            "Dist");
-        // System.out.printf("%-3s %-15s %-22s %-7s %s%n",
-        //     "-".repeat(3),
-        //     "-".repeat(15),
-        //     "-".repeat(22),
-        //     "-".repeat(7),
-        //     "-".repeat(18));
-        System.out.printf("%-3s %-13s %-19s%-7s%n",
-            "-".repeat(3),
-            "-".repeat(13),
-            "-".repeat(19),
-            "-".repeat(6));
+            "Dist",
+            "Time"
+        );
+        System.out.printf("%-3s%-13s%-19s%-7s%-8s%n",
+            "-".repeat(2),
+            "-".repeat(12),
+            "-".repeat(18),
+            "-".repeat(6),
+            "-".repeat(8)
+        );
 
         int coursePointNo = 0;
         int printedCoursePointNo = 0;
@@ -73,7 +66,7 @@ public class CPointReportGenerator {
             CoursePointMesg coursePointMesg = new CoursePointMesg(mesg);
 
             String timeStr = coursePointMesg.getTimestamp() != null
-                ? FitDateTime.toString(coursePointMesg.getTimestamp().getTimestamp(), fitFile.getDiffMinutesLocalUTC())
+                ? new Tstr(coursePointMesg.getTimestamp().getTimestamp(), fitFile.getDiffMinutesLocalUTC()).get()
                 : "-";
 
             CoursePoint coursePoint = coursePointMesg.getType();
@@ -84,26 +77,14 @@ public class CPointReportGenerator {
 
             String nameStr = coursePointMesg.getName() != null ? coursePointMesg.getName() : "-";
             String distStr = coursePointMesg.getDistance() != null ? String.format("%1$.0fm", coursePointMesg.getDistance()) : "-";
-            String favStr = coursePointMesg.getFavorite() != null ? coursePointMesg.getFavorite().toString() : "-";
 
-            String positionStr = "-";
-            if (coursePointMesg.getPositionLat() != null && coursePointMesg.getPositionLong() != null) {
-                positionStr = String.format("%.5f, %.5f",
-                    GeoUtils.fromSemicircles(coursePointMesg.getPositionLat()),
-                    GeoUtils.fromSemicircles(coursePointMesg.getPositionLong()));
-            }
-
-            // System.out.printf("%-3d %-15s %-22s %-7s %s%n",
-            //     coursePointNo,
-            //     typeStr,
-            //     nameStr,
-            //     distStr,
-            //     positionStr);
-            System.out.printf("%-3d %-13s %-19s%-7s%n",
+            System.out.printf("%-3d%-13s%-19s%-7s%-8s%n",
                 coursePointNo,
                 typeStr,
                 nameStr,
-                distStr);
+                distStr,
+                timeStr
+            );
 
             printedCoursePointNo++;
         }
@@ -112,7 +93,7 @@ public class CPointReportGenerator {
             System.out.println(emptyMessage);
         }
 
-        System.out.println("-------------------------------------------");
+        System.out.println("-".repeat(3+13+19+7+8));
         System.out.println("Number of course points: " + printedCoursePointNo);
     }
     // =================================================================================
@@ -140,26 +121,12 @@ public class CPointReportGenerator {
 
             CoursePointMesg coursePointMesg = new CoursePointMesg(mesg);
 
-            String timeStr = coursePointMesg.getTimestamp() != null
-                ? FitDateTime.toString(coursePointMesg.getTimestamp().getTimestamp(), fitFile.getDiffMinutesLocalUTC())
-                : "-";
-
             CoursePoint coursePoint = coursePointMesg.getType();
             if (typeFilter != null && coursePoint != typeFilter) {
                 continue;
             }
-            String typeStr = coursePoint != null ? CoursePoint.getStringFromValue(coursePoint) : "-";
 
             String nameStr = coursePointMesg.getName() != null ? coursePointMesg.getName() : "-";
-            String distStr = coursePointMesg.getDistance() != null ? String.format("%1$.0fm", coursePointMesg.getDistance()) : "-";
-            String favStr = coursePointMesg.getFavorite() != null ? coursePointMesg.getFavorite().toString() : "-";
-
-            String positionStr = "-";
-            if (coursePointMesg.getPositionLat() != null && coursePointMesg.getPositionLong() != null) {
-                positionStr = String.format("%.5f, %.5f",
-                    GeoUtils.fromSemicircles(coursePointMesg.getPositionLat()),
-                    GeoUtils.fromSemicircles(coursePointMesg.getPositionLong()));
-            }
 
             System.out.printf("%-3d%n%-19s%n",
                 coursePointNo,
