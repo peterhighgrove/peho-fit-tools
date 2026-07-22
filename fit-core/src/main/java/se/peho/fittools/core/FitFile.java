@@ -2703,6 +2703,35 @@ public class FitFile {
         appendTempUpdateLogLn("Computed path distance=" + String.format("%.1f", cumulativeGpsMeters) + "m, total time="
                 + PehoUtils.sec2minSecLong(Math.round(cumulativeSeconds)));
 
+        // Update start event time
+        Mesg firstStartEventMesg = findFirstTimerStartEventMesg();
+        if (firstStartEventMesg != null) {
+            Long startEventTime = firstStartEventMesg.getFieldLongValue(EVE_TIME);
+            if (startEventTime == null || !startEventTime.equals(startTime)) {
+                firstStartEventMesg.setFieldValue(EVE_TIME, startTime);
+                appendTempUpdateLogLn("Updated START event time from "
+                        + (startEventTime != null ? FitDateTime.toStringTime(startEventTime, diffMinutesLocalUTC) : "null")
+                        + " to " + FitDateTime.toStringTime(startTime, diffMinutesLocalUTC));
+            }
+        } else {
+            appendTempUpdateLogLn("No START event found to update.");
+        }
+
+        // Update stop event time
+        Long expectedStopTime = lastAssignedTime;
+        Mesg lastStopEventMesg = findLastTimerStopEventMesg();
+        if (lastStopEventMesg != null) {
+            Long stopEventTime = lastStopEventMesg.getFieldLongValue(EVE_TIME);
+            if (stopEventTime == null || !stopEventTime.equals(expectedStopTime)) {
+                lastStopEventMesg.setFieldValue(EVE_TIME, expectedStopTime);
+                appendTempUpdateLogLn("Updated STOP event time from "
+                        + (stopEventTime != null ? FitDateTime.toStringTime(stopEventTime, diffMinutesLocalUTC) : "null")
+                        + " to " + FitDateTime.toStringTime(expectedStopTime, diffMinutesLocalUTC));
+            }
+        } else {
+            appendTempUpdateLogLn("No STOP event found to update.");
+        }
+
         System.out.println(getTempUpdateLog());
         appendUpdateLog(getTempUpdateLog());
     }
@@ -2712,15 +2741,43 @@ public class FitFile {
         System.out.println(text);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    private Mesg findLastTimerStopEventMesg() {
-        for (int i = eventTimerMesg.size() - 1; i >= 0; i--) {
+    private Mesg findFirstTimerStartEventMesg() {
+        for (int i = 0; i < eventTimerMesg.size(); i++) {
             Mesg eventMesg = eventTimerMesg.get(i);
             if (eventMesg.getFieldValue(EVE_TYPE) != null
-                    && eventMesg.getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
+                    && eventMesg.getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
                 return eventMesg;
             }
         }
         return null;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    int findLastTimerStopEventIndex(List<Mesg> mesgs) {
+        for (int i = mesgs.size() - 1; i >= 0; i--) {
+            Mesg mesg = mesgs.get(i);
+            if (mesg.getNum() != MesgNum.EVENT) {
+                continue;
+            }
+            Short eventValue = mesg.getFieldShortValue(EventMesg.EventFieldNum);
+            Short eventTypeValue = mesg.getFieldShortValue(EventMesg.EventTypeFieldNum);
+            if (eventValue == null || eventTypeValue == null) {
+                continue;
+            }
+            if (!eventValue.equals(Event.TIMER.getValue())) {
+                continue;
+            }
+            EventType eventType = EventType.getByValue(eventTypeValue);
+            String eventTypeName = eventType != null ? String.valueOf(eventType) : "";
+            if ("STOP_ALL".equals(eventTypeName) || "STOP_DISABLE_ALL".equals(eventTypeName)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private Mesg findLastTimerStopEventMesg() {
+        int ix = findLastTimerStopEventIndex(eventTimerMesg);
+        return ix >= 0 ? eventTimerMesg.get(ix) : null;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private void removeRecordMesgAtIndex(int recordIx) {

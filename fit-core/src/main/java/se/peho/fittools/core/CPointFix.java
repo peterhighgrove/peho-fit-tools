@@ -20,9 +20,6 @@ import java.util.regex.Pattern;
 import com.garmin.fit.CourseMesg;
 import com.garmin.fit.CoursePoint;
 import com.garmin.fit.CoursePointMesg;
-import com.garmin.fit.Event;
-import com.garmin.fit.EventMesg;
-import com.garmin.fit.EventType;
 import com.garmin.fit.Mesg;
 import com.garmin.fit.MesgNum;
 
@@ -315,7 +312,7 @@ public class CPointFix {
             return;
         }
 
-        int lastTimerStopIx = findLastTimerStopEventIndex(allMesg);
+        int lastTimerStopIx = fitFile.findLastTimerStopEventIndex(allMesg);
         int insertIx = lastRecordIxAfterRemoval + 1;
 
         if (lastTimerStopIx >= 0 && lastTimerStopIx > lastRecordIxAfterRemoval) {
@@ -777,6 +774,9 @@ public class CPointFix {
 
         int changedRecords = 0;
         int changedCoursePoints = 0;
+        int changedEventTimestamps = 0;
+        int changedLapTimestamps = 0;
+        int changedLapStartTimes = 0;
         int skippedTimestamps = 0;
 
         int recordNo = 0;
@@ -826,8 +826,57 @@ public class CPointFix {
             fitFile.setTimeLastRecord(fitFile.getRecordMesg().get(fitFile.getRecordMesg().size() - 1).getFieldLongValue(FitFile.REC_TIME));
         }
 
+        int eventNo = 0;
+        for (Mesg mesg : fitFile.getEventMesg()) {
+            eventNo++;
+            Long oldTimestamp = mesg.getFieldLongValue(FitFile.EVE_TIME);
+            Long newTimestamp = replaceDateWithToday(oldTimestamp, today);
+            if (newTimestamp == null) {
+                skippedTimestamps++;
+                continue;
+            }
+            if (!newTimestamp.equals(oldTimestamp)) {
+                mesg.setFieldValue(FitFile.EVE_TIME, newTimestamp);
+                changedEventTimestamps++;
+                fitFile.appendTempUpdateLogLn("Event no: " + eventNo + " -> "
+                    + FitDateTime.toString(oldTimestamp) + " => " + FitDateTime.toString(newTimestamp));
+            }
+        }
+
+        int lapNo = 0;
+        for (Mesg lapMesg : fitFile.getLapMesg()) {
+            lapNo++;
+            Long oldTimestamp = lapMesg.getFieldLongValue(FitFile.LAP_TIME);
+            Long newTimestamp = replaceDateWithToday(oldTimestamp, today);
+            if (newTimestamp == null) {
+                skippedTimestamps++;
+            } else if (!newTimestamp.equals(oldTimestamp)) {
+                lapMesg.setFieldValue(FitFile.LAP_TIME, newTimestamp);
+                changedLapTimestamps++;
+                fitFile.appendTempUpdateLogLn("Lap no: " + lapNo + " timestamp -> "
+                    + FitDateTime.toString(oldTimestamp) + " => " + FitDateTime.toString(newTimestamp));
+            }
+
+            Long oldStartTime = lapMesg.getFieldLongValue(FitFile.LAP_STIME);
+            Long newStartTime = replaceDateWithToday(oldStartTime, today);
+            if (newStartTime == null) {
+                skippedTimestamps++;
+            } else if (!newStartTime.equals(oldStartTime)) {
+                lapMesg.setFieldValue(FitFile.LAP_STIME, newStartTime);
+                changedLapStartTimes++;
+                fitFile.appendTempUpdateLogLn("Lap no: " + lapNo + " start_time -> "
+                    + FitDateTime.toString(oldStartTime) + " => " + FitDateTime.toString(newStartTime));
+            }
+        }
+
+        // Sync lap times with actual record times to ensure fillLapExtraRecords can match them
+        syncLapTimesWithRecords();
+
         fitFile.appendTempUpdateLogLn("-- Updated records: " + changedRecords);
         fitFile.appendTempUpdateLogLn("-- Updated course points: " + changedCoursePoints);
+        fitFile.appendTempUpdateLogLn("-- Updated event timestamps: " + changedEventTimestamps);
+        fitFile.appendTempUpdateLogLn("-- Updated lap timestamps: " + changedLapTimestamps);
+        fitFile.appendTempUpdateLogLn("-- Updated lap start_times: " + changedLapStartTimes);
         fitFile.appendTempUpdateLogLn("-- Skipped timestamps: " + skippedTimestamps);
         System.out.println(fitFile.getTempUpdateLog());
         fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
@@ -891,31 +940,7 @@ public class CPointFix {
         return -1;
     }
     // =================================================================================
-    private int findLastTimerStopEventIndex(List<Mesg> mesgs) {
-        for (int i = mesgs.size() - 1; i >= 0; i--) {
-            Mesg mesg = mesgs.get(i);
-            if (mesg.getNum() != MesgNum.EVENT) {
-                continue;
-            }
 
-            Short eventValue = mesg.getFieldShortValue(EventMesg.EventFieldNum);
-            Short eventTypeValue = mesg.getFieldShortValue(EventMesg.EventTypeFieldNum);
-            if (eventValue == null || eventTypeValue == null) {
-                continue;
-            }
-
-            if (!eventValue.equals(Event.TIMER.getValue())) {
-                continue;
-            }
-
-            EventType eventType = EventType.getByValue(eventTypeValue);
-            String eventTypeName = eventType != null ? String.valueOf(eventType) : "";
-            if ("STOP_ALL".equals(eventTypeName) || "STOP_DISABLE_ALL".equals(eventTypeName)) {
-                return i;
-            }
-        }
-        return -1;
-    }
     // =================================================================================
     private String coursePointName(CoursePoint coursePoint) {
         return coursePoint != null ? CoursePoint.getStringFromValue(coursePoint) : "-";
@@ -1178,6 +1203,66 @@ public class CPointFix {
             return null;
         }
         return updatedFitSeconds;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private void syncLapTimesWithRecords() {
+        List<Mesg> records = fitFile.getRecordMesg();
+        List<Mesg> laps = fitFile.getLapMesg();
+        
+        if (records.isEmpty() || laps.isEmpty()) {
+            return;
+        }
+
+        for (int lapIdx = 0; lapIdx < laps.size(); lapIdx++) {
+            Mesg lapMesg = laps.get(lapIdx);
+            Long lapStartTime = lapMesg.getFieldLongValue(FitFile.LAP_STIME);
+            Long nextLapStartTime = (lapIdx + 1 < laps.size()) 
+                ? laps.get(lapIdx + 1).getFieldLongValue(FitFile.LAP_STIME)
+                : null;
+
+            // Find first record at or after lap start
+            Long syncedStartTime = null;
+            for (Mesg record : records) {
+                Long recTime = record.getFieldLongValue(FitFile.REC_TIME);
+                if (recTime != null && (lapStartTime == null || recTime >= lapStartTime)) {
+                    syncedStartTime = recTime;
+                    break;
+                }
+            }
+
+            if (syncedStartTime != null && !syncedStartTime.equals(lapStartTime)) {
+                lapMesg.setFieldValue(FitFile.LAP_STIME, syncedStartTime);
+                fitFile.appendTempUpdateLogLn("Lap sync: start_time aligned to first record -> "
+                    + FitDateTime.toString(syncedStartTime));
+            }
+
+            // Find last record before next lap start (or last record overall)
+            Long syncedEndTime = null;
+            if (nextLapStartTime != null) {
+                for (int i = records.size() - 1; i >= 0; i--) {
+                    Long recTime = records.get(i).getFieldLongValue(FitFile.REC_TIME);
+                    if (recTime != null && recTime < nextLapStartTime) {
+                        syncedEndTime = recTime;
+                        break;
+                    }
+                }
+            } else {
+                // Last lap: use last record time
+                Long lastRecTime = records.get(records.size() - 1).getFieldLongValue(FitFile.REC_TIME);
+                if (lastRecTime != null) {
+                    syncedEndTime = lastRecTime;
+                }
+            }
+
+            if (syncedEndTime != null) {
+                Long currentLapTime = lapMesg.getFieldLongValue(FitFile.LAP_TIME);
+                if (!syncedEndTime.equals(currentLapTime)) {
+                    lapMesg.setFieldValue(FitFile.LAP_TIME, syncedEndTime);
+                    fitFile.appendTempUpdateLogLn("Lap sync: timestamp (end) aligned to last record -> "
+                        + FitDateTime.toString(syncedEndTime));
+                }
+            }
+        }
     }
     // =================================================================================
     private ShiftedPoint shiftPointForRecord(int recordIx, List<OriginalGpsPoint> originalRecordGps, int metersToShift, ShiftSide shiftSide) {

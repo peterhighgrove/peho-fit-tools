@@ -122,6 +122,20 @@ Fix for courses that has the same first and last part when using
 --> regr wkt/gps ok ->bless
 --> git sync
 
+Fixing printCPoints() to print one char less, new header
+Updating cpace command to also update start and stop events
+Updating CPointFix().changeRecordAndCPointTimesToTodayDate to also update 
+ event mesg and lap mesg.
+
+--> Build v2.78
+
+Fixed lap time handling to get a PaR file to be able to save after cprt, changeRecordAndCPointTimesToTodayDate
+
+--> Build v2.79
+--> regr wkt/gps ok ->bless
+--> git sync
+
+
 
 BUGGAR
 !!fitFile.findTimerBasedOnTime(startTime); do not work on treadmill files

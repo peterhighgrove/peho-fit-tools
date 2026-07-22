@@ -12,14 +12,14 @@ public class DTstr {
     private String DateTimeStr = null;
 
     public DTstr(Long garminLocalDate) {
-        DateTimeStr = formatDateTime(garminLocalDate, 0);
+        DateTimeStr = formatDateTime(garminLocalDate, 0L);
     }
 
-    public DTstr (Long garminLocalDate, int offsetMinutes) {
+    public DTstr (Long garminLocalDate, Long offsetMinutes) {
         DateTimeStr = formatDateTime(garminLocalDate, offsetMinutes);
     }
 
-    private String formatDateTime(Long garminLocalDate, int offsetMinutes) {
+    private String formatDateTime(Long garminLocalDate, Long offsetMinutes) {
         if (garminLocalDate == null) {
             garminLocalDate = 0l;
         }
@@ -32,10 +32,13 @@ public class DTstr {
         return DT;
     }
 
-    private String offsetMinutesToTimeZoneString(int offsetMinutes) {
-        int absOffsetMinutes = Math.abs(offsetMinutes);
-        int hours = absOffsetMinutes / 60;
-        int minutes = absOffsetMinutes % 60;
+    private String offsetMinutesToTimeZoneString(Long offsetMinutes) {
+        if (offsetMinutes == null) {
+            offsetMinutes = 0L;
+        }
+        long absOffsetMinutes = Math.abs(offsetMinutes);
+        long hours = absOffsetMinutes / 60;
+        long minutes = absOffsetMinutes % 60;
         String sign = offsetMinutes >= 0 ? "+" : "-";
         return String.format("%s%02d:%02d", sign, hours, minutes);
     }
@@ -47,7 +50,7 @@ public class DTstr {
         return new DTstr(garminLocalDate).get();
     }
 
-    public static String get(Long garminLocalDate, int offsetMinutes) {
+    public static String get(Long garminLocalDate, Long offsetMinutes) {
         return new DTstr(garminLocalDate, offsetMinutes).get();
     }
 

@@ -410,9 +410,14 @@ CPoint no: 31 -> 1989-12-31-00-00-30 => 2026-07-22-00-00-30
 CPoint no: 32 -> 1989-12-31-00-00-31 => 2026-07-22-00-00-31
 CPoint no: 33 -> 1989-12-31-00-00-32 => 2026-07-22-00-00-32
 CPoint no: 34 -> 1989-12-31-00-00-33 => 2026-07-22-00-00-33
+Lap sync: start_time aligned to first record -> 2026-07-22-00-00-00
+Lap sync: timestamp (end) aligned to last record -> 2026-07-22-00-06-09
 -- Updated records: 370
 -- Updated course points: 34
--- Skipped timestamps: 0
+-- Updated event timestamps: 0
+-- Updated lap timestamps: 0
+-- Updated lap start_times: 0
+-- Skipped timestamps: 4
 RECALCULATE RECORD TIMES FROM GPS PACE
 -------------------------------------
 Target pace: 6:00 min/km (360 s/km)
@@ -421,6 +426,8 @@ Updated REC_TIME on 369 record(s). Total records: 370
 Distance source used: gpsSegments=369, fallbackRecDistSegments=0, missingDistanceSegments=0
 Distance check: checkedSegments=369, mismatches(>5m)=0, maxDiff=0.59m
 Computed path distance=7685.5m, total time=46:07
+Updated START event time from null to 00:00:00
+Updated STOP event time from null to 00:46:07
 COURSE POINT - MATCH TO CLOSEST RECORD
 --------------------------------
 Matching mode: forward-only along record sequence
