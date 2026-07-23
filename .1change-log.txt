@@ -150,6 +150,15 @@ CPointGenericShowListCommand->CPointReportGenericsCommand
 recfix->recfixtime
 cpct->cptime
 
+--> git sync
+
+cpdate->cdate
+CPointRecordTimesToTodayCommand->CourseToTodayCommand
+
+--> git sync
+
+
+
 BUGGAR
 
 Do not handle args correctly

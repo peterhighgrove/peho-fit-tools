@@ -1,10 +1,10 @@
 cpr
-cprt
+cdate
 cpace
 6:00
 y
 y
-recfix
+recfixtime
 cpt
 8
 45
@@ -27,7 +27,7 @@ cpi
 cpb
 15
 n
-cps
+csh
 R
 5
 cpcn
