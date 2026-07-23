@@ -10,7 +10,7 @@ public class CPointBackCommand implements Command {
     public String getKey() { return "cpb"; }
 
     @Override
-    public String getDescription() { return "Move Course point back"; }
+    public String getDescription() { return "Move Course point back on course"; }
 
     @Override
     public String getCategory() { return "Course points"; }

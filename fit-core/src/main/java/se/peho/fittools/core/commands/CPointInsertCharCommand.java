@@ -10,7 +10,7 @@ public class CPointInsertCharCommand implements Command {
     public String getKey() { return "cpi"; }
 
     @Override
-    public String getDescription() { return "Insert type char in Course point names"; }
+    public String getDescription() { return "Insert type char in Course point names based on type"; }
 
     @Override
     public String getCategory() { return "Course points"; }

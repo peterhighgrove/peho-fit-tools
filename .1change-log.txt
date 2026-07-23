@@ -140,8 +140,28 @@ Both cpace (FitFile.applyConstantPaceToRecordTimesFromGps()) and cprt (CPointFix
 
 --> git sync
 
+cpcn->cname
+CPointCourseNameCommand->CourseNameCommand
+cprt->cpdate
+cps->csh
+CPointShiftCommand->CourseShiftCommand
+CPointShowListCommand->CPointReportCommand
+CPointGenericShowListCommand->CPointReportGenericsCommand
+recfix->recfixtime
+cpct->cptime
 
 BUGGAR
+
+Do not handle args correctly
+$  cd /home/hoglund/dev/peho-fit-tools ; /usr/bin/env /usr/lib/jvm/java-21-openjdk-amd64/bin/java @/tmp/cp_46w5te5i30n47ik6i39j5p65d.argfile se.peho.fittools.gpsfix.Main CourseTest 0 test3.fit 
+ArgsLen: 3
+============= ARGS (3) =============
+------> timeOffsetSec not set, defaulting to 2 min (120 sec)
++++++++++++++++++++++++++++++++++++
+filePathPrefix: /home/hoglund/Downloads/
+profileNameSuffix: CourseTest
+timeOffsetSec: 120
+
 !!fitFile.findTimerBasedOnTime(startTime); do not work on treadmill files
     LapReportGenerator 
                     String lapTimerStr = "-";

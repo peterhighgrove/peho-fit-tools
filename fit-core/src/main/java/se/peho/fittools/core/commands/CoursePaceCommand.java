@@ -10,10 +10,10 @@ public class CoursePaceCommand implements Command {
     public String getKey() { return "cpace"; }
 
     @Override
-    public String getDescription() { return "Set course pace and recalculate record times"; }
+    public String getDescription() { return "Set fixed course pace and recalculate record times"; }
 
     @Override
-    public String getCategory() { return "Records"; }
+    public String getCategory() { return "Course points"; }
 
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {

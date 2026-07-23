@@ -10,7 +10,7 @@ public class CPointMoveAfterRecordsCommand implements Command {
     public String getKey() { return "cpm"; }
 
     @Override
-    public String getDescription() { return "Check/move CPoints after records"; }
+    public String getDescription() { return "Check/move CPoints to after records"; }
 
     @Override
     public String getCategory() { return "Course points"; }

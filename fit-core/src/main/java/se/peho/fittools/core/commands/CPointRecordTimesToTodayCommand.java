@@ -7,7 +7,7 @@ import se.peho.fittools.core.FitFile;
 
 public class CPointRecordTimesToTodayCommand implements Command {
     @Override
-    public String getKey() { return "cprt"; }
+    public String getKey() { return "cpdate"; }
 
     @Override
     public String getDescription() { return "Change record/CPoint dates to today"; }

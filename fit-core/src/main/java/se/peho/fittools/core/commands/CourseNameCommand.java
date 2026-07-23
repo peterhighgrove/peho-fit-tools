@@ -5,18 +5,18 @@ import java.util.Scanner;
 import se.peho.fittools.core.Command;
 import se.peho.fittools.core.FitFile;
 
-public class CPointShiftCommand implements Command {
+public class CourseNameCommand implements Command {
     @Override
-    public String getKey() { return "cps"; }
+    public String getKey() { return "cname"; }
 
     @Override
-    public String getDescription() { return "Shift route left/right"; }
+    public String getDescription() { return "Change Course name in COURSE file"; }
 
     @Override
     public String getCategory() { return "Course points"; }
 
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
-        watchFitFile.getCPointFix().shiftGpsPointsSideways(sc);
+        watchFitFile.getCPointFix().changeCourseName(sc);
     }
 }
