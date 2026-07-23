@@ -135,6 +135,10 @@ Fixed lap time handling to get a PaR file to be able to save after cprt, changeR
 --> regr wkt/gps ok ->bless
 --> git sync
 
+The timestamp of lapMesg should not be from the last record. All lapMesg should have the starttime as timestamp.
+Both cpace (FitFile.applyConstantPaceToRecordTimesFromGps()) and cprt (CPointFix().changeRecordAndCPointTimesToTodayDate()) command should add/fix lapMesg and eventMesg timestamps.
+
+--> git sync
 
 
 BUGGAR

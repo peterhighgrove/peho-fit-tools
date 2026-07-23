@@ -2703,55 +2703,130 @@ public class FitFile {
         appendTempUpdateLogLn("Computed path distance=" + String.format("%.1f", cumulativeGpsMeters) + "m, total time="
                 + PehoUtils.sec2minSecLong(Math.round(cumulativeSeconds)));
 
-        // Update start event time
-        Mesg firstStartEventMesg = findFirstTimerStartEventMesg();
-        if (firstStartEventMesg != null) {
-            Long startEventTime = firstStartEventMesg.getFieldLongValue(EVE_TIME);
-            if (startEventTime == null || !startEventTime.equals(startTime)) {
-                firstStartEventMesg.setFieldValue(EVE_TIME, startTime);
-                appendTempUpdateLogLn("Updated START event time from "
-                        + (startEventTime != null ? FitDateTime.toStringTime(startEventTime, diffMinutesLocalUTC) : "null")
-                        + " to " + FitDateTime.toStringTime(startTime, diffMinutesLocalUTC));
-            }
-        } else {
-            appendTempUpdateLogLn("No START event found to update.");
-        }
-
-        // Update stop event time
-        Long expectedStopTime = lastAssignedTime;
-        Mesg lastStopEventMesg = findLastTimerStopEventMesg();
-        if (lastStopEventMesg != null) {
-            Long stopEventTime = lastStopEventMesg.getFieldLongValue(EVE_TIME);
-            if (stopEventTime == null || !stopEventTime.equals(expectedStopTime)) {
-                lastStopEventMesg.setFieldValue(EVE_TIME, expectedStopTime);
-                appendTempUpdateLogLn("Updated STOP event time from "
-                        + (stopEventTime != null ? FitDateTime.toStringTime(stopEventTime, diffMinutesLocalUTC) : "null")
-                        + " to " + FitDateTime.toStringTime(expectedStopTime, diffMinutesLocalUTC));
-            }
-        } else {
-            appendTempUpdateLogLn("No STOP event found to update.");
-        }
+        fixLapAndEventTimestampsFromRecords();
 
         System.out.println(getTempUpdateLog());
         appendUpdateLog(getTempUpdateLog());
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    static class TimestampNormalizationStats {
+        int changedLapStartTimes;
+        int changedLapTimestamps;
+        int changedEventTimestamps;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    TimestampNormalizationStats fixLapAndEventTimestampsFromRecords() {
+        TimestampNormalizationStats stats = new TimestampNormalizationStats();
+        if (recordMesg == null || recordMesg.isEmpty()) {
+            appendTempUpdateLogLn("No records found. Skipping lap/event timestamp normalization.");
+            return stats;
+        }
+
+        List<Long> recordTimes = new ArrayList<>();
+        for (Mesg record : recordMesg) {
+            Long recTime = record.getFieldLongValue(REC_TIME);
+            if (recTime != null) {
+                recordTimes.add(recTime);
+            }
+        }
+        if (recordTimes.isEmpty()) {
+            appendTempUpdateLogLn("No non-null REC_TIME found. Skipping lap/event timestamp normalization.");
+            return stats;
+        }
+
+        Long firstRecordTime = recordTimes.get(0);
+        Long lastRecordTime = recordTimes.get(recordTimes.size() - 1);
+
+        int changedLapStartTimes = 0;
+        int changedLapTimestamps = 0;
+        int changedEventTimestamps = 0;
+
+        int recordSearchIx = 0;
+        Long previousLapStart = null;
+        for (int lapIx = 0; lapIx < lapMesg.size(); lapIx++) {
+            Mesg lap = lapMesg.get(lapIx);
+            Long oldLapStartTime = lap.getFieldLongValue(LAP_STIME);
+
+            long targetTime = oldLapStartTime != null ? oldLapStartTime : firstRecordTime;
+            if (previousLapStart != null && targetTime <= previousLapStart) {
+                targetTime = previousLapStart + 1;
+            }
+
+            recordSearchIx = findFirstRecordTimeIndexAtOrAfter(recordTimes, targetTime, recordSearchIx);
+            Long alignedLapStartTime = recordTimes.get(recordSearchIx);
+
+            if (oldLapStartTime == null || !oldLapStartTime.equals(alignedLapStartTime)) {
+                lap.setFieldValue(LAP_STIME, alignedLapStartTime);
+                changedLapStartTimes++;
+                appendTempUpdateLogLn("Lap no: " + (lapIx + 1) + " start_time -> "
+                        + (oldLapStartTime != null ? FitDateTime.toStringTime(oldLapStartTime, diffMinutesLocalUTC) : "null")
+                        + " => " + FitDateTime.toStringTime(alignedLapStartTime, diffMinutesLocalUTC));
+            }
+
+            Long oldLapTimestamp = lap.getFieldLongValue(LAP_TIME);
+            if (oldLapTimestamp == null || !oldLapTimestamp.equals(firstRecordTime)) {
+                lap.setFieldValue(LAP_TIME, firstRecordTime);
+                changedLapTimestamps++;
+                appendTempUpdateLogLn("Lap no: " + (lapIx + 1) + " timestamp -> "
+                        + (oldLapTimestamp != null ? FitDateTime.toStringTime(oldLapTimestamp, diffMinutesLocalUTC) : "null")
+                        + " => " + FitDateTime.toStringTime(firstRecordTime, diffMinutesLocalUTC));
+            }
+
+            previousLapStart = alignedLapStartTime;
+        }
+
+        for (int i = 0; i < eventMesg.size(); i++) {
+            Mesg event = eventMesg.get(i);
+            Long oldEventTime = event.getFieldLongValue(EVE_TIME);
+
+            Long desiredEventTime = null;
+            Short eventValue = event.getFieldShortValue(EVE_EVENT);
+            Short eventTypeValue = event.getFieldShortValue(EVE_TYPE);
+            if (eventValue != null && eventTypeValue != null && eventValue.equals(Event.TIMER.getValue())) {
+                EventType eventType = EventType.getByValue(eventTypeValue);
+                if (eventType == EventType.START) {
+                    desiredEventTime = firstRecordTime;
+                } else if (eventType == EventType.STOP_ALL || eventType == EventType.STOP_DISABLE_ALL) {
+                    desiredEventTime = lastRecordTime;
+                }
+            }
+
+            if (desiredEventTime == null && oldEventTime == null) {
+                desiredEventTime = firstRecordTime;
+            }
+
+            if (desiredEventTime != null && (oldEventTime == null || !oldEventTime.equals(desiredEventTime))) {
+                event.setFieldValue(EVE_TIME, desiredEventTime);
+                changedEventTimestamps++;
+                appendTempUpdateLogLn("Event no: " + (i + 1) + " timestamp -> "
+                        + (oldEventTime != null ? FitDateTime.toStringTime(oldEventTime, diffMinutesLocalUTC) : "null")
+                        + " => " + FitDateTime.toStringTime(desiredEventTime, diffMinutesLocalUTC));
+            }
+        }
+
+        appendTempUpdateLogLn("Normalized timestamps: lapStartTimes=" + changedLapStartTimes
+                + ", lapTimestamps=" + changedLapTimestamps
+                + ", eventTimestamps=" + changedEventTimestamps);
+        stats.changedLapStartTimes = changedLapStartTimes;
+        stats.changedLapTimestamps = changedLapTimestamps;
+        stats.changedEventTimestamps = changedEventTimestamps;
+        return stats;
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private int findFirstRecordTimeIndexAtOrAfter(List<Long> recordTimes, long targetTime, int fromIndex) {
+        int startIndex = Math.max(0, fromIndex);
+        for (int i = startIndex; i < recordTimes.size(); i++) {
+            if (recordTimes.get(i) >= targetTime) {
+                return i;
+            }
+        }
+        return recordTimes.size() - 1;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private void logTimeFix(String text) {
         appendTempUpdateLogLn(text);
         System.out.println(text);
     }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    private Mesg findFirstTimerStartEventMesg() {
-        for (int i = 0; i < eventTimerMesg.size(); i++) {
-            Mesg eventMesg = eventTimerMesg.get(i);
-            if (eventMesg.getFieldValue(EVE_TYPE) != null
-                    && eventMesg.getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
-                return eventMesg;
-            }
-        }
-        return null;
-    }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     int findLastTimerStopEventIndex(List<Mesg> mesgs) {
         for (int i = mesgs.size() - 1; i >= 0; i--) {
             Mesg mesg = mesgs.get(i);

@@ -869,8 +869,11 @@ public class CPointFix {
             }
         }
 
-        // Sync lap times with actual record times to ensure fillLapExtraRecords can match them
-        syncLapTimesWithRecords();
+        // Normalize lap/event timestamps against updated records.
+        FitFile.TimestampNormalizationStats normalizationStats = fitFile.fixLapAndEventTimestampsFromRecords();
+        changedEventTimestamps += normalizationStats.changedEventTimestamps;
+        changedLapTimestamps += normalizationStats.changedLapTimestamps;
+        changedLapStartTimes += normalizationStats.changedLapStartTimes;
 
         fitFile.appendTempUpdateLogLn("-- Updated records: " + changedRecords);
         fitFile.appendTempUpdateLogLn("-- Updated course points: " + changedCoursePoints);
@@ -1203,66 +1206,6 @@ public class CPointFix {
             return null;
         }
         return updatedFitSeconds;
-    }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    private void syncLapTimesWithRecords() {
-        List<Mesg> records = fitFile.getRecordMesg();
-        List<Mesg> laps = fitFile.getLapMesg();
-        
-        if (records.isEmpty() || laps.isEmpty()) {
-            return;
-        }
-
-        for (int lapIdx = 0; lapIdx < laps.size(); lapIdx++) {
-            Mesg lapMesg = laps.get(lapIdx);
-            Long lapStartTime = lapMesg.getFieldLongValue(FitFile.LAP_STIME);
-            Long nextLapStartTime = (lapIdx + 1 < laps.size()) 
-                ? laps.get(lapIdx + 1).getFieldLongValue(FitFile.LAP_STIME)
-                : null;
-
-            // Find first record at or after lap start
-            Long syncedStartTime = null;
-            for (Mesg record : records) {
-                Long recTime = record.getFieldLongValue(FitFile.REC_TIME);
-                if (recTime != null && (lapStartTime == null || recTime >= lapStartTime)) {
-                    syncedStartTime = recTime;
-                    break;
-                }
-            }
-
-            if (syncedStartTime != null && !syncedStartTime.equals(lapStartTime)) {
-                lapMesg.setFieldValue(FitFile.LAP_STIME, syncedStartTime);
-                fitFile.appendTempUpdateLogLn("Lap sync: start_time aligned to first record -> "
-                    + FitDateTime.toString(syncedStartTime));
-            }
-
-            // Find last record before next lap start (or last record overall)
-            Long syncedEndTime = null;
-            if (nextLapStartTime != null) {
-                for (int i = records.size() - 1; i >= 0; i--) {
-                    Long recTime = records.get(i).getFieldLongValue(FitFile.REC_TIME);
-                    if (recTime != null && recTime < nextLapStartTime) {
-                        syncedEndTime = recTime;
-                        break;
-                    }
-                }
-            } else {
-                // Last lap: use last record time
-                Long lastRecTime = records.get(records.size() - 1).getFieldLongValue(FitFile.REC_TIME);
-                if (lastRecTime != null) {
-                    syncedEndTime = lastRecTime;
-                }
-            }
-
-            if (syncedEndTime != null) {
-                Long currentLapTime = lapMesg.getFieldLongValue(FitFile.LAP_TIME);
-                if (!syncedEndTime.equals(currentLapTime)) {
-                    lapMesg.setFieldValue(FitFile.LAP_TIME, syncedEndTime);
-                    fitFile.appendTempUpdateLogLn("Lap sync: timestamp (end) aligned to last record -> "
-                        + FitDateTime.toString(syncedEndTime));
-                }
-            }
-        }
     }
     // =================================================================================
     private ShiftedPoint shiftPointForRecord(int recordIx, List<OriginalGpsPoint> originalRecordGps, int metersToShift, ShiftSide shiftSide) {
