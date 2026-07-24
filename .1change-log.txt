@@ -165,6 +165,20 @@ Bug: setFirst/LastRecordTime in recfixtime
 fixing lap times in recfixtime, checkAndFixNullRecordTimes() w existing method fixLapAndEventTimestampsFromRecords()
 Null string fix in Tstr and DTstr
 
+--> git sync
+
+--> Build v2.81
+--> regr gps Too many errors, NO blessing
+
+Avoid running this when not a Course file
+        if (watchFitFile.isCourseFile()) {
+            // CHECK NULL RECORD TIMES (warnings only)
+            watchFitFile.checkAndFixNullRecordTimes();
+        }
+
+--> Build v2.82
+
+
 BUGGAR
 
 Do not handle args correctly

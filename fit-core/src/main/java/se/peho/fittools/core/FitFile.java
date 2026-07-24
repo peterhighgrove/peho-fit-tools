@@ -2340,8 +2340,8 @@ public class FitFile {
             prevNonNullTime = lastAssigned;
         }
 
-        //setTimeFirstRecord(recordMesg.get(0).getFieldLongValue(REC_TIME));
-        //setTimeLastRecord(recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
+        setTimeFirstRecord(recordMesg.get(0).getFieldLongValue(REC_TIME));
+        setTimeLastRecord(recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
 
         logTimeFix("-------------------------------------------------------------");
         logTimeFix("FIRST AND LAST RECORD TIMES AFTER FIXING NULL REC_TIME VALUES");
