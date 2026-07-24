@@ -721,196 +721,204 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void fillLapExtraRecords() {
-        int recordIx = 0;
-        int lapIx = 0;
-        int lapNo = 1;
-        Long currentTimeStamp = 0L;
-        Long nextLapStartTime = 0L;
-        Float currentLapTime = 0f;
-        String currentLapIntensity = "";
-        Long currentLapTimeEnd = 0L;
-        Float lastLapTotalDistance = 0f;
+        try {
+            int recordIx = 0;
+            int lapIx = 0;
+            int lapNo = 1;
+            Long currentTimeStamp = 0L;
+            Long nextLapStartTime = 0L;
+            Float currentLapTime = 0f;
+            String currentLapIntensity = "";
+            Long currentLapTimeEnd = 0L;
+            Float lastLapTotalDistance = 0f;
 
-        int currentLapSumCadence = 0;
-        int currentLapSumPower = 0;
-        Float currentLapSumStrokeLen = 0f;
-        Float currentLapSumDragFactor = 0f;
-        Float currentLapMaxStrokeLen = 0f;
-        Float currentLapMaxDragFactor = 0f;
+            int currentLapSumCadence = 0;
+            int currentLapSumPower = 0;
+            Float currentLapSumStrokeLen = 0f;
+            Float currentLapSumDragFactor = 0f;
+            Float currentLapMaxStrokeLen = 0f;
+            Float currentLapMaxDragFactor = 0f;
 
-        Float activeSumSpeed = 0f;
-        Float activeSumCad = 0f;
-        Float activeSumPower = 0f;
-        Float restSumSpeed = 0f;
-        Float restSumCad = 0f;
-        Float restSumPower = 0f;
-        setActiveTime(0f);
-        setRestTime(0f);
-        setActiveDist(0f);
-        setRestDist(0f);
+            Float activeSumSpeed = 0f;
+            Float activeSumCad = 0f;
+            Float activeSumPower = 0f;
+            Float restSumSpeed = 0f;
+            Float restSumCad = 0f;
+            Float restSumPower = 0f;
+            setActiveTime(0f);
+            setRestTime(0f);
+            setActiveDist(0f);
+            setRestDist(0f);
 
-        lapExtraRecords.clear();
+            lapExtraRecords.clear();
 
-        // nextLapStartTime from lapMesg start time field
-        nextLapStartTime = (lapMesg.isEmpty() || lapMesg.get(0).getFieldLongValue(LAP_STIME) == null) ? 
-            getTimeFirstRecord() : 
-            lapMesg.get(0).getFieldLongValue(LAP_STIME);
+            // nextLapStartTime from lapMesg start time field
+            nextLapStartTime = (lapMesg.isEmpty() || lapMesg.get(0).getFieldLongValue(LAP_STIME) == null) ? 
+                getTimeFirstRecord() : 
+                lapMesg.get(0).getFieldLongValue(LAP_STIME);
 
-        Boolean nextRecordLastInLap = false;
+            Boolean nextRecordLastInLap = false;
 
-        for (Mesg record : recordMesg) {
+            for (Mesg record : recordMesg) {
 
-            Short currentHr = record.getFieldShortValue(REC_HR) == null ? (short) 60 : record.getFieldShortValue(REC_HR);
-            //--------------
-            // IF LAP START
-            currentTimeStamp = record.getFieldLongValue(REC_TIME);
-            if (currentTimeStamp != null && nextLapStartTime != null && currentTimeStamp.equals(nextLapStartTime)) {
+                Short currentHr = record.getFieldShortValue(REC_HR) == null ? (short) 60 : record.getFieldShortValue(REC_HR);
+                //--------------
+                // IF LAP START
+                currentTimeStamp = record.getFieldLongValue(REC_TIME);
+                if (currentTimeStamp != null && nextLapStartTime != null && currentTimeStamp.equals(nextLapStartTime)) {
 
-                LapExtraMesg newLapExtra = new LapExtraMesg();
-                lapExtraRecords.add(newLapExtra);
+                    LapExtraMesg newLapExtra = new LapExtraMesg();
+                    lapExtraRecords.add(newLapExtra);
 
-                // Save HR and recordIx START
-                lapExtraRecords.get(lapIx).setHrStart(currentHr);
-                lapExtraRecords.get(lapIx).setRecordIxStart(recordIx);
+                    // Save HR and recordIx START
+                    lapExtraRecords.get(lapIx).setHrStart(currentHr);
+                    lapExtraRecords.get(lapIx).setRecordIxStart(recordIx);
 
-                // Get LAP DATA to be used to find lap-start-end
-                Float lapTotalTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
-                currentLapTime = (lapTotalTimer == null) ? 0f : lapTotalTimer;
+                    // Get LAP DATA to be used to find lap-start-end
+                    Float lapTotalTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
+                    currentLapTime = (lapTotalTimer == null) ? 0f : lapTotalTimer;
 
-                Short lapIntensityShort = lapMesg.get(lapIx).getFieldShortValue(LAP_INTENSITY);
-                Intensity lapIntensity = (lapIntensityShort == null) ? Intensity.INVALID : Intensity.getByValue(lapIntensityShort);
-                currentLapIntensity = Intensity.getStringFromValue(lapIntensity);
+                    Short lapIntensityShort = lapMesg.get(lapIx).getFieldShortValue(LAP_INTENSITY);
+                    Intensity lapIntensity = (lapIntensityShort == null) ? Intensity.INVALID : Intensity.getByValue(lapIntensityShort);
+                    currentLapIntensity = Intensity.getStringFromValue(lapIntensity);
 
-                // Save LAP END to table (DateTime)
-                lapExtraRecords.get(lapIx).setTimeEnd(currentLapTimeEnd);
-                if (lapNo < numberOfLaps) {
-                    currentLapTimeEnd = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
-                    nextLapStartTime = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME);
+                    // Save LAP END to table (DateTime)
+                    lapExtraRecords.get(lapIx).setTimeEnd(currentLapTimeEnd);
+                    if (lapNo < numberOfLaps) {
+                        currentLapTimeEnd = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
+                        nextLapStartTime = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME);
+                    } else {
+                        currentLapTimeEnd = timeLastRecord;
+                    }
+
+                    // Save LAP END to table (DateTime)
+                    lapExtraRecords.get(lapIx).setTimeEnd(currentLapTimeEnd);
+                }
+
+                // Find out if next record is first record in next Lap
+                if ((recordIx + 1 >= recordMesg.size()) || 
+                        (recordMesg.get(recordIx + 1).getFieldLongValue(REC_TIME) > currentLapTimeEnd)) {
+                    nextRecordLastInLap = true;
                 } else {
-                    currentLapTimeEnd = timeLastRecord;
+                    nextRecordLastInLap = false;
                 }
 
-                // Save LAP END to table (DateTime)
-                lapExtraRecords.get(lapIx).setTimeEnd(currentLapTimeEnd);
-            }
-
-            // Find out if next record is first record in next Lap
-            if ((recordIx + 1 >= recordMesg.size()) || 
-                    (recordMesg.get(recordIx + 1).getFieldLongValue(REC_TIME) > currentLapTimeEnd)) {
-                nextRecordLastInLap = true;
-            } else {
-                nextRecordLastInLap = false;
-            }
-
-            // Calc LAP HR min
-            if (lapExtraRecords.get(lapIx).getHrMin() == null) {
-                lapExtraRecords.get(lapIx).setHrMin(currentHr);
-            } else if (currentHr < lapExtraRecords.get(lapIx).getHrMin()) {
-                lapExtraRecords.get(lapIx).setHrMin(currentHr);
-            }
-
-            // Calc LAPSUM & MLAPMAX for Developer fields from current record
-            Mesg secRecForDev = record; // Mesg.get(recordIx); // Why not just use 'record'???
-            for (DeveloperField field : secRecForDev.getDeveloperFields()) {
-                if ("StrokeLength".equals(field.getName())) {
-                    currentLapSumStrokeLen += field.getFloatValue();
-                    if (field.getFloatValue() > currentLapMaxStrokeLen) {
-                        currentLapMaxStrokeLen = field.getFloatValue();
-                    }
-                }
-                if ("DragFactor".equals(field.getName())) {
-                    currentLapSumDragFactor += field.getFloatValue();
-                    if (field.getFloatValue() > currentLapMaxDragFactor) {
-                        currentLapMaxDragFactor = field.getFloatValue();
-                    }
-                }
-            }
-
-            // --------------
-            // IF LAP END
-            //if (currentTimeStamp != null && currentLapTimeEnd != null && currentTimeStamp.equal(currentLapTimeEnd)) {
-            if (currentTimeStamp != null && currentLapTimeEnd != null && nextRecordLastInLap) {
-
-                // Save HR and recordIx END
-                lapExtraRecords.get(lapIx).setHrEnd(currentHr);
-                lapExtraRecords.get(lapIx).setRecordIxEnd(recordIx);
-                lapExtraRecords.get(lapIx).setTimeEnd(record.getFieldLongValue(REC_TIME));
-
-                Float lapCad = lapMesg.get(lapIx).getFieldFloatValue(LAP_CAD);
-                Float lapTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
-                Float lapDist = lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST);
-                if (lapCad != null && lapCad > 0 && lapTimer != null && lapTimer > 0 && lapDist != null && lapDist > 0) {
-                    getLapExtraRecords().get(lapIx).setStepLen(lapDist / ( lapCad * lapTimer / 60 )); // step length acc to FFRT
+                // Calc LAP HR min
+                if (lapExtraRecords.get(lapIx).getHrMin() == null) {
+                    lapExtraRecords.get(lapIx).setHrMin(currentHr);
+                } else if (currentHr < lapExtraRecords.get(lapIx).getHrMin()) {
+                    lapExtraRecords.get(lapIx).setHrMin(currentHr);
                 }
 
-                // Calc LAP SUM & LAP MAX
-                for (DeveloperField field : recordMesg.get(recordIx).getDeveloperFields()) {
+                // Calc LAPSUM & MLAPMAX for Developer fields from current record
+                Mesg secRecForDev = record; // Mesg.get(recordIx); // Why not just use 'record'???
+                for (DeveloperField field : secRecForDev.getDeveloperFields()) {
                     if ("StrokeLength".equals(field.getName())) {
-                        lapExtraRecords.get(lapIx).setAvgStrokeLen(
-                            (float) Math.round(100 * currentLapSumStrokeLen 
-                                / (recordIx-lapExtraRecords.get(lapIx).getRecordIxStart()+1)) 
-                                /100);
-                        lapExtraRecords.get(lapIx).setMaxStrokeLen(currentLapMaxStrokeLen);
-                        currentLapSumStrokeLen = 0f;
-                        currentLapMaxStrokeLen = 0f;
+                        currentLapSumStrokeLen += field.getFloatValue();
+                        if (field.getFloatValue() > currentLapMaxStrokeLen) {
+                            currentLapMaxStrokeLen = field.getFloatValue();
+                        }
                     }
                     if ("DragFactor".equals(field.getName())) {
-                        lapExtraRecords.get(lapIx).setAvgDragFactor(
-                            (float) Math.round(100 * currentLapSumDragFactor 
-                                / (recordIx-lapExtraRecords.get(lapIx).getRecordIxStart()+1)) 
-                                /100);
-                        lapExtraRecords.get(lapIx).setMaxDragFactor(currentLapMaxDragFactor);
-                        currentLapSumDragFactor = 0f;
-                        currentLapMaxDragFactor = 0f;
-                    }
-                    if ("Level".equals(field.getName())) {
-                        getLapExtraRecords().get(lapIx).setLevel(field.getFloatValue());
+                        currentLapSumDragFactor += field.getFloatValue();
+                        if (field.getFloatValue() > currentLapMaxDragFactor) {
+                            currentLapMaxDragFactor = field.getFloatValue();
+                        }
                     }
                 }
-
-                Float lapTotalTimerTime = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
-                Float lapTotDist = lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST);
-                Short lapAvgCad = lapMesg.get(lapIx).getFieldShortValue(LAP_CAD);
-                Integer lapAvgPow = lapMesg.get(lapIx).getFieldIntegerValue(LAP_POW);
-                Float lapAvgSpeedF = lapMesg.get(lapIx).getFieldFloatValue(LAP_SPEED);
 
                 // --------------
-                // Calculate ACTIVE LAP SUM & MAX
-                if ("ACTIVE".equals(currentLapIntensity)) {
-                    if (lapTotalTimerTime != null) setActiveTime(getActiveTime() + lapTotalTimerTime);
-                    if (lapTotDist != null) setActiveDist(getActiveDist() + lapTotDist);
-                    if (lapAvgSpeedF != null && lapTotalTimerTime != null) activeSumSpeed += lapAvgSpeedF * lapTotalTimerTime;
-                    if (lapAvgCad != null && lapTotalTimerTime != null) activeSumCad += lapAvgCad * lapTotalTimerTime;
-                    if (lapAvgPow != null && lapTotalTimerTime != null) activeSumPower += lapAvgPow * lapTotalTimerTime;
-                }
+                // IF LAP END
+                //if (currentTimeStamp != null && currentLapTimeEnd != null && currentTimeStamp.equal(currentLapTimeEnd)) {
+                if (currentTimeStamp != null && currentLapTimeEnd != null && nextRecordLastInLap) {
 
-                // Calculate REST LAP SUM & MAX
-                if ("REST".equals(currentLapIntensity) || "RECOVERY".equals(currentLapIntensity)) {
-                    if (lapTotalTimerTime != null) setRestTime(getRestTime() + lapTotalTimerTime);
-                    if (lapTotDist != null) setRestDist(getRestDist() + lapTotDist);
-                    if (lapAvgSpeedF != null && lapTotalTimerTime != null) restSumSpeed += lapAvgSpeedF * lapTotalTimerTime;
-                    if (lapAvgCad != null && lapTotalTimerTime != null) restSumCad += lapAvgCad * lapTotalTimerTime;
-                    if (lapAvgPow != null && lapTotalTimerTime != null) restSumPower += lapAvgPow * lapTotalTimerTime;
-                }
+                    // Save HR and recordIx END
+                    lapExtraRecords.get(lapIx).setHrEnd(currentHr);
+                    lapExtraRecords.get(lapIx).setRecordIxEnd(recordIx);
+                    lapExtraRecords.get(lapIx).setTimeEnd(record.getFieldLongValue(REC_TIME));
 
-                lapIx++;
-                lapNo++;
-            } // IF LAP END END
+                    Float lapCad = lapMesg.get(lapIx).getFieldFloatValue(LAP_CAD);
+                    Float lapTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
+                    Float lapDist = lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST);
+                    if (lapCad != null && lapCad > 0 && lapTimer != null && lapTimer > 0 && lapDist != null && lapDist > 0) {
+                        getLapExtraRecords().get(lapIx).setStepLen(lapDist / ( lapCad * lapTimer / 60 )); // step length acc to FFRT
+                    }
 
-            recordIx++;
-        }  // FOR LOOP END
-        
-        // Calculate ACTIVE LAP SUM & MAX
-        // activeAvgSpeed = (float) (activeSumSpeed / getActiveTime());
-        activeAvgSpeed = (float) (getActiveDist() / getActiveTime());
-        activeAvgCad = (float) (activeSumCad / getActiveTime());
-        activeAvgPower = (float) (activeSumPower / getActiveTime());
+                    // Calc LAP SUM & LAP MAX
+                    for (DeveloperField field : recordMesg.get(recordIx).getDeveloperFields()) {
+                        if ("StrokeLength".equals(field.getName())) {
+                            lapExtraRecords.get(lapIx).setAvgStrokeLen(
+                                (float) Math.round(100 * currentLapSumStrokeLen 
+                                    / (recordIx-lapExtraRecords.get(lapIx).getRecordIxStart()+1)) 
+                                    /100);
+                            lapExtraRecords.get(lapIx).setMaxStrokeLen(currentLapMaxStrokeLen);
+                            currentLapSumStrokeLen = 0f;
+                            currentLapMaxStrokeLen = 0f;
+                        }
+                        if ("DragFactor".equals(field.getName())) {
+                            lapExtraRecords.get(lapIx).setAvgDragFactor(
+                                (float) Math.round(100 * currentLapSumDragFactor 
+                                    / (recordIx-lapExtraRecords.get(lapIx).getRecordIxStart()+1)) 
+                                    /100);
+                            lapExtraRecords.get(lapIx).setMaxDragFactor(currentLapMaxDragFactor);
+                            currentLapSumDragFactor = 0f;
+                            currentLapMaxDragFactor = 0f;
+                        }
+                        if ("Level".equals(field.getName())) {
+                            getLapExtraRecords().get(lapIx).setLevel(field.getFloatValue());
+                        }
+                    }
 
-        // Calculate REST LAP SUM & MAX
-        restAvgSpeed = (float) (getRestDist() / getRestTime());
-        restAvgCad = (float) (restSumCad / getRestTime());
-        restAvgPower = (float) (restSumPower / getRestTime());
+                    Float lapTotalTimerTime = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
+                    Float lapTotDist = lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST);
+                    Short lapAvgCad = lapMesg.get(lapIx).getFieldShortValue(LAP_CAD);
+                    Integer lapAvgPow = lapMesg.get(lapIx).getFieldIntegerValue(LAP_POW);
+                    Float lapAvgSpeedF = lapMesg.get(lapIx).getFieldFloatValue(LAP_SPEED);
 
+                    // --------------
+                    // Calculate ACTIVE LAP SUM & MAX
+                    if ("ACTIVE".equals(currentLapIntensity)) {
+                        if (lapTotalTimerTime != null) setActiveTime(getActiveTime() + lapTotalTimerTime);
+                        if (lapTotDist != null) setActiveDist(getActiveDist() + lapTotDist);
+                        if (lapAvgSpeedF != null && lapTotalTimerTime != null) activeSumSpeed += lapAvgSpeedF * lapTotalTimerTime;
+                        if (lapAvgCad != null && lapTotalTimerTime != null) activeSumCad += lapAvgCad * lapTotalTimerTime;
+                        if (lapAvgPow != null && lapTotalTimerTime != null) activeSumPower += lapAvgPow * lapTotalTimerTime;
+                    }
+
+                    // Calculate REST LAP SUM & MAX
+                    if ("REST".equals(currentLapIntensity) || "RECOVERY".equals(currentLapIntensity)) {
+                        if (lapTotalTimerTime != null) setRestTime(getRestTime() + lapTotalTimerTime);
+                        if (lapTotDist != null) setRestDist(getRestDist() + lapTotDist);
+                        if (lapAvgSpeedF != null && lapTotalTimerTime != null) restSumSpeed += lapAvgSpeedF * lapTotalTimerTime;
+                        if (lapAvgCad != null && lapTotalTimerTime != null) restSumCad += lapAvgCad * lapTotalTimerTime;
+                        if (lapAvgPow != null && lapTotalTimerTime != null) restSumPower += lapAvgPow * lapTotalTimerTime;
+                    }
+
+                    lapIx++;
+                    lapNo++;
+                } // IF LAP END END
+
+                recordIx++;
+            }  // FOR LOOP END
+            
+            // Calculate ACTIVE LAP SUM & MAX
+            // activeAvgSpeed = (float) (activeSumSpeed / getActiveTime());
+            activeAvgSpeed = (float) (getActiveDist() / getActiveTime());
+            activeAvgCad = (float) (activeSumCad / getActiveTime());
+            activeAvgPower = (float) (activeSumPower / getActiveTime());
+
+            // Calculate REST LAP SUM & MAX
+            restAvgSpeed = (float) (getRestDist() / getRestTime());
+            restAvgCad = (float) (restSumCad / getRestTime());
+            restAvgPower = (float) (restSumPower / getRestTime());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("============================================================");
+            System.out.println("Error in fillLapExtraRecords: " + e.getMessage());
+            System.out.println("SOME FUNCTIONS WITH LAP EXTRA VALUES MAY NOT WORK.");
+            System.out.println("============================================================");
+        }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void addTimeToLapAndSession(int lapIx, Float timeToAdd) {
@@ -2027,6 +2035,17 @@ public class FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void checkAndFixNullRecordTimes() {
         clearTempUpdateLog();
+
+        logTimeFix("--------------------------------------------------------------");
+        logTimeFix("FIRST AND LAST RECORD TIMES BEFORE FIXING NULL REC_TIME VALUES");
+        logTimeFix("" 
+             + "----- Time first record: " + new DTstr(getTimeFirstRecord()).get()
+              + ", Time from first record: " + new DTstr(recordMesg.get(0).getFieldLongValue(REC_TIME)).get()
+              + ", Time last record: " + new DTstr(getTimeLastRecord()).get()
+              + ", Time from last record: " + new DTstr(recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME)).get()
+            );
+        
+        appendTempUpdateLogLn("---------------------------");
         appendTempUpdateLogLn("CHECK/FIX NULL RECORD TIMES");
         appendTempUpdateLogLn("---------------------------");
 
@@ -2321,7 +2340,58 @@ public class FitFile {
             prevNonNullTime = lastAssigned;
         }
 
-        logTimeFix("Completed REC_TIME startup check/fix. Filled " + fixedCount + " null REC_TIME value(s)."
+        //setTimeFirstRecord(recordMesg.get(0).getFieldLongValue(REC_TIME));
+        //setTimeLastRecord(recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
+
+        logTimeFix("-------------------------------------------------------------");
+        logTimeFix("FIRST AND LAST RECORD TIMES AFTER FIXING NULL REC_TIME VALUES");
+        logTimeFix("" 
+             + "----- Time first record: " + new DTstr(getTimeFirstRecord()).get()
+              + ", Time from first record: " + new DTstr(recordMesg.get(0).getFieldLongValue(REC_TIME)).get()
+              + ", Time last record: " + new DTstr(getTimeLastRecord()).get()
+              + ", Time from last record: " + new DTstr(recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME)).get()
+            );
+
+
+        logTimeFix("-----------------------------------------------");
+        logTimeFix("LAP DATA BEFORE FIXING LAP AND EVENT TIMESTAMPS");
+        int lapNo = 1;
+        for (Mesg mesg : allMesg) {
+            if (mesg.getNum() != MesgNum.LAP) continue;
+            Mesg lap = mesg;
+            logTimeFix(""
+             + "----- LapNo: " + lapNo
+             + ", StartTime: " + new DTstr(lap.getFieldLongValue(LAP_STIME)).get()
+              + ", TotalTimer: " + new TimeStr(lap.getFieldFloatValue(LAP_TIMER)).get()
+               + ", Intensity: " + lap.getFieldShortValue(LAP_INTENSITY)
+               + ", TimeStamp: " + new DTstr(lap.getFieldLongValue(LAP_TIME)).get()
+            );
+            lapNo++;
+        }
+        
+        fixLapAndEventTimestampsFromRecords();
+
+        logTimeFix("----------------------------------------------");
+        logTimeFix("LAP DATA AFTER FIXING LAP AND EVENT TIMESTAMPS");
+        lapNo = 1;
+        for (Mesg mesg : allMesg) {
+            if (mesg.getNum() != MesgNum.LAP) continue;
+            Mesg lap = mesg;
+            logTimeFix(""
+             + "----- LapNo: " + lapNo
+             + ", StartTime: " + new DTstr(lap.getFieldLongValue(LAP_STIME)).get()
+              + ", TotalTimer: " + new TimeStr(lap.getFieldFloatValue(LAP_TIMER)).get()
+               + ", Intensity: " + lap.getFieldShortValue(LAP_INTENSITY)
+               + ", TimeStamp: " + new DTstr(lap.getFieldLongValue(LAP_TIME)).get()
+            );
+            lapNo++;
+        }
+
+        logTimeFix("-----------------------------------------------");
+        logTimeFix("RESULTS OF CHECK/FIX NULL RECORD TIMES");
+        logTimeFix(""
+                + "Completed REC_TIME startup check/fix. Filled " + fixedCount
+                + " null REC_TIME value(s)."
                 + " Duplicates kept=" + duplicateCount
                 + ", out-of-order points detected=" + outOfOrderCount + ".");
 

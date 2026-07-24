@@ -20,7 +20,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"CourseTest\" 0 \"test3.fit\""
+      "args": "\"CourseTest\" 1 \"Himlaberget-5röset_10.5km.fit\""
     },
     {
       "type": "java",

@@ -10,6 +10,11 @@ public class Hmmss {
 
     public Hmmss(Float timer) {
 
+        if (timer == null) {
+            hmmss = "null";
+            return;
+        }
+
         Boolean showMinus = false;
         if (timer<0) {
             showMinus = true;

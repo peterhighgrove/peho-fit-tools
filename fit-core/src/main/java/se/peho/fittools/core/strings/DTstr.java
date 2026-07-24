@@ -9,19 +9,20 @@ public class DTstr {
     private final long FIT_EPOCH_OFFSET = 631065600L; // seconds
     private final String formatPattern = "yyyy-MM-dd-HH-mm-ss";
 
-    private String DateTimeStr = null;
+    private String dateTimeStr = null;
 
     public DTstr(Long garminLocalDate) {
-        DateTimeStr = formatDateTime(garminLocalDate, 0L);
+        dateTimeStr = formatDateTime(garminLocalDate, 0L);
     }
 
     public DTstr (Long garminLocalDate, Long offsetMinutes) {
-        DateTimeStr = formatDateTime(garminLocalDate, offsetMinutes);
+        dateTimeStr = formatDateTime(garminLocalDate, offsetMinutes);
     }
 
     private String formatDateTime(Long garminLocalDate, Long offsetMinutes) {
         if (garminLocalDate == null) {
-            garminLocalDate = 0l;
+            dateTimeStr = "null";
+            return dateTimeStr;
         }
         String tz = offsetMinutesToTimeZoneString(offsetMinutes);
         long unixDateTime = garminLocalDate + FIT_EPOCH_OFFSET;
@@ -43,7 +44,7 @@ public class DTstr {
         return String.format("%s%02d:%02d", sign, hours, minutes);
     }
     public String get() {
-        return DateTimeStr;
+        return dateTimeStr;
     }
 
     public static String get(Long garminLocalDate) {

@@ -30,7 +30,7 @@ n
 csh
 R
 5
-cpcn
+cname
 Porsnäs 7.6km
 save
 0

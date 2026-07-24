@@ -6,6 +6,11 @@ public class TimeStr {
 
     public TimeStr(Float timer) {
 
+        if (timer == null) {
+            formattedString = "null";
+            return;
+        }
+        
         String timerStr = new Hmmss(timer).get();
 
         if (timer != null) {

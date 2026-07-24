@@ -157,7 +157,13 @@ CPointRecordTimesToTodayCommand->CourseToTodayCommand
 
 --> git sync
 
+--> Build v2.80
+--> regr wkt/gps ok ->bless
+--> git sync
 
+Bug: setFirst/LastRecordTime in recfixtime
+fixing lap times in recfixtime, checkAndFixNullRecordTimes() w existing method fixLapAndEventTimestampsFromRecords()
+Null string fix in Tstr and DTstr
 
 BUGGAR
 
