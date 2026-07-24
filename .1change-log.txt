@@ -170,7 +170,7 @@ Null string fix in Tstr and DTstr
 --> Build v2.81
 --> regr gps Too many errors, NO blessing
 
-Avoid running this when not a Course file
+Avoid running checkAndFixNullRecordTimes() when not a Course file
         if (watchFitFile.isCourseFile()) {
             // CHECK NULL RECORD TIMES (warnings only)
             watchFitFile.checkAndFixNullRecordTimes();
@@ -178,9 +178,10 @@ Avoid running this when not a Course file
 Made public
     public boolean isCourseFile()
 
-
 --> Build v2.82
+--> git sync
 
+Bug. Corrected in MenuRunner() that readFitfile didn't run!
 
 BUGGAR
 

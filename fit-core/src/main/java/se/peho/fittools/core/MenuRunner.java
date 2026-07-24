@@ -83,13 +83,18 @@ public class MenuRunner {
 
     public void run() {
         
-        if (watchFitFile.isCourseFile()) {
-            // CHECK NULL RECORD TIMES (warnings only)
-            watchFitFile.checkAndFixNullRecordTimes();
-        }
+        // READING FIT FILE
+        watchFitFile.readFitFile (conf.getInputFilePath());
 
-        // CHECK NULL RECORD TIMES (warnings only)
-        watchFitFile.checkAndFixNullRecordTimes();
+        // CHECK IF COURSE FILE OR NOT
+        if (watchFitFile.isCourseFile()) {
+            System.out.println("======== Course file detected. Only course-related commands will be available.");
+            System.out.println("======== CHECKING NULL RECORD TIMES. If any are found, they will be fixed automatically.");
+            // CHECK NULL RECORD TIMES
+            watchFitFile.checkAndFixNullRecordTimes();
+        } else {    
+            System.out.println("======== Non-course file detected. All commands will be available.");
+        }
 
         // SAVE INFO ABOUT FILE BEFORE UPDATIING
         watchFitFile.saveFileInfoBefore();
