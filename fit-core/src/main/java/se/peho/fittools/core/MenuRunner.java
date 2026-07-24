@@ -83,8 +83,10 @@ public class MenuRunner {
 
     public void run() {
         
-        // READING FIT FILE
-        watchFitFile.readFitFile (conf.getInputFilePath());
+        if (watchFitFile.isCourseFile()) {
+            // CHECK NULL RECORD TIMES (warnings only)
+            watchFitFile.checkAndFixNullRecordTimes();
+        }
 
         // CHECK NULL RECORD TIMES (warnings only)
         watchFitFile.checkAndFixNullRecordTimes();

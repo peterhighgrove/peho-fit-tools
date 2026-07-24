@@ -175,6 +175,9 @@ Avoid running this when not a Course file
             // CHECK NULL RECORD TIMES (warnings only)
             watchFitFile.checkAndFixNullRecordTimes();
         }
+Made public
+    public boolean isCourseFile()
+
 
 --> Build v2.82
 

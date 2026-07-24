@@ -6714,7 +6714,7 @@ public class FitFile {
         
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    private boolean isCourseFile() {
+    public boolean isCourseFile() {
         for (Mesg mesg : allMesg) {
             if (mesg.getNum() == MesgNum.COURSE) {
                 return true;
