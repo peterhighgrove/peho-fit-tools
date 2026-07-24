@@ -182,6 +182,10 @@ Made public
 --> git sync
 
 Bug. Corrected in MenuRunner() that readFitfile didn't run!
+--> git sync
+
+--> v2.83 Build
+--> git sync
 
 BUGGAR
 
