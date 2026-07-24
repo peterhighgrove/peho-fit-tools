@@ -187,8 +187,13 @@ Bug. Corrected in MenuRunner() that readFitfile didn't run!
 --> v2.83 Build
 --> git sync
 
+Fixed date in cdate command, changeRecordAndCPointTimesToTodayDate
 Test case with today date is not a good thing. Changes everytime.
-Try to set a fixed date instead.
+Try to set a fixed date instead, 2026-07-22.
+--> git sync
+
+--> v2.84 Build
+--> git sync
 
 
 BUGGAR
