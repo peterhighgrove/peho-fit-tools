@@ -195,6 +195,9 @@ Try to set a fixed date instead, 2026-07-22.
 --> v2.84 Build
 --> git sync
 
+--> regr wkt/gps ok ->bless
+--> git sync
+
 
 BUGGAR
 

@@ -1,7 +1,27 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 370, Time between: 1989-12-31-00-00-00 -- 1989-12-31-00-06-09
+--------------------------------------------------------------
+FIRST AND LAST RECORD TIMES BEFORE FIXING NULL REC_TIME VALUES
+----- Time first record: 1989-12-31-00-00-00, Time from first record: 1989-12-31-00-00-00, Time last record: 1989-12-31-00-06-09, Time from last record: 1989-12-31-00-06-09
+---------------------------
 CHECK/FIX NULL RECORD TIMES
 ---------------------------
+-------------------------------------------------------------
+FIRST AND LAST RECORD TIMES AFTER FIXING NULL REC_TIME VALUES
+----- Time first record: 1989-12-31-00-00-00, Time from first record: 1989-12-31-00-00-00, Time last record: 1989-12-31-00-06-09, Time from last record: 1989-12-31-00-06-09
+-----------------------------------------------
+LAP DATA BEFORE FIXING LAP AND EVENT TIMESTAMPS
+----- LapNo: 1, StartTime: null, TotalTimer: 40:05min, Intensity: null, TimeStamp: null
+Lap no: 1 start_time -> null => 00:00:00
+Lap no: 1 timestamp -> null => 00:00:00
+Event no: 1 timestamp -> null => 00:00:00
+Event no: 2 timestamp -> null => 00:06:09
+Normalized timestamps: lapStartTimes=1, lapTimestamps=1, eventTimestamps=2
+----------------------------------------------
+LAP DATA AFTER FIXING LAP AND EVENT TIMESTAMPS
+----- LapNo: 1, StartTime: 1989-12-31-00-00-00, TotalTimer: 40:05min, Intensity: null, TimeStamp: 1989-12-31-00-00-00
+-----------------------------------------------
+RESULTS OF CHECK/FIX NULL RECORD TIMES
 Completed REC_TIME startup check/fix. Filled 0 null REC_TIME value(s). Duplicates kept=0, out-of-order points detected=0.
 COURSE POINT/RECORD - CHANGE DATE TO TODAY
 --------------------------------
@@ -410,14 +430,17 @@ CPoint no: 31 -> 1989-12-31-00-00-30 => 2026-07-22-00-00-30
 CPoint no: 32 -> 1989-12-31-00-00-31 => 2026-07-22-00-00-31
 CPoint no: 33 -> 1989-12-31-00-00-32 => 2026-07-22-00-00-32
 CPoint no: 34 -> 1989-12-31-00-00-33 => 2026-07-22-00-00-33
-Lap sync: start_time aligned to first record -> 2026-07-22-00-00-00
-Lap sync: timestamp (end) aligned to last record -> 2026-07-22-00-06-09
+Event no: 1 -> 1989-12-31-00-00-00 => 2026-07-22-00-00-00
+Event no: 2 -> 1989-12-31-00-06-09 => 2026-07-22-00-06-09
+Lap no: 1 timestamp -> 1989-12-31-00-00-00 => 2026-07-22-00-00-00
+Lap no: 1 start_time -> 1989-12-31-00-00-00 => 2026-07-22-00-00-00
+Normalized timestamps: lapStartTimes=0, lapTimestamps=0, eventTimestamps=0
 -- Updated records: 370
 -- Updated course points: 34
--- Updated event timestamps: 0
--- Updated lap timestamps: 0
--- Updated lap start_times: 0
--- Skipped timestamps: 4
+-- Updated event timestamps: 2
+-- Updated lap timestamps: 1
+-- Updated lap start_times: 1
+-- Skipped timestamps: 0
 RECALCULATE RECORD TIMES FROM GPS PACE
 -------------------------------------
 Target pace: 6:00 min/km (360 s/km)
@@ -426,8 +449,8 @@ Updated REC_TIME on 369 record(s). Total records: 370
 Distance source used: gpsSegments=369, fallbackRecDistSegments=0, missingDistanceSegments=0
 Distance check: checkedSegments=369, mismatches(>5m)=0, maxDiff=0.59m
 Computed path distance=7685.5m, total time=46:07
-Updated START event time from null to 00:00:00
-Updated STOP event time from null to 00:46:07
+Event no: 2 timestamp -> 00:06:09 => 00:46:07
+Normalized timestamps: lapStartTimes=0, lapTimestamps=0, eventTimestamps=1
 COURSE POINT - MATCH TO CLOSEST RECORD
 --------------------------------
 Matching mode: forward-only along record sequence
