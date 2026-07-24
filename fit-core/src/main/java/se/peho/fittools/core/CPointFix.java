@@ -765,7 +765,7 @@ public class CPointFix {
 
     // =================================================================================
     public void changeRecordAndCPointTimesToTodayDate() {
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.parse("2026-07-22");
 
         fitFile.clearTempUpdateLog();
         fitFile.appendTempUpdateLogLn("COURSE POINT/RECORD - CHANGE DATE TO TODAY");

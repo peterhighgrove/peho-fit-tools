@@ -187,6 +187,10 @@ Bug. Corrected in MenuRunner() that readFitfile didn't run!
 --> v2.83 Build
 --> git sync
 
+Test case with today date is not a good thing. Changes everytime.
+Try to set a fixed date instead.
+
+
 BUGGAR
 
 Do not handle args correctly
