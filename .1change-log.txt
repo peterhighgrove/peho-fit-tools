@@ -216,12 +216,15 @@ Q:When checkAndFixNullRecordTimes() is running it starts to detact dupicate reco
 I would like it to also gps lat/lon also are duplicates. If they are, delete the record. If not, keep it.
 --> git sync
 
---> v2.84 Build
+--> v2.85 Build
 --> git sync
 
 --> regr wkt ok / gps course point logging bug after enabling logging in fixLapAndEventTimestampsFromRecords() and checkAndFixNullRecordTimes()
 
 Fixed loggingafter enabling logging in fixLapAndEventTimestampsFromRecords() and checkAndFixNullRecordTimes()
+--> git sync
+
+--> v2.86 Build
 
 BUGGAR
 
