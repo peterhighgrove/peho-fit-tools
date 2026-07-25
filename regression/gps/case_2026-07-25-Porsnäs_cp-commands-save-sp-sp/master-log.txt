@@ -1,28 +1,19 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 370, Time between: 1989-12-31-00-00-00 -- 1989-12-31-00-06-09
---------------------------------------------------------------
-FIRST AND LAST RECORD TIMES BEFORE FIXING NULL REC_TIME VALUES
------ Time first record: 1989-12-31-00-00-00, Time from first record: 1989-12-31-00-00-00, Time last record: 1989-12-31-00-06-09, Time from last record: 1989-12-31-00-06-09
----------------------------
-CHECK/FIX NULL RECORD TIMES
----------------------------
--------------------------------------------------------------
-FIRST AND LAST RECORD TIMES AFTER FIXING NULL REC_TIME VALUES
------ Time first record: 1989-12-31-00-00-00, Time from first record: 1989-12-31-00-00-00, Time last record: 1989-12-31-00-06-09, Time from last record: 1989-12-31-00-06-09
------------------------------------------------
-LAP DATA BEFORE FIXING LAP AND EVENT TIMESTAMPS
------ LapNo: 1, StartTime: null, TotalTimer: 40:05min, Intensity: null, TimeStamp: null
-Lap no: 1 start_time -> null => 00:00:00
-Lap no: 1 timestamp -> null => 00:00:00
-Event no: 1 timestamp -> null => 00:00:00
-Event no: 2 timestamp -> null => 00:06:09
-Normalized timestamps: lapStartTimes=1, lapTimestamps=1, eventTimestamps=2
-----------------------------------------------
-LAP DATA AFTER FIXING LAP AND EVENT TIMESTAMPS
------ LapNo: 1, StartTime: 1989-12-31-00-00-00, TotalTimer: 40:05min, Intensity: null, TimeStamp: 1989-12-31-00-00-00
+------------------------------------
+CHECK/FIX NULL RECORD TIMES AT START
+------------------------------------
 -----------------------------------------------
 RESULTS OF CHECK/FIX NULL RECORD TIMES
-Completed REC_TIME startup check/fix. Filled 0 null REC_TIME value(s). Duplicates kept=0, out-of-order points detected=0.
+Completed REC_TIME startup check/fix. Filled 0 null REC_TIME value(s). Duplicate REC_TIME seen=0, duplicates deleted (same GPS)=0, out-of-order points detected=0.
+---------------------------------
+LAP/EVENT TIMESTAMP NORMALIZATION
+---------------------------------
+Lap no: 1 start_time -> null => 00:00:00
+Lap no: 1 timestamp -> null => 00:00:00
+Event no: 1, event by text: TIMER, type in text: START, timestamp -> null => 00:00:00
+Event no: 2, event by text: TIMER, type in text: STOP_DISABLE_ALL, timestamp -> null => 00:06:09
+Normalized timestamps: lapStartTimes=1, lapTimestamps=1, eventTimestamps=2
 COURSE POINT/RECORD - CHANGE DATE TO TODAY
 --------------------------------
 Today date: 2026-07-22
@@ -434,6 +425,9 @@ Event no: 1 -> 1989-12-31-00-00-00 => 2026-07-22-00-00-00
 Event no: 2 -> 1989-12-31-00-06-09 => 2026-07-22-00-06-09
 Lap no: 1 timestamp -> 1989-12-31-00-00-00 => 2026-07-22-00-00-00
 Lap no: 1 start_time -> 1989-12-31-00-00-00 => 2026-07-22-00-00-00
+---------------------------------
+LAP/EVENT TIMESTAMP NORMALIZATION
+---------------------------------
 Normalized timestamps: lapStartTimes=0, lapTimestamps=0, eventTimestamps=0
 -- Updated records: 370
 -- Updated course points: 34
@@ -449,7 +443,10 @@ Updated REC_TIME on 369 record(s). Total records: 370
 Distance source used: gpsSegments=369, fallbackRecDistSegments=0, missingDistanceSegments=0
 Distance check: checkedSegments=369, mismatches(>5m)=0, maxDiff=0.59m
 Computed path distance=7685.5m, total time=46:07
-Event no: 2 timestamp -> 00:06:09 => 00:46:07
+---------------------------------
+LAP/EVENT TIMESTAMP NORMALIZATION
+---------------------------------
+Event no: 2, event by text: TIMER, type in text: STOP_DISABLE_ALL, timestamp -> 00:06:09 => 00:46:07
 Normalized timestamps: lapStartTimes=0, lapTimestamps=0, eventTimestamps=1
 COURSE POINT - MATCH TO CLOSEST RECORD
 --------------------------------
@@ -524,8 +521,8 @@ CPoint no: 34 -> closest record no: 370 (gps gap: 0.0m)
 -- Updated timestamps: 33
 -- Updated distances: 0
 -- Skipped course points: 0
-CHECK/FIX RECORD TIMES
-----------------------
+CHECK/FIX RECORD TIMES FROM MENU
+--------------------------------
 Completed REC_TIME check/fix. Updated 0 null value(s). Duplicates removed=0, out-of-order points detected=0.
 COURSE POINT - CHANGE TYPE
 --------------------------------

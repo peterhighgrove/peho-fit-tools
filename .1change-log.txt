@@ -235,6 +235,12 @@ Adding appendUpdateLog(getTempUpdateLog()); missing in fixLapAndEventTimestampsF
 --> v2.87 Build
 --> git sync
 
+--> regr wkt ok / gps ok --bless
+--> git sync
+
+
+
+
 BUGGAR
 
 Do not handle args correctly
