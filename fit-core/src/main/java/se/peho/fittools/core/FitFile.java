@@ -2906,6 +2906,7 @@ public class FitFile {
                 + ", lapTimestamps=" + changedLapTimestamps
                 + ", eventTimestamps=" + changedEventTimestamps);
         System.out.println(getTempUpdateLog());
+        appendUpdateLog(getTempUpdateLog());
         
         stats.changedLapStartTimes = changedLapStartTimes;
         stats.changedLapTimestamps = changedLapTimestamps;
