@@ -2038,12 +2038,13 @@ public class FitFile {
     public void checkAndFixNullRecordTimes() {
         clearTempUpdateLog();
 
-        appendTempUpdateLogLn("---------------------------");
-        appendTempUpdateLogLn("CHECK/FIX NULL RECORD TIMES");
-        appendTempUpdateLogLn("---------------------------");
+        appendTempUpdateLogLn("------------------------------------");
+        appendTempUpdateLogLn("CHECK/FIX NULL RECORD TIMES AT START");
+        appendTempUpdateLogLn("------------------------------------");
 
         if (recordMesg == null || recordMesg.isEmpty()) {
-            logTimeFix("No records found. Nothing to check.");
+            appendTempUpdateLogLn("No records found. Nothing to check.");
+            System.out.println(getTempUpdateLog());
             appendUpdateLog(getTempUpdateLog());
             return;
         }
@@ -2377,11 +2378,11 @@ public class FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void fixNullRecordTimes() {
         clearTempUpdateLog();
-        appendTempUpdateLogLn("CHECK/FIX RECORD TIMES");
-        appendTempUpdateLogLn("----------------------");
+        appendTempUpdateLogLn("CHECK/FIX RECORD TIMES FROM MENU");
+        appendTempUpdateLogLn("--------------------------------");
 
         if (recordMesg == null || recordMesg.isEmpty()) {
-            logTimeFix("No records found. Nothing to check.");
+            appendTempUpdateLogLn("No records found. Nothing to check.");
             appendUpdateLog(getTempUpdateLog());
             return;
         }
@@ -2397,7 +2398,7 @@ public class FitFile {
 
             // Duplicate timestamps are resolved by deleting the second record.
             if (currentTime != null && prevNonNullTime != null && currentTime.equals(prevNonNullTime)) {
-                logTimeFix("Duplicate REC_TIME found at recIx=" + i
+                appendTempUpdateLogLn("Duplicate REC_TIME found at recIx=" + i
                         + " time=" + currentTime
                         + " (" + FitDateTime.toStringTime(currentTime, diffMinutesLocalUTC) + ")"
                         + ". Deleting second record.");
@@ -2409,11 +2410,12 @@ public class FitFile {
             // Out-of-order timestamps are reported and processing stops.
             if (currentTime != null && prevNonNullTime != null && currentTime < prevNonNullTime) {
                 outOfOrderCount++;
-                logTimeFix("ERROR: REC_TIME out of order at recIx=" + i
+                appendTempUpdateLogLn("ERROR: REC_TIME out of order at recIx=" + i
                         + " prev=" + prevNonNullTime
                         + " curr=" + currentTime
                         + " (" + FitDateTime.toStringTime(currentTime, diffMinutesLocalUTC) + ")");
-                logTimeFix("Stopping without changing more records.");
+                appendTempUpdateLogLn("Stopping without changing more records.");
+                System.out.println(getTempUpdateLog());
                 appendUpdateLog(getTempUpdateLog());
                 return;
             }
@@ -2432,9 +2434,9 @@ public class FitFile {
             int nullCount = nullEnd - nullStart + 1;
 
             if (nullCount == 1) {
-                logTimeFix("Found 1 null REC_TIME at recIx=" + nullStart);
+                appendTempUpdateLogLn("Found 1 null REC_TIME at recIx=" + nullStart);
             } else {
-                logTimeFix("Found " + nullCount + " null REC_TIME in a row at recIx=" + nullStart + ".." + nullEnd);
+                appendTempUpdateLogLn("Found " + nullCount + " null REC_TIME in a row at recIx=" + nullStart + ".." + nullEnd);
             }
 
             int beforeIx = nullStart - 1;
@@ -2444,7 +2446,7 @@ public class FitFile {
             if (afterIx >= recordMesg.size()) {
                 Long beforeTime = beforeIx >= 0 ? recordMesg.get(beforeIx).getFieldLongValue(REC_TIME) : null;
                 if (beforeTime == null) {
-                    logTimeFix("Cannot fill trailing null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
+                    appendTempUpdateLogLn("Cannot fill trailing null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
                             + " (missing previous non-null REC_TIME).");
                     break;
                 }
@@ -2456,23 +2458,23 @@ public class FitFile {
                 boolean useStopEventAsLastRecord = (stopEventTime != null && stopEventTime > beforeTime);
                 if (useStopEventAsLastRecord) {
                     trailingLastTime = stopEventTime;
-                    logTimeFix("Trailing null REC_TIME range uses last STOP event time=" + stopEventTime
+                    appendTempUpdateLogLn("Trailing null REC_TIME range uses last STOP event time=" + stopEventTime
                             + " (" + FitDateTime.toStringTime(stopEventTime, diffMinutesLocalUTC) + ")");
                 } else {
                     if (stopEventTime == null) {
-                        logTimeFix("Last STOP event has empty timestamp. Filling trailing null REC_TIME using +1s steps.");
+                        appendTempUpdateLogLn("Last STOP event has empty timestamp. Filling trailing null REC_TIME using +1s steps.");
                     } else {
-                        logTimeFix("Last STOP event time is not after last valid REC_TIME (stop=" + stopEventTime
+                        appendTempUpdateLogLn("Last STOP event time is not after last valid REC_TIME (stop=" + stopEventTime
                                 + ", prev=" + beforeTime + "). Filling trailing null REC_TIME using +1s steps.");
                     }
 
                     trailingLastTime = beforeTime + nullCount;
                     if (lastStopEventMesg != null) {
                         lastStopEventMesg.setFieldValue(EVE_TIME, trailingLastTime);
-                        logTimeFix("Updated last STOP event REC_TIME to " + trailingLastTime
+                        appendTempUpdateLogLn("Updated last STOP event REC_TIME to " + trailingLastTime
                                 + " (" + FitDateTime.toStringTime(trailingLastTime, diffMinutesLocalUTC) + ")");
                     } else {
-                        logTimeFix("No STOP event found to update with trailing REC_TIME.");
+                        appendTempUpdateLogLn("No STOP event found to update with trailing REC_TIME.");
                     }
                 }
 
@@ -2518,7 +2520,7 @@ public class FitFile {
                     fixedCount++;
                     lastAssigned = candidate;
 
-                    logTimeFix("  recIx=" + recIx + " REC_TIME set to " + candidate
+                    appendUpdateLog("  recIx=" + recIx + " REC_TIME set to " + candidate
                             + " (" + FitDateTime.toStringTime(candidate, diffMinutesLocalUTC) + ")");
                 }
 
@@ -2527,7 +2529,7 @@ public class FitFile {
             }
 
             if (beforeIx < 0 || afterIx >= recordMesg.size()) {
-                logTimeFix("Cannot interpolate null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
+                appendTempUpdateLogLn("Cannot interpolate null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
                         + " (missing boundary record before/after).");
                 continue;
             }
@@ -2535,14 +2537,16 @@ public class FitFile {
             Long beforeTime = recordMesg.get(beforeIx).getFieldLongValue(REC_TIME);
             Long afterTime = recordMesg.get(afterIx).getFieldLongValue(REC_TIME);
             if (beforeTime == null || afterTime == null) {
-                logTimeFix("Cannot interpolate null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
+                appendTempUpdateLogLn("Cannot interpolate null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
                         + " (boundary REC_TIME missing).");
                 continue;
             }
             if (afterTime <= beforeTime) {
-                logTimeFix("ERROR: Boundary REC_TIME invalid for null range recIx=" + nullStart + ".." + nullEnd
+                appendTempUpdateLogLn("ERROR: Boundary REC_TIME invalid for null range recIx=" + nullStart + ".." + nullEnd
                         + " before=" + beforeTime + " after=" + afterTime);
-                logTimeFix("Stopping without changing more records.");
+                appendTempUpdateLogLn("Stopping without changing more records.");
+
+                System.out.println(getTempUpdateLog());
                 appendUpdateLog(getTempUpdateLog());
                 return;
             }
@@ -2573,7 +2577,7 @@ public class FitFile {
             }
 
             String method = canUseDist ? "distance-proportional" : "even";
-            logTimeFix("Interpolating null REC_TIME range recIx=" + nullStart + ".." + nullEnd
+            appendTempUpdateLogLn("Interpolating null REC_TIME range recIx=" + nullStart + ".." + nullEnd
                     + " using " + method + " spread.");
 
             long lastAssigned = beforeTime;
@@ -2604,7 +2608,7 @@ public class FitFile {
                 fixedCount++;
                 lastAssigned = candidate;
 
-                logTimeFix("  recIx=" + recIx + " REC_TIME set to " + candidate
+                appendTempUpdateLogLn("  recIx=" + recIx + " REC_TIME set to " + candidate
                         + " (" + FitDateTime.toStringTime(candidate, diffMinutesLocalUTC) + ")");
             }
 
@@ -2612,9 +2616,11 @@ public class FitFile {
             prevNonNullTime = lastAssigned;
         }
 
-        logTimeFix("Completed REC_TIME check/fix. Updated " + fixedCount + " null value(s)."
+        appendTempUpdateLogLn("Completed REC_TIME check/fix. Updated " + fixedCount + " null value(s)."
             + " Duplicates removed=" + duplicateRemovedCount
             + ", out-of-order points detected=" + outOfOrderCount + ".");
+
+        System.out.println(getTempUpdateLog());
         appendUpdateLog(getTempUpdateLog());
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -2750,10 +2756,11 @@ public class FitFile {
         appendTempUpdateLogLn("Computed path distance=" + String.format("%.1f", cumulativeGpsMeters) + "m, total time="
                 + PehoUtils.sec2minSecLong(Math.round(cumulativeSeconds)));
 
-        fixLapAndEventTimestampsFromRecords();
-
         System.out.println(getTempUpdateLog());
         appendUpdateLog(getTempUpdateLog());
+
+        fixLapAndEventTimestampsFromRecords();
+
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     static class TimestampNormalizationStats {
@@ -2916,7 +2923,7 @@ public class FitFile {
         return recordTimes.size() - 1;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    private void logTimeFix(String text) {
+    private void textToTempLogAndConsole(String text) {
         appendTempUpdateLogLn(text);
         System.out.println(text);
     }
@@ -2967,7 +2974,7 @@ public class FitFile {
         }
 
         if (!removedFromAllMesg) {
-            logTimeFix("WARNING: Deleted duplicate record from recordMesg, but matching Mesg instance was not found in allMesg.");
+            textToTempLogAndConsole("WARNING: Deleted record from recordMesg, but matching Mesg instance was not found in allMesg!!!!");
         }
 
         if (numberOfRecords > 0) {

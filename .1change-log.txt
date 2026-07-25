@@ -219,7 +219,9 @@ I would like it to also gps lat/lon also are duplicates. If they are, delete the
 --> v2.84 Build
 --> git sync
 
+--> regr wkt ok / gps course point logging bug after enabling logging in fixLapAndEventTimestampsFromRecords() and checkAndFixNullRecordTimes()
 
+Fixed loggingafter enabling logging in fixLapAndEventTimestampsFromRecords() and checkAndFixNullRecordTimes()
 
 BUGGAR
 

@@ -869,8 +869,13 @@ public class CPointFix {
             }
         }
 
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
+
         // Normalize lap/event timestamps against updated records.
         FitFile.TimestampNormalizationStats normalizationStats = fitFile.fixLapAndEventTimestampsFromRecords();
+
+        fitFile.clearTempUpdateLog();
         changedEventTimestamps += normalizationStats.changedEventTimestamps;
         changedLapTimestamps += normalizationStats.changedLapTimestamps;
         changedLapStartTimes += normalizationStats.changedLapStartTimes;
