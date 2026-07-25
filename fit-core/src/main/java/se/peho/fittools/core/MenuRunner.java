@@ -89,9 +89,11 @@ public class MenuRunner {
         // CHECK IF COURSE FILE OR NOT
         if (watchFitFile.isCourseFile()) {
             System.out.println("======== Course file detected. Only course-related commands will be available.");
-            System.out.println("======== CHECKING NULL RECORD TIMES. If any are found, they will be fixed automatically.");
+            
             // CHECK NULL RECORD TIMES
             watchFitFile.checkAndFixNullRecordTimes();
+            // FIX LAP AND EVENT TIMESTAMPS FROM RECORDS
+            watchFitFile.fixLapAndEventTimestampsFromRecords();
         } else {    
             System.out.println("======== Non-course file detected. All commands will be available.");
         }

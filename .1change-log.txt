@@ -198,11 +198,22 @@ Try to set a fixed date instead, 2026-07-22.
 --> regr wkt/gps ok ->bless
 --> git sync
 
+Moving  fixLapAndEventTimestampsFromRecords() from checkAndFixNullRecordTimes(), need to start separately.
+Added that to MenuRunner.
+
+Testing to fixLapAndEventTimestampsFromRecords() to nochangeourse file also.
+
+Q: Can you write comments in FitFile.fixLapAndEventTimestampsFromRecords() to explain what it's doing?
+
 Renamed due to changing function todayDate -> fixedDate
 changeRecordAndCPointTimesToTodayDate() -> changeRecordAndCPointTimesToNewFixedDate()
 class CourseToTodayCommand -> class CourseToNewDateCommand
 
 --> git sync
+
+Deleting records in checkAndFixNullRecordTimes() if they have the same time and gps.
+Q:When checkAndFixNullRecordTimes() is running it starts to detact dupicate record timestamp, but do not delete it.
+I would like it to also gps lat/lon also are duplicates. If they are, delete the record. If not, keep it.
 
 
 

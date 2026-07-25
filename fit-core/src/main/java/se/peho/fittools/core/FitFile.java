@@ -8,8 +8,10 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Collections;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -2036,15 +2038,6 @@ public class FitFile {
     public void checkAndFixNullRecordTimes() {
         clearTempUpdateLog();
 
-        logTimeFix("--------------------------------------------------------------");
-        logTimeFix("FIRST AND LAST RECORD TIMES BEFORE FIXING NULL REC_TIME VALUES");
-        logTimeFix("" 
-             + "----- Time first record: " + new DTstr(getTimeFirstRecord()).get()
-              + ", Time from first record: " + new DTstr(recordMesg.get(0).getFieldLongValue(REC_TIME)).get()
-              + ", Time last record: " + new DTstr(getTimeLastRecord()).get()
-              + ", Time from last record: " + new DTstr(recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME)).get()
-            );
-        
         appendTempUpdateLogLn("---------------------------");
         appendTempUpdateLogLn("CHECK/FIX NULL RECORD TIMES");
         appendTempUpdateLogLn("---------------------------");
@@ -2058,6 +2051,7 @@ public class FitFile {
         Long prevNonNullTime = null;
         int fixedCount = 0;
         int duplicateCount = 0;
+        int duplicateDeletedCount = 0;
         int outOfOrderCount = 0;
 
         int i = 0;
@@ -2066,10 +2060,34 @@ public class FitFile {
 
             if (currentTime != null && prevNonNullTime != null && currentTime.equals(prevNonNullTime)) {
                 duplicateCount++;
-                logTimeFix("WARNING: Duplicate REC_TIME found at recIx=" + i
+                Integer prevLat = null;
+                Integer prevLon = null;
+                Integer currLat = recordMesg.get(i).getFieldIntegerValue(REC_LAT);
+                Integer currLon = recordMesg.get(i).getFieldIntegerValue(REC_LON);
+                if (i - 1 >= 0) {
+                    prevLat = recordMesg.get(i - 1).getFieldIntegerValue(REC_LAT);
+                    prevLon = recordMesg.get(i - 1).getFieldIntegerValue(REC_LON);
+                }
+
+                boolean sameGps = prevLat != null && prevLon != null
+                    && currLat != null && currLon != null
+                    && prevLat.equals(currLat) && prevLon.equals(currLon);
+
+                if (sameGps) {
+                    appendTempUpdateLogLn("WARNING: Duplicate REC_TIME+GPS found at recIx=" + i
                         + " time=" + currentTime
                         + " (" + FitDateTime.toStringTime(currentTime, diffMinutesLocalUTC) + ")"
-                        + ". Keeping duplicate (no delete in startup check).");
+                        + " lat/lon=" + currLat + "/" + currLon
+                        + ". Deleting duplicate record.");
+                    removeRecordMesgAtIndex(i);
+                    duplicateDeletedCount++;
+                    continue;
+                }
+
+                appendTempUpdateLogLn("WARNING: Duplicate REC_TIME found at recIx=" + i
+                    + " time=" + currentTime
+                    + " (" + FitDateTime.toStringTime(currentTime, diffMinutesLocalUTC) + ")"
+                    + ". GPS differs or is missing, keeping duplicate.");
                 prevNonNullTime = currentTime;
                 i++;
                 continue;
@@ -2077,7 +2095,7 @@ public class FitFile {
 
             if (currentTime != null && prevNonNullTime != null && currentTime < prevNonNullTime) {
                 outOfOrderCount++;
-                logTimeFix("WARNING: REC_TIME out of order at recIx=" + i
+                appendTempUpdateLogLn("WARNING: REC_TIME out of order at recIx=" + i
                         + " prev=" + prevNonNullTime
                         + " curr=" + currentTime
                         + " (" + FitDateTime.toStringTime(currentTime, diffMinutesLocalUTC) + ")"
@@ -2101,9 +2119,9 @@ public class FitFile {
             int nullCount = nullEnd - nullStart + 1;
 
             if (nullCount == 1) {
-                logTimeFix("Found 1 null REC_TIME at recIx=" + nullStart);
+                appendTempUpdateLogLn("Found 1 null REC_TIME at recIx=" + nullStart);
             } else {
-                logTimeFix("Found " + nullCount + " null REC_TIME in a row at recIx="
+                appendTempUpdateLogLn("Found " + nullCount + " null REC_TIME in a row at recIx="
                         + nullStart + ".." + nullEnd);
             }
 
@@ -2113,7 +2131,7 @@ public class FitFile {
             if (beforeIx < 0 && afterIx < recordMesg.size()) {
                 Long afterTime = recordMesg.get(afterIx).getFieldLongValue(REC_TIME);
                 if (afterTime == null) {
-                    logTimeFix("Cannot fill leading null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
+                    appendTempUpdateLogLn("Cannot fill leading null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
                             + " (missing next non-null REC_TIME).");
                     continue;
                 }
@@ -2123,7 +2141,7 @@ public class FitFile {
                     startCandidate = 1L;
                 }
 
-                logTimeFix("Filling leading null REC_TIME range recIx=" + nullStart + ".." + nullEnd
+                appendTempUpdateLogLn("Filling leading null REC_TIME range recIx=" + nullStart + ".." + nullEnd
                         + " using even +1s spread before next record.");
 
                 long lastAssigned = startCandidate - 1;
@@ -2138,7 +2156,7 @@ public class FitFile {
                     fixedCount++;
                     lastAssigned = candidate;
 
-                    logTimeFix("  recIx=" + recIx + " REC_TIME set to " + candidate
+                    appendTempUpdateLogLn("  recIx=" + recIx + " REC_TIME set to " + candidate
                             + " (" + FitDateTime.toStringTime(candidate, diffMinutesLocalUTC) + ")");
                 }
 
@@ -2154,14 +2172,14 @@ public class FitFile {
                 Long stopEventTime = lastStopEventMesg != null ? lastStopEventMesg.getFieldLongValue(EVE_TIME) : null;
 
                 if (beforeTime == null) {
-                    logTimeFix("Trailing null REC_TIME range without previous boundary at recIx="
+                    appendTempUpdateLogLn("Trailing null REC_TIME range without previous boundary at recIx="
                             + nullStart + ".." + nullEnd + ". Filling from +1s.");
                     for (int j = 1; j <= nullCount; j++) {
                         int recIx = nullStart + (j - 1);
                         long candidate = j;
                         recordMesg.get(recIx).setFieldValue(REC_TIME, candidate);
                         fixedCount++;
-                        logTimeFix("  recIx=" + recIx + " REC_TIME set to " + candidate
+                        appendTempUpdateLogLn("  recIx=" + recIx + " REC_TIME set to " + candidate
                                 + " (" + FitDateTime.toStringTime(candidate, diffMinutesLocalUTC) + ")");
                     }
                     prevNonNullTime = (long) nullCount;
@@ -2172,23 +2190,23 @@ public class FitFile {
                 boolean useStopEventAsLastRecord = (stopEventTime != null && stopEventTime > beforeTime);
                 if (useStopEventAsLastRecord) {
                     trailingLastTime = stopEventTime;
-                    logTimeFix("Trailing null REC_TIME range uses last STOP event time=" + stopEventTime
+                    appendTempUpdateLogLn("Trailing null REC_TIME range uses last STOP event time=" + stopEventTime
                             + " (" + FitDateTime.toStringTime(stopEventTime, diffMinutesLocalUTC) + ")");
                 } else {
                     if (stopEventTime == null) {
-                        logTimeFix("Last STOP event has empty timestamp. Filling trailing null REC_TIME using +1s steps.");
+                        appendTempUpdateLogLn("Last STOP event has empty timestamp. Filling trailing null REC_TIME using +1s steps.");
                     } else {
-                        logTimeFix("Last STOP event time is not after last valid REC_TIME (stop=" + stopEventTime
+                        appendTempUpdateLogLn("Last STOP event time is not after last valid REC_TIME (stop=" + stopEventTime
                                 + ", prev=" + beforeTime + "). Filling trailing null REC_TIME using +1s steps.");
                     }
 
                     trailingLastTime = beforeTime + nullCount;
                     if (lastStopEventMesg != null) {
                         lastStopEventMesg.setFieldValue(EVE_TIME, trailingLastTime);
-                        logTimeFix("Updated last STOP event REC_TIME to " + trailingLastTime
+                        appendTempUpdateLogLn("Updated last STOP event REC_TIME to " + trailingLastTime
                                 + " (" + FitDateTime.toStringTime(trailingLastTime, diffMinutesLocalUTC) + ")");
                     } else {
-                        logTimeFix("No STOP event found to update with trailing REC_TIME.");
+                        appendTempUpdateLogLn("No STOP event found to update with trailing REC_TIME.");
                     }
                 }
 
@@ -2234,7 +2252,7 @@ public class FitFile {
                     fixedCount++;
                     lastAssigned = candidate;
 
-                    logTimeFix("  recIx=" + recIx + " REC_TIME set to " + candidate
+                    appendTempUpdateLogLn("  recIx=" + recIx + " REC_TIME set to " + candidate
                             + " (" + FitDateTime.toStringTime(candidate, diffMinutesLocalUTC) + ")");
                 }
 
@@ -2243,7 +2261,7 @@ public class FitFile {
             }
 
             if (beforeIx < 0 || afterIx >= recordMesg.size()) {
-                logTimeFix("Cannot interpolate null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
+                appendTempUpdateLogLn("Cannot interpolate null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
                         + " is missing boundary record before/after.");
                 continue;
             }
@@ -2251,13 +2269,13 @@ public class FitFile {
             Long beforeTime = recordMesg.get(beforeIx).getFieldLongValue(REC_TIME);
             Long afterTime = recordMesg.get(afterIx).getFieldLongValue(REC_TIME);
             if (beforeTime == null || afterTime == null) {
-                logTimeFix("Cannot interpolate null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
+                appendTempUpdateLogLn("Cannot interpolate null REC_TIME range at recIx=" + nullStart + ".." + nullEnd
                         + " (boundary REC_TIME missing).");
                 continue;
             }
 
             if (afterTime <= beforeTime) {
-                logTimeFix("WARNING: Invalid boundary order for null range recIx=" + nullStart + ".." + nullEnd
+                appendTempUpdateLogLn("WARNING: Invalid boundary order for null range recIx=" + nullStart + ".." + nullEnd
                         + " (before=" + beforeTime + ", after=" + afterTime + ")."
                         + " Filling with +1s from before boundary.");
 
@@ -2268,7 +2286,7 @@ public class FitFile {
                     recordMesg.get(recIx).setFieldValue(REC_TIME, candidate);
                     fixedCount++;
                     lastAssigned = candidate;
-                    logTimeFix("  recIx=" + recIx + " REC_TIME set to " + candidate
+                    appendTempUpdateLogLn("  recIx=" + recIx + " REC_TIME set to " + candidate
                             + " (" + FitDateTime.toStringTime(candidate, diffMinutesLocalUTC) + ")");
                 }
 
@@ -2302,7 +2320,7 @@ public class FitFile {
             }
 
             String method = canUseDist ? "distance-proportional" : "even";
-            logTimeFix("Interpolating null REC_TIME range recIx=" + nullStart + ".." + nullEnd
+            appendTempUpdateLogLn("Interpolating null REC_TIME range recIx=" + nullStart + ".." + nullEnd
                     + " using " + method + " spread.");
 
             long lastAssigned = beforeTime;
@@ -2332,7 +2350,7 @@ public class FitFile {
                 fixedCount++;
                 lastAssigned = candidate;
 
-                logTimeFix("  recIx=" + recIx + " REC_TIME set to " + candidate
+                appendTempUpdateLogLn("  recIx=" + recIx + " REC_TIME set to " + candidate
                         + " (" + FitDateTime.toStringTime(candidate, diffMinutesLocalUTC) + ")");
             }
 
@@ -2343,58 +2361,17 @@ public class FitFile {
         setTimeFirstRecord(recordMesg.get(0).getFieldLongValue(REC_TIME));
         setTimeLastRecord(recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME));
 
-        logTimeFix("-------------------------------------------------------------");
-        logTimeFix("FIRST AND LAST RECORD TIMES AFTER FIXING NULL REC_TIME VALUES");
-        logTimeFix("" 
-             + "----- Time first record: " + new DTstr(getTimeFirstRecord()).get()
-              + ", Time from first record: " + new DTstr(recordMesg.get(0).getFieldLongValue(REC_TIME)).get()
-              + ", Time last record: " + new DTstr(getTimeLastRecord()).get()
-              + ", Time from last record: " + new DTstr(recordMesg.get(recordMesg.size() - 1).getFieldLongValue(REC_TIME)).get()
-            );
-
-
-        logTimeFix("-----------------------------------------------");
-        logTimeFix("LAP DATA BEFORE FIXING LAP AND EVENT TIMESTAMPS");
-        int lapNo = 1;
-        for (Mesg mesg : allMesg) {
-            if (mesg.getNum() != MesgNum.LAP) continue;
-            Mesg lap = mesg;
-            logTimeFix(""
-             + "----- LapNo: " + lapNo
-             + ", StartTime: " + new DTstr(lap.getFieldLongValue(LAP_STIME)).get()
-              + ", TotalTimer: " + new TimeStr(lap.getFieldFloatValue(LAP_TIMER)).get()
-               + ", Intensity: " + lap.getFieldShortValue(LAP_INTENSITY)
-               + ", TimeStamp: " + new DTstr(lap.getFieldLongValue(LAP_TIME)).get()
-            );
-            lapNo++;
-        }
-        
-        fixLapAndEventTimestampsFromRecords();
-
-        logTimeFix("----------------------------------------------");
-        logTimeFix("LAP DATA AFTER FIXING LAP AND EVENT TIMESTAMPS");
-        lapNo = 1;
-        for (Mesg mesg : allMesg) {
-            if (mesg.getNum() != MesgNum.LAP) continue;
-            Mesg lap = mesg;
-            logTimeFix(""
-             + "----- LapNo: " + lapNo
-             + ", StartTime: " + new DTstr(lap.getFieldLongValue(LAP_STIME)).get()
-              + ", TotalTimer: " + new TimeStr(lap.getFieldFloatValue(LAP_TIMER)).get()
-               + ", Intensity: " + lap.getFieldShortValue(LAP_INTENSITY)
-               + ", TimeStamp: " + new DTstr(lap.getFieldLongValue(LAP_TIME)).get()
-            );
-            lapNo++;
-        }
-
-        logTimeFix("-----------------------------------------------");
-        logTimeFix("RESULTS OF CHECK/FIX NULL RECORD TIMES");
-        logTimeFix(""
+        appendTempUpdateLogLn("-----------------------------------------------");
+        appendTempUpdateLogLn("RESULTS OF CHECK/FIX NULL RECORD TIMES");
+        appendTempUpdateLogLn(""
                 + "Completed REC_TIME startup check/fix. Filled " + fixedCount
                 + " null REC_TIME value(s)."
-                + " Duplicates kept=" + duplicateCount
+            + " Duplicate REC_TIME seen=" + duplicateCount
+            + ", duplicates deleted (same GPS)=" + duplicateDeletedCount
                 + ", out-of-order points detected=" + outOfOrderCount + ".");
 
+
+        System.out.println(getTempUpdateLog());
         appendUpdateLog(getTempUpdateLog());
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -2786,12 +2763,20 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     TimestampNormalizationStats fixLapAndEventTimestampsFromRecords() {
+
+        clearTempUpdateLog();
+        appendTempUpdateLogLn("---------------------------------");
+        appendTempUpdateLogLn("LAP/EVENT TIMESTAMP NORMALIZATION");
+        appendTempUpdateLogLn("---------------------------------");
+
         TimestampNormalizationStats stats = new TimestampNormalizationStats();
         if (recordMesg == null || recordMesg.isEmpty()) {
             appendTempUpdateLogLn("No records found. Skipping lap/event timestamp normalization.");
             return stats;
         }
 
+        // Build a clean time axis from record messages. These are the source of truth
+        // for where laps and timer events should land after normalization.
         List<Long> recordTimes = new ArrayList<>();
         for (Mesg record : recordMesg) {
             Long recTime = record.getFieldLongValue(REC_TIME);
@@ -2803,6 +2788,7 @@ public class FitFile {
             appendTempUpdateLogLn("No non-null REC_TIME found. Skipping lap/event timestamp normalization.");
             return stats;
         }
+        Set<Long> recordTimeSet = new HashSet<>(recordTimes);
 
         Long firstRecordTime = recordTimes.get(0);
         Long lastRecordTime = recordTimes.get(recordTimes.size() - 1);
@@ -2817,6 +2803,9 @@ public class FitFile {
             Mesg lap = lapMesg.get(lapIx);
             Long oldLapStartTime = lap.getFieldLongValue(LAP_STIME);
 
+            // Keep each lap start anchored to a real record time. If the original
+            // lap start is missing or lands between records, move it forward to the
+            // first record at or after that target time.
             long targetTime = oldLapStartTime != null ? oldLapStartTime : firstRecordTime;
             if (previousLapStart != null && targetTime <= previousLapStart) {
                 targetTime = previousLapStart + 1;
@@ -2828,21 +2817,44 @@ public class FitFile {
             if (oldLapStartTime == null || !oldLapStartTime.equals(alignedLapStartTime)) {
                 lap.setFieldValue(LAP_STIME, alignedLapStartTime);
                 changedLapStartTimes++;
-                appendTempUpdateLogLn("Lap no: " + (lapIx + 1) + " start_time -> "
+                appendTempUpdateLogLn("Lap no: " + (lapIx + 1)
+                        + " start_time -> "
                         + (oldLapStartTime != null ? FitDateTime.toStringTime(oldLapStartTime, diffMinutesLocalUTC) : "null")
                         + " => " + FitDateTime.toStringTime(alignedLapStartTime, diffMinutesLocalUTC));
             }
 
+            // The lap timestamp is normalized to the activity start time. That keeps
+            // lap metadata consistent even when the lap start itself is shifted.
             Long oldLapTimestamp = lap.getFieldLongValue(LAP_TIME);
             if (oldLapTimestamp == null || !oldLapTimestamp.equals(firstRecordTime)) {
                 lap.setFieldValue(LAP_TIME, firstRecordTime);
                 changedLapTimestamps++;
-                appendTempUpdateLogLn("Lap no: " + (lapIx + 1) + " timestamp -> "
+                appendTempUpdateLogLn("Lap no: " + (lapIx + 1)
+                        + " timestamp -> "
                         + (oldLapTimestamp != null ? FitDateTime.toStringTime(oldLapTimestamp, diffMinutesLocalUTC) : "null")
                         + " => " + FitDateTime.toStringTime(firstRecordTime, diffMinutesLocalUTC));
             }
 
             previousLapStart = alignedLapStartTime;
+        }
+
+        int firstTimerStartEventIx = -1;
+        int lastTimerStopEventIx = -1;
+        for (int i = 0; i < eventMesg.size(); i++) {
+            Mesg event = eventMesg.get(i);
+            Short eventValue = event.getFieldShortValue(EVE_EVENT);
+            Short eventTypeValue = event.getFieldShortValue(EVE_TYPE);
+            if (eventValue == null || eventTypeValue == null || !eventValue.equals(Event.TIMER.getValue())) {
+                continue;
+            }
+
+            EventType eventType = EventType.getByValue(eventTypeValue);
+            if (eventType == EventType.START && firstTimerStartEventIx < 0) {
+                firstTimerStartEventIx = i;
+            }
+            if (eventType == EventType.STOP_ALL || eventType == EventType.STOP_DISABLE_ALL) {
+                lastTimerStopEventIx = i;
+            }
         }
 
         for (int i = 0; i < eventMesg.size(); i++) {
@@ -2852,23 +2864,32 @@ public class FitFile {
             Long desiredEventTime = null;
             Short eventValue = event.getFieldShortValue(EVE_EVENT);
             Short eventTypeValue = event.getFieldShortValue(EVE_TYPE);
-            if (eventValue != null && eventTypeValue != null && eventValue.equals(Event.TIMER.getValue())) {
-                EventType eventType = EventType.getByValue(eventTypeValue);
-                if (eventType == EventType.START) {
-                    desiredEventTime = firstRecordTime;
-                } else if (eventType == EventType.STOP_ALL || eventType == EventType.STOP_DISABLE_ALL) {
-                    desiredEventTime = lastRecordTime;
-                }
-            }
 
-            if (desiredEventTime == null && oldEventTime == null) {
-                desiredEventTime = firstRecordTime;
+            // Only normalize two anchor events: the first TIMER START and the last
+            // TIMER STOP(_DISABLE_ALL). All other TIMER events are never rewritten;
+            // if they are missing or off-record, we only log the mismatch.
+            if (eventValue != null && eventTypeValue != null && eventValue.equals(Event.TIMER.getValue())) {
+                if (i == firstTimerStartEventIx) {
+                    desiredEventTime = firstRecordTime;
+                } else if (i == lastTimerStopEventIx) {
+                    desiredEventTime = lastRecordTime;
+                } else if (oldEventTime == null || !recordTimeSet.contains(oldEventTime)) {
+                    appendTempUpdateLogLn("Event no: " + (i + 1)
+                            + ", event by text: " + Event.getByValue(eventValue)
+                            + ", type in text: " + EventType.getByValue(eventTypeValue)
+                            + ", timestamp issue (kept unchanged): "
+                            + (oldEventTime != null ? FitDateTime.toStringTime(oldEventTime, diffMinutesLocalUTC) : "null")
+                            + " (not on record timeline)");
+                }
             }
 
             if (desiredEventTime != null && (oldEventTime == null || !oldEventTime.equals(desiredEventTime))) {
                 event.setFieldValue(EVE_TIME, desiredEventTime);
                 changedEventTimestamps++;
-                appendTempUpdateLogLn("Event no: " + (i + 1) + " timestamp -> "
+                appendTempUpdateLogLn("Event no: " + (i + 1)
+                 + ", event by text: " + Event.getByValue(eventValue)
+                + ", type in text: " + EventType.getByValue(eventTypeValue)
+                 + ", timestamp -> "
                         + (oldEventTime != null ? FitDateTime.toStringTime(oldEventTime, diffMinutesLocalUTC) : "null")
                         + " => " + FitDateTime.toStringTime(desiredEventTime, diffMinutesLocalUTC));
             }
@@ -2877,6 +2898,8 @@ public class FitFile {
         appendTempUpdateLogLn("Normalized timestamps: lapStartTimes=" + changedLapStartTimes
                 + ", lapTimestamps=" + changedLapTimestamps
                 + ", eventTimestamps=" + changedEventTimestamps);
+        System.out.println(getTempUpdateLog());
+        
         stats.changedLapStartTimes = changedLapStartTimes;
         stats.changedLapTimestamps = changedLapTimestamps;
         stats.changedEventTimestamps = changedEventTimestamps;
@@ -2897,6 +2920,7 @@ public class FitFile {
         appendTempUpdateLogLn(text);
         System.out.println(text);
     }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     int findLastTimerStopEventIndex(List<Mesg> mesgs) {
         for (int i = mesgs.size() - 1; i >= 0; i--) {
             Mesg mesg = mesgs.get(i);
