@@ -214,6 +214,10 @@ class CourseToTodayCommand -> class CourseToNewDateCommand
 Deleting records in checkAndFixNullRecordTimes() if they have the same time and gps.
 Q:When checkAndFixNullRecordTimes() is running it starts to detact dupicate record timestamp, but do not delete it.
 I would like it to also gps lat/lon also are duplicates. If they are, delete the record. If not, keep it.
+--> git sync
+
+--> v2.84 Build
+--> git sync
 
 
 
