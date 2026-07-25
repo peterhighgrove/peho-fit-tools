@@ -60,7 +60,7 @@ public class MenuRunner {
             new CPointMoveAfterRecordsCommand(),
             new CourseShiftCommand(),
             new CPointTimeToClosestRecordCommand(),
-            new CourseToTodayCommand(),
+            new CourseToNewDateCommand(),
             new CPointInsertCharCommand(),
             new CPointTypeChangeCommand(),
             new CPointTypeGenericLoopCommand(),

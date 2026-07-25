@@ -198,6 +198,13 @@ Try to set a fixed date instead, 2026-07-22.
 --> regr wkt/gps ok ->bless
 --> git sync
 
+Renamed due to changing function todayDate -> fixedDate
+changeRecordAndCPointTimesToTodayDate() -> changeRecordAndCPointTimesToNewFixedDate()
+class CourseToTodayCommand -> class CourseToNewDateCommand
+
+--> git sync
+
+
 
 BUGGAR
 

@@ -5,18 +5,18 @@ import java.util.Scanner;
 import se.peho.fittools.core.Command;
 import se.peho.fittools.core.FitFile;
 
-public class CourseToTodayCommand implements Command {
+public class CourseToNewDateCommand implements Command {
     @Override
     public String getKey() { return "cdate"; }
 
     @Override
-    public String getDescription() { return "Change CPoint/record dates to today"; }
+    public String getDescription() { return "Change CPoint/record dates to a new fixed date"; }
 
     @Override
     public String getCategory() { return "Course points"; }
 
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
-        watchFitFile.getCPointFix().changeRecordAndCPointTimesToTodayDate();
+        watchFitFile.getCPointFix().changeRecordAndCPointTimesToNewFixedDate();
     }
 }
