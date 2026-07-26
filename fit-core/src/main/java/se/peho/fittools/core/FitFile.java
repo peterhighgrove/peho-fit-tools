@@ -4940,17 +4940,14 @@ public class FitFile {
     public void changeStartTime (int changeSeconds) {
         Long timeToChange;
         for (Mesg mesg : allMesg) {
-            boolean handledTimestamp = false;
             switch (mesg.getNum()) {
                 case MesgNum.FILE_ID:
-                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(FID_CTIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(FID_CTIME, timeToChange + changeSeconds);
                     }
                     break;
                 case MesgNum.ACTIVITY:
-                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(ACT_TIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(ACT_TIME, timeToChange + changeSeconds);
@@ -4961,7 +4958,6 @@ public class FitFile {
                     }
                     break;
                 case 140:  // ActivityMetrics
-                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(MESG_TIMESTAMP);
                     if (timeToChange != null) {
                         mesg.setFieldValue(MESG_TIMESTAMP, timeToChange + changeSeconds);
@@ -4972,7 +4968,6 @@ public class FitFile {
                     }
                     break;
                 case 79:  //UserMetrics
-                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(MESG_TIMESTAMP);
                     if (timeToChange != null) {
                         mesg.setFieldValue(MESG_TIMESTAMP, timeToChange + changeSeconds);
@@ -4983,14 +4978,12 @@ public class FitFile {
                     }
                     break;
                 case MesgNum.DEVICE_INFO:
-                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(DINFO_TIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(DINFO_TIME, timeToChange + changeSeconds);
                     }
                     break;
                 case MesgNum.EVENT:
-                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(EVE_TIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(EVE_TIME, timeToChange + changeSeconds);
@@ -5001,7 +4994,6 @@ public class FitFile {
                     }
                     break;
                 case MesgNum.SESSION:
-                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(SES_TIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(SES_TIME, timeToChange + changeSeconds);
@@ -5012,7 +5004,6 @@ public class FitFile {
                     }
                     break;
                 case MesgNum.LAP:
-                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(LAP_TIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(LAP_TIME, timeToChange + changeSeconds);
@@ -5023,7 +5014,6 @@ public class FitFile {
                     }
                     break;
                 case MesgNum.SPLIT:
-                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(SPL_STIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(SPL_STIME, timeToChange + changeSeconds);
@@ -5034,21 +5024,24 @@ public class FitFile {
                     }
                     break;
                 case MesgNum.TIME_IN_ZONE:
-                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(TIZ_TIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(TIZ_TIME, timeToChange + changeSeconds);
                     }
                     break;
                 case MesgNum.RECORD:
-                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(REC_TIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(REC_TIME, timeToChange + changeSeconds);
                     }
                     break;
+                case MesgNum.COURSE_POINT:
+                    timeToChange = mesg.getFieldLongValue(CoursePointMesg.TimestampFieldNum);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(CoursePointMesg.TimestampFieldNum, timeToChange + changeSeconds);
+                    }
+                    break;
                 case MesgNum.TIMESTAMP_CORRELATION:
-                    handledTimestamp = true;
                     timeToChange = mesg.getFieldLongValue(TC_TIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(TC_TIME, timeToChange + changeSeconds);
@@ -5063,14 +5056,12 @@ public class FitFile {
                     }
                     break;
                 default:
+                    timeToChange = mesg.getFieldLongValue(MESG_TIMESTAMP);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(MESG_TIMESTAMP, timeToChange + changeSeconds);
+                    }
                     break;
                 
-            }
-            if (!handledTimestamp) {
-                timeToChange = mesg.getFieldLongValue(MESG_TIMESTAMP);
-                if (timeToChange != null) {
-                    mesg.setFieldValue(MESG_TIMESTAMP, timeToChange + changeSeconds);
-                }
             }
         }
         setTimeFirstRecord(recordMesg.get(0).getFieldLongValue(REC_TIME));

@@ -234,10 +234,10 @@ public class Conf {
         // ================================================================
         // STEP 6: Default timeOffsetSec → 2 minutes
         // ================================================================
-        if (timeOffsetSec == 0) {
-            setTimeOffsetSec(2 * 60);
-            System.out.println("------> timeOffsetSec not set, defaulting to 2 min (120 sec)");
-        }
+        // if (timeOffsetSec == 0) {
+        //     setTimeOffsetSec(2 * 60);
+        //     System.out.println("------> timeOffsetSec not set, defaulting to 2 min (120 sec)");
+        // }
 
         // ================================================================
         // STEP 7: Default profileNameSuffix → "Friskis Orminge"

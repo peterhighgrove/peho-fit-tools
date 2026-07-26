@@ -238,7 +238,10 @@ Adding appendUpdateLog(getTempUpdateLog()); missing in fixLapAndEventTimestampsF
 --> regr wkt ok / gps ok --bless
 --> git sync
 
-
+Fixed Zero minutes changetime and change of Coursepoint timestamp
+Fixed handeling of zero minutes changetime in save. Before it was handled as not correct and defaulting to 2
+Fixed change of Coursepoint timestamp, was not handled due to timestamp fieldnum not 253 (1)
+--> git sync
 
 
 BUGGAR
