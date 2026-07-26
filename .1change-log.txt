@@ -246,6 +246,10 @@ Fixed change of Coursepoint timestamp, was not handled due to timestamp fieldnum
 --> v2.88 Build
 --> git sync
 
+--> regr wkt ok / gps ok, NO FAIL
+--> git sync
+
+
 BUGGAR
 
 Do not handle args correctly
