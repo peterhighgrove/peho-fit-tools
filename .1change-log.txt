@@ -243,6 +243,8 @@ Fixed handeling of zero minutes changetime in save. Before it was handled as not
 Fixed change of Coursepoint timestamp, was not handled due to timestamp fieldnum not 253 (1)
 --> git sync
 
+--> v2.88 Build
+--> git sync
 
 BUGGAR
 
