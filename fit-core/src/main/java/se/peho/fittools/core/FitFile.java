@@ -3096,6 +3096,7 @@ public class FitFile {
         final float timerToleranceSec = 1.1f;
         final float distanceToleranceM = 1.0f;
         final float movingTimeToleranceSec = 1.1f;
+        final float elapsedTimeToleranceSec = 1.1f;
         final float speedToleranceMps = 0.02f;
 
         clearTempUpdateLog();
@@ -3123,6 +3124,7 @@ public class FitFile {
         }
 
         Long totalTimerFromList = getLastTimerInTimerList();
+
         Float totalDistanceFromLastRecord = null;
         if (recordMesg != null && !recordMesg.isEmpty()) {
             totalDistanceFromLastRecord = recordMesg.get(recordMesg.size() - 1).getFieldFloatValue(REC_DIST);
@@ -3131,11 +3133,23 @@ public class FitFile {
         Float totalMovingTimeFromSession = null;
         if (sessionMesg != null && !sessionMesg.isEmpty()) {
             totalMovingTimeFromSession = sessionMesg.get(0).getFieldFloatValue(SES_MTIMER);
+        } else {
+            appendTempUpdateLogLn("Session mesg missing, so can't read session moving timer. Using totalTimerFromList.");
+            totalMovingTimeFromSession = totalTimerFromList != null ? totalTimerFromList.floatValue() : null;
+        }
+
+        Float totalElapsedTimeFromSession = null;
+        if (sessionMesg != null && !sessionMesg.isEmpty()) {
+            totalElapsedTimeFromSession = sessionMesg.get(0).getFieldFloatValue(SES_ETIMER);
+        } else {
+            appendTempUpdateLogLn("Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.");
+            totalElapsedTimeFromSession = totalTimerFromList != null ? totalTimerFromList.floatValue() : null;
         }
 
         float lapTimerSum = 0f;
         float lapDistanceSum = 0f;
         float lapMovingTimeSum = 0f;
+        float lapElapsedTimeSum = 0f;
 
         boolean ok = true;
 
@@ -3144,6 +3158,7 @@ public class FitFile {
 
             Float lapTimer = lap.getFieldFloatValue(LAP_TIMER);
             Float lapDistance = lap.getFieldFloatValue(LAP_DIST);
+            Float lapElapsedTime = lap.getFieldFloatValue(LAP_ETIMER);
             Float lapMovingTime = lap.getFieldFloatValue(LAP_MTIMER);
             Float lapEnhancedAvgSpeed = lap.getFieldFloatValue(LAP_ESPEED);
 
@@ -3152,6 +3167,9 @@ public class FitFile {
             }
             if (lapDistance != null) {
                 lapDistanceSum += lapDistance;
+            }
+            if (lapElapsedTime != null) {
+                lapElapsedTimeSum += lapElapsedTime;
             }
             if (lapMovingTime != null) {
                 lapMovingTimeSum += lapMovingTime;
@@ -3190,13 +3208,22 @@ public class FitFile {
                 + "s, sessionTotalMoving=" + totalMovingTimeFromSession + "s");
         }
 
+        if (totalElapsedTimeFromSession != null
+                && Math.abs(lapElapsedTimeSum - totalElapsedTimeFromSession) > elapsedTimeToleranceSec) {
+            ok = false;
+            appendTempUpdateLogLn("Lap elapsed-time sum mismatch: lapSum=" + lapElapsedTimeSum
+                + "s, sessionTotalElapsed=" + totalElapsedTimeFromSession + "s");
+        }
+
         appendTempUpdateLogLn("Lap totals check: " + (ok ? "OK" : "FAILED")
             + " | lapTimerSum=" + lapTimerSum + "s"
             + ", timerListTotal=" + totalTimerFromList + "s"
             + " | lapDistSum=" + lapDistanceSum + "m"
             + ", lastRecordDist=" + (totalDistanceFromLastRecord != null ? totalDistanceFromLastRecord : "null") + "m"
             + " | lapMovingSum=" + lapMovingTimeSum + "s"
-            + ", sessionMoving=" + (totalMovingTimeFromSession != null ? totalMovingTimeFromSession : "null") + "s");
+            + ", sessionMoving=" + (totalMovingTimeFromSession != null ? totalMovingTimeFromSession : "null") + "s"
+            + " | lapElapsedSum=" + lapElapsedTimeSum + "s"
+            + ", sessionElapsed=" + (totalElapsedTimeFromSession != null ? totalElapsedTimeFromSession : "null") + "s");
 
         System.out.println(getTempUpdateLog());
         appendUpdateLog(getTempUpdateLog());
@@ -3209,6 +3236,7 @@ public class FitFile {
         final float timerToleranceSec = 1.1f;
         final float distanceToleranceM = 1.0f;
         final float movingTimeToleranceSec = 1.1f;
+        final float elapsedTimeToleranceSec = 1.1f;
         final float speedToleranceMps = 0.02f;
 
         clearTempUpdateLog();
@@ -3245,6 +3273,17 @@ public class FitFile {
         Float totalMovingTimeFromSession = null;
         if (sessionMesg != null && !sessionMesg.isEmpty()) {
             totalMovingTimeFromSession = sessionMesg.get(0).getFieldFloatValue(SES_MTIMER);
+        } else {
+            appendTempUpdateLogLn("Session mesg missing, so can't read session moving timer. Using totalTimerFromList.");
+            totalMovingTimeFromSession = totalTimerFromList != null ? totalTimerFromList.floatValue() : null;
+        }
+
+        Float totalElapsedTimeFromSession = null;
+        if (sessionMesg != null && !sessionMesg.isEmpty()) {
+            totalElapsedTimeFromSession = sessionMesg.get(0).getFieldFloatValue(SES_ETIMER);
+        } else {
+            appendTempUpdateLogLn("Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.");
+            totalElapsedTimeFromSession = totalTimerFromList != null ? totalTimerFromList.floatValue() : null;
         }
 
         if (totalTimerFromList == null && totalDistanceFromLastRecord == null && totalMovingTimeFromSession == null) {
@@ -3257,13 +3296,18 @@ public class FitFile {
         float totalTimerTarget = totalTimerFromList != null ? totalTimerFromList.floatValue() : 0f;
         float totalDistanceTarget = totalDistanceFromLastRecord != null ? totalDistanceFromLastRecord : 0f;
         float totalMovingTimeTarget = totalMovingTimeFromSession != null ? totalMovingTimeFromSession : 0f;
+        float totalElapsedTimeTarget = totalElapsedTimeFromSession != null
+         ? totalElapsedTimeFromSession
+          : 0f;
 
         float lapTimerSum = 0f;
         float lapDistanceSum = 0f;
         float lapMovingTimeSum = 0f;
+        float lapElapsedTimeSum = 0f;
         float[] lapTimerValues = new float[lapMesg.size()];
         float[] lapDistanceValues = new float[lapMesg.size()];
         float[] lapMovingTimeValues = new float[lapMesg.size()];
+        float[] lapElapsedTimeValues = new float[lapMesg.size()];
         float[] lapSpeedValues = new float[lapMesg.size()];
 
         for (int i = 0; i < lapMesg.size(); i++) {
@@ -3272,6 +3316,7 @@ public class FitFile {
             Float lapDistance = lap.getFieldFloatValue(LAP_DIST);
             Float lapMovingTime = lap.getFieldFloatValue(LAP_MTIMER);
             Float lapEnhancedAvgSpeed = lap.getFieldFloatValue(LAP_ESPEED);
+            Float lapElapsedTime = lap.getFieldFloatValue(LAP_ETIMER);
 
             if (lapTimer != null) {
                 lapTimerValues[i] = lapTimer;
@@ -3291,6 +3336,12 @@ public class FitFile {
             } else {
                 lapMovingTimeValues[i] = 0f;
             }
+            if (lapElapsedTime != null) {
+                lapElapsedTimeValues[i] = lapElapsedTime;
+                lapElapsedTimeSum += lapElapsedTime;
+            } else {
+                lapElapsedTimeValues[i] = 0f;
+            }
             if (lapEnhancedAvgSpeed != null) {
                 lapSpeedValues[i] = lapEnhancedAvgSpeed;
             } else {
@@ -3301,8 +3352,10 @@ public class FitFile {
         if (lapMesg.size() > 0) {
             float positiveTimerSum = 0f;
             float positiveMovingSum = 0f;
+            float positiveElapsedSum = 0f;
             float missingTimerDistanceSum = 0f;
             float missingMovingDistanceSum = 0f;
+            float missingElapsedDistanceSum = 0f;
 
             for (int i = 0; i < lapMesg.size(); i++) {
                 if (lapTimerValues[i] > 0f) {
@@ -3316,22 +3369,34 @@ public class FitFile {
                 } else {
                     missingMovingDistanceSum += lapDistanceValues[i];
                 }
+
+                if (lapElapsedTimeValues[i] > 0f) {
+                    positiveElapsedSum += lapElapsedTimeValues[i];
+                } else {
+                    missingElapsedDistanceSum += lapDistanceValues[i];
+                }
             }
 
             float timerScale = totalTimerTarget > 0f && positiveTimerSum > 0f ? totalTimerTarget / positiveTimerSum : 1f;
             float distanceScale = totalDistanceTarget > 0f && lapDistanceSum > 0f ? totalDistanceTarget / lapDistanceSum : 1f;
             float movingScale = totalMovingTimeTarget > 0f && positiveMovingSum > 0f ? totalMovingTimeTarget / positiveMovingSum : 1f;
+            float elapsedTimeScale = totalElapsedTimeTarget > 0f && lapElapsedTimeSum > 0f
+             ? totalElapsedTimeTarget / lapElapsedTimeSum
+              : 1f;
 
             float assignedTimer = 0f;
             float assignedMovingTime = 0f;
+            float assignedElapsedTime = 0f;
             float remainingTimerTarget = totalTimerTarget;
             float remainingMovingTarget = totalMovingTimeTarget;
+            float remainingElapsedTimeTarget = totalElapsedTimeTarget;
 
             for (int i = 0; i < lapMesg.size(); i++) {
                 Mesg lap = lapMesg.get(i);
                 float newTimer = 0f;
                 float newDistance = lapDistanceValues[i] * distanceScale;
                 float newMovingTime = 0f;
+                float newElapsedTime = 0f;
 
                 if (lapTimerValues[i] > 0f) {
                     newTimer = lapTimerValues[i] * timerScale;
@@ -3349,12 +3414,24 @@ public class FitFile {
                     newMovingTime = remainingMovingTarget * (lapDistanceValues[i] / missingMovingDistanceSum);
                 }
 
+                if (lapElapsedTimeValues[i] > 0f) {
+                    newElapsedTime = lapElapsedTimeValues[i] * elapsedTimeScale;
+                    assignedElapsedTime += newElapsedTime;
+                    remainingElapsedTimeTarget = Math.max(0f, totalElapsedTimeTarget - assignedElapsedTime);
+                } else if (totalElapsedTimeTarget > 0f && missingElapsedDistanceSum > 0f) {
+                    newElapsedTime = remainingElapsedTimeTarget * (lapDistanceValues[i] / missingElapsedDistanceSum);
+                }
+
                 if (newTimer <= 0f && newDistance > 0f && totalTimerTarget > 0f && totalDistanceTarget > 0f) {
                     newTimer = totalTimerTarget * (newDistance / totalDistanceTarget);
                 }
 
                 if (newMovingTime <= 0f && newDistance > 0f && totalMovingTimeTarget > 0f && totalDistanceTarget > 0f) {
                     newMovingTime = totalMovingTimeTarget * (newDistance / totalDistanceTarget);
+                }
+
+                if (newElapsedTime <= 0f && newDistance > 0f && totalElapsedTimeTarget > 0f && totalDistanceTarget > 0f) {
+                    newElapsedTime = totalElapsedTimeTarget * (newDistance / totalDistanceTarget);
                 }
 
                 float newSpeed = 0f;
@@ -3365,6 +3442,7 @@ public class FitFile {
                 lap.setFieldValue(LAP_TIMER, newTimer);
                 lap.setFieldValue(LAP_DIST, newDistance);
                 lap.setFieldValue(LAP_MTIMER, newMovingTime);
+                lap.setFieldValue(LAP_ETIMER, newElapsedTime);
                 lap.setFieldValue(LAP_SPEED, newSpeed);
                 lap.setFieldValue(LAP_ESPEED, newSpeed);
             }

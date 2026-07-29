@@ -266,6 +266,10 @@ Fixing logging and adding clearTimerList in middle of applyConstantPaceToRecordT
 --> v2.90 Build
 --> git sync
 
+Also adding Chacking Elapsed timer to checkLapTotalsAndEnhancedAvgSpeed() and fix.
+--> git sync
+
+
 
 BUGGAR
 
