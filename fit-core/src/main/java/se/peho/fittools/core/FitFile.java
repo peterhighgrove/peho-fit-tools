@@ -2756,6 +2756,13 @@ public class FitFile {
         appendTempUpdateLogLn("Computed path distance=" + String.format("%.1f", cumulativeGpsMeters) + "m, total time="
                 + PehoUtils.sec2minSecLong(Math.round(cumulativeSeconds)));
 
+        // CHECK LAP TOTALS AND ENHANCED AVG SPEED
+        if (checkLapTotalsAndEnhancedAvgSpeed()) {
+            appendTempUpdateLogLn("Lap totals and enhanced average speed are correct.");
+        } else {
+            fixLapTotalsAndEnhancedAvgSpeed();
+        }       
+
         System.out.println(getTempUpdateLog());
         appendUpdateLog(getTempUpdateLog());
 
@@ -3078,6 +3085,265 @@ public class FitFile {
         System.out.println("======== TotalTimerTime: " + PehoUtils.sec2minSecLong(totalTimerTime)
              + " last timer value: "
              + PehoUtils.sec2minSecLong(recordMesgAddOnRecords.get(recordMesgAddOnRecords.size()-1).getTimer()));
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public boolean checkLapTotalsAndEnhancedAvgSpeed() {
+        final float timerToleranceSec = 1.1f;
+        final float distanceToleranceM = 1.0f;
+        final float movingTimeToleranceSec = 1.1f;
+        final float speedToleranceMps = 0.02f;
+
+        if (lapMesg == null || lapMesg.isEmpty()) {
+            appendTempUpdateLogLn("Lap check failed: no lap messages found.");
+            return false;
+        }
+
+        if ((recordMesgAddOnRecords == null || recordMesgAddOnRecords.isEmpty()) && recordMesg != null && !recordMesg.isEmpty()) {
+            appendTempUpdateLogLn("Lap check: timer list missing, rebuilding with createTimerList().");
+            createTimerList();
+        }
+
+        if (recordMesgAddOnRecords == null || recordMesgAddOnRecords.isEmpty()) {
+            appendTempUpdateLogLn("Lap check failed: timer list missing (run createTimerList()).");
+            return false;
+        }
+
+        Long totalTimerFromList = getLastTimerInTimerList();
+        Float totalDistanceFromLastRecord = null;
+        if (recordMesg != null && !recordMesg.isEmpty()) {
+            totalDistanceFromLastRecord = recordMesg.get(recordMesg.size() - 1).getFieldFloatValue(REC_DIST);
+        }
+
+        Float totalMovingTimeFromSession = null;
+        if (sessionMesg != null && !sessionMesg.isEmpty()) {
+            totalMovingTimeFromSession = sessionMesg.get(0).getFieldFloatValue(SES_MTIMER);
+        }
+
+        float lapTimerSum = 0f;
+        float lapDistanceSum = 0f;
+        float lapMovingTimeSum = 0f;
+
+        boolean ok = true;
+
+        for (int i = 0; i < lapMesg.size(); i++) {
+            Mesg lap = lapMesg.get(i);
+
+            Float lapTimer = lap.getFieldFloatValue(LAP_TIMER);
+            Float lapDistance = lap.getFieldFloatValue(LAP_DIST);
+            Float lapMovingTime = lap.getFieldFloatValue(LAP_MTIMER);
+            Float lapEnhancedAvgSpeed = lap.getFieldFloatValue(LAP_ESPEED);
+
+            if (lapTimer != null) {
+                lapTimerSum += lapTimer;
+            }
+            if (lapDistance != null) {
+                lapDistanceSum += lapDistance;
+            }
+            if (lapMovingTime != null) {
+                lapMovingTimeSum += lapMovingTime;
+            }
+
+            if (lapTimer != null && lapTimer > 0f && lapDistance != null && lapEnhancedAvgSpeed != null) {
+                float expectedEnhancedAvgSpeed = lapDistance / lapTimer;
+                if (Math.abs(lapEnhancedAvgSpeed - expectedEnhancedAvgSpeed) > speedToleranceMps) {
+                    ok = false;
+                    appendTempUpdateLogLn("Lap speed mismatch at lap " + (i + 1)
+                        + ": enhancedAvgSpeed=" + lapEnhancedAvgSpeed
+                        + ", expected=" + expectedEnhancedAvgSpeed
+                        + " (dist/timer)");
+                }
+            }
+        }
+
+        if (totalTimerFromList != null
+                && Math.abs(lapTimerSum - totalTimerFromList.floatValue()) > timerToleranceSec) {
+            ok = false;
+            appendTempUpdateLogLn("Lap timer sum mismatch: lapSum=" + lapTimerSum
+                + "s, timerListTotal=" + totalTimerFromList + "s");
+        }
+
+        if (totalDistanceFromLastRecord != null
+                && Math.abs(lapDistanceSum - totalDistanceFromLastRecord) > distanceToleranceM) {
+            ok = false;
+            appendTempUpdateLogLn("Lap distance sum mismatch: lapSum=" + lapDistanceSum
+                + "m, lastRecordDist=" + totalDistanceFromLastRecord + "m");
+        }
+
+        if (totalMovingTimeFromSession != null
+                && Math.abs(lapMovingTimeSum - totalMovingTimeFromSession) > movingTimeToleranceSec) {
+            ok = false;
+            appendTempUpdateLogLn("Lap moving-time sum mismatch: lapSum=" + lapMovingTimeSum
+                + "s, sessionTotalMoving=" + totalMovingTimeFromSession + "s");
+        }
+
+        appendTempUpdateLogLn("Lap totals check: " + (ok ? "OK" : "FAILED")
+            + " | lapTimerSum=" + lapTimerSum + "s"
+            + ", timerListTotal=" + totalTimerFromList + "s"
+            + " | lapDistSum=" + lapDistanceSum + "m"
+            + ", lastRecordDist=" + (totalDistanceFromLastRecord != null ? totalDistanceFromLastRecord : "null") + "m"
+            + " | lapMovingSum=" + lapMovingTimeSum + "s"
+            + ", sessionMoving=" + (totalMovingTimeFromSession != null ? totalMovingTimeFromSession : "null") + "s");
+
+        return ok;
+    }
+
+    public boolean fixLapTotalsAndEnhancedAvgSpeed() {
+        final float timerToleranceSec = 1.1f;
+        final float distanceToleranceM = 1.0f;
+        final float movingTimeToleranceSec = 1.1f;
+        final float speedToleranceMps = 0.02f;
+
+        appendTempUpdateLogLn("Fixing lap totals and enhanced average speed...");
+        if (lapMesg == null || lapMesg.isEmpty()) {
+            appendTempUpdateLogLn("Lap fix failed: no lap messages found.");
+            return false;
+        }
+
+        if ((recordMesgAddOnRecords == null || recordMesgAddOnRecords.isEmpty()) && recordMesg != null && !recordMesg.isEmpty()) {
+            appendTempUpdateLogLn("Lap fix: timer list missing, rebuilding with createTimerList().");
+            createTimerList();
+        }
+
+        if (recordMesgAddOnRecords == null || recordMesgAddOnRecords.isEmpty()) {
+            appendTempUpdateLogLn("Lap fix failed: timer list missing (run createTimerList()).");
+            return false;
+        }
+
+        Long totalTimerFromList = getLastTimerInTimerList();
+        Float totalDistanceFromLastRecord = null;
+        if (recordMesg != null && !recordMesg.isEmpty()) {
+            totalDistanceFromLastRecord = recordMesg.get(recordMesg.size() - 1).getFieldFloatValue(REC_DIST);
+        }
+
+        Float totalMovingTimeFromSession = null;
+        if (sessionMesg != null && !sessionMesg.isEmpty()) {
+            totalMovingTimeFromSession = sessionMesg.get(0).getFieldFloatValue(SES_MTIMER);
+        }
+
+        if (totalTimerFromList == null && totalDistanceFromLastRecord == null && totalMovingTimeFromSession == null) {
+            appendTempUpdateLogLn("Lap fix failed: no activity totals available.");
+            return false;
+        }
+
+        float totalTimerTarget = totalTimerFromList != null ? totalTimerFromList.floatValue() : 0f;
+        float totalDistanceTarget = totalDistanceFromLastRecord != null ? totalDistanceFromLastRecord : 0f;
+        float totalMovingTimeTarget = totalMovingTimeFromSession != null ? totalMovingTimeFromSession : 0f;
+
+        float lapTimerSum = 0f;
+        float lapDistanceSum = 0f;
+        float lapMovingTimeSum = 0f;
+        float[] lapTimerValues = new float[lapMesg.size()];
+        float[] lapDistanceValues = new float[lapMesg.size()];
+        float[] lapMovingTimeValues = new float[lapMesg.size()];
+        float[] lapSpeedValues = new float[lapMesg.size()];
+
+        for (int i = 0; i < lapMesg.size(); i++) {
+            Mesg lap = lapMesg.get(i);
+            Float lapTimer = lap.getFieldFloatValue(LAP_TIMER);
+            Float lapDistance = lap.getFieldFloatValue(LAP_DIST);
+            Float lapMovingTime = lap.getFieldFloatValue(LAP_MTIMER);
+            Float lapEnhancedAvgSpeed = lap.getFieldFloatValue(LAP_ESPEED);
+
+            if (lapTimer != null) {
+                lapTimerValues[i] = lapTimer;
+                lapTimerSum += lapTimer;
+            } else {
+                lapTimerValues[i] = 0f;
+            }
+            if (lapDistance != null) {
+                lapDistanceValues[i] = lapDistance;
+                lapDistanceSum += lapDistance;
+            } else {
+                lapDistanceValues[i] = 0f;
+            }
+            if (lapMovingTime != null) {
+                lapMovingTimeValues[i] = lapMovingTime;
+                lapMovingTimeSum += lapMovingTime;
+            } else {
+                lapMovingTimeValues[i] = 0f;
+            }
+            if (lapEnhancedAvgSpeed != null) {
+                lapSpeedValues[i] = lapEnhancedAvgSpeed;
+            } else {
+                lapSpeedValues[i] = 0f;
+            }
+        }
+
+        if (lapMesg.size() > 0) {
+            float positiveTimerSum = 0f;
+            float positiveMovingSum = 0f;
+            float missingTimerDistanceSum = 0f;
+            float missingMovingDistanceSum = 0f;
+
+            for (int i = 0; i < lapMesg.size(); i++) {
+                if (lapTimerValues[i] > 0f) {
+                    positiveTimerSum += lapTimerValues[i];
+                } else {
+                    missingTimerDistanceSum += lapDistanceValues[i];
+                }
+
+                if (lapMovingTimeValues[i] > 0f) {
+                    positiveMovingSum += lapMovingTimeValues[i];
+                } else {
+                    missingMovingDistanceSum += lapDistanceValues[i];
+                }
+            }
+
+            float timerScale = totalTimerTarget > 0f && positiveTimerSum > 0f ? totalTimerTarget / positiveTimerSum : 1f;
+            float distanceScale = totalDistanceTarget > 0f && lapDistanceSum > 0f ? totalDistanceTarget / lapDistanceSum : 1f;
+            float movingScale = totalMovingTimeTarget > 0f && positiveMovingSum > 0f ? totalMovingTimeTarget / positiveMovingSum : 1f;
+
+            float assignedTimer = 0f;
+            float assignedMovingTime = 0f;
+            float remainingTimerTarget = totalTimerTarget;
+            float remainingMovingTarget = totalMovingTimeTarget;
+
+            for (int i = 0; i < lapMesg.size(); i++) {
+                Mesg lap = lapMesg.get(i);
+                float newTimer = 0f;
+                float newDistance = lapDistanceValues[i] * distanceScale;
+                float newMovingTime = 0f;
+
+                if (lapTimerValues[i] > 0f) {
+                    newTimer = lapTimerValues[i] * timerScale;
+                    assignedTimer += newTimer;
+                    remainingTimerTarget = Math.max(0f, totalTimerTarget - assignedTimer);
+                } else if (totalTimerTarget > 0f && missingTimerDistanceSum > 0f) {
+                    newTimer = remainingTimerTarget * (lapDistanceValues[i] / missingTimerDistanceSum);
+                }
+
+                if (lapMovingTimeValues[i] > 0f) {
+                    newMovingTime = lapMovingTimeValues[i] * movingScale;
+                    assignedMovingTime += newMovingTime;
+                    remainingMovingTarget = Math.max(0f, totalMovingTimeTarget - assignedMovingTime);
+                } else if (totalMovingTimeTarget > 0f && missingMovingDistanceSum > 0f) {
+                    newMovingTime = remainingMovingTarget * (lapDistanceValues[i] / missingMovingDistanceSum);
+                }
+
+                if (newTimer <= 0f && newDistance > 0f && totalTimerTarget > 0f && totalDistanceTarget > 0f) {
+                    newTimer = totalTimerTarget * (newDistance / totalDistanceTarget);
+                }
+
+                if (newMovingTime <= 0f && newDistance > 0f && totalMovingTimeTarget > 0f && totalDistanceTarget > 0f) {
+                    newMovingTime = totalMovingTimeTarget * (newDistance / totalDistanceTarget);
+                }
+
+                float newSpeed = 0f;
+                if (newTimer > 0f && newDistance > 0f) {
+                    newSpeed = newDistance / newTimer;
+                }
+
+                lap.setFieldValue(LAP_TIMER, newTimer);
+                lap.setFieldValue(LAP_DIST, newDistance);
+                lap.setFieldValue(LAP_MTIMER, newMovingTime);
+                lap.setFieldValue(LAP_SPEED, newSpeed);
+                lap.setFieldValue(LAP_ESPEED, newSpeed);
+            }
+        }
+
+        boolean ok = checkLapTotalsAndEnhancedAvgSpeed();
+        return ok;
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void createGapList() {

@@ -19,6 +19,7 @@ import com.garmin.fit.LapMesg;
 import com.garmin.fit.Mesg;
 import com.garmin.fit.GpsMetadataMesg;
 import com.garmin.fit.RecordMesg;
+import com.garmin.fit.SessionMesg;
 import com.garmin.fit.TimeInZoneMesg;
 
 import se.peho.fittools.core.commands.ActivityAddAnother;
@@ -220,5 +221,177 @@ public class FitFileCreatePauseListTest {
             "[0] unknownx(233)",
             "[1-5] GPS_METADATA(160), [2-6] unknownx(233) x3"
         ), summary);
+    }
+
+    @Test
+    public void checkLapTotalsAndEnhancedAvgSpeed_returnsTrue_whenLapsAreConsistent() {
+        FitFile fitFile = new FitFile();
+
+        RecordMesg startRecord = new RecordMesg();
+        startRecord.setTimestamp(new com.garmin.fit.DateTime(1_000L));
+        startRecord.setDistance(0f);
+
+        RecordMesg endRecord = new RecordMesg();
+        endRecord.setTimestamp(new com.garmin.fit.DateTime(1_030L));
+        endRecord.setDistance(150f);
+
+        fitFile.getRecordMesg().add(startRecord);
+        fitFile.getRecordMesg().add(endRecord);
+
+        LapMesg lap1 = new LapMesg();
+        lap1.setFieldValue(FitFile.LAP_TIMER, 10f);
+        lap1.setFieldValue(FitFile.LAP_DIST, 50f);
+        lap1.setFieldValue(FitFile.LAP_MTIMER, 9f);
+        lap1.setFieldValue(FitFile.LAP_ESPEED, 5f);
+
+        LapMesg lap2 = new LapMesg();
+        lap2.setFieldValue(FitFile.LAP_TIMER, 20f);
+        lap2.setFieldValue(FitFile.LAP_DIST, 100f);
+        lap2.setFieldValue(FitFile.LAP_MTIMER, 18f);
+        lap2.setFieldValue(FitFile.LAP_ESPEED, 5f);
+
+        fitFile.getLapMesg().add(lap1);
+        fitFile.getLapMesg().add(lap2);
+
+        SessionMesg sessionMesg = new SessionMesg();
+        sessionMesg.setFieldValue(FitFile.SES_MTIMER, 27f);
+        fitFile.getSessionMesg().add(sessionMesg);
+
+        fitFile.getRecordMesgAddOnRecords().add(fitFile.new RecordMesgAddOnRecords(0L));
+        fitFile.getRecordMesgAddOnRecords().add(fitFile.new RecordMesgAddOnRecords(30L));
+
+        assertTrue(fitFile.checkLapTotalsAndEnhancedAvgSpeed());
+    }
+
+    @Test
+    public void checkLapTotalsAndEnhancedAvgSpeed_returnsFalse_whenLapSpeedIsWrong() {
+        FitFile fitFile = new FitFile();
+
+        RecordMesg startRecord = new RecordMesg();
+        startRecord.setTimestamp(new com.garmin.fit.DateTime(1_000L));
+        startRecord.setDistance(0f);
+
+        RecordMesg endRecord = new RecordMesg();
+        endRecord.setTimestamp(new com.garmin.fit.DateTime(1_030L));
+        endRecord.setDistance(150f);
+
+        fitFile.getRecordMesg().add(startRecord);
+        fitFile.getRecordMesg().add(endRecord);
+
+        LapMesg lap1 = new LapMesg();
+        lap1.setFieldValue(FitFile.LAP_TIMER, 10f);
+        lap1.setFieldValue(FitFile.LAP_DIST, 50f);
+        lap1.setFieldValue(FitFile.LAP_MTIMER, 9f);
+        lap1.setFieldValue(FitFile.LAP_ESPEED, 5f);
+
+        LapMesg lap2 = new LapMesg();
+        lap2.setFieldValue(FitFile.LAP_TIMER, 20f);
+        lap2.setFieldValue(FitFile.LAP_DIST, 100f);
+        lap2.setFieldValue(FitFile.LAP_MTIMER, 18f);
+        lap2.setFieldValue(FitFile.LAP_ESPEED, 4f);
+
+        fitFile.getLapMesg().add(lap1);
+        fitFile.getLapMesg().add(lap2);
+
+        SessionMesg sessionMesg = new SessionMesg();
+        sessionMesg.setFieldValue(FitFile.SES_MTIMER, 27f);
+        fitFile.getSessionMesg().add(sessionMesg);
+
+        fitFile.getRecordMesgAddOnRecords().add(fitFile.new RecordMesgAddOnRecords(0L));
+        fitFile.getRecordMesgAddOnRecords().add(fitFile.new RecordMesgAddOnRecords(30L));
+
+        assertTrue(!fitFile.checkLapTotalsAndEnhancedAvgSpeed());
+    }
+
+    @Test
+    public void fixLapTotalsAndEnhancedAvgSpeed_rebalancesLapValuesToMatchActivityTotals() {
+        FitFile fitFile = new FitFile();
+
+        RecordMesg startRecord = new RecordMesg();
+        startRecord.setTimestamp(new com.garmin.fit.DateTime(1_000L));
+        startRecord.setDistance(0f);
+
+        RecordMesg endRecord = new RecordMesg();
+        endRecord.setTimestamp(new com.garmin.fit.DateTime(1_030L));
+        endRecord.setDistance(150f);
+
+        fitFile.getRecordMesg().add(startRecord);
+        fitFile.getRecordMesg().add(endRecord);
+
+        LapMesg lap1 = new LapMesg();
+        lap1.setFieldValue(FitFile.LAP_TIMER, 8f);
+        lap1.setFieldValue(FitFile.LAP_DIST, 40f);
+        lap1.setFieldValue(FitFile.LAP_MTIMER, 7f);
+        lap1.setFieldValue(FitFile.LAP_ESPEED, 5f);
+
+        LapMesg lap2 = new LapMesg();
+        lap2.setFieldValue(FitFile.LAP_TIMER, 12f);
+        lap2.setFieldValue(FitFile.LAP_DIST, 60f);
+        lap2.setFieldValue(FitFile.LAP_MTIMER, 11f);
+        lap2.setFieldValue(FitFile.LAP_ESPEED, 4f);
+
+        fitFile.getLapMesg().add(lap1);
+        fitFile.getLapMesg().add(lap2);
+
+        SessionMesg sessionMesg = new SessionMesg();
+        sessionMesg.setFieldValue(FitFile.SES_MTIMER, 27f);
+        fitFile.getSessionMesg().add(sessionMesg);
+
+        fitFile.getRecordMesgAddOnRecords().add(fitFile.new RecordMesgAddOnRecords(0L));
+        fitFile.getRecordMesgAddOnRecords().add(fitFile.new RecordMesgAddOnRecords(30L));
+
+        assertTrue(fitFile.fixLapTotalsAndEnhancedAvgSpeed());
+        assertEquals(12f, fitFile.getLapMesg().get(0).getFieldFloatValue(FitFile.LAP_TIMER), 0.001f);
+        assertEquals(18f, fitFile.getLapMesg().get(1).getFieldFloatValue(FitFile.LAP_TIMER), 0.001f);
+        assertEquals(60f, fitFile.getLapMesg().get(0).getFieldFloatValue(FitFile.LAP_DIST), 0.001f);
+        assertEquals(90f, fitFile.getLapMesg().get(1).getFieldFloatValue(FitFile.LAP_DIST), 0.001f);
+        assertEquals(10.5f, fitFile.getLapMesg().get(0).getFieldFloatValue(FitFile.LAP_MTIMER), 0.001f);
+        assertEquals(16.5f, fitFile.getLapMesg().get(1).getFieldFloatValue(FitFile.LAP_MTIMER), 0.001f);
+        assertEquals(5f, fitFile.getLapMesg().get(0).getFieldFloatValue(FitFile.LAP_ESPEED), 0.001f);
+        assertEquals(5f, fitFile.getLapMesg().get(1).getFieldFloatValue(FitFile.LAP_ESPEED), 0.001f);
+    }
+
+    @Test
+    public void fixLapTotalsAndEnhancedAvgSpeed_usesDistanceFallbackWhenLapTimersAreMissing() {
+        FitFile fitFile = new FitFile();
+
+        RecordMesg startRecord = new RecordMesg();
+        startRecord.setTimestamp(new com.garmin.fit.DateTime(1_000L));
+        startRecord.setDistance(0f);
+
+        RecordMesg endRecord = new RecordMesg();
+        endRecord.setTimestamp(new com.garmin.fit.DateTime(1_030L));
+        endRecord.setDistance(150f);
+
+        fitFile.getRecordMesg().add(startRecord);
+        fitFile.getRecordMesg().add(endRecord);
+
+        LapMesg lap1 = new LapMesg();
+        lap1.setFieldValue(FitFile.LAP_TIMER, 0f);
+        lap1.setFieldValue(FitFile.LAP_DIST, 40f);
+        lap1.setFieldValue(FitFile.LAP_MTIMER, 0f);
+        lap1.setFieldValue(FitFile.LAP_ESPEED, 0f);
+
+        LapMesg lap2 = new LapMesg();
+        lap2.setFieldValue(FitFile.LAP_TIMER, 0f);
+        lap2.setFieldValue(FitFile.LAP_DIST, 60f);
+        lap2.setFieldValue(FitFile.LAP_MTIMER, 0f);
+        lap2.setFieldValue(FitFile.LAP_ESPEED, 0f);
+
+        fitFile.getLapMesg().add(lap1);
+        fitFile.getLapMesg().add(lap2);
+
+        SessionMesg sessionMesg = new SessionMesg();
+        sessionMesg.setFieldValue(FitFile.SES_MTIMER, 27f);
+        fitFile.getSessionMesg().add(sessionMesg);
+
+        fitFile.getRecordMesgAddOnRecords().add(fitFile.new RecordMesgAddOnRecords(0L));
+        fitFile.getRecordMesgAddOnRecords().add(fitFile.new RecordMesgAddOnRecords(30L));
+
+        assertTrue(fitFile.fixLapTotalsAndEnhancedAvgSpeed());
+        assertEquals(12f, fitFile.getLapMesg().get(0).getFieldFloatValue(FitFile.LAP_TIMER), 0.001f);
+        assertEquals(18f, fitFile.getLapMesg().get(1).getFieldFloatValue(FitFile.LAP_TIMER), 0.001f);
+        assertEquals(5f, fitFile.getLapMesg().get(0).getFieldFloatValue(FitFile.LAP_ESPEED), 0.001f);
+        assertEquals(5f, fitFile.getLapMesg().get(1).getFieldFloatValue(FitFile.LAP_ESPEED), 0.001f);
     }
 }

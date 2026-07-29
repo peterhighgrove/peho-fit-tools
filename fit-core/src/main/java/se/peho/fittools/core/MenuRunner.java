@@ -86,17 +86,34 @@ public class MenuRunner {
         // READING FIT FILE
         watchFitFile.readFitFile (conf.getInputFilePath());
 
+        watchFitFile.clearTempUpdateLog();
+
         // CHECK IF COURSE FILE OR NOT
         if (watchFitFile.isCourseFile()) {
-            System.out.println("======== Course file detected. Only course-related commands will be available.");
+            watchFitFile.appendTempUpdateLog("======== Course file detected. Only course-related commands will be available.");
+            System.out.println(watchFitFile.getTempUpdateLog());
+            watchFitFile.appendUpdateLog(watchFitFile.getTempUpdateLog());
             
             // CHECK NULL RECORD TIMES
             watchFitFile.checkAndFixNullRecordTimes();
             // FIX LAP AND EVENT TIMESTAMPS FROM RECORDS
             watchFitFile.fixLapAndEventTimestampsFromRecords();
+
+            watchFitFile.clearTempUpdateLog();
+
+            // CHECK LAP TOTALS AND ENHANCED AVG SPEED
+            if (watchFitFile.checkLapTotalsAndEnhancedAvgSpeed()) {
+                watchFitFile.appendTempUpdateLog("Lap totals and enhanced average speed are correct.");
+            } else {
+                watchFitFile.fixLapTotalsAndEnhancedAvgSpeed();
+            }
+
         } else {    
-            System.out.println("======== Non-course file detected. All commands will be available.");
+            watchFitFile.appendTempUpdateLog("======== Non-course file detected. All commands will be available.");
         }
+
+        System.out.println(watchFitFile.getTempUpdateLog());
+        watchFitFile.appendUpdateLog(watchFitFile.getTempUpdateLog());
 
         // SAVE INFO ABOUT FILE BEFORE UPDATIING
         watchFitFile.saveFileInfoBefore();

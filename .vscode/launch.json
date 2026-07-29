@@ -20,7 +20,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"Course\" 0 \"Söderbysjön-Ältasjön-Ulvsjön.fit\""
+      "args": "\"Course\" 0 \"Boobadet-stäket 8km PaR-fixed-LM.fit\""
     },
     {
       "type": "java",

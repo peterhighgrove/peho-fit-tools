@@ -620,6 +620,14 @@ public class CPointFix {
 
         fitFile.appendTempUpdateLogLn("-- Changed record GPS points: " + changedRecords);
         fitFile.appendTempUpdateLogLn("-- Changed course points: " + changedCoursePoints);
+
+        // CHECK LAP TOTALS AND ENHANCED AVG SPEED
+        if (fitFile.checkLapTotalsAndEnhancedAvgSpeed()) {
+            fitFile.appendTempUpdateLogLn("Lap totals and enhanced average speed are correct.");
+        } else {
+            fitFile.fixLapTotalsAndEnhancedAvgSpeed();
+        }
+
         System.out.println(fitFile.getTempUpdateLog());
         fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
@@ -768,9 +776,9 @@ public class CPointFix {
         LocalDate today = LocalDate.parse("2026-07-22");
 
         fitFile.clearTempUpdateLog();
-        fitFile.appendTempUpdateLogLn("COURSE POINT/RECORD - CHANGE DATE TO TODAY");
+        fitFile.appendTempUpdateLogLn("COURSE POINT/RECORD - CHANGE DATE TO NEW DATE");
         fitFile.appendTempUpdateLogLn("--------------------------------");
-        fitFile.appendTempUpdateLogLn("Today date: " + today);
+        fitFile.appendTempUpdateLogLn("Date: " + today);
 
         int changedRecords = 0;
         int changedCoursePoints = 0;
@@ -886,6 +894,14 @@ public class CPointFix {
         fitFile.appendTempUpdateLogLn("-- Updated lap timestamps: " + changedLapTimestamps);
         fitFile.appendTempUpdateLogLn("-- Updated lap start_times: " + changedLapStartTimes);
         fitFile.appendTempUpdateLogLn("-- Skipped timestamps: " + skippedTimestamps);
+
+        // CHECK LAP TOTALS AND ENHANCED AVG SPEED
+        if (fitFile.checkLapTotalsAndEnhancedAvgSpeed()) {
+            fitFile.appendTempUpdateLogLn("Lap totals and enhanced average speed are correct.");
+        } else {
+            fitFile.fixLapTotalsAndEnhancedAvgSpeed();
+        }
+
         System.out.println(fitFile.getTempUpdateLog());
         fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
