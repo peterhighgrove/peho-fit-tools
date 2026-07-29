@@ -375,6 +375,7 @@ public class FitFile {
     public void setUpdateLog(String savedFileUpdateLogg) { this.updateLog = savedFileUpdateLogg; }
     public void appendUpdateLog(String text) { this.updateLog += text; }
     public void appendUpdateLogLn(String text) { this.updateLog += text + System.lineSeparator(); }
+    public void printAndAppendUpdateLogLn(String text) { System.out.println(text); this.updateLog += text + System.lineSeparator(); }
     public void clearUpdateLog() { this.updateLog = ""; }
 
     private String tempUpdateLog = "";
@@ -382,6 +383,7 @@ public class FitFile {
     public void setTempUpdateLog(String tempUpdateLogg) { this.tempUpdateLog = tempUpdateLogg; }
     public void appendTempUpdateLog(String text) { this.tempUpdateLog += text; }
     public void appendTempUpdateLogLn(String text) { this.tempUpdateLog += text + System.lineSeparator(); }
+    public void printAndAppendTempUpdateLogLn(String text) { System.out.println(text); this.tempUpdateLog += text + System.lineSeparator(); }
     public void clearTempUpdateLog() { this.tempUpdateLog = ""; }
 
     //public int getChangedStartTimeBySec() { return changedStartTimeBySec; }
@@ -2756,17 +2758,19 @@ public class FitFile {
         appendTempUpdateLogLn("Computed path distance=" + String.format("%.1f", cumulativeGpsMeters) + "m, total time="
                 + PehoUtils.sec2minSecLong(Math.round(cumulativeSeconds)));
 
-        // CHECK LAP TOTALS AND ENHANCED AVG SPEED
-        if (checkLapTotalsAndEnhancedAvgSpeed()) {
-            appendTempUpdateLogLn("Lap totals and enhanced average speed are correct.");
-        } else {
-            fixLapTotalsAndEnhancedAvgSpeed();
-        }       
-
         System.out.println(getTempUpdateLog());
         appendUpdateLog(getTempUpdateLog());
+        
+        createTimerList();
 
         fixLapAndEventTimestampsFromRecords();
+
+        // CHECK LAP TOTALS AND ENHANCED AVG SPEED
+        if (checkLapTotalsAndEnhancedAvgSpeed()) {
+            printAndAppendUpdateLogLn("Lap totals and enhanced average speed are correct.");
+        } else {
+            fixLapTotalsAndEnhancedAvgSpeed();
+        }
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -3094,8 +3098,15 @@ public class FitFile {
         final float movingTimeToleranceSec = 1.1f;
         final float speedToleranceMps = 0.02f;
 
+        clearTempUpdateLog();
+        appendTempUpdateLogLn("--------------------------");
+        appendTempUpdateLogLn("CHECK LAP TOTALS AND SPEED");
+        appendTempUpdateLogLn("--------------------------");
+        
         if (lapMesg == null || lapMesg.isEmpty()) {
             appendTempUpdateLogLn("Lap check failed: no lap messages found.");
+            System.out.println(getTempUpdateLog());
+            appendUpdateLog(getTempUpdateLog());
             return false;
         }
 
@@ -3106,6 +3117,8 @@ public class FitFile {
 
         if (recordMesgAddOnRecords == null || recordMesgAddOnRecords.isEmpty()) {
             appendTempUpdateLogLn("Lap check failed: timer list missing (run createTimerList()).");
+            System.out.println(getTempUpdateLog());
+            appendUpdateLog(getTempUpdateLog());
             return false;
         }
 
@@ -3185,18 +3198,29 @@ public class FitFile {
             + " | lapMovingSum=" + lapMovingTimeSum + "s"
             + ", sessionMoving=" + (totalMovingTimeFromSession != null ? totalMovingTimeFromSession : "null") + "s");
 
+        System.out.println(getTempUpdateLog());
+        appendUpdateLog(getTempUpdateLog());
+
         return ok;
     }
 
+    // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public boolean fixLapTotalsAndEnhancedAvgSpeed() {
         final float timerToleranceSec = 1.1f;
         final float distanceToleranceM = 1.0f;
         final float movingTimeToleranceSec = 1.1f;
         final float speedToleranceMps = 0.02f;
 
+        clearTempUpdateLog();
+        appendTempUpdateLogLn("--------------------------");
+        appendTempUpdateLogLn("FIX LAP TOTALS AND SPEED");
+        appendTempUpdateLogLn("--------------------------");
+
         appendTempUpdateLogLn("Fixing lap totals and enhanced average speed...");
         if (lapMesg == null || lapMesg.isEmpty()) {
             appendTempUpdateLogLn("Lap fix failed: no lap messages found.");
+            System.out.println(getTempUpdateLog());
+            appendUpdateLog(getTempUpdateLog());
             return false;
         }
 
@@ -3207,6 +3231,8 @@ public class FitFile {
 
         if (recordMesgAddOnRecords == null || recordMesgAddOnRecords.isEmpty()) {
             appendTempUpdateLogLn("Lap fix failed: timer list missing (run createTimerList()).");
+            System.out.println(getTempUpdateLog());
+            appendUpdateLog(getTempUpdateLog());
             return false;
         }
 
@@ -3223,6 +3249,8 @@ public class FitFile {
 
         if (totalTimerFromList == null && totalDistanceFromLastRecord == null && totalMovingTimeFromSession == null) {
             appendTempUpdateLogLn("Lap fix failed: no activity totals available.");
+            System.out.println(getTempUpdateLog());
+            appendUpdateLog(getTempUpdateLog());
             return false;
         }
 
@@ -3341,6 +3369,9 @@ public class FitFile {
                 lap.setFieldValue(LAP_ESPEED, newSpeed);
             }
         }
+
+        System.out.println(getTempUpdateLog());
+        appendUpdateLog(getTempUpdateLog());
 
         boolean ok = checkLapTotalsAndEnhancedAvgSpeed();
         return ok;

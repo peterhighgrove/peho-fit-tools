@@ -621,15 +621,15 @@ public class CPointFix {
         fitFile.appendTempUpdateLogLn("-- Changed record GPS points: " + changedRecords);
         fitFile.appendTempUpdateLogLn("-- Changed course points: " + changedCoursePoints);
 
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
+
         // CHECK LAP TOTALS AND ENHANCED AVG SPEED
         if (fitFile.checkLapTotalsAndEnhancedAvgSpeed()) {
-            fitFile.appendTempUpdateLogLn("Lap totals and enhanced average speed are correct.");
+            fitFile.printAndAppendUpdateLogLn("Lap totals and enhanced average speed are correct.");
         } else {
             fitFile.fixLapTotalsAndEnhancedAvgSpeed();
         }
-
-        System.out.println(fitFile.getTempUpdateLog());
-        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
     // =================================================================================
     public void cleanCPointNamePrefixes() {
@@ -776,6 +776,7 @@ public class CPointFix {
         LocalDate today = LocalDate.parse("2026-07-22");
 
         fitFile.clearTempUpdateLog();
+        fitFile.appendTempUpdateLogLn("--------------------------------");
         fitFile.appendTempUpdateLogLn("COURSE POINT/RECORD - CHANGE DATE TO NEW DATE");
         fitFile.appendTempUpdateLogLn("--------------------------------");
         fitFile.appendTempUpdateLogLn("Date: " + today);
@@ -895,15 +896,15 @@ public class CPointFix {
         fitFile.appendTempUpdateLogLn("-- Updated lap start_times: " + changedLapStartTimes);
         fitFile.appendTempUpdateLogLn("-- Skipped timestamps: " + skippedTimestamps);
 
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
+
         // CHECK LAP TOTALS AND ENHANCED AVG SPEED
         if (fitFile.checkLapTotalsAndEnhancedAvgSpeed()) {
-            fitFile.appendTempUpdateLogLn("Lap totals and enhanced average speed are correct.");
+            fitFile.printAndAppendUpdateLogLn("Lap totals and enhanced average speed are correct.");
         } else {
             fitFile.fixLapTotalsAndEnhancedAvgSpeed();
         }
-
-        System.out.println(fitFile.getTempUpdateLog());
-        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
 
     // =================================================================================
