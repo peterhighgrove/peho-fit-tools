@@ -263,6 +263,8 @@ timer and moving time: 1.1s, distance: 1.0m, speed: 0.02 m/s.
 
 Fixing logging and adding clearTimerList in middle of applyConstantPaceToRecordTimesFromGps()
 
+--> v2.90 Build
+--> git sync
 
 
 BUGGAR
