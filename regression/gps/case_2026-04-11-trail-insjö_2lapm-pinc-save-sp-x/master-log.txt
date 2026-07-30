@@ -1,5 +1,6 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 2439, Time between: 2026-04-11-14-12-34 -- 2026-04-11-14-58-04
+======== Non-course file detected. All commands will be available.
 Merged laps: 1 to 3
 -- New lap 2 time: 26:09 min, dist: 3000 m
 -- Deleting lap ix:0 time:2026-04-11-14-12-34

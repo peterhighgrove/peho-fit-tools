@@ -1,5 +1,6 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 2186, Time between: 2026-04-12-12-17-30 -- 2026-04-12-12-54-48
+======== Non-course file detected. All commands will be available.
 -------------------------
 Deleting records to create a GAP
 -------------------------

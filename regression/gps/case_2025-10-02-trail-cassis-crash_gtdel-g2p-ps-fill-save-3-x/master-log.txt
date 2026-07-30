@@ -1,5 +1,6 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 9591, Time between: 2025-10-02-11-33-35 -- 2025-10-02-16-06-26
+======== Non-course file detected. All commands will be available.
 START - Deleting events
 ------------------------------
 Input values to delete events between 2025-10-02-13-50-58 and 2025-10-02-13-56-24

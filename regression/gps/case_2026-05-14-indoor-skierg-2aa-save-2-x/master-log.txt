@@ -1,5 +1,6 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 129, Time between: 2026-05-14-10-15-23 -- 2026-05-14-10-17-31
+======== Non-course file detected. All commands will be available.
 Adding activity from another file
 Selected segment in second file: ix 33 to 661 (629 messages)
 Adjusted TIME_IN_ZONE reference_index by +1 for 5 message(s).

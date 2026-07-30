@@ -1,5 +1,6 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 370, Time between: 1989-12-31-00-00-00 -- 1989-12-31-00-06-09
+======== Course file detected. Only course-related commands will be available.
 ------------------------------------
 CHECK/FIX NULL RECORD TIMES AT START
 ------------------------------------
@@ -14,9 +15,33 @@ Lap no: 1 timestamp -> null => 00:00:00
 Event no: 1, event by text: TIMER, type in text: START, timestamp -> null => 00:00:00
 Event no: 2, event by text: TIMER, type in text: STOP_DISABLE_ALL, timestamp -> null => 00:06:09
 Normalized timestamps: lapStartTimes=1, lapTimestamps=1, eventTimestamps=2
-COURSE POINT/RECORD - CHANGE DATE TO TODAY
+--------------------------
+CHECK LAP TOTALS AND SPEED
+--------------------------
+Lap check: timer list missing, rebuilding with createTimerList().
+Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
+Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
+Lap timer sum mismatch: lapSum=2404.598s, timerListTotal=369s
+Lap moving-time sum mismatch: lapSum=2407.226s, sessionTotalMoving=369.0s
+Lap elapsed-time sum mismatch: lapSum=2404.598s, sessionTotalElapsed=369.0s
+Lap totals check: FAILED | lapTimerSum=2404.598s, timerListTotal=369s | lapDistSum=7706.29m, lastRecordDist=7706.29m | lapMovingSum=2407.226s, sessionMoving=369.0s | lapElapsedSum=2404.598s, sessionElapsed=369.0s
+Lap totals and enhanced average speed are correct.
+--------------------------
+FIX LAP TOTALS AND SPEED
+--------------------------
+Fixing lap totals and enhanced average speed...
+Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
+Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
+--------------------------
+CHECK LAP TOTALS AND SPEED
+--------------------------
+Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
+Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
+Lap totals check: OK | lapTimerSum=369.0s, timerListTotal=369s | lapDistSum=7706.29m, lastRecordDist=7706.29m | lapMovingSum=369.0s, sessionMoving=369.0s | lapElapsedSum=369.0s, sessionElapsed=369.0s
 --------------------------------
-Today date: 2026-07-22
+COURSE POINT/RECORD - CHANGE DATE TO NEW DATE
+--------------------------------
+Date: 2026-07-22
 Record no: 1 -> 1989-12-31-00-00-00 => 2026-07-22-00-00-00
 Record no: 2 -> 1989-12-31-00-00-01 => 2026-07-22-00-00-01
 Record no: 3 -> 1989-12-31-00-00-02 => 2026-07-22-00-00-02
@@ -435,6 +460,13 @@ Normalized timestamps: lapStartTimes=0, lapTimestamps=0, eventTimestamps=0
 -- Updated lap timestamps: 1
 -- Updated lap start_times: 1
 -- Skipped timestamps: 0
+--------------------------
+CHECK LAP TOTALS AND SPEED
+--------------------------
+Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
+Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
+Lap totals check: OK | lapTimerSum=369.0s, timerListTotal=369s | lapDistSum=7706.29m, lastRecordDist=7706.29m | lapMovingSum=369.0s, sessionMoving=369.0s | lapElapsedSum=369.0s, sessionElapsed=369.0s
+Lap totals and enhanced average speed are correct.
 RECALCULATE RECORD TIMES FROM GPS PACE
 -------------------------------------
 Target pace: 6:00 min/km (360 s/km)
@@ -448,6 +480,27 @@ LAP/EVENT TIMESTAMP NORMALIZATION
 ---------------------------------
 Event no: 2, event by text: TIMER, type in text: STOP_DISABLE_ALL, timestamp -> 00:06:09 => 00:46:07
 Normalized timestamps: lapStartTimes=0, lapTimestamps=0, eventTimestamps=1
+--------------------------
+CHECK LAP TOTALS AND SPEED
+--------------------------
+Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
+Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
+Lap timer sum mismatch: lapSum=369.0s, timerListTotal=2767s
+Lap moving-time sum mismatch: lapSum=369.0s, sessionTotalMoving=2767.0s
+Lap elapsed-time sum mismatch: lapSum=369.0s, sessionTotalElapsed=2767.0s
+Lap totals check: FAILED | lapTimerSum=369.0s, timerListTotal=2767s | lapDistSum=7706.29m, lastRecordDist=7706.29m | lapMovingSum=369.0s, sessionMoving=2767.0s | lapElapsedSum=369.0s, sessionElapsed=2767.0s
+--------------------------
+FIX LAP TOTALS AND SPEED
+--------------------------
+Fixing lap totals and enhanced average speed...
+Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
+Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
+--------------------------
+CHECK LAP TOTALS AND SPEED
+--------------------------
+Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
+Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
+Lap totals check: OK | lapTimerSum=2767.0s, timerListTotal=2767s | lapDistSum=7706.29m, lastRecordDist=7706.29m | lapMovingSum=2767.0s, sessionMoving=2767.0s | lapElapsedSum=2767.0s, sessionElapsed=2767.0s
 COURSE POINT - MATCH TO CLOSEST RECORD
 --------------------------------
 Matching mode: forward-only along record sequence
@@ -1161,6 +1214,13 @@ CPoint no: 33 (same GPS point) -> 58.11806, 11.45514 => 58.11810, 11.45519
 CPoint no: 34 (same GPS point) -> 58.11761, 11.45560 => 58.11758, 11.45554
 -- Changed record GPS points: 370
 -- Changed course points: 34
+--------------------------
+CHECK LAP TOTALS AND SPEED
+--------------------------
+Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
+Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
+Lap totals check: OK | lapTimerSum=2767.0s, timerListTotal=2767s | lapDistSum=7706.29m, lastRecordDist=7706.29m | lapMovingSum=2767.0s, sessionMoving=2767.0s | lapElapsedSum=2767.0s, sessionElapsed=2767.0s
+Lap totals and enhanced average speed are correct.
 COURSE - CHANGE NAME
 --------------------------------
 Changed COURSE messages: 1

@@ -1,5 +1,6 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 5640, Time between: 2026-03-08-14-46-10 -- 2026-03-08-16-55-20
+======== Non-course file detected. All commands will be available.
 
 PAUSE - SHORTEN@end, forgot to resume timer after pause
 --------------------------------------------

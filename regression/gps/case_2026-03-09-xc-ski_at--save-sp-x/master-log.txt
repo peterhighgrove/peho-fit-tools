@@ -1,5 +1,6 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 7544, Time between: 2026-03-09-06-16-18 -- 2026-03-09-09-40-48
+======== Non-course file detected. All commands will be available.
 --------------------------------------------------
  --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v26.03
  --> Sport:CROSS_COUNTRY_SKIING, SubSport:GENERIC, SportProfile:XC Classic Ski, WktName:

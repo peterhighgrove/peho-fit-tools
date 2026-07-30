@@ -272,7 +272,8 @@ Also adding Chacking Elapsed timer to checkLapTotalsAndEnhancedAvgSpeed() and fi
 --> v2.91 Build
 --> git sync
 
-
+--> regr wkt ok / gps ok
+--> git sync
 
 BUGGAR
 
