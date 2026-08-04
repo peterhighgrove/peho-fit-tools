@@ -275,6 +275,13 @@ Also adding Chacking Elapsed timer to checkLapTotalsAndEnhancedAvgSpeed() and fi
 --> regr wkt ok / gps ok
 --> git sync
 
+New CPQ command
+--> git sync
+
+--> v2.92 Build
+--> git sync
+
+
 BUGGAR
 
 Do not handle args correctly
