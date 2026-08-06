@@ -659,13 +659,21 @@ public class LapReportGenerator {
 
                     Short avgCad = record.getFieldShortValue(fitFile.LAP_CAD);
                     if (avgCad != null) {
-                        fitFile.appendTempUpdateLog(" " + avgCad + "spm");
+                        if (fitFile.getMySport() == FitFile.MySport.RUN) {
+                            fitFile.appendTempUpdateLog(" " + (avgCad * 2) + "spm");
+                        } else {
+                            fitFile.appendTempUpdateLog(" " + avgCad + "spm");
+                        }
                     }
 
                     Float avgSpeed = record.getFieldFloatValue(fitFile.LAP_ESPEED);
                     if (avgSpeed != null) {
                         if (fitFile.getMySport() == FitFile.MySport.SKIERG) {
                             fitFile.appendTempUpdateLog(" " + PehoUtils.sec2minSecLong(500 / avgSpeed) + "min/500m");
+                        } else if (fitFile.getMySport() == FitFile.MySport.RUN) {
+                            fitFile.appendTempUpdateLog(" " + PehoUtils.sec2minSecLong(1000 / avgSpeed) + "min/km");
+                        } else if (fitFile.getMySport() == FitFile.MySport.BIKE) {
+                            fitFile.appendTempUpdateLog(" " + String.format("%.1fkm/h", avgSpeed * 3.60));
                         } else {
                             fitFile.appendTempUpdateLog(" " + PehoUtils.sec2minSecLong(1000 / avgSpeed) + "min/km");
                             fitFile.appendTempUpdateLog(" " + String.format("%.1fkm/h", avgSpeed * 3.60));
@@ -691,7 +699,10 @@ public class LapReportGenerator {
                         fitFile.appendTempUpdateLog(" sl" + fitFile.getLapExtraRecords().get(i).getAvgStrokeLen());
                     }
                     if (fitFile.getLapExtraRecords().get(i).getStepLen() != null
-                     && fitFile.getMySport() != FitFile.MySport.SKIERG) {
+                     && (fitFile.getMySport() == FitFile.MySport.ELLIPTICAL
+                        || fitFile.getMySport() == FitFile.MySport.TREADMILL
+                        || fitFile.getMySport() == FitFile.MySport.OTHER
+                            )) {
                         fitFile.appendTempUpdateLog(" step" + (int) (fitFile.getLapExtraRecords().get(i).getStepLen() * 100) + "cm");
                     }
 
@@ -747,13 +758,21 @@ public class LapReportGenerator {
 
                     Short avgCad = record.getFieldShortValue(fitFile.LAP_CAD);
                     if (avgCad != null) {
-                        fitFile.appendTempUpdateLog(" " + avgCad + "spm");
+                        if (fitFile.getMySport() == FitFile.MySport.RUN) {
+                            fitFile.appendTempUpdateLog(" " + (avgCad * 2) + "spm");
+                        } else {
+                            fitFile.appendTempUpdateLog(" " + avgCad + "spm");
+                        }
                     }
 
                     Float avgSpeed = record.getFieldFloatValue(fitFile.LAP_ESPEED);
                     if (avgSpeed != null) {
                         if (fitFile.getMySport() == FitFile.MySport.SKIERG) {
                             fitFile.appendTempUpdateLog(" " + PehoUtils.sec2minSecLong(500 / avgSpeed) + "min/500m");
+                        } else if (fitFile.getMySport() == FitFile.MySport.RUN) {
+                            fitFile.appendTempUpdateLog(" " + PehoUtils.sec2minSecLong(1000 / avgSpeed) + "min/km");
+                        } else if (fitFile.getMySport() == FitFile.MySport.BIKE) {
+                            fitFile.appendTempUpdateLog(" " + String.format("%.1fkm/h", avgSpeed * 3.60));
                         } else {
                             fitFile.appendTempUpdateLog(" " + PehoUtils.sec2minSecLong(1000 / avgSpeed) + "min/km");
                             fitFile.appendTempUpdateLog(" " + String.format("%.1fkm/h", avgSpeed * 3.60));
@@ -771,7 +790,10 @@ public class LapReportGenerator {
                     }
 
                     if (fitFile.getLapExtraRecords().get(i).getStepLen() != null
-                     && fitFile.getMySport() != FitFile.MySport.SKIERG) {
+                     && (fitFile.getMySport() == FitFile.MySport.ELLIPTICAL
+                        || fitFile.getMySport() == FitFile.MySport.TREADMILL
+                        || fitFile.getMySport() == FitFile.MySport.OTHER
+                            )) {
                         fitFile.appendTempUpdateLog(" step" + (int) (fitFile.getLapExtraRecords().get(i).getStepLen() * 100) + "cm");
                     }
 

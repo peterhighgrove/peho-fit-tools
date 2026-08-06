@@ -300,7 +300,7 @@ public class FitFile {
     // public void setIsElliptical(Boolean isElliptical) { this.isElliptical = isElliptical; }
     // public void setIsTreadmill(Boolean isTreadmill) { this.isTreadmill = isTreadmill; }
 
-    public enum MySport { SKIERG, ELLIPTICAL, TREADMILL, OTHER }
+    public enum MySport { SKIERG, ELLIPTICAL, TREADMILL, RUN, BIKE, OTHER }
     private MySport mySport = MySport.OTHER;
     public MySport getMySport() { return mySport; }
     public void setMySport(MySport mySport) { this.mySport = mySport; }
@@ -5045,6 +5045,16 @@ public class FitFile {
                 || profile.contains("ct")
             ) {
             mySport = MySport.ELLIPTICAL;
+        } else if (profile.contains("run")
+                || profile.contains("trail")
+                || profile.contains("interval")
+                || profile.contains("fartlek")
+            ) {
+            mySport = MySport.RUN;
+        } else if (profile.contains("bike")
+                || profile.contains("cykel")
+            ) {
+            mySport = MySport.BIKE;
         } else {
             mySport = MySport.OTHER;
         }

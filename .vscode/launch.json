@@ -20,7 +20,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"Course\" 0 \"Boobadet-Stäket 8km_now.2026-07-28-08-47-52-org.fit\""
+      "args": "\"Fartlek Lill-Jans\" 2 \"aaa.zip\""
     },
     {
       "type": "java",
