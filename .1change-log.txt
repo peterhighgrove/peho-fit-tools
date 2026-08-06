@@ -281,6 +281,10 @@ New CPQ command
 --> v2.92 Build
 --> git sync
 
+--> regr wkt ok / gps pass, no errors
+--> git sync
+
+
 
 BUGGAR
 
