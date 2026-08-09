@@ -20,7 +20,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"Fartlek Lill-Jans\" 2 \"aaa.zip\""
+      "args": "\"Fartlek Lill-Jans\" 2 \"Söderbysjön-Ältasjön-Ulvsjön 16km_now.2026-08-09-07-33-49-org.fit\""
     },
     {
       "type": "java",

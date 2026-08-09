@@ -281,7 +281,12 @@ New CPQ command
 --> v2.92 Build
 --> git sync
 
---> regr wkt ok / gps pass, no errors
+--> regr wkt pass / gps afte/log errors due to change in inti
+--> git sync
+
+New regr test for cpq
+
+--> regr gps bless
 --> git sync
 
 

@@ -1,0 +1,1199 @@
+FIT SDK profile version: 21.205 Release (21205)
+FIT file successfully read. Total records: 561, Time between: 2026-07-21-00-05-23 -- 2026-07-21-01-30-33
+======== Course file detected. Only course-related commands will be available.
+------------------------------------
+CHECK/FIX NULL RECORD TIMES AT START
+------------------------------------
+Found 48 null REC_TIME in a row at recIx=287..334
+Interpolating null REC_TIME range recIx=287..334 using distance-proportional spread.
+  recIx=287 REC_TIME set to 1153529285 (00:48:05)
+  recIx=288 REC_TIME set to 1153529286 (00:48:06)
+  recIx=289 REC_TIME set to 1153529287 (00:48:07)
+  recIx=290 REC_TIME set to 1153529290 (00:48:10)
+  recIx=291 REC_TIME set to 1153529299 (00:48:19)
+  recIx=292 REC_TIME set to 1153529305 (00:48:25)
+  recIx=293 REC_TIME set to 1153529313 (00:48:33)
+  recIx=294 REC_TIME set to 1153529320 (00:48:40)
+  recIx=295 REC_TIME set to 1153529328 (00:48:48)
+  recIx=296 REC_TIME set to 1153529335 (00:48:55)
+  recIx=297 REC_TIME set to 1153529342 (00:49:02)
+  recIx=298 REC_TIME set to 1153529353 (00:49:13)
+  recIx=299 REC_TIME set to 1153529363 (00:49:23)
+  recIx=300 REC_TIME set to 1153529374 (00:49:34)
+  recIx=301 REC_TIME set to 1153529380 (00:49:40)
+  recIx=302 REC_TIME set to 1153529388 (00:49:48)
+  recIx=303 REC_TIME set to 1153529393 (00:49:53)
+  recIx=304 REC_TIME set to 1153529403 (00:50:03)
+  recIx=305 REC_TIME set to 1153529412 (00:50:12)
+  recIx=306 REC_TIME set to 1153529423 (00:50:23)
+  recIx=307 REC_TIME set to 1153529454 (00:50:54)
+  recIx=308 REC_TIME set to 1153529467 (00:51:07)
+  recIx=309 REC_TIME set to 1153529472 (00:51:12)
+  recIx=310 REC_TIME set to 1153529480 (00:51:20)
+  recIx=311 REC_TIME set to 1153529500 (00:51:40)
+  recIx=312 REC_TIME set to 1153529508 (00:51:48)
+  recIx=313 REC_TIME set to 1153529518 (00:51:58)
+  recIx=314 REC_TIME set to 1153529529 (00:52:09)
+  recIx=315 REC_TIME set to 1153529537 (00:52:17)
+  recIx=316 REC_TIME set to 1153529545 (00:52:25)
+  recIx=317 REC_TIME set to 1153529556 (00:52:36)
+  recIx=318 REC_TIME set to 1153529562 (00:52:42)
+  recIx=319 REC_TIME set to 1153529570 (00:52:50)
+  recIx=320 REC_TIME set to 1153529579 (00:52:59)
+  recIx=321 REC_TIME set to 1153529585 (00:53:05)
+  recIx=322 REC_TIME set to 1153529594 (00:53:14)
+  recIx=323 REC_TIME set to 1153529597 (00:53:17)
+  recIx=324 REC_TIME set to 1153529602 (00:53:22)
+  recIx=325 REC_TIME set to 1153529606 (00:53:26)
+  recIx=326 REC_TIME set to 1153529618 (00:53:38)
+  recIx=327 REC_TIME set to 1153529628 (00:53:48)
+  recIx=328 REC_TIME set to 1153529640 (00:54:00)
+  recIx=329 REC_TIME set to 1153529642 (00:54:02)
+  recIx=330 REC_TIME set to 1153529649 (00:54:09)
+  recIx=331 REC_TIME set to 1153529653 (00:54:13)
+  recIx=332 REC_TIME set to 1153529658 (00:54:18)
+  recIx=333 REC_TIME set to 1153529661 (00:54:21)
+  recIx=334 REC_TIME set to 1153529665 (00:54:25)
+Found 93 null REC_TIME in a row at recIx=376..468
+Interpolating null REC_TIME range recIx=376..468 using distance-proportional spread.
+  recIx=376 REC_TIME set to 1153530039 (01:00:39)
+  recIx=377 REC_TIME set to 1153530040 (01:00:40)
+  recIx=378 REC_TIME set to 1153530049 (01:00:49)
+  recIx=379 REC_TIME set to 1153530059 (01:00:59)
+  recIx=380 REC_TIME set to 1153530061 (01:01:01)
+  recIx=381 REC_TIME set to 1153530070 (01:01:10)
+  recIx=382 REC_TIME set to 1153530079 (01:01:19)
+  recIx=383 REC_TIME set to 1153530081 (01:01:21)
+  recIx=384 REC_TIME set to 1153530087 (01:01:27)
+  recIx=385 REC_TIME set to 1153530095 (01:01:35)
+  recIx=386 REC_TIME set to 1153530100 (01:01:40)
+  recIx=387 REC_TIME set to 1153530109 (01:01:49)
+  recIx=388 REC_TIME set to 1153530135 (01:02:15)
+  recIx=389 REC_TIME set to 1153530141 (01:02:21)
+  recIx=390 REC_TIME set to 1153530144 (01:02:24)
+  recIx=391 REC_TIME set to 1153530157 (01:02:37)
+  recIx=392 REC_TIME set to 1153530163 (01:02:43)
+  recIx=393 REC_TIME set to 1153530171 (01:02:51)
+  recIx=394 REC_TIME set to 1153530175 (01:02:55)
+  recIx=395 REC_TIME set to 1153530178 (01:02:58)
+  recIx=396 REC_TIME set to 1153530182 (01:03:02)
+  recIx=397 REC_TIME set to 1153530195 (01:03:15)
+  recIx=398 REC_TIME set to 1153530202 (01:03:22)
+  recIx=399 REC_TIME set to 1153530220 (01:03:40)
+  recIx=400 REC_TIME set to 1153530228 (01:03:48)
+  recIx=401 REC_TIME set to 1153530239 (01:03:59)
+  recIx=402 REC_TIME set to 1153530246 (01:04:06)
+  recIx=403 REC_TIME set to 1153530252 (01:04:12)
+  recIx=404 REC_TIME set to 1153530286 (01:04:46)
+  recIx=405 REC_TIME set to 1153530298 (01:04:58)
+  recIx=406 REC_TIME set to 1153530303 (01:05:03)
+  recIx=407 REC_TIME set to 1153530325 (01:05:25)
+  recIx=408 REC_TIME set to 1153530331 (01:05:31)
+  recIx=409 REC_TIME set to 1153530346 (01:05:46)
+  recIx=410 REC_TIME set to 1153530377 (01:06:17)
+  recIx=411 REC_TIME set to 1153530393 (01:06:33)
+  recIx=412 REC_TIME set to 1153530406 (01:06:46)
+  recIx=413 REC_TIME set to 1153530422 (01:07:02)
+  recIx=414 REC_TIME set to 1153530434 (01:07:14)
+  recIx=415 REC_TIME set to 1153530448 (01:07:28)
+  recIx=416 REC_TIME set to 1153530453 (01:07:33)
+  recIx=417 REC_TIME set to 1153530464 (01:07:44)
+  recIx=418 REC_TIME set to 1153530476 (01:07:56)
+  recIx=419 REC_TIME set to 1153530483 (01:08:03)
+  recIx=420 REC_TIME set to 1153530495 (01:08:15)
+  recIx=421 REC_TIME set to 1153530502 (01:08:22)
+  recIx=422 REC_TIME set to 1153530519 (01:08:39)
+  recIx=423 REC_TIME set to 1153530539 (01:08:59)
+  recIx=424 REC_TIME set to 1153530554 (01:09:14)
+  recIx=425 REC_TIME set to 1153530555 (01:09:15)
+  recIx=426 REC_TIME set to 1153530556 (01:09:16)
+  recIx=427 REC_TIME set to 1153530570 (01:09:30)
+  recIx=428 REC_TIME set to 1153530590 (01:09:50)
+  recIx=429 REC_TIME set to 1153530608 (01:10:08)
+  recIx=430 REC_TIME set to 1153530614 (01:10:14)
+  recIx=431 REC_TIME set to 1153530627 (01:10:27)
+  recIx=432 REC_TIME set to 1153530633 (01:10:33)
+  recIx=433 REC_TIME set to 1153530642 (01:10:42)
+  recIx=434 REC_TIME set to 1153530653 (01:10:53)
+  recIx=435 REC_TIME set to 1153530661 (01:11:01)
+  recIx=436 REC_TIME set to 1153530671 (01:11:11)
+  recIx=437 REC_TIME set to 1153530677 (01:11:17)
+  recIx=438 REC_TIME set to 1153530683 (01:11:23)
+  recIx=439 REC_TIME set to 1153530691 (01:11:31)
+  recIx=440 REC_TIME set to 1153530699 (01:11:39)
+  recIx=441 REC_TIME set to 1153530706 (01:11:46)
+  recIx=442 REC_TIME set to 1153530718 (01:11:58)
+  recIx=443 REC_TIME set to 1153530731 (01:12:11)
+  recIx=444 REC_TIME set to 1153530751 (01:12:31)
+  recIx=445 REC_TIME set to 1153530763 (01:12:43)
+  recIx=446 REC_TIME set to 1153530770 (01:12:50)
+  recIx=447 REC_TIME set to 1153530777 (01:12:57)
+  recIx=448 REC_TIME set to 1153530792 (01:13:12)
+  recIx=449 REC_TIME set to 1153530798 (01:13:18)
+  recIx=450 REC_TIME set to 1153530806 (01:13:26)
+  recIx=451 REC_TIME set to 1153530818 (01:13:38)
+  recIx=452 REC_TIME set to 1153530833 (01:13:53)
+  recIx=453 REC_TIME set to 1153530848 (01:14:08)
+  recIx=454 REC_TIME set to 1153530856 (01:14:16)
+  recIx=455 REC_TIME set to 1153530870 (01:14:30)
+  recIx=456 REC_TIME set to 1153530874 (01:14:34)
+  recIx=457 REC_TIME set to 1153530878 (01:14:38)
+  recIx=458 REC_TIME set to 1153530885 (01:14:45)
+  recIx=459 REC_TIME set to 1153530895 (01:14:55)
+  recIx=460 REC_TIME set to 1153530901 (01:15:01)
+  recIx=461 REC_TIME set to 1153530907 (01:15:07)
+  recIx=462 REC_TIME set to 1153530910 (01:15:10)
+  recIx=463 REC_TIME set to 1153530921 (01:15:21)
+  recIx=464 REC_TIME set to 1153530925 (01:15:25)
+  recIx=465 REC_TIME set to 1153530934 (01:15:34)
+  recIx=466 REC_TIME set to 1153530938 (01:15:38)
+  recIx=467 REC_TIME set to 1153530942 (01:15:42)
+  recIx=468 REC_TIME set to 1153530946 (01:15:46)
+-----------------------------------------------
+RESULTS OF CHECK/FIX NULL RECORD TIMES
+Completed REC_TIME startup check/fix. Filled 141 null REC_TIME value(s). Duplicate REC_TIME seen=0, duplicates deleted (same GPS)=0, out-of-order points detected=0.
+---------------------------------
+LAP/EVENT TIMESTAMP NORMALIZATION
+---------------------------------
+Normalized timestamps: lapStartTimes=0, lapTimestamps=0, eventTimestamps=0
+--------------------------
+CHECK LAP TOTALS AND SPEED
+--------------------------
+Lap check: timer list missing, rebuilding with createTimerList().
+Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
+Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
+Lap speed mismatch at lap 1: enhancedAvgSpeed=0.0, expected=2.5882132 (dist/timer)
+Lap moving-time sum mismatch: lapSum=4788.674s, sessionTotalMoving=5110.0s
+Lap totals check: FAILED | lapTimerSum=5110.0s, timerListTotal=5110s | lapDistSum=13225.77m, lastRecordDist=13225.77m | lapMovingSum=4788.674s, sessionMoving=5110.0s | lapElapsedSum=5110.0s, sessionElapsed=5110.0s
+Lap totals and enhanced average speed are correct.
+--------------------------
+FIX LAP TOTALS AND SPEED
+--------------------------
+Fixing lap totals and enhanced average speed...
+Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
+Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
+--------------------------
+CHECK LAP TOTALS AND SPEED
+--------------------------
+Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
+Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
+Lap totals check: OK | lapTimerSum=5110.0s, timerListTotal=5110s | lapDistSum=13225.77m, lastRecordDist=13225.77m | lapMovingSum=5110.0s, sessionMoving=5110.0s | lapElapsedSum=5110.0s, sessionElapsed=5110.0s
+COURSE POINT - CHANGE TYPE GENERIC LOOP
+--------------------------------
+CPoint no: 3 [Dammsjön] GENERIC -> WATER
+CPoint no: 9 [Söderbysjön] GENERIC -> WATER
+CPoint no: 16 [Brotorp] GENERIC -> SHELTER
+CPoint no: 21 [Ältasjön] GENERIC -> WATER
+CPoint no: 23 [Peak] GENERIC -> SUMMIT
+CPoint no: 26 [Söderbysjön] GENERIC -> WATER
+CPoint no: 32 [Ulvsjönview] GENERIC -> OVERLOOK
+CPoint no: 35 [Ulvsjön2] GENERIC -> OVERLOOK
+CPoint no: 49 [Söderbysjön] GENERIC -> CHECKPOINT
+CPoint no: 51 [Dammsjön] GENERIC -> MILE_MARKER
+CPoint no: 58 [-] GENERIC -> MEETING_SPOT
+-- Changed course points: 11
+COURSE POINT - CHECK/MOVE POSITION
+--------------------------------
+Record range in allMesg: 63..623
+Course points total: 58
+-- Before first record: 58
+-- Between records: 0
+-- After last record: 0
+Placement result: ALL BEFORE FIRST RECORD
+Moved course points: 58
+Inserted at allMesg index: 566
+-- After last record index: 565
+-- Last timer stop index: 566
+RECALCULATE RECORD TIMES FROM GPS PACE
+-------------------------------------
+Target pace: 6:30 min/km (390 s/km)
+Keeping first REC_TIME unchanged at 1153526723 (00:05:23)
+Updated REC_TIME on 560 record(s). Total records: 561
+Distance source used: gpsSegments=560, fallbackRecDistSegments=0, missingDistanceSegments=0
+Distance check: checkedSegments=560, mismatches(>5m)=0, maxDiff=0.30m
+Computed path distance=13192.4m, total time=85:45
+---------------------------------
+LAP/EVENT TIMESTAMP NORMALIZATION
+---------------------------------
+Event no: 2, event by text: TIMER, type in text: STOP_DISABLE_ALL, timestamp -> 01:30:33 => 01:31:08
+Normalized timestamps: lapStartTimes=0, lapTimestamps=0, eventTimestamps=1
+--------------------------
+CHECK LAP TOTALS AND SPEED
+--------------------------
+Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
+Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
+Lap timer sum mismatch: lapSum=5110.0s, timerListTotal=5145s
+Lap moving-time sum mismatch: lapSum=5110.0s, sessionTotalMoving=5145.0s
+Lap elapsed-time sum mismatch: lapSum=5110.0s, sessionTotalElapsed=5145.0s
+Lap totals check: FAILED | lapTimerSum=5110.0s, timerListTotal=5145s | lapDistSum=13225.77m, lastRecordDist=13225.77m | lapMovingSum=5110.0s, sessionMoving=5145.0s | lapElapsedSum=5110.0s, sessionElapsed=5145.0s
+--------------------------
+FIX LAP TOTALS AND SPEED
+--------------------------
+Fixing lap totals and enhanced average speed...
+Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
+Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
+--------------------------
+CHECK LAP TOTALS AND SPEED
+--------------------------
+Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
+Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
+Lap totals check: OK | lapTimerSum=5145.0s, timerListTotal=5145s | lapDistSum=13225.77m, lastRecordDist=13225.77m | lapMovingSum=5145.0s, sessionMoving=5145.0s | lapElapsedSum=5145.0s, sessionElapsed=5145.0s
+COURSE POINT - MATCH TO CLOSEST RECORD
+--------------------------------
+Matching mode: forward-only along record sequence
+CPoint no: 2 -> closest record no: 2 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-05-34 -> 2026-07-21-00-05-35
+CPoint no: 3 -> closest record no: 5 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-05-44 -> 2026-07-21-00-05-46
+CPoint no: 4 -> closest record no: 9 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-06-10 -> 2026-07-21-00-06-14
+CPoint no: 5 -> closest record no: 10 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-06-17 -> 2026-07-21-00-06-21
+CPoint no: 6 -> closest record no: 32 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-08-22 -> 2026-07-21-00-08-37
+CPoint no: 7 -> closest record no: 45 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-09-24 -> 2026-07-21-00-09-44
+CPoint no: 8 -> closest record no: 59 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-11-00 -> 2026-07-21-00-11-28
+CPoint no: 9 -> closest record no: 79 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-14-44 -> 2026-07-21-00-15-30
+CPoint no: 10 -> closest record no: 109 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-20-25 -> 2026-07-21-00-21-39
+CPoint no: 11 -> closest record no: 111 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-20-39 -> 2026-07-21-00-21-54
+CPoint no: 12 -> closest record no: 128 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-23-23 -> 2026-07-21-00-24-52
+CPoint no: 13 -> closest record no: 130 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-23-35 -> 2026-07-21-00-25-04
+CPoint no: 14 -> closest record no: 140 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-25-01 -> 2026-07-21-00-26-38
+CPoint no: 15 -> closest record no: 144 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-25-17 -> 2026-07-21-00-26-55
+CPoint no: 16 -> closest record no: 162 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-28-28 -> 2026-07-21-00-30-22
+CPoint no: 17 -> closest record no: 164 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-28-37 -> 2026-07-21-00-30-31
+CPoint no: 18 -> closest record no: 169 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-29-08 -> 2026-07-21-00-31-05
+CPoint no: 19 -> closest record no: 174 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-30-01 -> 2026-07-21-00-32-03
+CPoint no: 20 -> closest record no: 183 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-31-38 -> 2026-07-21-00-33-48
+CPoint no: 21 -> closest record no: 202 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-34-40 -> 2026-07-21-00-37-04
+CPoint no: 22 -> closest record no: 223 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-38-08 -> 2026-07-21-00-40-49
+CPoint no: 23 -> closest record no: 243 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-41-42 -> 2026-07-21-00-44-41
+CPoint no: 24 -> closest record no: 245 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-42-03 -> 2026-07-21-00-45-04
+CPoint no: 25 -> closest record no: 287 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-48-04 -> 2026-07-21-00-51-35
+CPoint no: 26 -> closest record no: 288 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-00-51-36
+CPoint no: 27 -> closest record no: 297 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-00-52-20
+CPoint no: 28 -> closest record no: 303 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-00-53-07
+CPoint no: 29 -> closest record no: 316 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-00-55-19
+CPoint no: 30 -> closest record no: 322 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-00-56-02
+CPoint no: 31 -> closest record no: 329 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-00-56-51
+CPoint no: 32 -> closest record no: 336 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-54-28 -> 2026-07-21-00-57-16
+CPoint no: 33 -> closest record no: 359 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-57-37 -> 2026-07-21-01-00-40
+CPoint no: 34 -> closest record no: 361 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-00-57-52 -> 2026-07-21-01-00-57
+CPoint no: 35 -> closest record no: 377 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-01-03-57
+CPoint no: 36 -> closest record no: 378 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-01-03-58
+CPoint no: 37 -> closest record no: 386 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-01-04-38
+CPoint no: 38 -> closest record no: 388 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-01-04-48
+CPoint no: 39 -> closest record no: 394 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-01-05-34
+CPoint no: 40 -> closest record no: 401 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-01-06-17
+CPoint no: 41 -> closest record no: 409 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-01-07-33
+CPoint no: 42 -> closest record no: 410 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-01-07-44
+CPoint no: 43 -> closest record no: 419 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-01-09-21
+CPoint no: 44 -> closest record no: 426 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-01-10-20
+CPoint no: 45 -> closest record no: 437 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-01-11-45
+CPoint no: 46 -> closest record no: 445 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-01-12-45
+CPoint no: 47 -> closest record no: 449 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-01-13-15
+CPoint no: 48 -> closest record no: 463 (gps gap: 0.0m)
+-- Timestamp: 1989-12-31-00-00-00 -> 2026-07-21-01-14-43
+CPoint no: 49 -> closest record no: 470 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-01-15-48 -> 2026-07-21-01-15-11
+CPoint no: 50 -> closest record no: 483 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-01-19-48 -> 2026-07-21-01-19-31
+CPoint no: 51 -> closest record no: 491 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-01-20-24 -> 2026-07-21-01-20-09
+CPoint no: 52 -> closest record no: 494 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-01-20-39 -> 2026-07-21-01-20-25
+CPoint no: 53 -> closest record no: 496 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-01-20-56 -> 2026-07-21-01-20-44
+CPoint no: 54 -> closest record no: 519 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-01-23-48 -> 2026-07-21-01-23-50
+CPoint no: 55 -> closest record no: 521 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-01-24-18 -> 2026-07-21-01-24-23
+CPoint no: 56 -> closest record no: 523 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-01-24-45 -> 2026-07-21-01-24-52
+CPoint no: 57 -> closest record no: 530 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-01-25-52 -> 2026-07-21-01-26-05
+CPoint no: 58 -> closest record no: 561 (gps gap: 0.0m)
+-- Timestamp: 2026-07-21-01-30-33 -> 2026-07-21-01-31-08
+-- Updated course points: 57
+-- Updated timestamps: 57
+-- Updated distances: 0
+-- Skipped course points: 0
+CHECK/FIX RECORD TIMES FROM MENU
+--------------------------------
+Completed REC_TIME check/fix. Updated 0 null value(s). Duplicates removed=0, out-of-order points detected=0.
+COURSE POINT - ABBREVIATE NAMES
+--------------------------------
+CPoint no: 25 -> sharp right => »
+CPoint no: 27 -> bear right => /
+CPoint no: 28 -> bear right => /
+CPoint no: 29 -> bear right => /
+CPoint no: 30 -> turn left => <
+CPoint no: 31 -> bear left => \
+CPoint no: 36 -> bear right => /
+CPoint no: 37 -> bear right => /
+CPoint no: 38 -> turn right => >
+CPoint no: 39 -> bear left => \
+CPoint no: 40 -> bear left => \
+CPoint no: 41 -> bear right => /
+CPoint no: 42 -> bear left => \
+CPoint no: 43 -> turn right => >
+CPoint no: 45 -> bear right => /
+CPoint no: 46 -> turn left => <
+CPoint no: 47 -> bear right => /
+CPoint no: 48 -> sharp right => »
+-- Changed course point names: 18
+COURSE POINT - INSERT TYPE PREFIX
+--------------------------------
+CPoint no: 1 type:STRAIGHT -> Start point => |Start point
+CPoint no: 23 type:SUMMIT -> Peak => ^Peak
+-- Changed course point names: 2
+COURSE POINT - MOVE BACK
+--------------------------------
+Move all course points back by: 15m
+Update GPS points: n
+CPoint no: 1 skipped because new distance would be negative
+CPoint no: 2 -> < / LEFT
+-- Distance changed from 30.42m to 15.42m
+-- Position: 59.29444, 18.14402 -> 59.29444, 18.14402
+CPoint no: 3 -> Dammsjön / WATER
+-- Distance changed from 58.27m to 43.27m
+-- Position: 59.29420, 18.14404 -> 59.29420, 18.14404
+CPoint no: 4 -> ) / SLIGHT_LEFT
+-- Distance changed from 130.75m to 115.75m
+-- Position: 59.29368, 18.14340 -> 59.29368, 18.14340
+CPoint no: 5 -> < / LEFT
+-- Distance changed from 149.87m to 134.87m
+-- Position: 59.29363, 18.14307 -> 59.29363, 18.14307
+CPoint no: 6 -> < / LEFT
+-- Distance changed from 498.67m to 483.67m
+-- Position: 59.29069, 18.14202 -> 59.29069, 18.14202
+CPoint no: 7 -> < / LEFT
+-- Distance changed from 670.38m to 655.38m
+-- Position: 59.28955, 18.14328 -> 59.28955, 18.14328
+CPoint no: 8 -> > / RIGHT
+-- Distance changed from 937.81m to 922.81m
+-- Position: 59.28791, 18.14591 -> 59.28791, 18.14591
+CPoint no: 9 -> Söderbysjön / WATER
+-- Distance changed from 1560.33m to 1545.33m
+-- Position: 59.28314, 18.14950 -> 59.28314, 18.14950
+CPoint no: 10 -> < / LEFT
+-- Distance changed from 2508.96m to 2493.96m
+-- Position: 59.27916, 18.14825 -> 59.27916, 18.14825
+CPoint no: 11 -> > / RIGHT
+-- Distance changed from 2547.79m to 2532.79m
+-- Position: 59.27911, 18.14892 -> 59.27911, 18.14892
+CPoint no: 12 -> < / LEFT
+-- Distance changed from 3003.46m to 2988.46m
+-- Position: 59.27523, 18.15027 -> 59.27523, 18.15027
+CPoint no: 13 -> ( / SLIGHT_LEFT
+-- Distance changed from 3036.32m to 3021.32m
+-- Position: 59.27501, 18.15064 -> 59.27501, 18.15064
+CPoint no: 14 -> < / LEFT
+-- Distance changed from 3277.89m to 3262.89m
+-- Position: 59.27413, 18.14996 -> 59.27413, 18.14996
+CPoint no: 15 -> < / LEFT
+-- Distance changed from 3321.4m to 3306.4m
+-- Position: 59.27388, 18.14946 -> 59.27388, 18.14946
+CPoint no: 16 -> Brotorp / SHELTER
+-- Distance changed from 3853.01m to 3838.01m
+-- Position: 59.27055, 18.14711 -> 59.27055, 18.14711
+CPoint no: 17 -> ( / STRAIGHT
+-- Distance changed from 3876.4m to 3861.4m
+-- Position: 59.27035, 18.14712 -> 59.27035, 18.14712
+CPoint no: 18 -> \ / SLIGHT_LEFT
+-- Distance changed from 3963.69m to 3948.69m
+-- Position: 59.26979, 18.14806 -> 59.26979, 18.14806
+CPoint no: 19 -> > / RIGHT
+-- Distance changed from 4112.31m to 4097.31m
+-- Position: 59.27011, 18.15059 -> 59.27011, 18.15059
+CPoint no: 20 -> / / SLIGHT_RIGHT
+-- Distance changed from 4381.61m to 4366.61m
+-- Position: 59.26816, 18.15213 -> 59.26816, 18.15213
+CPoint no: 21 -> Ältasjön / WATER
+-- Distance changed from 4886.99m to 4871.99m
+-- Position: 59.26557, 18.15608 -> 59.26557, 18.15608
+CPoint no: 22 -> <Ältasjöstige / LEFT
+-- Distance changed from 5465.21m to 5450.21m
+-- Position: 59.26736, 18.16288 -> 59.26736, 18.16288
+CPoint no: 23 -> ^Peak / SUMMIT
+-- Distance changed from 6059.76m to 6044.76m
+-- Position: 59.27083, 18.15635 -> 59.27083, 18.15635
+CPoint no: 24 -> >John Bauer / RIGHT
+-- Distance changed from 6120.49m to 6105.49m
+-- Position: 59.27102, 18.15537 -> 59.27102, 18.15537
+CPoint no: 25 -> » / SHARP_RIGHT
+-- Distance changed from 7123.86m to 7108.86m
+-- Position: 59.27914, 18.14961 -> 59.27914, 18.14961
+CPoint no: 26 -> »Söderbysjön / WATER
+-- Distance changed from 7124.4m to 7109.4m
+-- Position: 59.27914, 18.14962 -> 59.27914, 18.14962
+CPoint no: 27 -> / / SLIGHT_RIGHT
+-- Distance changed from 7241.47m to 7226.47m
+-- Position: 59.27873, 18.15145 -> 59.27873, 18.15145
+CPoint no: 28 -> / / SLIGHT_RIGHT
+-- Distance changed from 7361.51m to 7346.51m
+-- Position: 59.27814, 18.15298 -> 59.27814, 18.15298
+CPoint no: 29 -> / / SLIGHT_RIGHT
+-- Distance changed from 7701.83m to 7686.83m
+-- Position: 59.27660, 18.15783 -> 59.27660, 18.15783
+CPoint no: 30 -> < / LEFT
+-- Distance changed from 7811.83m to 7796.83m
+-- Position: 59.27581, 18.15887 -> 59.27581, 18.15887
+CPoint no: 31 -> \ / SLIGHT_LEFT
+-- Distance changed from 7937.3m to 7922.3m
+-- Position: 59.27577, 18.16072 -> 59.27577, 18.16072
+CPoint no: 32 -> Ulvsjön view / OVERLOOK
+-- Distance changed from 8001.62m to 7986.62m
+-- Position: 59.27604, 18.16155 -> 59.27604, 18.16155
+CPoint no: 33 -> < / LEFT
+-- Distance changed from 8527.33m to 8512.33m
+-- Position: 59.27527, 18.16746 -> 59.27527, 18.16746
+CPoint no: 34 -> < / LEFT
+-- Distance changed from 8569.06m to 8554.06m
+-- Position: 59.27534, 18.16817 -> 59.27534, 18.16817
+CPoint no: 35 -> Ulvsjön2 / OVERLOOK
+-- Distance changed from 9031.55m to 9016.55m
+-- Position: 59.27859, 18.16534 -> 59.27859, 18.16534
+CPoint no: 36 -> / / SLIGHT_RIGHT
+-- Distance changed from 9032.09m to 9017.09m
+-- Position: 59.27859, 18.16533 -> 59.27859, 18.16533
+CPoint no: 37 -> / / SLIGHT_RIGHT
+-- Distance changed from 9137.59m to 9122.59m
+-- Position: 59.27921, 18.16427 -> 59.27921, 18.16427
+CPoint no: 38 -> > / RIGHT
+-- Distance changed from 9164.71m to 9149.71m
+-- Position: 59.27939, 18.16406 -> 59.27939, 18.16406
+CPoint no: 39 -> \ / SLIGHT_LEFT
+-- Distance changed from 9282.6m to 9267.6m
+-- Position: 59.27971, 18.16601 -> 59.27971, 18.16601
+CPoint no: 40 -> \ / SLIGHT_LEFT
+-- Distance changed from 9391.92m to 9376.92m
+-- Position: 59.28062, 18.16570 -> 59.28062, 18.16570
+CPoint no: 41 -> / / SLIGHT_RIGHT
+-- Distance changed from 9588.73m to 9573.73m
+-- Position: 59.28180, 18.16331 -> 59.28180, 18.16331
+CPoint no: 42 -> \ / SLIGHT_LEFT
+-- Distance changed from 9616.1m to 9601.1m
+-- Position: 59.28204, 18.16340 -> 59.28204, 18.16340
+CPoint no: 43 -> > / RIGHT
+-- Distance changed from 9864.62m to 9849.62m
+-- Position: 59.28363, 18.16041 -> 59.28363, 18.16041
+CPoint no: 44 -> turn around / U_TURN
+-- Distance changed from 10014.79m to 9999.79m
+-- Position: 59.28455, 18.15862 -> 59.28455, 18.15862
+CPoint no: 45 -> / / SLIGHT_RIGHT
+-- Distance changed from 10236.27m to 10221.27m
+-- Position: 59.28350, 18.15918 -> 59.28350, 18.15918
+CPoint no: 46 -> < / LEFT
+-- Distance changed from 10389.45m to 10374.45m
+-- Position: 59.28338, 18.15653 -> 59.28338, 18.15653
+CPoint no: 47 -> / / SLIGHT_RIGHT
+-- Distance changed from 10467.13m to 10452.13m
+-- Position: 59.28270, 18.15653 -> 59.28270, 18.15653
+CPoint no: 48 -> » / SHARP_RIGHT
+-- Distance changed from 10692.59m to 10677.59m
+-- Position: 59.28137, 18.15380 -> 59.28137, 18.15380
+CPoint no: 49 -> Söderbysjön / CHECKPOINT
+-- Distance changed from 10764.64m to 10749.64m
+-- Position: 59.28173, 18.15284 -> 59.28173, 18.15284
+CPoint no: 50 -> < / LEFT
+-- Distance changed from 11432.76m to 11417.76m
+-- Position: 59.28723, 18.14988 -> 59.28723, 18.14988
+CPoint no: 51 -> Dammsjön / MILE_MARKER
+-- Distance changed from 11532.25m to 11517.25m
+-- Position: 59.28781, 18.14885 -> 59.28781, 18.14885
+CPoint no: 52 -> < / LEFT
+-- Distance changed from 11573.09m to 11558.09m
+-- Position: 59.28795, 18.14945 -> 59.28795, 18.14945
+CPoint no: 53 -> > / RIGHT
+-- Distance changed from 11620.13m to 11605.13m
+-- Position: 59.28831, 18.14914 -> 59.28831, 18.14914
+CPoint no: 54 -> \ / SLIGHT_LEFT
+-- Distance changed from 12098.83m to 12083.83m
+-- Position: 59.28860, 18.15505 -> 59.28860, 18.15505
+CPoint no: 55 -> < / LEFT
+-- Distance changed from 12183.39m to 12168.39m
+-- Position: 59.28900, 18.15630 -> 59.28900, 18.15630
+CPoint no: 56 -> \ / SLIGHT_LEFT
+-- Distance changed from 12259.18m to 12244.18m
+-- Position: 59.28968, 18.15636 -> 59.28968, 18.15636
+CPoint no: 57 -> < / LEFT
+-- Distance changed from 12445.84m to 12430.84m
+-- Position: 59.29048, 18.15364 -> 59.29048, 18.15364
+CPoint no: 58 -> » / MEETING_SPOT
+-- Distance changed from 13225.77m to 13210.77m
+-- Position: 59.29304, 18.14611 -> 59.29304, 18.14611
+-- Changed course points: 57
+COURSE POINT - SHIFT ROUTE SIDEWAYS
+--------------------------------
+Shift side: RIGHT
+Shift distance: 7m
+Record no: 1 -> 59.29469, 18.14423 => 59.29471, 18.14411
+Record no: 2 -> 59.29444, 18.14402 => 59.29445, 18.14390
+Record no: 3 -> 59.29441, 18.14408 => 59.29440, 18.14396
+Record no: 4 -> 59.29423, 18.14406 => 59.29423, 18.14394
+Record no: 5 -> 59.29420, 18.14404 => 59.29422, 18.14393
+Record no: 6 -> 59.29402, 18.14391 => 59.29406, 18.14381
+Record no: 7 -> 59.29394, 18.14369 => 59.29397, 18.14359
+Record no: 8 -> 59.29375, 18.14360 => 59.29378, 18.14350
+Record no: 9 -> 59.29368, 18.14340 => 59.29373, 18.14334
+Record no: 10 -> 59.29363, 18.14307 => 59.29368, 18.14300
+Record no: 11 -> 59.29352, 18.14301 => 59.29353, 18.14289
+Record no: 12 -> 59.29326, 18.14295 => 59.29328, 18.14283
+Record no: 13 -> 59.29320, 18.14286 => 59.29320, 18.14274
+Record no: 14 -> 59.29309, 18.14293 => 59.29308, 18.14281
+Record no: 15 -> 59.29295, 18.14295 => 59.29295, 18.14282
+Record no: 16 -> 59.29278, 18.14288 => 59.29280, 18.14276
+Record no: 17 -> 59.29270, 18.14281 => 59.29271, 18.14269
+Record no: 18 -> 59.29247, 18.14281 => 59.29248, 18.14269
+Record no: 19 -> 59.29232, 18.14271 => 59.29234, 18.14259
+Record no: 20 -> 59.29223, 18.14267 => 59.29226, 18.14256
+Record no: 21 -> 59.29214, 18.14255 => 59.29216, 18.14244
+Record no: 22 -> 59.29201, 18.14254 => 59.29202, 18.14241
+Record no: 23 -> 59.29190, 18.14248 => 59.29191, 18.14236
+Record no: 24 -> 59.29184, 18.14250 => 59.29187, 18.14239
+Record no: 25 -> 59.29177, 18.14235 => 59.29181, 18.14225
+Record no: 26 -> 59.29171, 18.14233 => 59.29175, 18.14224
+Record no: 27 -> 59.29166, 18.14215 => 59.29170, 18.14206
+Record no: 28 -> 59.29151, 18.14199 => 59.29152, 18.14187
+Record no: 29 -> 59.29137, 18.14203 => 59.29136, 18.14191
+Record no: 30 -> 59.29125, 18.14211 => 59.29125, 18.14198
+Record no: 31 -> 59.29098, 18.14203 => 59.29099, 18.14191
+Record no: 32 -> 59.29069, 18.14202 => 59.29068, 18.14190
+Record no: 33 -> 59.29063, 18.14217 => 59.29059, 18.14208
+Record no: 34 -> 59.29055, 18.14229 => 59.29051, 18.14220
+Record no: 35 -> 59.29050, 18.14246 => 59.29044, 18.14243
+Record no: 36 -> 59.29050, 18.14269 => 59.29043, 18.14267
+Record no: 37 -> 59.29047, 18.14281 => 59.29043, 18.14273
+Record no: 38 -> 59.29030, 18.14313 => 59.29026, 18.14304
+Record no: 39 -> 59.29025, 18.14329 => 59.29022, 18.14318
+Record no: 40 -> 59.29009, 18.14334 => 59.29009, 18.14322
+Record no: 41 -> 59.28998, 18.14327 => 59.28999, 18.14315
+Record no: 42 -> 59.28980, 18.14326 => 59.28979, 18.14313
+Record no: 43 -> 59.28969, 18.14332 => 59.28969, 18.14320
+Record no: 44 -> 59.28964, 18.14327 => 59.28965, 18.14315
+Record no: 45 -> 59.28955, 18.14328 => 59.28951, 18.14318
+Record no: 46 -> 59.28949, 18.14350 => 59.28943, 18.14347
+Record no: 47 -> 59.28950, 18.14364 => 59.28944, 18.14361
+Record no: 48 -> 59.28945, 18.14380 => 59.28940, 18.14371
+Record no: 49 -> 59.28921, 18.14420 => 59.28917, 18.14411
+Record no: 50 -> 59.28919, 18.14430 => 59.28919, 18.14417
+Record no: 51 -> 59.28860, 18.14424 => 59.28859, 18.14412
+Record no: 52 -> 59.28846, 18.14450 => 59.28841, 18.14442
+Record no: 53 -> 59.28842, 18.14461 => 59.28838, 18.14453
+Record no: 54 -> 59.28835, 18.14476 => 59.28832, 18.14465
+Record no: 55 -> 59.28827, 18.14477 => 59.28823, 18.14467
+Record no: 56 -> 59.28814, 18.14502 => 59.28809, 18.14496
+Record no: 57 -> 59.28810, 18.14535 => 59.28804, 18.14530
+Record no: 58 -> 59.28803, 18.14546 => 59.28798, 18.14539
+Record no: 59 -> 59.28791, 18.14591 => 59.28788, 18.14581
+Record no: 60 -> 59.28750, 18.14609 => 59.28747, 18.14598
+Record no: 61 -> 59.28730, 18.14640 => 59.28727, 18.14629
+Record no: 62 -> 59.28676, 18.14696 => 59.28674, 18.14684
+Record no: 63 -> 59.28652, 18.14709 => 59.28650, 18.14697
+Record no: 64 -> 59.28629, 18.14720 => 59.28625, 18.14710
+Record no: 65 -> 59.28590, 18.14788 => 59.28586, 18.14778
+Record no: 66 -> 59.28559, 18.14822 => 59.28555, 18.14812
+Record no: 67 -> 59.28535, 18.14872 => 59.28533, 18.14860
+Record no: 68 -> 59.28504, 18.14854 => 59.28505, 18.14842
+Record no: 69 -> 59.28501, 18.14856 => 59.28498, 18.14846
+Record no: 70 -> 59.28473, 18.14899 => 59.28470, 18.14889
+Record no: 71 -> 59.28453, 18.14919 => 59.28450, 18.14909
+Record no: 72 -> 59.28438, 18.14945 => 59.28435, 18.14934
+Record no: 73 -> 59.28416, 18.14956 => 59.28414, 18.14945
+Record no: 74 -> 59.28399, 18.14973 => 59.28396, 18.14963
+Record no: 75 -> 59.28374, 18.15011 => 59.28373, 18.14999
+Record no: 76 -> 59.28345, 18.14987 => 59.28347, 18.14975
+Record no: 77 -> 59.28343, 18.14989 => 59.28348, 18.14981
+Record no: 78 -> 59.28334, 18.14960 => 59.28338, 18.14950
+Record no: 79 -> 59.28314, 18.14950 => 59.28316, 18.14938
+Record no: 80 -> 59.28312, 18.14949 => 59.28309, 18.14938
+Record no: 81 -> 59.28299, 18.14963 => 59.28296, 18.14952
+Record no: 82 -> 59.28278, 18.14985 => 59.28279, 18.14973
+Record no: 83 -> 59.28261, 18.14949 => 59.28267, 18.14948
+Record no: 84 -> 59.28274, 18.14825 => 59.28280, 18.14829
+Record no: 85 -> 59.28286, 18.14784 => 59.28292, 18.14788
+Record no: 86 -> 59.28287, 18.14755 => 59.28293, 18.14758
+Record no: 87 -> 59.28305, 18.14631 => 59.28311, 18.14633
+Record no: 88 -> 59.28303, 18.14588 => 59.28310, 18.14589
+Record no: 89 -> 59.28310, 18.14482 => 59.28316, 18.14483
+Record no: 90 -> 59.28309, 18.14438 => 59.28316, 18.14437
+Record no: 91 -> 59.28304, 18.14390 => 59.28308, 18.14381
+Record no: 92 -> 59.28280, 18.14381 => 59.28281, 18.14369
+Record no: 93 -> 59.28255, 18.14370 => 59.28253, 18.14358
+Record no: 94 -> 59.28218, 18.14419 => 59.28213, 18.14410
+Record no: 95 -> 59.28190, 18.14494 => 59.28186, 18.14486
+Record no: 96 -> 59.28161, 18.14545 => 59.28157, 18.14537
+Record no: 97 -> 59.28160, 18.14557 => 59.28154, 18.14554
+Record no: 98 -> 59.28153, 18.14609 => 59.28148, 18.14605
+Record no: 99 -> 59.28145, 18.14635 => 59.28144, 18.14623
+Record no: 100 -> 59.28126, 18.14617 => 59.28126, 18.14605
+Record no: 101 -> 59.28102, 18.14637 => 59.28099, 18.14626
+Record no: 102 -> 59.28072, 18.14681 => 59.28068, 18.14671
+Record no: 103 -> 59.28063, 18.14697 => 59.28059, 18.14686
+Record no: 104 -> 59.28027, 18.14738 => 59.28025, 18.14726
+Record no: 105 -> 59.28002, 18.14737 => 59.28002, 18.14725
+Record no: 106 -> 59.27990, 18.14741 => 59.27988, 18.14730
+Record no: 107 -> 59.27971, 18.14758 => 59.27968, 18.14747
+Record no: 108 -> 59.27933, 18.14809 => 59.27929, 18.14799
+Record no: 109 -> 59.27916, 18.14825 => 59.27911, 18.14817
+Record no: 110 -> 59.27914, 18.14851 => 59.27907, 18.14849
+Record no: 111 -> 59.27911, 18.14892 => 59.27907, 18.14882
+Record no: 112 -> 59.27881, 18.14898 => 59.27879, 18.14886
+Record no: 113 -> 59.27857, 18.14916 => 59.27856, 18.14903
+Record no: 114 -> 59.27831, 18.14911 => 59.27831, 18.14899
+Record no: 115 -> 59.27815, 18.14926 => 59.27812, 18.14916
+Record no: 116 -> 59.27793, 18.14956 => 59.27790, 18.14945
+Record no: 117 -> 59.27775, 18.14963 => 59.27775, 18.14951
+Record no: 118 -> 59.27746, 18.14957 => 59.27746, 18.14944
+Record no: 119 -> 59.27729, 18.14961 => 59.27730, 18.14948
+Record no: 120 -> 59.27707, 18.14950 => 59.27708, 18.14938
+Record no: 121 -> 59.27688, 18.14954 => 59.27685, 18.14943
+Record no: 122 -> 59.27641, 18.15004 => 59.27638, 18.14992
+Record no: 123 -> 59.27626, 18.14997 => 59.27627, 18.14985
+Record no: 124 -> 59.27607, 18.14993 => 59.27606, 18.14981
+Record no: 125 -> 59.27579, 18.15008 => 59.27577, 18.14997
+Record no: 126 -> 59.27562, 18.15029 => 59.27559, 18.15018
+Record no: 127 -> 59.27552, 18.15034 => 59.27552, 18.15021
+Record no: 128 -> 59.27523, 18.15027 => 59.27522, 18.15015
+Record no: 129 -> 59.27508, 18.15055 => 59.27504, 18.15046
+Record no: 130 -> 59.27501, 18.15064 => 59.27495, 18.15058
+Record no: 131 -> 59.27492, 18.15112 => 59.27486, 18.15108
+Record no: 132 -> 59.27482, 18.15155 => 59.27476, 18.15149
+Record no: 133 -> 59.27471, 18.15189 => 59.27466, 18.15183
+Record no: 134 -> 59.27470, 18.15195 => 59.27466, 18.15186
+Record no: 135 -> 59.27459, 18.15209 => 59.27462, 18.15198
+Record no: 136 -> 59.27440, 18.15172 => 59.27445, 18.15165
+Record no: 137 -> 59.27428, 18.15123 => 59.27433, 18.15117
+Record no: 138 -> 59.27409, 18.15071 => 59.27414, 18.15064
+Record no: 139 -> 59.27401, 18.15043 => 59.27408, 18.15044
+Record no: 140 -> 59.27413, 18.14996 => 59.27419, 18.14998
+Record no: 141 -> 59.27406, 18.14979 => 59.27411, 18.14973
+Record no: 142 -> 59.27402, 18.14959 => 59.27407, 18.14953
+Record no: 143 -> 59.27396, 18.14946 => 59.27399, 18.14935
+Record no: 144 -> 59.27388, 18.14946 => 59.27388, 18.14934
+Record no: 145 -> 59.27327, 18.14949 => 59.27328, 18.14937
+Record no: 146 -> 59.27276, 18.14928 => 59.27278, 18.14916
+Record no: 147 -> 59.27209, 18.14907 => 59.27210, 18.14895
+Record no: 148 -> 59.27205, 18.14907 => 59.27209, 18.14898
+Record no: 149 -> 59.27197, 18.14884 => 59.27201, 18.14876
+Record no: 150 -> 59.27189, 18.14876 => 59.27194, 18.14867
+Record no: 151 -> 59.27183, 18.14858 => 59.27188, 18.14849
+Record no: 152 -> 59.27175, 18.14848 => 59.27176, 18.14836
+Record no: 153 -> 59.27155, 18.14848 => 59.27156, 18.14836
+Record no: 154 -> 59.27141, 18.14834 => 59.27141, 18.14822
+Record no: 155 -> 59.27099, 18.14851 => 59.27099, 18.14838
+Record no: 156 -> 59.27093, 18.14846 => 59.27100, 18.14844
+Record no: 157 -> 59.27095, 18.14795 => 59.27098, 18.14806
+Record no: 158 -> 59.27132, 18.14798 => 59.27133, 18.14810
+Record no: 159 -> 59.27136, 18.14784 => 59.27141, 18.14778
+Record no: 160 -> 59.27123, 18.14763 => 59.27127, 18.14754
+Record no: 161 -> 59.27103, 18.14728 => 59.27105, 18.14716
+Record no: 162 -> 59.27055, 18.14711 => 59.27056, 18.14699
+Record no: 163 -> 59.27043, 18.14706 => 59.27042, 18.14694
+Record no: 164 -> 59.27035, 18.14712 => 59.27033, 18.14701
+Record no: 165 -> 59.27013, 18.14729 => 59.27011, 18.14718
+Record no: 166 -> 59.26996, 18.14746 => 59.26993, 18.14736
+Record no: 167 -> 59.26990, 18.14757 => 59.26985, 18.14751
+Record no: 168 -> 59.26987, 18.14779 => 59.26981, 18.14775
+Record no: 169 -> 59.26979, 18.14806 => 59.26973, 18.14804
+Record no: 170 -> 59.26981, 18.14855 => 59.26975, 18.14857
+Record no: 171 -> 59.26984, 18.14871 => 59.26978, 18.14875
+Record no: 172 -> 59.27006, 18.15021 => 59.27000, 18.15024
+Record no: 173 -> 59.27008, 18.15040 => 59.27002, 18.15044
+Record no: 174 -> 59.27011, 18.15059 => 59.27007, 18.15049
+Record no: 175 -> 59.26984, 18.15080 => 59.26983, 18.15068
+Record no: 176 -> 59.26977, 18.15075 => 59.26981, 18.15065
+Record no: 177 -> 59.26963, 18.15049 => 59.26964, 18.15037
+Record no: 178 -> 59.26912, 18.15047 => 59.26911, 18.15035
+Record no: 179 -> 59.26908, 18.15066 => 59.26902, 18.15061
+Record no: 180 -> 59.26899, 18.15093 => 59.26896, 18.15082
+Record no: 181 -> 59.26873, 18.15106 => 59.26871, 18.15094
+Record no: 182 -> 59.26853, 18.15120 => 59.26849, 18.15111
+Record no: 183 -> 59.26816, 18.15213 => 59.26811, 18.15205
+Record no: 184 -> 59.26803, 18.15226 => 59.26800, 18.15216
+Record no: 185 -> 59.26789, 18.15247 => 59.26785, 18.15239
+Record no: 186 -> 59.26782, 18.15266 => 59.26777, 18.15260
+Record no: 187 -> 59.26777, 18.15291 => 59.26771, 18.15285
+Record no: 188 -> 59.26751, 18.15377 => 59.26746, 18.15371
+Record no: 189 -> 59.26747, 18.15396 => 59.26741, 18.15393
+Record no: 190 -> 59.26742, 18.15441 => 59.26736, 18.15436
+Record no: 191 -> 59.26734, 18.15458 => 59.26730, 18.15449
+Record no: 192 -> 59.26720, 18.15478 => 59.26716, 18.15470
+Record no: 193 -> 59.26702, 18.15527 => 59.26697, 18.15519
+Record no: 194 -> 59.26696, 18.15535 => 59.26694, 18.15523
+Record no: 195 -> 59.26685, 18.15537 => 59.26684, 18.15524
+Record no: 196 -> 59.26651, 18.15543 => 59.26652, 18.15531
+Record no: 197 -> 59.26622, 18.15513 => 59.26625, 18.15503
+Record no: 198 -> 59.26606, 18.15481 => 59.26610, 18.15472
+Record no: 199 -> 59.26597, 18.15470 => 59.26599, 18.15458
+Record no: 200 -> 59.26566, 18.15460 => 59.26568, 18.15448
+Record no: 201 -> 59.26553, 18.15441 => 59.26547, 18.15440
+Record no: 202 -> 59.26557, 18.15608 => 59.26550, 18.15608
+Record no: 203 -> 59.26557, 18.15630 => 59.26555, 18.15641
+Record no: 204 -> 59.26590, 18.15634 => 59.26591, 18.15646
+Record no: 205 -> 59.26649, 18.15600 => 59.26650, 18.15612
+Record no: 206 -> 59.26657, 18.15615 => 59.26651, 18.15619
+Record no: 207 -> 59.26655, 18.15641 => 59.26649, 18.15638
+Record no: 208 -> 59.26649, 18.15687 => 59.26643, 18.15682
+Record no: 209 -> 59.26629, 18.15761 => 59.26624, 18.15757
+Record no: 210 -> 59.26624, 18.15840 => 59.26618, 18.15839
+Record no: 211 -> 59.26624, 18.15855 => 59.26618, 18.15858
+Record no: 212 -> 59.26631, 18.15903 => 59.26625, 18.15908
+Record no: 213 -> 59.26642, 18.15932 => 59.26638, 18.15942
+Record no: 214 -> 59.26651, 18.15939 => 59.26647, 18.15948
+Record no: 215 -> 59.26671, 18.15993 => 59.26666, 18.16001
+Record no: 216 -> 59.26681, 18.16011 => 59.26677, 18.16020
+Record no: 217 -> 59.26696, 18.16034 => 59.26691, 18.16041
+Record no: 218 -> 59.26712, 18.16091 => 59.26706, 18.16096
+Record no: 219 -> 59.26711, 18.16109 => 59.26706, 18.16104
+Record no: 220 -> 59.26696, 18.16159 => 59.26690, 18.16154
+Record no: 221 -> 59.26695, 18.16183 => 59.26689, 18.16189
+Record no: 222 -> 59.26719, 18.16251 => 59.26714, 18.16259
+Record no: 223 -> 59.26736, 18.16288 => 59.26738, 18.16300
+Record no: 224 -> 59.26771, 18.16225 => 59.26775, 18.16234
+Record no: 225 -> 59.26793, 18.16181 => 59.26798, 18.16189
+Record no: 226 -> 59.26818, 18.16123 => 59.26823, 18.16131
+Record no: 227 -> 59.26824, 18.16105 => 59.26829, 18.16110
+Record no: 228 -> 59.26846, 18.15997 => 59.26852, 18.16002
+Record no: 229 -> 59.26854, 18.15987 => 59.26855, 18.16000
+Record no: 230 -> 59.26884, 18.15982 => 59.26884, 18.15994
+Record no: 231 -> 59.26901, 18.15988 => 59.26900, 18.16000
+Record no: 232 -> 59.26908, 18.15991 => 59.26907, 18.16004
+Record no: 233 -> 59.26933, 18.15992 => 59.26932, 18.16004
+Record no: 234 -> 59.26944, 18.15997 => 59.26949, 18.16005
+Record no: 235 -> 59.26955, 18.15939 => 59.26960, 18.15945
+Record no: 236 -> 59.26969, 18.15895 => 59.26974, 18.15904
+Record no: 237 -> 59.27001, 18.15841 => 59.27006, 18.15850
+Record no: 238 -> 59.27016, 18.15808 => 59.27021, 18.15816
+Record no: 239 -> 59.27027, 18.15782 => 59.27033, 18.15788
+Record no: 240 -> 59.27043, 18.15712 => 59.27048, 18.15718
+Record no: 241 -> 59.27059, 18.15654 => 59.27063, 18.15663
+Record no: 242 -> 59.27082, 18.15651 => 59.27084, 18.15663
+Record no: 243 -> 59.27083, 18.15635 => 59.27089, 18.15637
+Record no: 244 -> 59.27086, 18.15594 => 59.27092, 18.15599
+Record no: 245 -> 59.27102, 18.15537 => 59.27108, 18.15544
+Record no: 246 -> 59.27105, 18.15541 => 59.27104, 18.15553
+Record no: 247 -> 59.27156, 18.15560 => 59.27156, 18.15573
+Record no: 248 -> 59.27202, 18.15547 => 59.27203, 18.15560
+Record no: 249 -> 59.27218, 18.15533 => 59.27220, 18.15544
+Record no: 250 -> 59.27234, 18.15527 => 59.27236, 18.15538
+Record no: 251 -> 59.27247, 18.15508 => 59.27250, 18.15520
+Record no: 252 -> 59.27286, 18.15488 => 59.27288, 18.15500
+Record no: 253 -> 59.27298, 18.15488 => 59.27300, 18.15500
+Record no: 254 -> 59.27317, 18.15471 => 59.27321, 18.15481
+Record no: 255 -> 59.27328, 18.15442 => 59.27331, 18.15452
+Record no: 256 -> 59.27357, 18.15427 => 59.27359, 18.15439
+Record no: 257 -> 59.27387, 18.15404 => 59.27390, 18.15415
+Record no: 258 -> 59.27394, 18.15390 => 59.27399, 18.15399
+Record no: 259 -> 59.27401, 18.15380 => 59.27404, 18.15391
+Record no: 260 -> 59.27412, 18.15373 => 59.27413, 18.15385
+Record no: 261 -> 59.27431, 18.15368 => 59.27430, 18.15380
+Record no: 262 -> 59.27454, 18.15383 => 59.27453, 18.15395
+Record no: 263 -> 59.27457, 18.15376 => 59.27460, 18.15387
+Record no: 264 -> 59.27469, 18.15366 => 59.27472, 18.15377
+Record no: 265 -> 59.27480, 18.15352 => 59.27482, 18.15363
+Record no: 266 -> 59.27497, 18.15341 => 59.27500, 18.15352
+Record no: 267 -> 59.27520, 18.15311 => 59.27523, 18.15322
+Record no: 268 -> 59.27538, 18.15304 => 59.27541, 18.15316
+Record no: 269 -> 59.27549, 18.15291 => 59.27551, 18.15303
+Record no: 270 -> 59.27555, 18.15293 => 59.27558, 18.15304
+Record no: 271 -> 59.27564, 18.15273 => 59.27568, 18.15283
+Record no: 272 -> 59.27567, 18.15273 => 59.27567, 18.15285
+Record no: 273 -> 59.27570, 18.15272 => 59.27573, 18.15283
+Record no: 274 -> 59.27587, 18.15253 => 59.27590, 18.15263
+Record no: 275 -> 59.27609, 18.15218 => 59.27612, 18.15229
+Record no: 276 -> 59.27623, 18.15212 => 59.27624, 18.15224
+Record no: 277 -> 59.27634, 18.15214 => 59.27636, 18.15226
+Record no: 278 -> 59.27686, 18.15182 => 59.27688, 18.15194
+Record no: 279 -> 59.27692, 18.15173 => 59.27695, 18.15185
+Record no: 280 -> 59.27720, 18.15150 => 59.27724, 18.15161
+Record no: 281 -> 59.27738, 18.15111 => 59.27741, 18.15121
+Record no: 282 -> 59.27791, 18.15067 => 59.27793, 18.15079
+Record no: 283 -> 59.27823, 18.15055 => 59.27825, 18.15067
+Record no: 284 -> 59.27844, 18.15043 => 59.27848, 18.15054
+Record no: 285 -> 59.27869, 18.15004 => 59.27872, 18.15014
+Record no: 286 -> 59.27893, 18.14979 => 59.27896, 18.14990
+Record no: 287 -> 59.27914, 18.14961 => 59.27917, 18.14973
+Record no: 288 -> 59.27914, 18.14962 => 59.27917, 18.14951
+Record no: 289 -> 59.27914, 18.14961 => 59.27908, 18.14960
+Record no: 290 -> 59.27914, 18.14968 => 59.27908, 18.14963
+Record no: 291 -> 59.27909, 18.14981 => 59.27903, 18.14976
+Record no: 292 -> 59.27903, 18.15016 => 59.27897, 18.15012
+Record no: 293 -> 59.27900, 18.15038 => 59.27894, 18.15035
+Record no: 294 -> 59.27896, 18.15071 => 59.27891, 18.15066
+Record no: 295 -> 59.27887, 18.15089 => 59.27882, 18.15081
+Record no: 296 -> 59.27878, 18.15115 => 59.27873, 18.15109
+Record no: 297 -> 59.27873, 18.15145 => 59.27868, 18.15139
+Record no: 298 -> 59.27864, 18.15162 => 59.27859, 18.15154
+Record no: 299 -> 59.27849, 18.15197 => 59.27845, 18.15187
+Record no: 300 -> 59.27830, 18.15205 => 59.27826, 18.15195
+Record no: 301 -> 59.27816, 18.15242 => 59.27811, 18.15238
+Record no: 302 -> 59.27817, 18.15268 => 59.27811, 18.15267
+Record no: 303 -> 59.27814, 18.15298 => 59.27809, 18.15293
+Record no: 304 -> 59.27807, 18.15312 => 59.27804, 18.15301
+Record no: 305 -> 59.27789, 18.15326 => 59.27784, 18.15317
+Record no: 306 -> 59.27779, 18.15357 => 59.27775, 18.15348
+Record no: 307 -> 59.27759, 18.15376 => 59.27754, 18.15367
+Record no: 308 -> 59.27723, 18.15481 => 59.27717, 18.15474
+Record no: 309 -> 59.27708, 18.15524 => 59.27702, 18.15518
+Record no: 310 -> 59.27707, 18.15543 => 59.27701, 18.15539
+Record no: 311 -> 59.27700, 18.15570 => 59.27694, 18.15564
+Record no: 312 -> 59.27681, 18.15643 => 59.27675, 18.15639
+Record no: 313 -> 59.27680, 18.15675 => 59.27674, 18.15672
+Record no: 314 -> 59.27671, 18.15712 => 59.27665, 18.15709
+Record no: 315 -> 59.27668, 18.15755 => 59.27662, 18.15752
+Record no: 316 -> 59.27660, 18.15783 => 59.27657, 18.15773
+Record no: 317 -> 59.27644, 18.15790 => 59.27641, 18.15779
+Record no: 318 -> 59.27626, 18.15813 => 59.27623, 18.15802
+Record no: 319 -> 59.27613, 18.15824 => 59.27610, 18.15813
+Record no: 320 -> 59.27599, 18.15842 => 59.27595, 18.15832
+Record no: 321 -> 59.27587, 18.15866 => 59.27582, 18.15858
+Record no: 322 -> 59.27581, 18.15887 => 59.27575, 18.15893
+Record no: 323 -> 59.27598, 18.15903 => 59.27595, 18.15913
+Record no: 324 -> 59.27601, 18.15913 => 59.27595, 18.15916
+Record no: 325 -> 59.27603, 18.15932 => 59.27597, 18.15933
+Record no: 326 -> 59.27603, 18.15948 => 59.27597, 18.15944
+Record no: 327 -> 59.27593, 18.15990 => 59.27587, 18.15987
+Record no: 328 -> 59.27589, 18.16031 => 59.27584, 18.16026
+Record no: 329 -> 59.27577, 18.16072 => 59.27571, 18.16068
+Record no: 330 -> 59.27579, 18.16082 => 59.27573, 18.16083
+Record no: 331 -> 59.27579, 18.16109 => 59.27573, 18.16110
+Record no: 332 -> 59.27582, 18.16125 => 59.27576, 18.16131
+Record no: 333 -> 59.27588, 18.16138 => 59.27583, 18.16147
+Record no: 334 -> 59.27593, 18.16145 => 59.27592, 18.16157
+Record no: 335 -> 59.27601, 18.16143 => 59.27598, 18.16154
+Record no: 336 -> 59.27604, 18.16155 => 59.27600, 18.16146
+Record no: 337 -> 59.27595, 18.16152 => 59.27599, 18.16143
+Record no: 338 -> 59.27581, 18.16118 => 59.27586, 18.16113
+Record no: 339 -> 59.27576, 18.16064 => 59.27579, 18.16053
+Record no: 340 -> 59.27558, 18.16095 => 59.27552, 18.16090
+Record no: 341 -> 59.27552, 18.16173 => 59.27546, 18.16176
+Record no: 342 -> 59.27573, 18.16224 => 59.27568, 18.16231
+Record no: 343 -> 59.27581, 18.16264 => 59.27575, 18.16269
+Record no: 344 -> 59.27589, 18.16294 => 59.27584, 18.16301
+Record no: 345 -> 59.27603, 18.16329 => 59.27598, 18.16337
+Record no: 346 -> 59.27608, 18.16337 => 59.27602, 18.16340
+Record no: 347 -> 59.27605, 18.16352 => 59.27600, 18.16347
+Record no: 348 -> 59.27595, 18.16397 => 59.27589, 18.16393
+Record no: 349 -> 59.27586, 18.16497 => 59.27580, 18.16495
+Record no: 350 -> 59.27588, 18.16508 => 59.27583, 18.16502
+Record no: 351 -> 59.27576, 18.16537 => 59.27571, 18.16530
+Record no: 352 -> 59.27570, 18.16559 => 59.27564, 18.16558
+Record no: 353 -> 59.27573, 18.16626 => 59.27567, 18.16625
+Record no: 354 -> 59.27567, 18.16636 => 59.27562, 18.16629
+Record no: 355 -> 59.27559, 18.16663 => 59.27553, 18.16661
+Record no: 356 -> 59.27561, 18.16695 => 59.27555, 18.16693
+Record no: 357 -> 59.27552, 18.16728 => 59.27548, 18.16721
+Record no: 358 -> 59.27543, 18.16741 => 59.27541, 18.16729
+Record no: 359 -> 59.27527, 18.16746 => 59.27523, 18.16736
+Record no: 360 -> 59.27526, 18.16766 => 59.27520, 18.16769
+Record no: 361 -> 59.27534, 18.16817 => 59.27532, 18.16828
+Record no: 362 -> 59.27577, 18.16809 => 59.27578, 18.16821
+Record no: 363 -> 59.27597, 18.16791 => 59.27599, 18.16802
+Record no: 364 -> 59.27616, 18.16774 => 59.27619, 18.16785
+Record no: 365 -> 59.27644, 18.16731 => 59.27648, 18.16741
+Record no: 366 -> 59.27650, 18.16724 => 59.27656, 18.16731
+Record no: 367 -> 59.27686, 18.16608 => 59.27688, 18.16620
+Record no: 368 -> 59.27753, 18.16659 => 59.27751, 18.16671
+Record no: 369 -> 59.27771, 18.16664 => 59.27770, 18.16676
+Record no: 370 -> 59.27780, 18.16673 => 59.27778, 18.16685
+Record no: 371 -> 59.27788, 18.16673 => 59.27793, 18.16682
+Record no: 372 -> 59.27800, 18.16629 => 59.27804, 18.16638
+Record no: 373 -> 59.27814, 18.16622 => 59.27817, 18.16633
+Record no: 374 -> 59.27827, 18.16602 => 59.27830, 18.16613
+Record no: 375 -> 59.27840, 18.16592 => 59.27845, 18.16600
+Record no: 376 -> 59.27856, 18.16532 => 59.27861, 18.16539
+Record no: 377 -> 59.27859, 18.16534 => 59.27859, 18.16546
+Record no: 378 -> 59.27859, 18.16533 => 59.27863, 18.16543
+Record no: 379 -> 59.27873, 18.16514 => 59.27874, 18.16526
+Record no: 380 -> 59.27888, 18.16524 => 59.27887, 18.16536
+Record no: 381 -> 59.27893, 18.16522 => 59.27897, 18.16530
+Record no: 382 -> 59.27901, 18.16498 => 59.27906, 18.16505
+Record no: 383 -> 59.27911, 18.16474 => 59.27916, 18.16482
+Record no: 384 -> 59.27913, 18.16469 => 59.27918, 18.16475
+Record no: 385 -> 59.27918, 18.16450 => 59.27924, 18.16454
+Record no: 386 -> 59.27921, 18.16427 => 59.27927, 18.16430
+Record no: 387 -> 59.27924, 18.16409 => 59.27928, 18.16420
+Record no: 388 -> 59.27939, 18.16406 => 59.27933, 18.16412
+Record no: 389 -> 59.27948, 18.16491 => 59.27941, 18.16494
+Record no: 390 -> 59.27951, 18.16511 => 59.27945, 18.16515
+Record no: 391 -> 59.27953, 18.16520 => 59.27947, 18.16526
+Record no: 392 -> 59.27964, 18.16556 => 59.27958, 18.16562
+Record no: 393 -> 59.27967, 18.16576 => 59.27961, 18.16580
+Record no: 394 -> 59.27971, 18.16601 => 59.27966, 18.16607
+Record no: 395 -> 59.27976, 18.16610 => 59.27972, 18.16620
+Record no: 396 -> 59.27982, 18.16615 => 59.27981, 18.16627
+Record no: 397 -> 59.27989, 18.16615 => 59.27991, 18.16626
+Record no: 398 -> 59.28009, 18.16595 => 59.28012, 18.16605
+Record no: 399 -> 59.28019, 18.16584 => 59.28020, 18.16596
+Record no: 400 -> 59.28049, 18.16578 => 59.28050, 18.16590
+Record no: 401 -> 59.28062, 18.16570 => 59.28067, 18.16578
+Record no: 402 -> 59.28069, 18.16534 => 59.28075, 18.16537
+Record no: 403 -> 59.28070, 18.16511 => 59.28076, 18.16515
+Record no: 404 -> 59.28076, 18.16495 => 59.28081, 18.16503
+Record no: 405 -> 59.28116, 18.16415 => 59.28121, 18.16424
+Record no: 406 -> 59.28130, 18.16383 => 59.28135, 18.16392
+Record no: 407 -> 59.28136, 18.16374 => 59.28140, 18.16384
+Record no: 408 -> 59.28169, 18.16340 => 59.28172, 18.16351
+Record no: 409 -> 59.28180, 18.16331 => 59.28179, 18.16343
+Record no: 410 -> 59.28204, 18.16340 => 59.28207, 18.16351
+Record no: 411 -> 59.28240, 18.16265 => 59.28245, 18.16274
+Record no: 412 -> 59.28262, 18.16232 => 59.28266, 18.16241
+Record no: 413 -> 59.28277, 18.16200 => 59.28282, 18.16208
+Record no: 414 -> 59.28294, 18.16158 => 59.28299, 18.16166
+Record no: 415 -> 59.28309, 18.16131 => 59.28313, 18.16139
+Record no: 416 -> 59.28324, 18.16095 => 59.28329, 18.16103
+Record no: 417 -> 59.28332, 18.16083 => 59.28335, 18.16093
+Record no: 418 -> 59.28348, 18.16069 => 59.28352, 18.16079
+Record no: 419 -> 59.28363, 18.16041 => 59.28367, 18.16050
+Record no: 420 -> 59.28373, 18.16029 => 59.28376, 18.16040
+Record no: 421 -> 59.28392, 18.16011 => 59.28395, 18.16022
+Record no: 422 -> 59.28403, 18.16005 => 59.28406, 18.16015
+Record no: 423 -> 59.28424, 18.15965 => 59.28429, 18.15973
+Record no: 424 -> 59.28444, 18.15910 => 59.28449, 18.15916
+Record no: 425 -> 59.28455, 18.15863 => 59.28461, 18.15869
+Record no: 426 -> 59.28455, 18.15862 => 59.28462, 18.15862
+Record no: 427 -> 59.28455, 18.15863 => 59.28450, 18.15858
+Record no: 428 -> 59.28444, 18.15910 => 59.28439, 18.15903
+Record no: 429 -> 59.28424, 18.15965 => 59.28419, 18.15957
+Record no: 430 -> 59.28403, 18.16005 => 59.28399, 18.15995
+Record no: 431 -> 59.28392, 18.16011 => 59.28390, 18.15999
+Record no: 432 -> 59.28373, 18.16029 => 59.28370, 18.16018
+Record no: 433 -> 59.28363, 18.16041 => 59.28366, 18.16030
+Record no: 434 -> 59.28358, 18.16013 => 59.28364, 18.16009
+Record no: 435 -> 59.28355, 18.15979 => 59.28361, 18.15977
+Record no: 436 -> 59.28352, 18.15952 => 59.28359, 18.15950
+Record no: 437 -> 59.28350, 18.15918 => 59.28357, 18.15918
+Record no: 438 -> 59.28352, 18.15897 => 59.28359, 18.15897
+Record no: 439 -> 59.28351, 18.15880 => 59.28357, 18.15878
+Record no: 440 -> 59.28349, 18.15853 => 59.28355, 18.15852
+Record no: 441 -> 59.28350, 18.15826 => 59.28356, 18.15827
+Record no: 442 -> 59.28351, 18.15801 => 59.28357, 18.15799
+Record no: 443 -> 59.28346, 18.15762 => 59.28352, 18.15760
+Record no: 444 -> 59.28342, 18.15720 => 59.28348, 18.15718
+Record no: 445 -> 59.28338, 18.15653 => 59.28343, 18.15645
+Record no: 446 -> 59.28319, 18.15665 => 59.28317, 18.15653
+Record no: 447 -> 59.28307, 18.15668 => 59.28306, 18.15655
+Record no: 448 -> 59.28295, 18.15666 => 59.28296, 18.15654
+Record no: 449 -> 59.28270, 18.15653 => 59.28273, 18.15642
+Record no: 450 -> 59.28264, 18.15635 => 59.28269, 18.15628
+Record no: 451 -> 59.28257, 18.15617 => 59.28262, 18.15610
+Record no: 452 -> 59.28247, 18.15581 => 59.28252, 18.15574
+Record no: 453 -> 59.28231, 18.15538 => 59.28236, 18.15530
+Record no: 454 -> 59.28213, 18.15504 => 59.28218, 18.15495
+Record no: 455 -> 59.28202, 18.15488 => 59.28205, 18.15477
+Record no: 456 -> 59.28180, 18.15471 => 59.28183, 18.15460
+Record no: 457 -> 59.28174, 18.15464 => 59.28178, 18.15454
+Record no: 458 -> 59.28170, 18.15455 => 59.28175, 18.15448
+Record no: 459 -> 59.28164, 18.15434 => 59.28169, 18.15429
+Record no: 460 -> 59.28158, 18.15401 => 59.28164, 18.15396
+Record no: 461 -> 59.28152, 18.15386 => 59.28156, 18.15376
+Record no: 462 -> 59.28143, 18.15379 => 59.28145, 18.15367
+Record no: 463 -> 59.28137, 18.15380 => 59.28143, 18.15386
+Record no: 464 -> 59.28150, 18.15355 => 59.28155, 18.15363
+Record no: 465 -> 59.28154, 18.15346 => 59.28160, 18.15351
+Record no: 466 -> 59.28160, 18.15317 => 59.28166, 18.15322
+Record no: 467 -> 59.28164, 18.15307 => 59.28169, 18.15315
+Record no: 468 -> 59.28169, 18.15295 => 59.28173, 18.15305
+Record no: 469 -> 59.28175, 18.15291 => 59.28180, 18.15297
+Record no: 470 -> 59.28173, 18.15284 => 59.28173, 18.15296
+Record no: 471 -> 59.28317, 18.15262 => 59.28317, 18.15275
+Record no: 472 -> 59.28403, 18.15281 => 59.28403, 18.15294
+Record no: 473 -> 59.28434, 18.15255 => 59.28435, 18.15267
+Record no: 474 -> 59.28509, 18.15244 => 59.28511, 18.15255
+Record no: 475 -> 59.28550, 18.15144 => 59.28555, 18.15153
+Record no: 476 -> 59.28584, 18.15100 => 59.28588, 18.15111
+Record no: 477 -> 59.28608, 18.15076 => 59.28610, 18.15088
+Record no: 478 -> 59.28629, 18.15067 => 59.28630, 18.15079
+Record no: 479 -> 59.28641, 18.15068 => 59.28643, 18.15080
+Record no: 480 -> 59.28687, 18.15022 => 59.28690, 18.15033
+Record no: 481 -> 59.28694, 18.15009 => 59.28698, 18.15019
+Record no: 482 -> 59.28716, 18.14988 => 59.28718, 18.14999
+Record no: 483 -> 59.28723, 18.14988 => 59.28728, 18.14996
+Record no: 484 -> 59.28722, 18.14972 => 59.28729, 18.14976
+Record no: 485 -> 59.28727, 18.14961 => 59.28730, 18.14972
+Record no: 486 -> 59.28736, 18.14958 => 59.28738, 18.14970
+Record no: 487 -> 59.28745, 18.14948 => 59.28751, 18.14955
+Record no: 488 -> 59.28746, 18.14926 => 59.28751, 18.14934
+Record no: 489 -> 59.28762, 18.14902 => 59.28766, 18.14912
+Record no: 490 -> 59.28776, 18.14883 => 59.28778, 18.14894
+Record no: 491 -> 59.28781, 18.14885 => 59.28780, 18.14897
+Record no: 492 -> 59.28788, 18.14887 => 59.28782, 18.14893
+Record no: 493 -> 59.28791, 18.14921 => 59.28785, 18.14924
+Record no: 494 -> 59.28795, 18.14945 => 59.28790, 18.14953
+Record no: 495 -> 59.28804, 18.14950 => 59.28806, 18.14962
+Record no: 496 -> 59.28831, 18.14914 => 59.28832, 18.14926
+Record no: 497 -> 59.28854, 18.14929 => 59.28854, 18.14942
+Record no: 498 -> 59.28859, 18.14916 => 59.28859, 18.14928
+Record no: 499 -> 59.28896, 18.14931 => 59.28894, 18.14942
+Record no: 500 -> 59.28901, 18.14951 => 59.28895, 18.14954
+Record no: 501 -> 59.28900, 18.14959 => 59.28894, 18.14957
+Record no: 502 -> 59.28898, 18.14980 => 59.28892, 18.14976
+Record no: 503 -> 59.28887, 18.15020 => 59.28882, 18.15014
+Record no: 504 -> 59.28875, 18.15057 => 59.28871, 18.15049
+Record no: 505 -> 59.28860, 18.15079 => 59.28855, 18.15071
+Record no: 506 -> 59.28858, 18.15094 => 59.28853, 18.15085
+Record no: 507 -> 59.28845, 18.15106 => 59.28842, 18.15096
+Record no: 508 -> 59.28830, 18.15129 => 59.28827, 18.15119
+Record no: 509 -> 59.28823, 18.15132 => 59.28821, 18.15120
+Record no: 510 -> 59.28812, 18.15143 => 59.28807, 18.15136
+Record no: 511 -> 59.28812, 18.15161 => 59.28806, 18.15156
+Record no: 512 -> 59.28805, 18.15176 => 59.28799, 18.15170
+Record no: 513 -> 59.28797, 18.15211 => 59.28792, 18.15216
+Record no: 514 -> 59.28820, 18.15244 => 59.28816, 18.15252
+Record no: 515 -> 59.28823, 18.15261 => 59.28817, 18.15264
+Record no: 516 -> 59.28830, 18.15326 => 59.28824, 18.15329
+Record no: 517 -> 59.28847, 18.15416 => 59.28841, 18.15421
+Record no: 518 -> 59.28857, 18.15458 => 59.28851, 18.15461
+Record no: 519 -> 59.28860, 18.15505 => 59.28854, 18.15511
+Record no: 520 -> 59.28888, 18.15579 => 59.28883, 18.15586
+Record no: 521 -> 59.28900, 18.15630 => 59.28898, 18.15641
+Record no: 522 -> 59.28949, 18.15641 => 59.28949, 18.15653
+Record no: 523 -> 59.28968, 18.15636 => 59.28970, 18.15647
+Record no: 524 -> 59.28978, 18.15620 => 59.28983, 18.15629
+Record no: 525 -> 59.28985, 18.15601 => 59.28990, 18.15609
+Record no: 526 -> 59.29011, 18.15528 => 59.29017, 18.15535
+Record no: 527 -> 59.29013, 18.15508 => 59.29019, 18.15507
+Record no: 528 -> 59.29009, 18.15483 => 59.29015, 18.15481
+Record no: 529 -> 59.29010, 18.15471 => 59.29015, 18.15477
+Record no: 530 -> 59.29048, 18.15364 => 59.29054, 18.15369
+Record no: 531 -> 59.29040, 18.15307 => 59.29046, 18.15302
+Record no: 532 -> 59.29028, 18.15269 => 59.29034, 18.15263
+Record no: 533 -> 59.29022, 18.15248 => 59.29027, 18.15241
+Record no: 534 -> 59.29001, 18.15202 => 59.29007, 18.15197
+Record no: 535 -> 59.28992, 18.15131 => 59.28998, 18.15128
+Record no: 536 -> 59.28987, 18.15112 => 59.28993, 18.15109
+Record no: 537 -> 59.28984, 18.15056 => 59.28991, 18.15057
+Record no: 538 -> 59.28988, 18.15016 => 59.28995, 18.15017
+Record no: 539 -> 59.28991, 18.14968 => 59.28997, 18.14968
+Record no: 540 -> 59.28988, 18.14944 => 59.28994, 18.14945
+Record no: 541 -> 59.28995, 18.14865 => 59.29001, 18.14866
+Record no: 542 -> 59.28992, 18.14844 => 59.28998, 18.14845
+Record no: 543 -> 59.28996, 18.14831 => 59.29002, 18.14834
+Record no: 544 -> 59.28999, 18.14796 => 59.29005, 18.14798
+Record no: 545 -> 59.29002, 18.14758 => 59.29008, 18.14761
+Record no: 546 -> 59.29009, 18.14733 => 59.29013, 18.14742
+Record no: 547 -> 59.29059, 18.14653 => 59.29063, 18.14662
+Record no: 548 -> 59.29070, 18.14617 => 59.29075, 18.14625
+Record no: 549 -> 59.29111, 18.14540 => 59.29115, 18.14550
+Record no: 550 -> 59.29120, 18.14560 => 59.29117, 18.14571
+Record no: 551 -> 59.29139, 18.14577 => 59.29137, 18.14589
+Record no: 552 -> 59.29147, 18.14575 => 59.29147, 18.14587
+Record no: 553 -> 59.29164, 18.14571 => 59.29163, 18.14584
+Record no: 554 -> 59.29175, 18.14583 => 59.29174, 18.14595
+Record no: 555 -> 59.29201, 18.14582 => 59.29202, 18.14594
+Record no: 556 -> 59.29236, 18.14568 => 59.29236, 18.14580
+Record no: 557 -> 59.29243, 18.14587 => 59.29240, 18.14598
+Record no: 558 -> 59.29257, 18.14592 => 59.29257, 18.14605
+Record no: 559 -> 59.29278, 18.14584 => 59.29277, 18.14596
+Record no: 560 -> 59.29292, 18.14605 => 59.29289, 18.14616
+Record no: 561 -> 59.29304, 18.14611 => 59.29303, 18.14623
+CPoint no: 1 (same GPS point) -> 59.29469, 18.14423 => 59.29471, 18.14411
+CPoint no: 2 (same GPS point) -> 59.29444, 18.14402 => 59.29445, 18.14390
+CPoint no: 3 (same GPS point) -> 59.29420, 18.14404 => 59.29422, 18.14393
+CPoint no: 4 (same GPS point) -> 59.29368, 18.14340 => 59.29373, 18.14334
+CPoint no: 5 (same GPS point) -> 59.29363, 18.14307 => 59.29368, 18.14300
+CPoint no: 6 (same GPS point) -> 59.29069, 18.14202 => 59.29068, 18.14190
+CPoint no: 7 (same GPS point) -> 59.28955, 18.14328 => 59.28951, 18.14318
+CPoint no: 8 (same GPS point) -> 59.28791, 18.14591 => 59.28788, 18.14581
+CPoint no: 9 (same GPS point) -> 59.28314, 18.14950 => 59.28316, 18.14938
+CPoint no: 10 (same GPS point) -> 59.27916, 18.14825 => 59.27911, 18.14817
+CPoint no: 11 (same GPS point) -> 59.27911, 18.14892 => 59.27907, 18.14882
+CPoint no: 12 (same GPS point) -> 59.27523, 18.15027 => 59.27522, 18.15015
+CPoint no: 13 (same GPS point) -> 59.27501, 18.15064 => 59.27495, 18.15058
+CPoint no: 14 (same GPS point) -> 59.27413, 18.14996 => 59.27419, 18.14998
+CPoint no: 15 (same GPS point) -> 59.27388, 18.14946 => 59.27388, 18.14934
+CPoint no: 16 (same GPS point) -> 59.27055, 18.14711 => 59.27056, 18.14699
+CPoint no: 17 (same GPS point) -> 59.27035, 18.14712 => 59.27033, 18.14701
+CPoint no: 18 (same GPS point) -> 59.26979, 18.14806 => 59.26973, 18.14804
+CPoint no: 19 (same GPS point) -> 59.27011, 18.15059 => 59.27007, 18.15049
+CPoint no: 20 (same GPS point) -> 59.26816, 18.15213 => 59.26811, 18.15205
+CPoint no: 21 (same GPS point) -> 59.26557, 18.15608 => 59.26550, 18.15608
+CPoint no: 22 (same GPS point) -> 59.26736, 18.16288 => 59.26738, 18.16300
+CPoint no: 23 (same GPS point) -> 59.27083, 18.15635 => 59.27089, 18.15637
+CPoint no: 24 (same GPS point) -> 59.27102, 18.15537 => 59.27108, 18.15544
+CPoint no: 25 (same GPS point) -> 59.27914, 18.14961 => 59.27917, 18.14973
+CPoint no: 26 (same GPS point) -> 59.27914, 18.14962 => 59.27917, 18.14951
+CPoint no: 27 (same GPS point) -> 59.27873, 18.15145 => 59.27868, 18.15139
+CPoint no: 28 (same GPS point) -> 59.27814, 18.15298 => 59.27809, 18.15293
+CPoint no: 29 (same GPS point) -> 59.27660, 18.15783 => 59.27657, 18.15773
+CPoint no: 30 (same GPS point) -> 59.27581, 18.15887 => 59.27575, 18.15893
+CPoint no: 31 (same GPS point) -> 59.27577, 18.16072 => 59.27571, 18.16068
+CPoint no: 32 (same GPS point) -> 59.27604, 18.16155 => 59.27600, 18.16146
+CPoint no: 33 (same GPS point) -> 59.27527, 18.16746 => 59.27523, 18.16736
+CPoint no: 34 (same GPS point) -> 59.27534, 18.16817 => 59.27532, 18.16828
+CPoint no: 35 (same GPS point) -> 59.27859, 18.16534 => 59.27859, 18.16546
+CPoint no: 36 (same GPS point) -> 59.27859, 18.16533 => 59.27863, 18.16543
+CPoint no: 37 (same GPS point) -> 59.27921, 18.16427 => 59.27927, 18.16430
+CPoint no: 38 (same GPS point) -> 59.27939, 18.16406 => 59.27933, 18.16412
+CPoint no: 39 (same GPS point) -> 59.27971, 18.16601 => 59.27966, 18.16607
+CPoint no: 40 (same GPS point) -> 59.28062, 18.16570 => 59.28067, 18.16578
+CPoint no: 41 (same GPS point) -> 59.28180, 18.16331 => 59.28179, 18.16343
+CPoint no: 42 (same GPS point) -> 59.28204, 18.16340 => 59.28207, 18.16351
+CPoint no: 43 (same GPS point) -> 59.28363, 18.16041 => 59.28367, 18.16050
+CPoint no: 44 (same GPS point) -> 59.28455, 18.15862 => 59.28462, 18.15862
+CPoint no: 45 (same GPS point) -> 59.28350, 18.15918 => 59.28357, 18.15918
+CPoint no: 46 (same GPS point) -> 59.28338, 18.15653 => 59.28343, 18.15645
+CPoint no: 47 (same GPS point) -> 59.28270, 18.15653 => 59.28273, 18.15642
+CPoint no: 48 (same GPS point) -> 59.28137, 18.15380 => 59.28143, 18.15386
+CPoint no: 49 (same GPS point) -> 59.28173, 18.15284 => 59.28173, 18.15296
+CPoint no: 50 (same GPS point) -> 59.28723, 18.14988 => 59.28728, 18.14996
+CPoint no: 51 (same GPS point) -> 59.28781, 18.14885 => 59.28780, 18.14897
+CPoint no: 52 (same GPS point) -> 59.28795, 18.14945 => 59.28790, 18.14953
+CPoint no: 53 (same GPS point) -> 59.28831, 18.14914 => 59.28832, 18.14926
+CPoint no: 54 (same GPS point) -> 59.28860, 18.15505 => 59.28854, 18.15511
+CPoint no: 55 (same GPS point) -> 59.28900, 18.15630 => 59.28898, 18.15641
+CPoint no: 56 (same GPS point) -> 59.28968, 18.15636 => 59.28970, 18.15647
+CPoint no: 57 (same GPS point) -> 59.29048, 18.15364 => 59.29054, 18.15369
+CPoint no: 58 (same GPS point) -> 59.29304, 18.14611 => 59.29303, 18.14623
+-- Changed record GPS points: 561
+-- Changed course points: 58
+--------------------------
+CHECK LAP TOTALS AND SPEED
+--------------------------
+Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
+Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
+Lap totals check: OK | lapTimerSum=5145.0s, timerListTotal=5145s | lapDistSum=13225.77m, lastRecordDist=13225.77m | lapMovingSum=5145.0s, sessionMoving=5145.0s | lapElapsedSum=5145.0s, sessionElapsed=5145.0s
+Lap totals and enhanced average speed are correct.
