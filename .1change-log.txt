@@ -300,6 +300,13 @@ Did overlay functions for three functions to be able to set a preanswer for them
     public void shiftGpsPointsSideways(Scanner sc, ShiftSide preAnswerShiftSide, Integer preAnswerMetersShift) {
         watchFitFile.getCPointFix().shiftGpsPointsSideways(sc, null, 7);
 
+--> git sync
+
+--> v2.94 Build
+--> git sync
+
+
+
 BUGGAR
 
 Do not handle args correctly
