@@ -305,6 +305,8 @@ Did overlay functions for three functions to be able to set a preanswer for them
 --> v2.94 Build
 --> git sync
 
+--> regr wkt pass / gps pass
+--> git sync
 
 
 BUGGAR
