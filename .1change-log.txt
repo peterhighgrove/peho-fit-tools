@@ -308,6 +308,8 @@ Did overlay functions for three functions to be able to set a preanswer for them
 --> regr wkt pass / gps pass
 --> git sync
 
+Added logging in cpb command, getCPointFix().moveCPointsBack, if cp moves before any record mesg.
+
 
 BUGGAR
 

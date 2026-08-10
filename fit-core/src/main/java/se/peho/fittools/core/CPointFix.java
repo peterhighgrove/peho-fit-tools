@@ -482,7 +482,9 @@ public class CPointFix {
 
         int changedCount = 0;
         int coursePointNo = 0;
-        for (Mesg mesg : fitFile.getAllMesg()) {
+        List<Mesg> allMesg = fitFile.getAllMesg();
+        for (int mesgIx = 0; mesgIx < allMesg.size(); mesgIx++) {
+            Mesg mesg = allMesg.get(mesgIx);
             if (mesg.getNum() != MesgNum.COURSE_POINT) {
                 continue;
             }
@@ -545,6 +547,7 @@ public class CPointFix {
             fitFile.appendTempUpdateLogLn("CPoint no: " + coursePointNo + " -> " + oldName + " / " + coursePointName(oldType));
             fitFile.appendTempUpdateLogLn("-- Distance changed from " + oldDistance + "m to " + newDistance + "m");
             fitFile.appendTempUpdateLogLn("-- Position: " + oldPosition + " -> " + newPosition);
+            fitFile.appendTempUpdateLogLn(buildMoveBackOrderCheckLog(mesgIx, oldDistance, newDistance));
             changedCount++;
         }
 
@@ -1217,6 +1220,38 @@ public class CPointFix {
         }
 
         return closestIndex;
+    }
+    // =================================================================================
+    private String buildMoveBackOrderCheckLog(int coursePointMesgIndex, float oldDistance, float newDistance) {
+        float lowerDistance = Math.min(oldDistance, newDistance);
+        float upperDistance = Math.max(oldDistance, newDistance);
+
+        List<Mesg> allMesg = fitFile.getAllMesg();
+        int checkedRecordCount = 0;
+        for (int i = coursePointMesgIndex - 1; i >= 0; i--) {
+            Mesg previousMesg = allMesg.get(i);
+            if (previousMesg.getNum() != MesgNum.RECORD) {
+                if (checkedRecordCount > 0) {
+                    break;
+                }
+                continue;
+            }
+
+            checkedRecordCount++;
+            Float previousDistance = previousMesg.getFieldFloatValue(FitFile.REC_DIST);
+            if (previousDistance == null) {
+                continue;
+            }
+
+            if (previousDistance > lowerDistance && previousDistance < upperDistance) {
+                return "-- Order check: WARNING - preceding RECORD at allMesg index " + i
+                    + " has distance " + previousDistance + "m between "
+                    + newDistance + "m and " + oldDistance + "m";
+            }
+        }
+
+        return "-- Order check: OK - no preceding RECORD distance between "
+            + newDistance + "m and " + oldDistance + "m";
     }
     // =================================================================================
     private int findClosestGpsRecordIndexInRecords(Integer lat, Integer lon, List<Mesg> recordMesgList) {
