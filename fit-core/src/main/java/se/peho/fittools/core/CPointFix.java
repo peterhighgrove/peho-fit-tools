@@ -229,6 +229,10 @@ public class CPointFix {
     }
     // =================================================================================
     public void checkAndMoveCPointsAfterRecords(Scanner sc) {
+        checkAndMoveCPointsAfterRecords(sc, null);
+    }
+    // =================================================================================
+    public void checkAndMoveCPointsAfterRecords(Scanner sc, String preAnswer) {
         List<Mesg> allMesg = fitFile.getAllMesg();
 
         int firstRecordIx = findFirstMesgIndex(allMesg, MesgNum.RECORD);
@@ -285,10 +289,17 @@ public class CPointFix {
         fitFile.appendTempUpdateLogLn("Placement result: " + placement);
         System.out.println(fitFile.getTempUpdateLog());
 
-        String answer = InputHelper.askForString(
-            "Move all course points to after records and before last timer stop event (y/n)",
-            "n",
-            sc);
+        String answer;
+        if (preAnswer == null){
+            answer = InputHelper.askForString(
+                "Move all course points to after records and before last timer stop event (y/n)",
+                "n",
+                sc);
+        } else if (preAnswer.equalsIgnoreCase("y")) {
+            answer = "y";
+        } else {
+            answer = "n";
+        }
         if (answer == null || !answer.equalsIgnoreCase("y")) {
             fitFile.appendTempUpdateLogLn("No move done.");
             fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
@@ -438,14 +449,29 @@ public class CPointFix {
     }
     // =================================================================================
     public void moveCPointsBack(Scanner sc) {
-        Integer metersToMove = InputHelper.askForNumber("Enter number of meters to move back", sc);
+        moveCPointsBack(sc, null, null);
+    }
+    // =================================================================================
+    public void moveCPointsBack(Scanner sc, Integer preAnswerMetersMoveBack, String preAnswerUpdateGps) {
+
+        Integer metersToMove = 0;
+        if (preAnswerMetersMoveBack == null) {
+            metersToMove = InputHelper.askForNumber("Enter number of meters to move back", sc);
+        } else {
+            metersToMove = preAnswerMetersMoveBack;
+        }
         if (metersToMove == null) return;
         if (metersToMove <= 0) {
             System.out.println("==XX> Number of meters must be greater than zero.");
             return;
         }
 
-        String updateGpsAnswer = InputHelper.askForString("Also update GPS point (y/n)", "n", sc);
+        String updateGpsAnswer;
+        if (preAnswerUpdateGps == null) {
+            updateGpsAnswer = InputHelper.askForString("Also update GPS point (y/n)", "n", sc);
+        } else {
+            updateGpsAnswer = preAnswerUpdateGps;
+        }
         if (updateGpsAnswer == null) return;
 
         fitFile.clearTempUpdateLog();
@@ -528,10 +554,25 @@ public class CPointFix {
     }
     // =================================================================================
     public void shiftGpsPointsSideways(Scanner sc) {
-        ShiftSide shiftSide = askForShiftSide(sc);
+        shiftGpsPointsSideways(sc, null, null);
+    }
+    // =================================================================================
+    public void shiftGpsPointsSideways(Scanner sc, ShiftSide preAnswerShiftSide, Integer preAnswerMetersShift) {
+        ShiftSide shiftSide = null;
+        if (preAnswerShiftSide == null) {
+            shiftSide = askForShiftSide(sc);
+        } else {
+            shiftSide = preAnswerShiftSide;
+        }
         if (shiftSide == null) return;
 
-        Integer metersToShift = InputHelper.askForNumber("Enter number of meters to shift", sc);
+        Integer metersToShift = null;
+        if (preAnswerMetersShift == null) {
+            metersToShift = InputHelper.askForNumber("Enter number of meters to shift", sc);
+        } else {
+            metersToShift = preAnswerMetersShift;
+        }
+
         if (metersToShift == null) return;
         if (metersToShift <= 0) {
             System.out.println("==XX> Number of meters must be greater than zero.");

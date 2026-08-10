@@ -18,7 +18,7 @@ public class CPointQuickScriptCommand implements Command {
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
         watchFitFile.getCPointFix().changeGenericCPointTypes(sc);
-        watchFitFile.getCPointFix().checkAndMoveCPointsAfterRecords(sc);
+        watchFitFile.getCPointFix().checkAndMoveCPointsAfterRecords(sc, "y");
 
         while (true) {
             System.out.print("Enter new pace (mm:ss min/km) (b = back): ");
@@ -42,8 +42,8 @@ public class CPointQuickScriptCommand implements Command {
 
             watchFitFile.getCPointFix().changeCPointNamesFromAbbrevList();
             watchFitFile.getCPointFix().insertTypeCharInCPointNames();
-            watchFitFile.getCPointFix().moveCPointsBack(sc);
-            watchFitFile.getCPointFix().shiftGpsPointsSideways(sc);
+            watchFitFile.getCPointFix().moveCPointsBack(sc, 15, "n");
+            watchFitFile.getCPointFix().shiftGpsPointsSideways(sc, null, 7);
             return;
         }
     }

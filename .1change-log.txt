@@ -289,7 +289,16 @@ New regr test for cpq
 --> regr gps bless
 --> git sync
 
-
+Did overlay functions for three functions to be able to set a preanswer for them andwith cpq command
+    public void checkAndMoveCPointsAfterRecords(Scanner sc) {
+    public void checkAndMoveCPointsAfterRecords(Scanner sc, String preAnswer) {
+        watchFitFile.getCPointFix().checkAndMoveCPointsAfterRecords(sc, "y");
+    public void moveCPointsBack(Scanner sc) {
+    public void moveCPointsBack(Scanner sc, Integer preAnswerMetersMoveBack, String preAnswerUpdateGps) {
+        watchFitFile.getCPointFix().moveCPointsBack(sc, 15, "n");
+    public void shiftGpsPointsSideways(Scanner sc) {
+    public void shiftGpsPointsSideways(Scanner sc, ShiftSide preAnswerShiftSide, Integer preAnswerMetersShift) {
+        watchFitFile.getCPointFix().shiftGpsPointsSideways(sc, null, 7);
 
 BUGGAR
 
