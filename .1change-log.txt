@@ -310,6 +310,8 @@ Did overlay functions for three functions to be able to set a preanswer for them
 
 Added logging in cpb command, getCPointFix().moveCPointsBack, if cp moves before any record mesg.
 
+--> v2.95 Build
+--> git sync
 
 BUGGAR
 
