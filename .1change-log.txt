@@ -320,6 +320,10 @@ I would like an Android mobile app front-end to the fit-fix-gps-activities in th
 --> v3.00 Build
 --> git sync
 
+Didn't bless fit.gps after 2.95 Build
+Regr just log changes 
+/regr-gps.sh --version 2.95 --bless
+
 BUGGAR
 
 Do not handle args correctly

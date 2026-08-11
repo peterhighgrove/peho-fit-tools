@@ -396,174 +396,231 @@ CPoint no: 1 skipped because new distance would be negative
 CPoint no: 2 -> < / LEFT
 -- Distance changed from 30.42m to 15.42m
 -- Position: 59.29444, 18.14402 -> 59.29444, 18.14402
+-- Order check: OK - no preceding RECORD distance between 15.42m and 30.42m
 CPoint no: 3 -> Dammsjön / WATER
 -- Distance changed from 58.27m to 43.27m
 -- Position: 59.29420, 18.14404 -> 59.29420, 18.14404
+-- Order check: WARNING - preceding RECORD at allMesg index 8 has distance 55.34m between 43.27m and 58.27m
 CPoint no: 4 -> ) / SLIGHT_LEFT
 -- Distance changed from 130.75m to 115.75m
 -- Position: 59.29368, 18.14340 -> 59.29368, 18.14340
+-- Order check: WARNING - preceding RECORD at allMesg index 12 has distance 116.28m between 115.75m and 130.75m
 CPoint no: 5 -> < / LEFT
 -- Distance changed from 149.87m to 134.87m
 -- Position: 59.29363, 18.14307 -> 59.29363, 18.14307
+-- Order check: OK - no preceding RECORD distance between 134.87m and 149.87m
 CPoint no: 6 -> < / LEFT
 -- Distance changed from 498.67m to 483.67m
 -- Position: 59.29069, 18.14202 -> 59.29069, 18.14202
+-- Order check: OK - no preceding RECORD distance between 483.67m and 498.67m
 CPoint no: 7 -> < / LEFT
 -- Distance changed from 670.38m to 655.38m
 -- Position: 59.28955, 18.14328 -> 59.28955, 18.14328
+-- Order check: WARNING - preceding RECORD at allMesg index 48 has distance 660.02m between 655.38m and 670.38m
 CPoint no: 8 -> > / RIGHT
 -- Distance changed from 937.81m to 922.81m
 -- Position: 59.28791, 18.14591 -> 59.28791, 18.14591
+-- Order check: OK - no preceding RECORD distance between 922.81m and 937.81m
 CPoint no: 9 -> Söderbysjön / WATER
 -- Distance changed from 1560.33m to 1545.33m
 -- Position: 59.28314, 18.14950 -> 59.28314, 18.14950
+-- Order check: OK - no preceding RECORD distance between 1545.33m and 1560.33m
 CPoint no: 10 -> < / LEFT
 -- Distance changed from 2508.96m to 2493.96m
 -- Position: 59.27916, 18.14825 -> 59.27916, 18.14825
+-- Order check: OK - no preceding RECORD distance between 2493.96m and 2508.96m
 CPoint no: 11 -> > / RIGHT
 -- Distance changed from 2547.79m to 2532.79m
 -- Position: 59.27911, 18.14892 -> 59.27911, 18.14892
+-- Order check: OK - no preceding RECORD distance between 2532.79m and 2547.79m
 CPoint no: 12 -> < / LEFT
 -- Distance changed from 3003.46m to 2988.46m
 -- Position: 59.27523, 18.15027 -> 59.27523, 18.15027
+-- Order check: OK - no preceding RECORD distance between 2988.46m and 3003.46m
 CPoint no: 13 -> ( / SLIGHT_LEFT
 -- Distance changed from 3036.32m to 3021.32m
 -- Position: 59.27501, 18.15064 -> 59.27501, 18.15064
+-- Order check: WARNING - preceding RECORD at allMesg index 133 has distance 3027.0m between 3021.32m and 3036.32m
 CPoint no: 14 -> < / LEFT
 -- Distance changed from 3277.89m to 3262.89m
 -- Position: 59.27413, 18.14996 -> 59.27413, 18.14996
+-- Order check: OK - no preceding RECORD distance between 3262.89m and 3277.89m
 CPoint no: 15 -> < / LEFT
 -- Distance changed from 3321.4m to 3306.4m
 -- Position: 59.27388, 18.14946 -> 59.27388, 18.14946
+-- Order check: WARNING - preceding RECORD at allMesg index 147 has distance 3312.31m between 3306.4m and 3321.4m
 CPoint no: 16 -> Brotorp / SHELTER
 -- Distance changed from 3853.01m to 3838.01m
 -- Position: 59.27055, 18.14711 -> 59.27055, 18.14711
+-- Order check: OK - no preceding RECORD distance between 3838.01m and 3853.01m
 CPoint no: 17 -> ( / STRAIGHT
 -- Distance changed from 3876.4m to 3861.4m
 -- Position: 59.27035, 18.14712 -> 59.27035, 18.14712
+-- Order check: WARNING - preceding RECORD at allMesg index 167 has distance 3867.21m between 3861.4m and 3876.4m
 CPoint no: 18 -> \ / SLIGHT_LEFT
 -- Distance changed from 3963.69m to 3948.69m
 -- Position: 59.26979, 18.14806 -> 59.26979, 18.14806
+-- Order check: OK - no preceding RECORD distance between 3948.69m and 3963.69m
 CPoint no: 19 -> > / RIGHT
 -- Distance changed from 4112.31m to 4097.31m
 -- Position: 59.27011, 18.15059 -> 59.27011, 18.15059
+-- Order check: WARNING - preceding RECORD at allMesg index 177 has distance 4101.4m between 4097.31m and 4112.31m
 CPoint no: 20 -> / / SLIGHT_RIGHT
 -- Distance changed from 4381.61m to 4366.61m
 -- Position: 59.26816, 18.15213 -> 59.26816, 18.15213
+-- Order check: OK - no preceding RECORD distance between 4366.61m and 4381.61m
 CPoint no: 21 -> Ältasjön / WATER
 -- Distance changed from 4886.99m to 4871.99m
 -- Position: 59.26557, 18.15608 -> 59.26557, 18.15608
+-- Order check: OK - no preceding RECORD distance between 4871.99m and 4886.99m
 CPoint no: 22 -> <Ältasjöstige / LEFT
 -- Distance changed from 5465.21m to 5450.21m
 -- Position: 59.26736, 18.16288 -> 59.26736, 18.16288
+-- Order check: OK - no preceding RECORD distance between 5450.21m and 5465.21m
 CPoint no: 23 -> ^Peak / SUMMIT
 -- Distance changed from 6059.76m to 6044.76m
 -- Position: 59.27083, 18.15635 -> 59.27083, 18.15635
+-- Order check: WARNING - preceding RECORD at allMesg index 246 has distance 6050.33m between 6044.76m and 6059.76m
 CPoint no: 24 -> >John Bauer / RIGHT
 -- Distance changed from 6120.49m to 6105.49m
 -- Position: 59.27102, 18.15537 -> 59.27102, 18.15537
+-- Order check: OK - no preceding RECORD distance between 6105.49m and 6120.49m
 CPoint no: 25 -> » / SHARP_RIGHT
 -- Distance changed from 7123.86m to 7108.86m
 -- Position: 59.27914, 18.14961 -> 59.27914, 18.14961
+-- Order check: OK - no preceding RECORD distance between 7108.86m and 7123.86m
 CPoint no: 26 -> »Söderbysjön / WATER
 -- Distance changed from 7124.4m to 7109.4m
 -- Position: 59.27914, 18.14962 -> 59.27914, 18.14962
+-- Order check: WARNING - preceding RECORD at allMesg index 291 has distance 7123.86m between 7109.4m and 7124.4m
 CPoint no: 27 -> / / SLIGHT_RIGHT
 -- Distance changed from 7241.47m to 7226.47m
 -- Position: 59.27873, 18.15145 -> 59.27873, 18.15145
+-- Order check: OK - no preceding RECORD distance between 7226.47m and 7241.47m
 CPoint no: 28 -> / / SLIGHT_RIGHT
 -- Distance changed from 7361.51m to 7346.51m
 -- Position: 59.27814, 18.15298 -> 59.27814, 18.15298
+-- Order check: OK - no preceding RECORD distance between 7346.51m and 7361.51m
 CPoint no: 29 -> / / SLIGHT_RIGHT
 -- Distance changed from 7701.83m to 7686.83m
 -- Position: 59.27660, 18.15783 -> 59.27660, 18.15783
+-- Order check: OK - no preceding RECORD distance between 7686.83m and 7701.83m
 CPoint no: 30 -> < / LEFT
 -- Distance changed from 7811.83m to 7796.83m
 -- Position: 59.27581, 18.15887 -> 59.27581, 18.15887
+-- Order check: WARNING - preceding RECORD at allMesg index 325 has distance 7798.07m between 7796.83m and 7811.83m
 CPoint no: 31 -> \ / SLIGHT_LEFT
 -- Distance changed from 7937.3m to 7922.3m
 -- Position: 59.27577, 18.16072 -> 59.27577, 18.16072
+-- Order check: OK - no preceding RECORD distance between 7922.3m and 7937.3m
 CPoint no: 32 -> Ulvsjön view / OVERLOOK
 -- Distance changed from 8001.62m to 7986.62m
 -- Position: 59.27604, 18.16155 -> 59.27604, 18.16155
+-- Order check: WARNING - preceding RECORD at allMesg index 339 has distance 7994.02m between 7986.62m and 8001.62m
 CPoint no: 33 -> < / LEFT
 -- Distance changed from 8527.33m to 8512.33m
 -- Position: 59.27527, 18.16746 -> 59.27527, 18.16746
+-- Order check: OK - no preceding RECORD distance between 8512.33m and 8527.33m
 CPoint no: 34 -> < / LEFT
 -- Distance changed from 8569.06m to 8554.06m
 -- Position: 59.27534, 18.16817 -> 59.27534, 18.16817
+-- Order check: OK - no preceding RECORD distance between 8554.06m and 8569.06m
 CPoint no: 35 -> Ulvsjön2 / OVERLOOK
 -- Distance changed from 9031.55m to 9016.55m
 -- Position: 59.27859, 18.16534 -> 59.27859, 18.16534
+-- Order check: WARNING - preceding RECORD at allMesg index 380 has distance 9027.64m between 9016.55m and 9031.55m
 CPoint no: 36 -> / / SLIGHT_RIGHT
 -- Distance changed from 9032.09m to 9017.09m
 -- Position: 59.27859, 18.16533 -> 59.27859, 18.16533
+-- Order check: WARNING - preceding RECORD at allMesg index 381 has distance 9031.55m between 9017.09m and 9032.09m
 CPoint no: 37 -> / / SLIGHT_RIGHT
 -- Distance changed from 9137.59m to 9122.59m
 -- Position: 59.27921, 18.16427 -> 59.27921, 18.16427
+-- Order check: WARNING - preceding RECORD at allMesg index 389 has distance 9123.79m between 9122.59m and 9137.59m
 CPoint no: 38 -> > / RIGHT
 -- Distance changed from 9164.71m to 9149.71m
 -- Position: 59.27939, 18.16406 -> 59.27939, 18.16406
+-- Order check: OK - no preceding RECORD distance between 9149.71m and 9164.71m
 CPoint no: 39 -> \ / SLIGHT_LEFT
 -- Distance changed from 9282.6m to 9267.6m
 -- Position: 59.27971, 18.16601 -> 59.27971, 18.16601
+-- Order check: OK - no preceding RECORD distance between 9267.6m and 9282.6m
 CPoint no: 40 -> \ / SLIGHT_LEFT
 -- Distance changed from 9391.92m to 9376.92m
 -- Position: 59.28062, 18.16570 -> 59.28062, 18.16570
+-- Order check: OK - no preceding RECORD distance between 9376.92m and 9391.92m
 CPoint no: 41 -> / / SLIGHT_RIGHT
 -- Distance changed from 9588.73m to 9573.73m
 -- Position: 59.28180, 18.16331 -> 59.28180, 18.16331
+-- Order check: WARNING - preceding RECORD at allMesg index 412 has distance 9576.08m between 9573.73m and 9588.73m
 CPoint no: 42 -> \ / SLIGHT_LEFT
 -- Distance changed from 9616.1m to 9601.1m
 -- Position: 59.28204, 18.16340 -> 59.28204, 18.16340
+-- Order check: OK - no preceding RECORD distance between 9601.1m and 9616.1m
 CPoint no: 43 -> > / RIGHT
 -- Distance changed from 9864.62m to 9849.62m
 -- Position: 59.28363, 18.16041 -> 59.28363, 18.16041
+-- Order check: OK - no preceding RECORD distance between 9849.62m and 9864.62m
 CPoint no: 44 -> turn around / U_TURN
 -- Distance changed from 10014.79m to 9999.79m
 -- Position: 59.28455, 18.15862 -> 59.28455, 18.15862
+-- Order check: WARNING - preceding RECORD at allMesg index 429 has distance 10014.35m between 9999.79m and 10014.79m
 CPoint no: 45 -> / / SLIGHT_RIGHT
 -- Distance changed from 10236.27m to 10221.27m
 -- Position: 59.28350, 18.15918 -> 59.28350, 18.15918
+-- Order check: OK - no preceding RECORD distance between 10221.27m and 10236.27m
 CPoint no: 46 -> < / LEFT
 -- Distance changed from 10389.45m to 10374.45m
 -- Position: 59.28338, 18.15653 -> 59.28338, 18.15653
+-- Order check: OK - no preceding RECORD distance between 10374.45m and 10389.45m
 CPoint no: 47 -> / / SLIGHT_RIGHT
 -- Distance changed from 10467.13m to 10452.13m
 -- Position: 59.28270, 18.15653 -> 59.28270, 18.15653
+-- Order check: OK - no preceding RECORD distance between 10452.13m and 10467.13m
 CPoint no: 48 -> » / SHARP_RIGHT
 -- Distance changed from 10692.59m to 10677.59m
 -- Position: 59.28137, 18.15380 -> 59.28137, 18.15380
+-- Order check: WARNING - preceding RECORD at allMesg index 466 has distance 10685.73m between 10677.59m and 10692.59m
 CPoint no: 49 -> Söderbysjön / CHECKPOINT
 -- Distance changed from 10764.64m to 10749.64m
 -- Position: 59.28173, 18.15284 -> 59.28173, 18.15284
+-- Order check: WARNING - preceding RECORD at allMesg index 473 has distance 10759.95m between 10749.64m and 10764.64m
 CPoint no: 50 -> < / LEFT
 -- Distance changed from 11432.76m to 11417.76m
 -- Position: 59.28723, 18.14988 -> 59.28723, 18.14988
+-- Order check: WARNING - preceding RECORD at allMesg index 486 has distance 11424.74m between 11417.76m and 11432.76m
 CPoint no: 51 -> Dammsjön / MILE_MARKER
 -- Distance changed from 11532.25m to 11517.25m
 -- Position: 59.28781, 18.14885 -> 59.28781, 18.14885
+-- Order check: WARNING - preceding RECORD at allMesg index 494 has distance 11525.84m between 11517.25m and 11532.25m
 CPoint no: 52 -> < / LEFT
 -- Distance changed from 11573.09m to 11558.09m
 -- Position: 59.28795, 18.14945 -> 59.28795, 18.14945
+-- Order check: WARNING - preceding RECORD at allMesg index 497 has distance 11558.92m between 11558.09m and 11573.09m
 CPoint no: 53 -> > / RIGHT
 -- Distance changed from 11620.13m to 11605.13m
 -- Position: 59.28831, 18.14914 -> 59.28831, 18.14914
+-- Order check: OK - no preceding RECORD distance between 11605.13m and 11620.13m
 CPoint no: 54 -> \ / SLIGHT_LEFT
 -- Distance changed from 12098.83m to 12083.83m
 -- Position: 59.28860, 18.15505 -> 59.28860, 18.15505
+-- Order check: OK - no preceding RECORD distance between 12083.83m and 12098.83m
 CPoint no: 55 -> < / LEFT
 -- Distance changed from 12183.39m to 12168.39m
 -- Position: 59.28900, 18.15630 -> 59.28900, 18.15630
+-- Order check: OK - no preceding RECORD distance between 12168.39m and 12183.39m
 CPoint no: 56 -> \ / SLIGHT_LEFT
 -- Distance changed from 12259.18m to 12244.18m
 -- Position: 59.28968, 18.15636 -> 59.28968, 18.15636
+-- Order check: OK - no preceding RECORD distance between 12244.18m and 12259.18m
 CPoint no: 57 -> < / LEFT
 -- Distance changed from 12445.84m to 12430.84m
 -- Position: 59.29048, 18.15364 -> 59.29048, 18.15364
+-- Order check: OK - no preceding RECORD distance between 12430.84m and 12445.84m
 CPoint no: 58 -> » / MEETING_SPOT
 -- Distance changed from 13225.77m to 13210.77m
 -- Position: 59.29304, 18.14611 -> 59.29304, 18.14611
+-- Order check: WARNING - preceding RECORD at allMesg index 564 has distance 13211.76m between 13210.77m and 13225.77m
 -- Changed course points: 57
 COURSE POINT - SHIFT ROUTE SIDEWAYS
 --------------------------------
