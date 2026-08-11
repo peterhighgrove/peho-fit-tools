@@ -351,7 +351,19 @@ findFirstRecordTimeIndexAtOrAfter(...) now calls FindMesgIx.findFirstIndexAtOrAf
 --> v3.02 Build
 --> git sync
 
-regr-gps/wkt.sh --version 3.01 pass
+regr-gps/wkt.sh --version 3.02 pass
+
+What changed
+
+Added a new generic helper in FindMesgIx.java:90:
+findMesgIndexByIntField(List<Mesg> mesgs, int mesgNum, int fieldNum, int targetValue)
+Refactored Lap index lookups in LapFix.java:309 and LapFix.java:313 to delegate to that helper:
+findLapMesgIndexInAllMesgByLapIx(...)
+findLapMesgIndexInLapMesgByLapIx(...)
+
+-> git sync
+
+
 
 BUGGAR
 

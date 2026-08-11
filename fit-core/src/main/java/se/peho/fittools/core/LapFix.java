@@ -307,27 +307,11 @@ public class LapFix {
     }
 
     private int findLapMesgIndexInAllMesgByLapIx(int lapIx) {
-        for (int i = 0; i < fitFile.getAllMesg().size(); i++) {
-            Mesg mesg = fitFile.getAllMesg().get(i);
-            if (mesg.getNum() != MesgNum.LAP) {
-                continue;
-            }
-            Integer currentLapIx = mesg.getFieldIntegerValue(FitFile.LAP_IX);
-            if (currentLapIx != null && currentLapIx.equals(lapIx)) {
-                return i;
-            }
-        }
-        return -1;
+        return FindMesgIx.findMesgIndexByIntField(fitFile.getAllMesg(), MesgNum.LAP, FitFile.LAP_IX, lapIx);
     }
 
     private int findLapMesgIndexInLapMesgByLapIx(int lapIx) {
-        for (int i = 0; i < fitFile.getLapMesg().size(); i++) {
-            Integer currentLapIx = fitFile.getLapMesg().get(i).getFieldIntegerValue(FitFile.LAP_IX);
-            if (currentLapIx != null && currentLapIx.equals(lapIx)) {
-                return i;
-            }
-        }
-        return -1;
+        return FindMesgIx.findMesgIndexByIntField(fitFile.getLapMesg(), MesgNum.LAP, FitFile.LAP_IX, lapIx);
     }
 
     private int findLinkedTimeInZoneMesgIndex(int lapAllMesgIx, int lapIx) {

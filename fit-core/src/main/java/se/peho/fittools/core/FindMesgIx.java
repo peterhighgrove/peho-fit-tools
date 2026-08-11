@@ -89,4 +89,18 @@ public final class FindMesgIx {
         }
         return values.size() - 1;
     }
+
+    public static int findMesgIndexByIntField(List<Mesg> mesgs, int mesgNum, int fieldNum, int targetValue) {
+        for (int i = 0; i < mesgs.size(); i++) {
+            Mesg mesg = mesgs.get(i);
+            if (mesg.getNum() != mesgNum) {
+                continue;
+            }
+            Integer value = mesg.getFieldIntegerValue(fieldNum);
+            if (value != null && value == targetValue) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }
