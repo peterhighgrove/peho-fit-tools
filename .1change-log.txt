@@ -326,7 +326,13 @@ regr-gps.sh --version 2.95 --bless
 
 regr-gps/wkt.sh --version 3.00 pass
 
-
+New class: FindMesgIx (or MesgIndexFinder).
+Static pure methods for generic scans:
+findInAllMesgByTime
+findInRecordMesgByTime
+findFirstByMesgNum
+findLastByMesgNum
+findLastTimerStopEvent
 
 BUGGAR
 

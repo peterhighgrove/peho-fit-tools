@@ -235,8 +235,8 @@ public class CPointFix {
     public void checkAndMoveCPointsAfterRecords(Scanner sc, String preAnswer) {
         List<Mesg> allMesg = fitFile.getAllMesg();
 
-        int firstRecordIx = findFirstMesgIndex(allMesg, MesgNum.RECORD);
-        int lastRecordIx = findLastMesgIndex(allMesg, MesgNum.RECORD);
+        int firstRecordIx = FindMesgIx.findFirstMesgIndex(allMesg, MesgNum.RECORD);
+        int lastRecordIx = FindMesgIx.findLastMesgIndex(allMesg, MesgNum.RECORD);
         if (firstRecordIx < 0 || lastRecordIx < 0) {
             System.out.println("==XX> No RECORD messages found in file.");
             return;
@@ -315,7 +315,7 @@ public class CPointFix {
 
         allMesg.removeIf(mesg -> mesg.getNum() == MesgNum.COURSE_POINT);
 
-        int lastRecordIxAfterRemoval = findLastMesgIndex(allMesg, MesgNum.RECORD);
+        int lastRecordIxAfterRemoval = FindMesgIx.findLastMesgIndex(allMesg, MesgNum.RECORD);
         if (lastRecordIxAfterRemoval < 0) {
             fitFile.appendTempUpdateLogLn("==XX> Move aborted: records disappeared unexpectedly.");
             System.out.println(fitFile.getTempUpdateLog());
@@ -989,24 +989,6 @@ public class CPointFix {
         }
 
         return null;
-    }
-    // =================================================================================
-    private int findFirstMesgIndex(List<Mesg> mesgs, int mesgNum) {
-        for (int i = 0; i < mesgs.size(); i++) {
-            if (mesgs.get(i).getNum() == mesgNum) {
-                return i;
-            }
-        }
-        return -1;
-    }
-    // =================================================================================
-    private int findLastMesgIndex(List<Mesg> mesgs, int mesgNum) {
-        for (int i = mesgs.size() - 1; i >= 0; i--) {
-            if (mesgs.get(i).getNum() == mesgNum) {
-                return i;
-            }
-        }
-        return -1;
     }
     // =================================================================================
 

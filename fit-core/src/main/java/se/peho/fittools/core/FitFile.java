@@ -1222,19 +1222,7 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public int findIxInAllMesgBasedOnTime(Long timeToSearchFor) {
-        int ix = 0;
-        // FIND IX i allMesg list
-        for (Mesg record : allMesg) {
-            if (record.getNum() == MesgNum.RECORD) {
-                if (record.getFieldLongValue(REC_TIME) != null) {
-                    if (record.getFieldLongValue(REC_TIME).equals(timeToSearchFor)) {
-                        break;
-                    }
-                }
-            }
-            ix += 1;
-        }
-        return ix;
+        return FindMesgIx.findIxInAllMesgBasedOnTime(allMesg, timeToSearchFor, REC_TIME);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public int findIxInRecordMesgBasedOnTimer(Long timerValueToSearchFor) {
@@ -1242,19 +1230,7 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public int findIxInRecordMesgBasedOnTime(Long timeToSearchFor) {
-        int ix = 0;
-        // FIND IX i allMesg list
-        for (Mesg record : recordMesg) {
-            //if (record.getNum() == MesgNum.RECORD) {
-                if (record.getFieldLongValue(REC_TIME) != null) {
-                    if (record.getFieldLongValue(REC_TIME).equals(timeToSearchFor)) {
-                        break;
-                    }
-                }
-            //}
-            ix += 1;
-        }
-        return ix;
+        return FindMesgIx.findIxInRecordMesgBasedOnTime(recordMesg, timeToSearchFor, REC_TIME);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public int countRecordsBetweenTimerValues(Long fromTimer, Long toTimer) {
@@ -2941,26 +2917,7 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     int findLastTimerStopEventIndex(List<Mesg> mesgs) {
-        for (int i = mesgs.size() - 1; i >= 0; i--) {
-            Mesg mesg = mesgs.get(i);
-            if (mesg.getNum() != MesgNum.EVENT) {
-                continue;
-            }
-            Short eventValue = mesg.getFieldShortValue(EventMesg.EventFieldNum);
-            Short eventTypeValue = mesg.getFieldShortValue(EventMesg.EventTypeFieldNum);
-            if (eventValue == null || eventTypeValue == null) {
-                continue;
-            }
-            if (!eventValue.equals(Event.TIMER.getValue())) {
-                continue;
-            }
-            EventType eventType = EventType.getByValue(eventTypeValue);
-            String eventTypeName = eventType != null ? String.valueOf(eventType) : "";
-            if ("STOP_ALL".equals(eventTypeName) || "STOP_DISABLE_ALL".equals(eventTypeName)) {
-                return i;
-            }
-        }
-        return -1;
+        return FindMesgIx.findLastTimerStopEventIndex(mesgs);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private Mesg findLastTimerStopEventMesg() {
