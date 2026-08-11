@@ -339,6 +339,8 @@ findLastTimerStopEvent
 --> v3.01 Build
 --> git sync
 
+regr-gps/wkt.sh --version 3.01 pass
+
 BUGGAR
 
 Do not handle args correctly
