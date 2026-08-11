@@ -317,6 +317,8 @@ Android app - basic
 I would like an Android mobile app front-end to the fit-fix-gps-activities in this project. FIrst input just a file picker with download folder as default. Then be able to run the commands, either from a command prompt or menu. I would like to be able to register it in Android as an app for fit files, so that it should be able to use 'Open with..' in file managers.
 --> git sync
 
+--> v3.00 Build
+--> git sync
 
 BUGGAR
 
