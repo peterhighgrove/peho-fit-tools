@@ -351,7 +351,7 @@ findFirstRecordTimeIndexAtOrAfter(...) now calls FindMesgIx.findFirstIndexAtOrAf
 --> v3.02 Build
 --> git sync
 
-regr-gps/wkt.sh --version 3.02 pass
+--> regr-gps/wkt.sh --version 3.02 pass
 
 What changed
 
@@ -361,15 +361,21 @@ Refactored Lap index lookups in LapFix.java:309 and LapFix.java:313 to delegate 
 findLapMesgIndexInAllMesgByLapIx(...)
 findLapMesgIndexInLapMesgByLapIx(...)
 
--> git sync
+--> git sync
 
 --> v3.03 Build
 --> git sync
 
-regr-gps/wkt.sh --version 3.03 pass
+--> regr-gps/wkt.sh --version 3.03 pass
 
 add a new lapn command path that splits an existing lap at a given totalTimer using the timer list from FitFile.createTimerList, then mirror the same lap field updates that lapMerge applies so the two resulting laps stay consistent. I’m starting by locating command parsing and the existing lapMerge update logic.
+--> git sync
 
+--> v3.04 Build
+
+--> regr-gps/wkt.sh --version 3.04 pass
+
+--> git sync
 
 
 BUGGAR

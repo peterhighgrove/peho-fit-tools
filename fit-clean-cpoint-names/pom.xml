@@ -8,7 +8,7 @@
     <parent>
         <groupId>se.peho.fittools</groupId>
         <artifactId>peho-fit-tools</artifactId>
-        <version>3.03</version>
+        <version>3.04</version>
     </parent>
 
     <artifactId>fit-clean-cpoint-names</artifactId>
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>se.peho.fittools</groupId>
             <artifactId>fit-core</artifactId>
-            <version>3.03</version>
+            <version>3.04</version>
         </dependency>
     </dependencies>
 
