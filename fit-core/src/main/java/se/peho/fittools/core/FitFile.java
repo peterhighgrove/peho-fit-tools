@@ -4815,6 +4815,10 @@ public class FitFile {
         getLapFix().lapMerge(fromLap, toLap);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void LapNew(Long totalTimer) {
+        getLapFix().lapNew(totalTimer);
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void shortenPause(int pauseNo, Long newPauseTime) {
         getPauseFix().pauseShorten(pauseNo, newPauseTime);
     }

@@ -306,8 +306,302 @@ public class LapFix {
         fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
 
+    public void lapNew(Long totalTimer) {
+        fitFile.clearTempUpdateLog();
+
+        if (totalTimer == null) {
+            fitFile.appendTempUpdateLogLn("==XX> No timer value provided.");
+            System.out.println(fitFile.getTempUpdateLog());
+            return;
+        }
+        if (fitFile.getRecordMesgAddOnRecords() == null || fitFile.getRecordMesgAddOnRecords().isEmpty()) {
+            fitFile.appendTempUpdateLogLn("==XX> Timer list is empty. Run createTimerList() first.");
+            System.out.println(fitFile.getTempUpdateLog());
+            return;
+        }
+        if (fitFile.getLapMesg() == null || fitFile.getLapMesg().isEmpty()) {
+            fitFile.appendTempUpdateLogLn("==XX> No lap messages found.");
+            System.out.println(fitFile.getTempUpdateLog());
+            return;
+        }
+
+        int splitRecordIx = findFirstRecordIndexAtOrAfterTimer(totalTimer);
+        if (splitRecordIx <= 0 || splitRecordIx >= fitFile.getRecordMesg().size()) {
+            fitFile.appendTempUpdateLogLn("==XX> Timer cannot be used for lap split (outside record range): "
+                + PehoUtils.sec2minSecLong(totalTimer));
+            System.out.println(fitFile.getTempUpdateLog());
+            return;
+        }
+
+        Mesg splitRecord = fitFile.getRecordMesg().get(splitRecordIx);
+        Mesg prevRecord = fitFile.getRecordMesg().get(splitRecordIx - 1);
+
+        Long splitTime = splitRecord.getFieldLongValue(FitFile.REC_TIME);
+        Long prevTime = prevRecord.getFieldLongValue(FitFile.REC_TIME);
+        Long splitTimer = fitFile.getRecordMesgAddOnRecords().get(splitRecordIx).getTimer();
+
+        if (splitTime == null || prevTime == null || splitTimer == null) {
+            fitFile.appendTempUpdateLogLn("==XX> Could not resolve split record timing values.");
+            System.out.println(fitFile.getTempUpdateLog());
+            return;
+        }
+
+        int lapIx = findLapIndexForTime(splitTime);
+        if (lapIx < 0 || lapIx >= fitFile.getLapMesg().size()) {
+            fitFile.appendTempUpdateLogLn("==XX> Could not find lap for timer " + PehoUtils.sec2minSecLong(totalTimer));
+            System.out.println(fitFile.getTempUpdateLog());
+            return;
+        }
+
+        Mesg firstLap = fitFile.getLapMesg().get(lapIx);
+        Mesg secondLap = new Mesg(firstLap);
+
+        Long lapStartTime = firstLap.getFieldLongValue(FitFile.LAP_STIME);
+        if (lapStartTime == null) {
+            fitFile.appendTempUpdateLogLn("==XX> Lap has no start time. Cannot split lap " + (lapIx + 1));
+            System.out.println(fitFile.getTempUpdateLog());
+            return;
+        }
+
+        Long lapStartTimer = fitFile.findTimerBasedOnTime(lapStartTime);
+        if (lapStartTimer == null) {
+            fitFile.appendTempUpdateLogLn("==XX> Could not resolve lap start timer for lap " + (lapIx + 1));
+            System.out.println(fitFile.getTempUpdateLog());
+            return;
+        }
+
+        Float lapTimerOriginal = firstLap.getFieldFloatValue(FitFile.LAP_TIMER);
+        float lapTimerRef = (lapTimerOriginal != null) ? lapTimerOriginal : 0f;
+        float splitInLap = splitTimer - lapStartTimer;
+
+        if (lapTimerRef <= 0f) {
+            fitFile.appendTempUpdateLogLn("==XX> Lap total timer is zero/unknown for lap " + (lapIx + 1));
+            System.out.println(fitFile.getTempUpdateLog());
+            return;
+        }
+        if (splitInLap <= 0f || splitInLap >= lapTimerRef) {
+            fitFile.appendTempUpdateLogLn("==XX> Split timer must be inside lap boundaries. Lap " + (lapIx + 1)
+                + " timer=" + PehoUtils.sec2minSecLong((long) lapTimerRef)
+                + ", split-at=" + PehoUtils.sec2minSecLong((long) splitInLap));
+            System.out.println(fitFile.getTempUpdateLog());
+            return;
+        }
+
+        float firstRatio = splitInLap / lapTimerRef;
+        if (firstRatio <= 0f || firstRatio >= 1f) {
+            fitFile.appendTempUpdateLogLn("==XX> Invalid split ratio: " + firstRatio);
+            System.out.println(fitFile.getTempUpdateLog());
+            return;
+        }
+
+        Long originalLapEndTime = firstLap.getFieldLongValue(FitFile.LAP_TIME);
+
+        setLongIfPresent(firstLap, FitFile.LAP_TIME, prevTime);
+        setLongIfPresent(secondLap, FitFile.LAP_TIME, originalLapEndTime != null ? originalLapEndTime : splitTime);
+        setLongIfPresent(secondLap, FitFile.LAP_STIME, splitTime);
+
+        splitFloatField(firstLap, secondLap, FitFile.LAP_TIMER, firstRatio);
+        splitFloatField(firstLap, secondLap, FitFile.LAP_ETIMER, firstRatio);
+        splitFloatField(firstLap, secondLap, FitFile.LAP_MTIMER, firstRatio);
+        splitFloatField(firstLap, secondLap, FitFile.LAP_DIST, firstRatio);
+        splitFloatField(firstLap, secondLap, FitFile.LAP_ASC, firstRatio);
+        splitFloatField(firstLap, secondLap, FitFile.LAP_DESC, firstRatio);
+
+        copyFloatFieldToBoth(firstLap, secondLap, FitFile.LAP_SPEED);
+        copyFloatFieldToBoth(firstLap, secondLap, FitFile.LAP_MSPEED);
+        copyFloatFieldToBoth(firstLap, secondLap, FitFile.LAP_ESPEED);
+        copyFloatFieldToBoth(firstLap, secondLap, FitFile.LAP_EMSPEED);
+        copyFloatFieldToBoth(firstLap, secondLap, FitFile.LAP_ALT);
+        copyFloatFieldToBoth(firstLap, secondLap, FitFile.LAP_MALT);
+        copyFloatFieldToBoth(firstLap, secondLap, FitFile.LAP_MINALT);
+
+        copyIntFieldToBoth(firstLap, secondLap, FitFile.LAP_HR);
+        copyIntFieldToBoth(firstLap, secondLap, FitFile.LAP_MHR);
+        copyIntFieldToBoth(firstLap, secondLap, FitFile.LAP_POW);
+        copyIntFieldToBoth(firstLap, secondLap, FitFile.LAP_MPOW);
+        copyIntFieldToBoth(firstLap, secondLap, FitFile.LAP_CAD);
+        copyIntFieldToBoth(firstLap, secondLap, FitFile.LAP_MCAD);
+        copyIntFieldToBoth(firstLap, secondLap, FitFile.LAP_TEMP);
+
+        copyByteFieldToBoth(firstLap, secondLap, FitFile.LAP_MTEMP);
+        copyByteFieldToBoth(firstLap, secondLap, FitFile.LAP_MINTEMP);
+
+        Integer splitLat = splitRecord.getFieldIntegerValue(FitFile.REC_LAT);
+        Integer splitLon = splitRecord.getFieldIntegerValue(FitFile.REC_LON);
+        Integer prevLat = prevRecord.getFieldIntegerValue(FitFile.REC_LAT);
+        Integer prevLon = prevRecord.getFieldIntegerValue(FitFile.REC_LON);
+
+        setIntIfPresent(firstLap, FitFile.LAP_ELAT, prevLat != null ? prevLat : splitLat);
+        setIntIfPresent(firstLap, FitFile.LAP_ELON, prevLon != null ? prevLon : splitLon);
+        setIntIfPresent(secondLap, FitFile.LAP_SLAT, splitLat);
+        setIntIfPresent(secondLap, FitFile.LAP_SLON, splitLon);
+
+        int lapAllMesgIx = findLapMesgIndexInAllMesgByLapIx(lapIx);
+        if (lapAllMesgIx < 0) {
+            fitFile.appendTempUpdateLogLn("==XX> Could not find LAP in allMesg for lap ix: " + lapIx);
+            System.out.println(fitFile.getTempUpdateLog());
+            return;
+        }
+
+        int linkedTizIx = findLinkedTimeInZoneMesgIndex(lapAllMesgIx, lapIx);
+        Mesg insertedTimeInZone = null;
+        Mesg sourceTimeInZone = linkedTizIx >= 0 ? fitFile.getAllMesg().get(linkedTizIx) : null;
+        int insertAllMesgIx = lapAllMesgIx + 1;
+        if (linkedTizIx == lapAllMesgIx + 1) {
+            insertAllMesgIx = lapAllMesgIx + 2;
+        }
+
+        setIntIfPresent(secondLap, FitFile.LAP_IX, lapIx + 1);
+        fitFile.getLapMesg().add(lapIx + 1, secondLap);
+        fitFile.getAllMesg().add(insertAllMesgIx, secondLap);
+
+        if (sourceTimeInZone != null) {
+            insertedTimeInZone = new Mesg(sourceTimeInZone);
+            insertedTimeInZone.setFieldValue(FitFile.TIZ_REF_MESG, MesgNum.LAP);
+            insertedTimeInZone.setFieldValue(FitFile.TIZ_REF_IX, lapIx + 1);
+            fitFile.getAllMesg().add(insertAllMesgIx + 1, insertedTimeInZone);
+        }
+
+        incrementLapReferencesAfterInsertedLap(lapIx, secondLap, insertedTimeInZone);
+
+        fitFile.setNumberOfLaps(fitFile.getNumberOfLaps() + 1);
+        if (!fitFile.getSessionMesg().isEmpty()) {
+            fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_LAPS, fitFile.getNumberOfLaps());
+        }
+
+        fitFile.appendTempUpdateLogLn("Split lap " + (lapIx + 1)
+            + " at totalTimer=" + PehoUtils.sec2minSecLong(totalTimer)
+            + " (recordIx=" + splitRecordIx + ")");
+        fitFile.appendTempUpdateLogLn("-- Lap " + (lapIx + 1)
+            + " new timer: " + new TimeStr(firstLap.getFieldFloatValue(FitFile.LAP_TIMER)).get()
+            + ", new lap " + (lapIx + 2)
+            + " timer: " + new TimeStr(secondLap.getFieldFloatValue(FitFile.LAP_TIMER)).get());
+
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
+    }
+
     private int findLapMesgIndexInAllMesgByLapIx(int lapIx) {
         return FindMesgIx.findMesgIndexByIntField(fitFile.getAllMesg(), MesgNum.LAP, FitFile.LAP_IX, lapIx);
+    }
+
+    private int findFirstRecordIndexAtOrAfterTimer(Long totalTimer) {
+        for (int i = 0; i < fitFile.getRecordMesgAddOnRecords().size(); i++) {
+            Long timer = fitFile.getRecordMesgAddOnRecords().get(i).getTimer();
+            if (timer != null && timer >= totalTimer) {
+                return i;
+            }
+        }
+        return fitFile.getRecordMesgAddOnRecords().size() - 1;
+    }
+
+    private int findLapIndexForTime(Long timeValue) {
+        int lapIx = -1;
+        for (int i = 0; i < fitFile.getLapMesg().size(); i++) {
+            Long lapStart = fitFile.getLapMesg().get(i).getFieldLongValue(FitFile.LAP_STIME);
+            if (lapStart != null && lapStart <= timeValue) {
+                lapIx = i;
+            } else if (lapStart != null && lapStart > timeValue) {
+                break;
+            }
+        }
+        return lapIx;
+    }
+
+    private void incrementLapReferencesAfterInsertedLap(int insertedAfterLapIx, Mesg insertedLap, Mesg insertedTimeInZone) {
+        for (Mesg mesg : fitFile.getAllMesg()) {
+            if (mesg.getNum() == MesgNum.LAP) {
+                if (mesg == insertedLap) {
+                    continue;
+                }
+                Integer lapIx = mesg.getFieldIntegerValue(FitFile.LAP_IX);
+                if (lapIx != null && lapIx > insertedAfterLapIx) {
+                    mesg.setFieldValue(FitFile.LAP_IX, lapIx + 1);
+                }
+                continue;
+            }
+
+            if (mesg.getNum() == MesgNum.TIME_IN_ZONE) {
+                if (mesg == insertedTimeInZone) {
+                    continue;
+                }
+                Integer referenceMesg = getMesgFieldAsInt(mesg, FitFile.TIZ_REF_MESG);
+                Integer referenceIndex = getMesgFieldAsInt(mesg, FitFile.TIZ_REF_IX);
+                if (referenceMesg != null
+                    && referenceMesg == MesgNum.LAP
+                    && referenceIndex != null
+                    && referenceIndex > insertedAfterLapIx) {
+                    mesg.setFieldValue(FitFile.TIZ_REF_IX, referenceIndex + 1);
+                }
+            }
+        }
+    }
+
+    private void splitFloatField(Mesg firstLap, Mesg secondLap, int fieldNum, float firstRatio) {
+        Float value = firstLap.getFieldFloatValue(fieldNum);
+        if (value == null) {
+            return;
+        }
+        float firstValue = value * firstRatio;
+        float secondValue = value - firstValue;
+        firstLap.setFieldValue(fieldNum, firstValue);
+        secondLap.setFieldValue(fieldNum, secondValue);
+    }
+
+    private void copyFloatFieldToBoth(Mesg firstLap, Mesg secondLap, int fieldNum) {
+        Float value = firstLap.getFieldFloatValue(fieldNum);
+        if (value == null) {
+            return;
+        }
+        firstLap.setFieldValue(fieldNum, value);
+        secondLap.setFieldValue(fieldNum, value);
+    }
+
+    private void copyIntFieldToBoth(Mesg firstLap, Mesg secondLap, int fieldNum) {
+        Integer intValue = firstLap.getFieldIntegerValue(fieldNum);
+        if (intValue != null) {
+            firstLap.setFieldValue(fieldNum, intValue);
+            secondLap.setFieldValue(fieldNum, intValue);
+            return;
+        }
+        Short shortValue = firstLap.getFieldShortValue(fieldNum);
+        if (shortValue != null) {
+            firstLap.setFieldValue(fieldNum, shortValue);
+            secondLap.setFieldValue(fieldNum, shortValue);
+        }
+    }
+
+    private void copyByteFieldToBoth(Mesg firstLap, Mesg secondLap, int fieldNum) {
+        Byte value = firstLap.getFieldByteValue(fieldNum);
+        if (value == null) {
+            return;
+        }
+        firstLap.setFieldValue(fieldNum, value);
+        secondLap.setFieldValue(fieldNum, value);
+    }
+
+    private void setIntIfPresent(Mesg mesg, int fieldNum, Integer value) {
+        if (value == null) {
+            return;
+        }
+        Integer intValue = mesg.getFieldIntegerValue(fieldNum);
+        if (intValue != null) {
+            mesg.setFieldValue(fieldNum, value);
+            return;
+        }
+        Short shortValue = mesg.getFieldShortValue(fieldNum);
+        if (shortValue != null) {
+            mesg.setFieldValue(fieldNum, value.shortValue());
+        }
+    }
+
+    private void setLongIfPresent(Mesg mesg, int fieldNum, Long value) {
+        if (value == null) {
+            return;
+        }
+        if (mesg.getFieldLongValue(fieldNum) != null) {
+            mesg.setFieldValue(fieldNum, value);
+        }
     }
 
     private int findLapMesgIndexInLapMesgByLapIx(int lapIx) {

@@ -20,7 +20,8 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"Fartlek Lill-Jans\" 0 \"Söderbysjön-Ältasjön-Ulvsjön 16km.fit\""
+      "args": "\"Fartlek Lill-Jans och Fiskartorpets elljus\""
+      // 0 \"Söderbysjön-Ältasjön-Ulvsjön 16km.fit\""
     },
     {
       "type": "java",

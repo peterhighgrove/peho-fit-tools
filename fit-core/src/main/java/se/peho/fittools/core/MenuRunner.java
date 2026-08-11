@@ -52,6 +52,7 @@ public class MenuRunner {
             new LapShowListIntervalCommand(),
             new LapShowListDebugCommand(),
             new LapMergeCommand(),
+            new LapNewCommand(),
             new SplitShowListCommand(), 
             new CPointQuickScriptCommand(),
             new CPointReportCommand(),

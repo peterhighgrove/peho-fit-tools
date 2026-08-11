@@ -368,6 +368,10 @@ findLapMesgIndexInLapMesgByLapIx(...)
 
 regr-gps/wkt.sh --version 3.03 pass
 
+add a new lapn command path that splits an existing lap at a given totalTimer using the timer list from FitFile.createTimerList, then mirror the same lap field updates that lapMerge applies so the two resulting laps stay consistent. I’m starting by locating command parsing and the existing lapMerge update logic.
+
+
+
 BUGGAR
 
 Do not handle args correctly
