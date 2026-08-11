@@ -341,6 +341,14 @@ findLastTimerStopEvent
 
 regr-gps/wkt.sh --version 3.01 pass
 
+Added generic progression helper to FindMesgIx.java:81:
+findFirstIndexAtOrAfter(List<Long> values, long targetValue, int fromIndex)
+Refactored FitFile.java:2904 to delegate:
+findFirstRecordTimeIndexAtOrAfter(...) now calls FindMesgIx.findFirstIndexAtOrAfter(...)
+
+-> git sync
+
+
 BUGGAR
 
 Do not handle args correctly

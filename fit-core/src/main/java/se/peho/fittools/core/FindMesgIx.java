@@ -79,4 +79,14 @@ public final class FindMesgIx {
         }
         return -1;
     }
+
+    public static int findFirstIndexAtOrAfter(List<Long> values, long targetValue, int fromIndex) {
+        int startIndex = Math.max(0, fromIndex);
+        for (int i = startIndex; i < values.size(); i++) {
+            if (values.get(i) >= targetValue) {
+                return i;
+            }
+        }
+        return values.size() - 1;
+    }
 }

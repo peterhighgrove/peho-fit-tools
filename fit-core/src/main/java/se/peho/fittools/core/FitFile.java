@@ -2902,13 +2902,7 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private int findFirstRecordTimeIndexAtOrAfter(List<Long> recordTimes, long targetTime, int fromIndex) {
-        int startIndex = Math.max(0, fromIndex);
-        for (int i = startIndex; i < recordTimes.size(); i++) {
-            if (recordTimes.get(i) >= targetTime) {
-                return i;
-            }
-        }
-        return recordTimes.size() - 1;
+        return FindMesgIx.findFirstIndexAtOrAfter(recordTimes, targetTime, fromIndex);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private void textToTempLogAndConsole(String text) {
