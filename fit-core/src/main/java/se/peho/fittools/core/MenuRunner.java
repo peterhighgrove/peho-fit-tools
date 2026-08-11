@@ -1,5 +1,7 @@
 package se.peho.fittools.core;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -83,52 +85,10 @@ public class MenuRunner {
     }
 
     public void run() {
-        
-        // READING FIT FILE
-        watchFitFile.readFitFile (conf.getInputFilePath());
-
-
-        // CHECK IF COURSE FILE OR NOT
-        if (watchFitFile.isCourseFile()) {
-
-            watchFitFile.printAndAppendUpdateLogLn("======== Course file detected. Only course-related commands will be available.");
-            
-            // CHECK NULL RECORD TIMES
-            watchFitFile.checkAndFixNullRecordTimes();
-            // FIX LAP AND EVENT TIMESTAMPS FROM RECORDS
-            watchFitFile.fixLapAndEventTimestampsFromRecords();
-
-
-            // CHECK LAP TOTALS AND ENHANCED AVG SPEED
-            if (watchFitFile.checkLapTotalsAndEnhancedAvgSpeed()) {
-
-                watchFitFile.printAndAppendUpdateLogLn("Lap totals and enhanced average speed are correct.");
-
-            } else {
-                watchFitFile.printAndAppendUpdateLogLn("Lap totals and enhanced average speed are correct.");
-                watchFitFile.fixLapTotalsAndEnhancedAvgSpeed();
-            }
-
-        } else {    
-            watchFitFile.printAndAppendUpdateLogLn("======== Non-course file detected. All commands will be available.");
-        }
-
-        // SAVE INFO ABOUT FILE BEFORE UPDATIING
-        watchFitFile.saveFileInfoBefore();
-        
-        watchFitFile.createTimerList();
-        watchFitFile.createPauseList();
-        watchFitFile.createGapList();
+        prepareFile();
 
         while (true) {
             printMainMenu();
-/*             if (firstTime) {
-                printFullMenu();
-                firstTime = false;
-            } else {
-                printMainMenu();
-            } */
-
             String choice = sc.nextLine().trim();
 
             if (choice.equals("x")) {
@@ -136,20 +96,59 @@ public class MenuRunner {
                 break;
             } else if (choice.equals("m")) {
                 printFullMenu();
-                choice = sc.nextLine().trim(); // read new choice after showing menu
+                choice = sc.nextLine().trim();
                 if (choice.equals("x")) {
                     System.out.println("Nothing done. Exiting.");
                     break;
                 }
             }
 
-            Command cmd = commands.get(choice);
-            if (cmd != null) {
-                cmd.run(sc, watchFitFile);
-            } else {
-                System.out.println("Unknown command: " + choice);
-            }
+            runCommand(choice, sc);
         }
+    }
+
+    public List<String> getAvailableCommandKeys() {
+        return new ArrayList<>(commands.keySet());
+    }
+
+    public void runCommand(String choice, Scanner scanner) {
+        Command cmd = commands.get(choice);
+        if (cmd != null) {
+            cmd.run(scanner, watchFitFile);
+        } else {
+            System.out.println("Unknown command: " + choice);
+        }
+    }
+
+    public void runSingleCommand(String choice, String inputText) {
+        String effectiveInput = inputText == null ? "" : inputText;
+        Scanner scanner = new Scanner(new ByteArrayInputStream(effectiveInput.getBytes(StandardCharsets.UTF_8)));
+        prepareFile();
+        runCommand(choice, scanner);
+    }
+
+    private void prepareFile() {
+        watchFitFile.readFitFile(conf.getInputFilePath());
+
+        if (watchFitFile.isCourseFile()) {
+            watchFitFile.printAndAppendUpdateLogLn("======== Course file detected. Only course-related commands will be available.");
+            watchFitFile.checkAndFixNullRecordTimes();
+            watchFitFile.fixLapAndEventTimestampsFromRecords();
+
+            if (watchFitFile.checkLapTotalsAndEnhancedAvgSpeed()) {
+                watchFitFile.printAndAppendUpdateLogLn("Lap totals and enhanced average speed are correct.");
+            } else {
+                watchFitFile.printAndAppendUpdateLogLn("Lap totals and enhanced average speed are correct.");
+                watchFitFile.fixLapTotalsAndEnhancedAvgSpeed();
+            }
+        } else {
+            watchFitFile.printAndAppendUpdateLogLn("======== Non-course file detected. All commands will be available.");
+        }
+
+        watchFitFile.saveFileInfoBefore();
+        watchFitFile.createTimerList();
+        watchFitFile.createPauseList();
+        watchFitFile.createGapList();
     }
 
     private void printMainMenu() {
