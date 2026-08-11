@@ -363,7 +363,10 @@ findLapMesgIndexInLapMesgByLapIx(...)
 
 -> git sync
 
+--> v3.03 Build
+--> git sync
 
+regr-gps/wkt.sh --version 3.03 pass
 
 BUGGAR
 
