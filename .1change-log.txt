@@ -374,7 +374,33 @@ add a new lapn command path that splits an existing lap at a given totalTimer us
 --> v3.04 Build
 
 --> regr-gps/wkt.sh --version 3.04 pass
+--> git sync
 
+All values are not correct calculated.
+Can you write a method in LapFix that calculates the below values for the lap and then use that method for the laps before and after the new lap split?
+-------------------------
+Total Distance(LAP_DIST)-diff between last dist value in lap before  and last value in selected lap. First lap start with zero.
+Total Timer Time(LAP_TIMER)-diff between last timer value in lap before and last value in selected lap. Use timer created with createTimerList. First lap start with zero.
+Total Elapsed Time (LAP_ETIMER)-diff between last time value in lap before and last value in selected lap. First lap start with zero.
+Total moving Time (LAP_MTIMER)-same as LAP_TIMER for now.
+Avg speed-Dist/Time, if values are stored in enhanced speed, use lap avg enhanced speed (LAP_ESPEED). If record values use standard speed, save values in lap avg speed(LAP_SPEED).
+Avg HR(LAP_HR)-Sum of all values divided with the number of values.
+Max HR (LAP_MHR)-Just max value of all values.
+Avg Power (LAP_POW)-Sum of all values divided with the number of values.
+Max Power (LAP_MPOW)-Just max value of all values.
+Avg Cadence (LAP_CAD)-Sum of all values divided with the number of values.
+Max Cadence (LAP_MCAD)-Just max value of all values.
+Avg Temp (LAP_TEMP)-Sum of all values divided with the number of values.
+Max Temp (LAP_MTEMP)-Just max value of all values.
+Min Temp (LAP_MINTEMP)-Just min value of all values.
+Avg Altitude (LAP_ALT)-Sum of all values divided with the number of values.
+Max Altitude (LAP_MALT)-Just max value of all values.
+Min Altitude (LAP_MINALT)-Just min value of all values.
+Altitude Ascent (LAP_ASC)-Sum of all increases of record altitude values. There is some kind of smoothing here, but I don't know now.
+Altitude Descent (LAP_DESC)-Sum of all decreases of record altitude values. here is some kind of smoothing here, but I don't know now.
+
+--> v3.05 Build, new lap value method, new lapn regr test, regression pass
+--> regr-gps/wkt.sh --version 3.05 pass
 --> git sync
 
 

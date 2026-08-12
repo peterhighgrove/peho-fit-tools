@@ -1,0 +1,18 @@
+==================================================
+New file info AFTER update:
+==================================================
+--------------------------------------------------
+ --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v26.09
+ --> Sport:RUNNING, SubSport:GENERIC, SportProfile:Fartlek Fartlek Lill-Jans och Fiskartorpets elljus 8.3km, WktName:
+ --> Org activity dateTime Local:2026-08-11-16-39-45
+ --> New activity dateTime Local:2026-08-11-16-41-45
+ --> Org activity DateTime UTC:  2026-08-11-14-39-45
+ --> timeZone:                   +02:00
+ --> Org start datetime UTC:     2026-08-11-14-39-45
+ --> New start datetime UTC:     2026-08-11-14-41-45
+--------------------------------------------------
+---- ACTIVE LAPS ----
+avgCad: 0spm, avgPace: 0:00min/km, avgSp: NaNkm/h, sumDist: 0.0km
+---- REST LAPS ----
+avgCad: 0spm, avgPace: 0:00min/km, avgSp: NaNkm/h, sumDist: 0.0km
+==================================================

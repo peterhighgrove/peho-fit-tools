@@ -1,0 +1,7 @@
+FIT SDK profile version: 21.205 Release (21205)
+FIT file successfully read. Total records: 2732, Time between: 2026-08-11-16-39-45 -- 2026-08-11-17-25-37
+======== Non-course file detected. All commands will be available.
+-- Recalculated lap metrics from records ix 1430-1719: timer=4:50, dist=825m, hrAvg=128, speed=5:51
+-- Recalculated lap metrics from records ix 1720-1814: timer=1:35, dist=357m, hrAvg=135, speed=4:26
+Split lap 9 at totalTimer=28:40 (recordIx=1720)
+-- Lap 9 new timer: 4:50min, new lap 10 timer: 1:35min
