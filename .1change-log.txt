@@ -408,6 +408,11 @@ Altitude Descent (LAP_DESC)-Sum of all decreases of record altitude values. here
 Update of splits with lapMerge and lapNew
 lapDubug lot of updates
 
+--> git sync
+
+Workout
+
+
 BUGGAR
 
 Do not handle args correctly

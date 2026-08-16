@@ -2,6 +2,8 @@ package se.peho.fittools.core;
 
 import com.garmin.fit.Mesg;
 import com.garmin.fit.MesgNum;
+import com.garmin.fit.Intensity;
+import com.garmin.fit.SplitType;
 import com.garmin.fit.RecordMesg;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -55,6 +57,7 @@ public class LapFix {
                 System.out.println("LAP " + (lapIx + 1)
                     + " timer=" + formatSec(lapTimer)
                     + " -> SPLIT " + (match.splitListIndex + 1)
+                    + " type=" + formatSplitType(match.splitMesg)
                     + " by " + match.matchReason
                     + " splitTimer=" + formatSec(match.splitTimer));
             } else {
@@ -73,6 +76,7 @@ public class LapFix {
             Mesg split = fitFile.getSplitMesg().get(splitIx);
             Integer splitLapIx = getMesgFieldAsInt(split, SPL_LAP_INDEX_FIELD_NUM);
             Float splitTimer = split.getFieldFloatValue(FitFile.SPL_TIMER);
+            String splitType = formatSplitType(split);
 
             if (splitLapIx != null && splitLapIx >= 0 && splitLapIx < fitFile.getLapMesg().size()) {
                 continue;
@@ -86,12 +90,14 @@ public class LapFix {
                 int lapNo = singleLapMatches.get(0) + 1;
                 System.out.println("SPLIT " + (splitIx + 1)
                     + " lapIx=" + splitLapIx
+                    + " type=" + splitType
                     + " timer=" + formatSec(splitTimer)
                     + " -> single LAP TIMER match: LAP " + lapNo
                     + " (candidate to set SPL_LAPIX)");
             } else if (singleLapMatches.size() > 1) {
                 System.out.println("SPLIT " + (splitIx + 1)
                     + " lapIx=" + splitLapIx
+                    + " type=" + splitType
                     + " timer=" + formatSec(splitTimer)
                     + " -> multiple LAP TIMER matches: " + toLapNoList(singleLapMatches)
                     + " (ambiguous)");
@@ -102,6 +108,7 @@ public class LapFix {
                 Float lap2Timer = fitFile.getLapMesg().get(pairStartLapIx + 1).getFieldFloatValue(FitFile.LAP_TIMER);
                 System.out.println("SPLIT " + (splitIx + 1)
                     + " lapIx=" + splitLapIx
+                    + " type=" + splitType
                     + " timer=" + formatSec(splitTimer)
                     + " -> matches LAP pair sum: LAP " + lapNo1 + " + LAP " + lapNo2
                     + " (" + formatSec(lap1Timer) + " + " + formatSec(lap2Timer) + ")"
@@ -109,6 +116,7 @@ public class LapFix {
             } else {
                 System.out.println("SPLIT " + (splitIx + 1)
                     + " lapIx=" + splitLapIx
+                    + " type=" + splitType
                     + " timer=" + formatSec(splitTimer)
                     + " -> no LAP TIMER match");
             }
@@ -170,6 +178,7 @@ public class LapFix {
 
         List<SplitMatch> splitMatchesToMerge = analyzeSplitMatchesForLapRange(fromLapIx, toLapIx);
         mergeMatchedSplitsForLapMerge(splitMatchesToMerge, fromLapIx, toLapIx, mergedLap);
+        renumberSplitMesgIndexes();
 
         // Preserve the original first-lap start identity fields on merged lap.
         setLongIfPresent(mergedLap, FitFile.LAP_STIME, originalMergedStartTime);
@@ -228,6 +237,125 @@ public class LapFix {
         // Print and save logs
         System.out.println(fitFile.getTempUpdateLog());
         fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void applyWorkoutIntervalPattern(int warmupLaps, int cooldownLaps, boolean useRestAfterActive) {
+        fitFile.clearTempUpdateLog();
+        if (fitFile.getLapMesg() == null || fitFile.getLapMesg().isEmpty()) {
+            fitFile.appendTempUpdateLogLn("==XX> No LAP messages found. wkti aborted.");
+            System.out.println(fitFile.getTempUpdateLog());
+            return;
+        }
+
+        int lapCount = fitFile.getLapMesg().size();
+        if (warmupLaps < 0 || cooldownLaps < 0) {
+            fitFile.appendTempUpdateLogLn("==XX> warmup/cooldown must be >= 0. wkti aborted.");
+            System.out.println(fitFile.getTempUpdateLog());
+            return;
+        }
+        if (warmupLaps + cooldownLaps > lapCount) {
+            fitFile.appendTempUpdateLogLn("==XX> warmup + cooldown exceeds number of laps (" + lapCount + "). wkti aborted.");
+            System.out.println(fitFile.getTempUpdateLog());
+            return;
+        }
+
+        int overviewSplitIx = findOverviewSplitIndex();
+        Set<Integer> usedSplitIndexes = new HashSet<>();
+        if (overviewSplitIx >= 0) {
+            usedSplitIndexes.add(overviewSplitIx);
+            fitFile.appendTempUpdateLogLn("-- Skipping activity overview split " + (overviewSplitIx + 1) + " for wkti.");
+        }
+
+        int updatedLaps = 0;
+        int updatedSplits = 0;
+        int intervalStartIx = warmupLaps;
+        int cooldownStartIx = lapCount - cooldownLaps;
+
+        for (int lapIx = 0; lapIx < lapCount; lapIx++) {
+            Mesg lap = fitFile.getLapMesg().get(lapIx);
+            SplitMatch match = findBestSplitMatchForLap(lapIx, lap, usedSplitIndexes);
+            if (match == null) {
+                continue;
+            }
+
+            usedSplitIndexes.add(match.splitListIndex);
+
+            Intensity intensity;
+            SplitType splitType;
+            if (lapIx < intervalStartIx) {
+                intensity = Intensity.WARMUP;
+                splitType = SplitType.INTERVAL_WARMUP;
+            } else if (lapIx >= cooldownStartIx) {
+                intensity = Intensity.COOLDOWN;
+                splitType = SplitType.INTERVAL_COOLDOWN;
+            } else {
+                int intervalIx = lapIx - intervalStartIx;
+                if ((intervalIx % 2) == 0) {
+                    intensity = Intensity.ACTIVE;
+                    splitType = SplitType.INTERVAL_ACTIVE;
+                } else if (useRestAfterActive) {
+                    intensity = Intensity.REST;
+                    splitType = SplitType.INTERVAL_REST;
+                } else {
+                    intensity = Intensity.RECOVERY;
+                    splitType = SplitType.INTERVAL_RECOVERY;
+                }
+            }
+
+            lap.setFieldValue(FitFile.LAP_INTENSITY, intensity.getValue());
+            match.splitMesg.setFieldValue(FitFile.SPL_TYPE, splitType.getValue());
+            updatedLaps++;
+            updatedSplits++;
+
+            fitFile.appendTempUpdateLogLn("-- wkti LAP " + (lapIx + 1)
+                + " -> SPLIT " + (match.splitListIndex + 1)
+                + " by " + match.matchReason
+                + " type=" + splitType);
+        }
+
+        fitFile.appendTempUpdateLogLn("wkti applied: warmup=" + warmupLaps
+            + ", cooldown=" + cooldownLaps
+            + ", after-active=" + (useRestAfterActive ? "rest" : "recover")
+            + ", laps=" + lapCount + ".");
+        fitFile.appendTempUpdateLogLn("Updated LAP_INTENSITY for " + updatedLaps + " lap messages.");
+        fitFile.appendTempUpdateLogLn("Updated SPL_TYPE for " + updatedSplits + " split messages.");
+        System.out.println(fitFile.getTempUpdateLog());
+        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private int findOverviewSplitIndex() {
+        if (fitFile.getSplitMesg() == null || fitFile.getSplitMesg().isEmpty()) {
+            return -1;
+        }
+
+        for (int splitIx = 0; splitIx < fitFile.getSplitMesg().size(); splitIx++) {
+            Mesg split = fitFile.getSplitMesg().get(splitIx);
+            if (split == null) {
+                continue;
+            }
+
+            Float splitTimer = split.getFieldFloatValue(FitFile.SPL_TIMER);
+            Float splitDist = split.getFieldFloatValue(FitFile.SPL_DIST);
+            Long splitStartTime = split.getFieldLongValue(FitFile.SPL_STIME);
+            Long splitEndTime = split.getFieldLongValue(FitFile.SPL_ETIME);
+
+            boolean matchesTimer = splitTimer != null && fitFile.getTotalTimerTime() != null
+                && Math.abs(splitTimer - fitFile.getTotalTimerTime()) <= SPLIT_TIMER_MATCH_TOLERANCE_SEC;
+            boolean matchesDist = splitDist != null && fitFile.getTotalDistance() != null
+                && Math.abs(splitDist - fitFile.getTotalDistance()) <= 10f;
+            boolean matchesStart = splitStartTime != null && fitFile.getTimeFirstRecord() != null
+                && Math.abs(splitStartTime - fitFile.getTimeFirstRecord()) <= 2L;
+            boolean matchesEnd = splitEndTime != null && fitFile.getTimeLastRecord() != null
+                && Math.abs(splitEndTime - fitFile.getTimeLastRecord()) <= 2L;
+
+            if ((matchesTimer && matchesDist) || (matchesStart && matchesEnd)) {
+                return splitIx;
+            }
+        }
+
+        return -1;
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -355,6 +483,7 @@ public class LapFix {
         }
 
         Mesg insertedSplit = splitMatchedSplitForLapNew(splitToSplit, lapIx, firstLap, secondLap);
+        renumberSplitMesgIndexes();
 
         incrementLapReferencesAfterInsertedLap(lapIx, secondLap, insertedTimeInZone, insertedSplit);
 
@@ -375,6 +504,19 @@ public class LapFix {
 
         System.out.println(fitFile.getTempUpdateLog());
         fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private void renumberSplitMesgIndexes() {
+        if (fitFile.getSplitMesg() == null || fitFile.getSplitMesg().isEmpty()) {
+            return;
+        }
+
+        int splitIx = 0;
+        for (Mesg split : fitFile.getSplitMesg()) {
+            split.setFieldValue(FitFile.SPL_MESGIX, splitIx);
+            splitIx++;
+        }
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -687,6 +829,24 @@ public class LapFix {
             return "null";
         }
         return String.format("%.1fs", value);
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private String formatSplitType(Mesg splitMesg) {
+        if (splitMesg == null) {
+            return "-";
+        }
+
+        Short splitType = splitMesg.getFieldShortValue(FitFile.SPL_TYPE);
+        if (splitType == null) {
+            return "-";
+        }
+
+        com.garmin.fit.SplitType splitTypeEnum = com.garmin.fit.SplitType.getByValue(splitType);
+        if (splitTypeEnum == null) {
+            return "unknown(" + splitType + ")";
+        }
+        return splitTypeEnum + "(" + splitType + ")";
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

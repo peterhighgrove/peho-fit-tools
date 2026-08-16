@@ -76,6 +76,7 @@ public class MenuRunner {
             new RecDeleteCreateGapCommand(),
             new RecStartCommand(),
             new WktShowCommand(),
+            new WktInsertCommand(),
             new StopPrintCommand(),
             new SaveChangeStartTimeExitCommand(conf)
         };

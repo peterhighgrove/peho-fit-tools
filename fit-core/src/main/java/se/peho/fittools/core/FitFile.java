@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -4827,6 +4828,10 @@ public class FitFile {
         getLapFix().printSplitLapMatchReport();
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void applyWorkoutIntervalPattern(int warmupLaps, int cooldownLaps, boolean useRestAfterActive) {
+        getLapFix().applyWorkoutIntervalPattern(warmupLaps, cooldownLaps, useRestAfterActive);
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void shortenPause(int pauseNo, Long newPauseTime) {
         getPauseFix().pauseShorten(pauseNo, newPauseTime);
     }
@@ -6257,8 +6262,15 @@ public class FitFile {
             System.out.print("No:" + (i + 1));
 
             Short splitType = mesg.getFieldShortValue(SPL_TYPE);
-            if (splitType != null) {
-                if (splitType != null) System.out.print(" Type:" + SplitType.getByValue(splitType));
+            if (splitType == null) {
+                System.out.print(" Type:-");
+            } else {
+                SplitType splitTypeEnum = SplitType.getByValue(splitType);
+                if (splitTypeEnum == null) {
+                    System.out.print(" Type:unknown(" + splitType + ")");
+                } else {
+                    System.out.print(" Type:" + splitTypeEnum + "(" + splitType + ")");
+                }
             }
 
             Long startTime = mesg.getFieldLongValue(SPL_STIME);
@@ -6319,8 +6331,15 @@ public class FitFile {
             System.out.print("SummaryNo:" + summaryCount);
 
             Short splitSummaryType = mesg.getFieldShortValue(SPLSUM_TYPE);
-            if (splitSummaryType != null) {
-                System.out.print(" Type:" + SplitType.getByValue(splitSummaryType));
+            if (splitSummaryType == null) {
+                System.out.print(" Type:-");
+            } else {
+                SplitType splitSummaryTypeEnum = SplitType.getByValue(splitSummaryType);
+                if (splitSummaryTypeEnum == null) {
+                    System.out.print(" Type:unknown(" + splitSummaryType + ")");
+                } else {
+                    System.out.print(" Type:" + splitSummaryTypeEnum + "(" + splitSummaryType + ")");
+                }
             }
 
             Float totalTimer = mesg.getFieldFloatValue(SPLSUM_TIMER);
@@ -6436,6 +6455,7 @@ public class FitFile {
         */
         System.out.println();
     }
+
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printLapRecords() {
         int ix = 0;

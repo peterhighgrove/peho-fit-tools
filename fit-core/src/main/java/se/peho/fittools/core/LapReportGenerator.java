@@ -65,8 +65,8 @@ public class LapReportGenerator {
                 if (avgCadence != null) lapCadStr = String.format("%d", avgCadence);
 
                 String intensityStr = "-";
-                Long intensity = mesg.getFieldLongValue(FitFile.LAP_INTENSITY);
-                if (intensity != null) intensityStr = PehoUtils.getLabel(Intensity.class, intensity);
+                Short intensity = mesg.getFieldShortValue(FitFile.LAP_INTENSITY);
+                intensityStr = formatIntensityForLap1(intensity);
 
                 System.out.printf("%-3d %-3s %6s %-7s %6s %-4s %-5s %-6s %-3s %-8s%n"
                 , lapNo
@@ -150,8 +150,8 @@ public class LapReportGenerator {
                 if (avgCadence != null) lapCadStr = String.format("%d", avgCadence);
 
                 String intensityStr = "-";
-                Long intensity = mesg.getFieldLongValue(FitFile.LAP_INTENSITY);
-                if (intensity != null) intensityStr = PehoUtils.getLabel(Intensity.class, intensity);
+                Short intensity = mesg.getFieldShortValue(FitFile.LAP_INTENSITY);
+                intensityStr = formatIntensityForLap1(intensity);
 
                 System.out.printf("%-3d %-3s %6s %-7s %6s %-4s %-5s %-6s %-3s %-8s%n", lapNo, lapIxStr, lapTimerStr, startTimeStr, lapTimeStr, lapDistStr, speedKmhStr, paceStr, lapCadStr, intensityStr);
                 lapNo++;
@@ -167,6 +167,17 @@ public class LapReportGenerator {
         catch (FitRuntimeException e) {
             System.out.println("LAP ERROR!!!!");
         }
+    }
+
+    private String formatIntensityForLap1(Short intensityRaw) {
+        if (intensityRaw == null) {
+            return "-";
+        }
+        Intensity intensityEnum = Intensity.getByValue(intensityRaw);
+        if (intensityEnum == null || intensityEnum == Intensity.INVALID) {
+            return "-";
+        }
+        return Intensity.getStringFromValue(intensityEnum);
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
