@@ -403,6 +403,10 @@ Altitude Descent (LAP_DESC)-Sum of all decreases of record altitude values. here
 --> regr-gps/wkt.sh --version 3.05 pass
 --> git sync
 
+--> v3.06 Build
+
+Update of splits with lapMerge and lapNew
+lapDubug lot of updates
 
 BUGGAR
 

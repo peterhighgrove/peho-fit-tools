@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.FileWriter;
 import java.io.IOException;
+import se.peho.fittools.core.strings.*;
 
 public class LapReportGenerator {
     private final FitFile fitFile;
@@ -832,48 +833,126 @@ public class LapReportGenerator {
         for (int i = 0; i < lapMesgs.size(); i++) {
             Mesg lap = lapMesgs.get(i);
 
+            int sRecIx = fitFile.getLapExtraRecords().get(i).getRecordIxStart();
+            int eRecIx = fitFile.getLapExtraRecords().get(i).getRecordIxEnd();
+
             // --- basic lap info
-            Long startTimeL = getLongField(lap, "start_time", null);
-            Long timestampL = getLongField(lap, "timestamp", null);
-            if (startTimeL == null) startTimeL = timestampL;
-            if (startTimeL == null) {
+            Long startTime = lap.getFieldLongValue(FitFile.LAP_STIME);
+            Long recStartTime = (i >= 0) 
+                ? fitFile.getRecordMesg().get(sRecIx).getFieldLongValue(FitFile.REC_TIME) 
+                : startTime;
+            Long recStartTimeMinus1 = (i - 1 >= 0) 
+                ? fitFile.getRecordMesg().get(sRecIx-1).getFieldLongValue(FitFile.REC_TIME) 
+                : startTime;
+
+            Float dist = lap.getFieldFloatValue(FitFile.LAP_DIST);
+
+            Float startDist = null;
+            Float recStartDist = (i >= 0) 
+                ? fitFile.getRecordMesg().get(sRecIx).getFieldFloatValue(FitFile.REC_DIST) 
+                : 0f;
+            Float recStartDistMinus1 = (i - 1 >= 0) 
+                ? fitFile.getRecordMesg().get(sRecIx-1).getFieldFloatValue(FitFile.REC_DIST) 
+                : 0f;
+
+            Float endDist = null;
+            Float recEndDist = (i >= 0) 
+                ? fitFile.getRecordMesg().get(eRecIx).getFieldFloatValue(FitFile.REC_DIST) 
+                : 0f;
+            Float recEndDistPlus1 = (i + 1 < fitFile.getLapExtraRecords().size()) 
+                ? fitFile.getRecordMesg().get(eRecIx+1).getFieldFloatValue(FitFile.REC_DIST) 
+                : recEndDist;
+
+            Float speed = lap.getFieldFloatValue(FitFile.LAP_SPEED);
+            Float eSpeed = lap.getFieldFloatValue(FitFile.LAP_ESPEED);
+
+            Long startLat = lap.getFieldLongValue(FitFile.LAP_SLAT);
+            Long recStartLat = (i >= 0) 
+                ? fitFile.getRecordMesg().get(sRecIx).getFieldLongValue(FitFile.REC_LAT) 
+                : startLat;
+            Long recStartLatMinus1 = (i - 1 >= 0) 
+                ? fitFile.getRecordMesg().get(sRecIx-1).getFieldLongValue(FitFile.REC_LAT) 
+                : startLat;
+
+            Long startLon = lap.getFieldLongValue(FitFile.LAP_SLON);
+            Long recStartLon = (i >= 0) 
+                ? fitFile.getRecordMesg().get(sRecIx).getFieldLongValue(FitFile.REC_LON) 
+                : startLon;
+            Long recStartLonMinus1 = (i - 1 >= 0) 
+                ? fitFile.getRecordMesg().get(sRecIx-1).getFieldLongValue(FitFile.REC_LON) 
+                : startLon;
+
+                Long timestamp = lap.getFieldLongValue(FitFile.LAP_TIME);
+            if (startTime == null) startTime = timestamp;
+            if (startTime == null) {
                 System.out.printf("%n---- LAP %d ---- (no start_time, skipping)%n", i + 1);
                 continue;
             }
 
-            Float totalElapsed = getFloatField(lap, "total_elapsed_time", null);
-            Float totalTimer = getFloatField(lap, "total_timer_time", null);
+            Float eTimer = lap.getFieldFloatValue(FitFile.LAP_ETIMER) != null
+             ? lap.getFieldFloatValue(FitFile.LAP_ETIMER) : null;
+            Float tTimer = lap.getFieldFloatValue(FitFile.LAP_TIMER) != null
+             ? lap.getFieldFloatValue(FitFile.LAP_TIMER) : null;
 
-            Long endTimeL = null;
-            if (totalElapsed != null && totalElapsed > 0f) {
-                endTimeL = startTimeL + Math.round(totalElapsed);
-            } else if (totalTimer != null && totalTimer > 0f) {
-                endTimeL = startTimeL + Math.round(totalTimer);
-            } else if (i + 1 < lapMesgs.size()) {
-                Long nextStart = getLongField(lapMesgs.get(i + 1), "start_time", null);
-                if (nextStart == null)
-                    nextStart = getLongField(lapMesgs.get(i + 1), "timestamp", null);
-                if (nextStart != null && nextStart > startTimeL) endTimeL = nextStart;
+            Long endTime = fitFile.getLapExtraRecords().get(i).getTimeEnd();
+            Long recEndTime = endTime;
+            Long recEndTimePlus1 = (i + 1 < fitFile.getLapExtraRecords().size()) 
+                ? fitFile.getRecordMesg().get(eRecIx+1).getFieldLongValue(FitFile.REC_TIME)
+                : recEndTime;
+
+            Long endLat = lap.getFieldLongValue(FitFile.LAP_ELAT);
+            Long recEndLat = (i >= 0) 
+                ? fitFile.getRecordMesg().get(sRecIx).getFieldLongValue(FitFile.REC_LAT) 
+                : endLat;
+            Long recEndLatPlus1 = (i + 1 < fitFile.getRecordMesg().size()) 
+                ? fitFile.getRecordMesg().get(sRecIx+1).getFieldLongValue(FitFile.REC_LAT) 
+                : recEndLat;
+
+            Long endLon = lap.getFieldLongValue(FitFile.LAP_ELON);
+            Long recEndLon = (i >= 0) 
+                ? fitFile.getRecordMesg().get(sRecIx).getFieldLongValue(FitFile.REC_LON) 
+                : endLon;
+            Long recEndLonPlus1 = (i + 1 < fitFile.getRecordMesg().size()) 
+                ? fitFile.getRecordMesg().get(sRecIx+1).getFieldLongValue(FitFile.REC_LON) 
+                : recEndLon;
+
+                Long nextStart = null;
+            if (i + 1 < lapMesgs.size()) {
+                nextStart = lapMesgs.get(i + 1).getFieldLongValue(FitFile.LAP_STIME);
             }
-
-            // fallback: find last record after lap start
-            if (endTimeL == null) {
-                Long lastAfter = null;
-                for (Mesg r : recordMesgs) {
-                    Long rts = getLongField(r, "timestamp", null);
-                    if (rts != null && rts >= startTimeL) lastAfter = rts;
+            if (endTime == null) {
+                if (eTimer != null && eTimer > 0f) {
+                    endTime = startTime + Math.round(eTimer);
+                } else if (tTimer != null && tTimer > 0f) {
+                    endTime = startTime + Math.round(tTimer);
+                } else if (i + 1 < lapMesgs.size()) {
+                    nextStart = getLongField(lapMesgs.get(i + 1), "start_time", null);
+                    if (nextStart == null)
+                        nextStart = getLongField(lapMesgs.get(i + 1), "timestamp", null);
+                    if (nextStart != null && nextStart > startTime) endTime = nextStart;
                 }
-                if (lastAfter != null && lastAfter > startTimeL) endTimeL = lastAfter;
+                // fallback: find last record after lap start
+                if (endTime == null) {
+                    Long lastAfter = null;
+                    for (Mesg r : recordMesgs) {
+                        Long rts = getLongField(r, "timestamp", null);
+                        if (rts != null && rts >= startTime) lastAfter = rts;
+                    }
+                    if (lastAfter != null && lastAfter > startTime) endTime = lastAfter;
+                }
             }
 
-            if (endTimeL == null) endTimeL = startTimeL + 1;
-            endTimeL++; // +1s inclusive
+            if (endTime == null) endTime = startTime + 1;
 
-            long lapStart = startTimeL;
-            long lapEnd = endTimeL;
+            //endTimeL++; // +1s inclusive
 
-            double lapDist = getFloatField(lap, "total_distance", 0f);
-            double lapAvgSpd = getFloatField(lap, "avg_speed", 0f);
+            //long startTimeL = startTimeL;
+            //long endTimeL = endTimeL;
+
+            float lapDist = lap.getFieldFloatValue(FitFile.LAP_DIST) != null
+             ? lap.getFieldFloatValue(FitFile.LAP_DIST) : 0f;
+            float lapAvgSpd = lap.getFieldFloatValue(FitFile.LAP_ESPEED) != null
+             ? lap.getFieldFloatValue(FitFile.LAP_ESPEED) : 0f;
 
             long messageIndexL = getLongField(lap, "message_index", 0L);
             long eventL = getLongField(lap, "event", 0L);
@@ -882,8 +961,9 @@ public class LapReportGenerator {
 
             System.out.printf("---- LAP %d ----%n", i + 1);
             System.out.printf(
-                "Start: %d  End: %d  Dur: %.1fs  LapMesg Dist: %.2fm  LapMesg AvgSpd: %.3f m/s%n",
-                lapStart, lapEnd, (double) (lapEnd - lapStart), lapDist, lapAvgSpd);
+                "Start: %s  End: %s  Dur: %s  LapMesg Dist: %skm  LapMesg AvgSpd: %.3f m/s%n",
+                new Tstr(startTime).get(), new Tstr(endTime).get(), 
+                new Hmmss(endTime - startTime).get(), new Km5(lapDist).get(), lapAvgSpd);
             System.out.printf(
                 "message_index=%d  event=%d  event_type=%d  lap_trigger=%d%n",
                 messageIndexL, eventL, eventTypeL, lapTriggerL);
@@ -891,45 +971,137 @@ public class LapReportGenerator {
             // --- Records immediately after lap start
             System.out.println("10 Records after lap start:");
             int count = 0;
-            for (Mesg r : recordMesgs) {
+            for (int j = sRecIx; j <= (sRecIx+9) && j < recordMesgs.size(); j++) {
+                Mesg r = recordMesgs.get(j);
                 Long ts = getLongField(r, "timestamp", null);
-                if (ts != null && ts >= lapStart && ts < lapStart + 10) {
-                    printRecord(r, lapStart);
+                if (ts != null && ts >= startTime && ts < startTime + 10) {
+                    printRecord(r, startTime);
                     count++;
-                    if (count >= 10) break;
+                    //if (count >= 10) break;
                 }
             }
 
             // --- Records immediately before lap end
             System.out.println("10 Records before lap end:");
             count = 0;
-            for (Mesg r : recordMesgs) {
+            for (int j = eRecIx - 9; j <= eRecIx && j < recordMesgs.size(); j++) {
+                Mesg r = recordMesgs.get(j);
                 Long ts = getLongField(r, "timestamp", null);
-                if (ts != null && ts >= lapEnd - 10 && ts <= lapEnd) {
-                    printRecord(r, lapStart);
+                if (ts != null && ts >= endTime - 10 && ts <= endTime) {
+                    printRecord(r, startTime);
                     count++;
-                    if (count >= 10) break;
+                    //if (count >= 10) break;
                 }
             }
 
             // --- Compute totals from records within the lap
             List<Mesg> lapRecords = new ArrayList<>();
-            for (Mesg r : recordMesgs) {
-                Long ts = getLongField(r, "timestamp", null);
-                if (ts != null && ts >= lapStart && ts <= lapEnd) {
-                    lapRecords.add(r);
+            if (sRecIx >= 0 && eRecIx >= sRecIx && eRecIx < recordMesgs.size()) {
+                lapRecords = recordMesgs.subList(sRecIx, eRecIx + 1);
+            } else {
+                for (Mesg r : recordMesgs) {
+                    Long ts = r.getFieldLongValue(FitFile.REC_TIME);
+                    if (ts != null && ts >= startTime && ts <= endTime) {
+                        lapRecords.add(r);
+                    }
                 }
             }
 
-            double firstDist = lapRecords.isEmpty() ? 0.0 : getFloatField(lapRecords.get(0), "distance", 0f);
-            double lastDist = lapRecords.isEmpty() ? 0.0 : getFloatField(lapRecords.get(lapRecords.size() - 1), "distance", 0f);
-            double distDelta = lastDist - firstDist;
-            double timeDelta = (double) (lapEnd - lapStart);
-            double avgSpeed = timeDelta > 0 ? distDelta / timeDelta : 0.0;
+            float firstDist = lapRecords.isEmpty() ? 0.0f : getFloatField(lapRecords.get(0), "distance", 0f);
+            float lastDist = lapRecords.isEmpty() ? 0.0f : getFloatField(lapRecords.get(lapRecords.size() - 1), "distance", 0f);
+            float distDelta = lastDist - firstDist;
+            long timeDelta = endTime - startTime;
+            float avgSpeed = timeDelta > 0 ? distDelta / timeDelta : 0.0f;
+
 
             System.out.printf(
-                "=> Records total: Dist=%.2fm  Time=%.1fs  AvgSpeed=%.3f m/s%n",
-                distDelta, timeDelta, avgSpeed);
+                "=> Records total: %skm  %s %.3fm/s%n",
+                new Km5(distDelta).get(), new Hmmss(timeDelta).get(), avgSpeed);
+            int col1 = 11;
+            int col2 = 10;
+            int col3 = 15;
+            int col4 = 17;
+            int col5 = 17;
+            System.out.printf("%" + col1 + "s%" + col2 + "s%" + col3 + "s%" + col4 + "s%" + col5 + "s%n", 
+                "Compare:",
+                "Lap mesg", 
+                "Rec start->end", 
+                "Rec start-1->end", 
+                "Rec start->end+1");
+            System.out.printf("%" + col1 + "s%" + col2 + "s%" + col3 + "s%" + col4 + "s%" + col5 + "s%n", 
+                "start time:",
+                new Tstr(startTime).get(),
+                new Tstr(recStartTime).get(),
+                new Tstr(recStartTimeMinus1).get(), 
+                new Tstr(recStartTime).get());
+            System.out.printf("%" + col1 + "s%" + col2 + "s%" + col3 + "s%" + col4 + "s%" + col5 + "s%n", 
+                "end time:",
+                new Tstr(endTime).get(),
+                new Tstr(recEndTime).get(),
+                new Tstr(recEndTime).get(), 
+                new Tstr(recEndTimePlus1).get());
+            System.out.printf("%" + col1 + "s%" + col2 + "s%" + col3 + "s%" + col4 + "s%" + col5 + "s%n", 
+                "E Timer:",
+                new Hmmss(eTimer).get(),
+                new Hmmss(recEndTime - recStartTime).get(),
+                new Hmmss(recEndTime - recStartTimeMinus1).get(), 
+                new Hmmss(recEndTimePlus1 - recStartTime).get());
+            System.out.printf("%" + col1 + "s%" + col2 + "s%" + col3 + "s%" + col4 + "s%" + col5 + "s%n", 
+                "start dist:",
+                startDist != null ? startDist : "N/A",
+                recStartDist != null ? new Km5(recStartDist).get() : "N/A",
+                recStartDistMinus1 != null ? new Km5(recStartDistMinus1).get() : "N/A", 
+                recStartDist != null ? new Km5(recStartDist).get() : "N/A");
+            System.out.printf("%" + col1 + "s%" + col2 + "s%" + col3 + "s%" + col4 + "s%" + col5 + "s%n", 
+                "end dist:",
+                endDist != null ? endDist : "N/A",
+                recEndDist != null ? new Km5(recEndDist).get() : "N/A",
+                recEndDist != null ? new Km5(recEndDist).get() : "N/A",
+                recEndDistPlus1 != null ? new Km5(recEndDistPlus1).get() : "N/A");
+            System.out.printf("%" + col1 + "s%" + col2 + "s%" + col3 + "s%" + col4 + "s%" + col5 + "s%n", 
+                "dist:",
+                dist != null ? new Km5(dist).get() : "N/A",
+                new Km5(recEndDist - recStartDist).get(),
+                new Km5(recEndDist - recStartDistMinus1).get(),
+                recEndDistPlus1 != null ? new Km5(recEndDistPlus1 - recStartDist).get() : "N/A");
+            System.out.printf("%" + col1 + "s%" + col2 + "f%" + col3 + "f%" + col4 + "f%" + col5 + "f%n",
+                "E speed:",
+                eSpeed != null ? eSpeed : 0,
+                (tTimer != null && tTimer > 0) ? (recEndDist - recStartDist) / tTimer : 0,
+                (tTimer != null && tTimer > 0) ? (recEndDist - recStartDistMinus1) / tTimer : 0,
+                (tTimer != null && tTimer > 0) ? (recEndDistPlus1 - recStartDist) / tTimer : 0);
+            System.out.printf("%" + col1 + "s%" + col2 + "f%" + col3 + "f%" + col4 + "f%" + col5 + "f%n",
+                "speed:",
+                speed != null ? speed : 0,
+                (tTimer != null && tTimer > 0) ? (recEndDist - recStartDist) / tTimer : 0,
+                (tTimer != null && tTimer > 0) ? (recEndDist - recStartDistMinus1) / tTimer : 0,
+                (tTimer != null && tTimer > 0) ? (recEndDistPlus1 - recStartDist) / tTimer : 0);
+            System.out.printf("%" + col1 + "s%" + col2 + "s%" + col3 + "s%" + col4 + "s%" + col5 + "s%n", 
+                "start lat:",
+                startLat != null ? startLat : "N/A",
+                recStartLat != null ? recStartLat : "N/A",
+                recStartLatMinus1 != null ? recStartLatMinus1 : "N/A", 
+                recStartLat != null ? recStartLat : "N/A");
+            System.out.printf("%" + col1 + "s%" + col2 + "s%" + col3 + "s%" + col4 + "s%" + col5 + "s%n", 
+                "start lon:",
+                startLon != null ? startLon : "N/A",
+                recStartLon != null ? recStartLon : "N/A",
+                recStartLonMinus1 != null ? recStartLonMinus1 : "N/A", 
+                recStartLon != null ? recStartLon : "N/A");
+            System.out.printf("%" + col1 + "s%" + col2 + "s%" + col3 + "s%" + col4 + "s%" + col5 + "s%n", 
+                "end lat:",
+                endLat != null ? endLat : "N/A",
+                recEndLat != null ? recEndLat : "N/A",
+                recEndLatPlus1 != null ? recEndLatPlus1 : "N/A", 
+                recEndLat != null ? recEndLat : "N/A");
+            System.out.printf("%" + col1 + "s%" + col2 + "s%" + col3 + "s%" + col4 + "s%" + col5 + "s%n", 
+                "end lon:",
+                endLon != null ? endLon : "N/A",
+                recEndLon != null ? recEndLon : "N/A",
+                recEndLonPlus1 != null ? recEndLonPlus1 : "N/A", 
+                recEndLon != null ? recEndLon : "N/A");
+                
+            
             System.out.printf(
                 "Compare LapMesg vs Records: LapMesgDist=%.2f  RecordsDist=%.2f  LapMesgAvgSpd=%.3f  RecAvgSpd=%.3f%n%n",
                 lapDist, distDelta, lapAvgSpd, avgSpeed);
@@ -938,14 +1110,22 @@ public class LapReportGenerator {
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private static void printRecord(Mesg r, long lapStart) {
-        Long ts = getLongField(r, "timestamp", null);
-        double dist = getFloatField(r, "distance", 0f);
-        double spd = getFloatField(r, "speed", 0f);
-        double enhSpd = getFloatField(r, "enhanced_speed", 0f);
+        Long ts = r.getFieldLongValue(FitFile.REC_TIME);
+        Float dist = r.getFieldFloatValue(FitFile.REC_DIST);
+        Float spd = r.getFieldFloatValue(FitFile.REC_SPEED);
+        Float enhSpd = r.getFieldFloatValue(FitFile.REC_ESPEED);
+        Long lat = r.getFieldLongValue(FitFile.REC_LAT);
+        Long lon = r.getFieldLongValue(FitFile.REC_LON);
         if (ts == null) return;
         System.out.printf(
-            "  ?t=%6ds  ts=%d  dist=%.2f  spd=%.3f  enhSpd=%.3f%n",
-            (ts - lapStart), ts, dist, spd, enhSpd);
+            " lapt=%s %s %s %sm/s %sm/s(enh) lat=%s lon=%s%n",
+            new Hmmss(ts - lapStart).get(), 
+            new Tstr(ts).get(), 
+            new Km5(dist).get(), 
+            spd, enhSpd,
+            lat, lon
+        );
+            //" lapt=%ds  ts=%d  dist=%.2f  spd=%.3f  enhSpd=%.3f%n",
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

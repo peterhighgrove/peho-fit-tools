@@ -54,6 +54,7 @@ public class MenuRunner {
             new LapMergeCommand(),
             new LapNewCommand(),
             new SplitShowListCommand(), 
+            new SplitLapAnalyzeCommand(),
             new CPointQuickScriptCommand(),
             new CPointReportCommand(),
             new CPointReportGenericsCommand(),

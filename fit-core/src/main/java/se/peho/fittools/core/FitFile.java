@@ -58,31 +58,35 @@ public class FitFile {
     public static final int EVE_TYPE = EventMesg.EventTypeFieldNum; //long
     public static final int SPL_STIME = SplitMesg.StartTimeFieldNum; //long
     public static final int SPL_ETIME = SplitMesg.EndTimeFieldNum; //long
-    public static final int SPL_MESSAGE_INDEX = SplitMesg.MessageIndexFieldNum; // int
+    public static final int SPL_MESGIX = SplitMesg.MessageIndexFieldNum; // int
+    public static final int SPL_LAPIX = 67; // int
     public static final int SPL_TYPE = SplitMesg.SplitTypeFieldNum; // enum
     public static final int SPL_TIMER = SplitMesg.TotalTimerTimeFieldNum; // float
+    public static final int SPL_ETIMER = SplitMesg.TotalElapsedTimeFieldNum; // float
+    public static final int SPL_MTIMER = SplitMesg.TotalMovingTimeFieldNum; // float
     public static final int SPL_SDIST = 7; // float
     public static final int SPL_DIST = SplitMesg.TotalDistanceFieldNum; // float
     public static final int SPL_SPEED = SplitMesg.AvgSpeedFieldNum; // float
     public static final int SPL_MSPEED = SplitMesg.MaxSpeedFieldNum; // float
     public static final int SPL_VSPEED = SplitMesg.AvgVertSpeedFieldNum; // float
+    public static final int SPL_CAD = 29; // short
+    public static final int SPL_MCAD = 30; // short
+    public static final int SPL_POW = 40; // int
+    public static final int SPL_MPOW = 41; // int
     public static final int SPL_SELE = SplitMesg.StartElevationFieldNum; // int
     public static final int SPL_ASC = SplitMesg.TotalAscentFieldNum; // int
     public static final int SPL_DESC = SplitMesg.TotalDescentFieldNum; // int
-    // public static final int SPL_START_LAT = SplitMesg.StartPositionLatFieldNum; // int (semicircles)
-    // public static final int SPL_START_LON = SplitMesg.StartPositionLongFieldNum; // int (semicircles)
-    // public static final int SPL_END_LAT = SplitMesg.EndPositionLatFieldNum; // int (semicircles)
-    // public static final int SPL_END_LON = SplitMesg.EndPositionLongFieldNum; // int (semicircles)
     public static final int SPL_SLAT = SplitMesg.StartPositionLatFieldNum; // int (semicircles)
     public static final int SPL_SLON = SplitMesg.StartPositionLongFieldNum; // int (semicircles)
     public static final int SPL_ELAT = SplitMesg.EndPositionLatFieldNum; // int (semicircles)
     public static final int SPL_ELON = SplitMesg.EndPositionLongFieldNum; // int (semicircles)
-    public static final int SPL_ETIMER = SplitMesg.TotalElapsedTimeFieldNum; // float
-    public static final int SPL_MTIMER = SplitMesg.TotalMovingTimeFieldNum; // float
-    public static final int SPL_TOTAL_CALORIES = SplitMesg.TotalCaloriesFieldNum; // int
-    public static final int SPL_START_ELEVATION = SplitMesg.StartElevationFieldNum; // int
-    public static final int SPL_TOTAL_MOVING_TIME = SplitMesg.TotalMovingTimeFieldNum; // float
     public static final int SPL_CAL = SplitMesg.TotalCaloriesFieldNum; // int
+    public static final int SPL_TEMP = 32; // int
+    public static final int SPL_MAXTEMP = 33; // int
+    public static final int SPL_MINTEMP = 34; // int
+    //public static final int SPL_TOTAL_CALORIES = SplitMesg.TotalCaloriesFieldNum; // int
+    //public static final int SPL_START_ELEVATION = SplitMesg.StartElevationFieldNum; // int
+    //public static final int SPL_TOTAL_MOVING_TIME = SplitMesg.TotalMovingTimeFieldNum; // float
     public static final int SPLSUM_TIMER = SplitSummaryMesg.TotalTimerTimeFieldNum; // float
     public static final int SPLSUM_MTIMER = SplitSummaryMesg.TotalMovingTimeFieldNum; // float
     public static final int SPLSUM_DIST = SplitSummaryMesg.TotalDistanceFieldNum; // float
@@ -4819,6 +4823,10 @@ public class FitFile {
         getLapFix().lapNew(totalTimer);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void analyzeSplitsAgainstLaps() {
+        getLapFix().printSplitLapMatchReport();
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void shortenPause(int pauseNo, Long newPauseTime) {
         getPauseFix().pauseShorten(pauseNo, newPauseTime);
     }
@@ -6289,10 +6297,10 @@ public class FitFile {
             /* Float vertSpeed = mesg.getFieldFloatValue(SPL_AVG_VERT_SPEED);
             if (vertSpeed != null) System.out.print(" AvgVertSpeed: " + vertSpeed + " m/s"); */
 
-            Integer startElev = mesg.getFieldIntegerValue(SPL_START_ELEVATION);
+            Integer startElev = mesg.getFieldIntegerValue(SPL_SELE);
             if (startElev != null) System.out.print(" StartEle: " + startElev + "m");
 
-            Float movingTime = mesg.getFieldFloatValue(SPL_TOTAL_MOVING_TIME);
+            Float movingTime = mesg.getFieldFloatValue(SPL_MTIMER);
             if (movingTime != null) System.out.print(" MovingTime: " + PehoUtils.sec2minSecShort(movingTime));
 
             System.out.println();
