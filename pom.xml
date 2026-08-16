@@ -6,7 +6,7 @@
 
     <groupId>se.peho.fittools</groupId>
     <artifactId>peho-fit-tools</artifactId>
-    <version>3.06</version>
+    <version>3.07</version>
     <packaging>pom</packaging>
 
     <modules>
