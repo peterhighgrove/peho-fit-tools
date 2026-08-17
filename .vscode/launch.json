@@ -20,7 +20,8 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"Fartlek Lill-Jans och Fiskartorpets elljus\" 2 \"2026-08-11-16-39-45-Fartlek-8.3km-45.33min-garmin-e2pro-v26.09-renamed.zip\""
+      "args": "\"Fartlek Lill-Jans och Fiskartorpets elljus\" 2 \
+      \"2025-09-02.zip\""
     },
     {
       "type": "java",

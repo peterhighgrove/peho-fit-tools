@@ -51,12 +51,12 @@ public class WktInsertCommand implements Command {
 
             boolean useRest;
             while (true) {
-                System.out.print("Rest or recover after active laps? (rest/recover, b = back): ");
+                System.out.print("Rest or recover after active laps? (rest(r)/recover(rec), b = back): ");
                 String choice = sc.nextLine().trim().toLowerCase();
                 if (choice.equals("b")) {
                     return;
                 }
-                if (choice.equals("rest") || choice.equals("r")) {
+                if (choice.equals("rest") || choice.equals("res") || choice.equals("r")) {
                     useRest = true;
                     break;
                 }

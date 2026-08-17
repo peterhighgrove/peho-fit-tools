@@ -7,8 +7,10 @@ import com.garmin.fit.SplitType;
 import com.garmin.fit.RecordMesg;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import se.peho.fittools.core.strings.*;
 
@@ -269,50 +271,91 @@ public class LapFix {
 
         int updatedLaps = 0;
         int updatedSplits = 0;
+        int warmupSplitsUpdated = 0;
+        int cooldownSplitsUpdated = 0;
+        int activeSplitsUpdated = 0;
+        int restSplitsUpdated = 0;
+        int recoverySplitsUpdated = 0;
+        Set<Short> splitTypesToRefreshSummary = new HashSet<>();
         int intervalStartIx = warmupLaps;
         int cooldownStartIx = lapCount - cooldownLaps;
 
         for (int lapIx = 0; lapIx < lapCount; lapIx++) {
             Mesg lap = fitFile.getLapMesg().get(lapIx);
-            SplitMatch match = findBestSplitMatchForLap(lapIx, lap, usedSplitIndexes);
-            if (match == null) {
-                continue;
-            }
-
-            usedSplitIndexes.add(match.splitListIndex);
 
             Intensity intensity;
-            SplitType splitType;
             if (lapIx < intervalStartIx) {
                 intensity = Intensity.WARMUP;
-                splitType = SplitType.INTERVAL_WARMUP;
             } else if (lapIx >= cooldownStartIx) {
                 intensity = Intensity.COOLDOWN;
-                splitType = SplitType.INTERVAL_COOLDOWN;
             } else {
                 int intervalIx = lapIx - intervalStartIx;
                 if ((intervalIx % 2) == 0) {
                     intensity = Intensity.ACTIVE;
-                    splitType = SplitType.INTERVAL_ACTIVE;
                 } else if (useRestAfterActive) {
                     intensity = Intensity.REST;
-                    splitType = SplitType.INTERVAL_REST;
                 } else {
                     intensity = Intensity.RECOVERY;
-                    splitType = SplitType.INTERVAL_RECOVERY;
                 }
             }
-
             lap.setFieldValue(FitFile.LAP_INTENSITY, intensity.getValue());
-            match.splitMesg.setFieldValue(FitFile.SPL_TYPE, splitType.getValue());
             updatedLaps++;
-            updatedSplits++;
+            
+            SplitMatch match = findBestSplitMatchForLap(lapIx, lap, usedSplitIndexes);
 
-            fitFile.appendTempUpdateLogLn("-- wkti LAP " + (lapIx + 1)
-                + " -> SPLIT " + (match.splitListIndex + 1)
-                + " by " + match.matchReason
-                + " type=" + splitType);
+            SplitType splitType;
+            if (match != null) {
+                usedSplitIndexes.add(match.splitListIndex);
+                if (lapIx < intervalStartIx) {
+                    splitType = SplitType.INTERVAL_WARMUP;
+                } else if (lapIx >= cooldownStartIx) {
+                    splitType = SplitType.INTERVAL_COOLDOWN;
+                } else {
+                    int intervalIx = lapIx - intervalStartIx;
+                    if ((intervalIx % 2) == 0) {
+                        splitType = SplitType.INTERVAL_ACTIVE;
+                    } else if (useRestAfterActive) {
+                        splitType = SplitType.INTERVAL_REST;
+                    } else {
+                        splitType = SplitType.INTERVAL_RECOVERY;
+                    }
+                }
+
+                Short currentSplitType = match.splitMesg.getFieldShortValue(FitFile.SPL_TYPE);
+                if (currentSplitType == null || currentSplitType.shortValue() != splitType.getValue()) {
+                    match.splitMesg.setFieldValue(FitFile.SPL_TYPE, splitType.getValue());
+                    updatedSplits++;
+                    splitTypesToRefreshSummary.add(splitType.getValue());
+
+                    if (splitType == SplitType.INTERVAL_WARMUP) {
+                        warmupSplitsUpdated++;
+                    } else if (splitType == SplitType.INTERVAL_COOLDOWN) {
+                        cooldownSplitsUpdated++;
+                    } else if (splitType == SplitType.INTERVAL_ACTIVE) {
+                        activeSplitsUpdated++;
+                    } else if (splitType == SplitType.INTERVAL_REST) {
+                        restSplitsUpdated++;
+                    } else if (splitType == SplitType.INTERVAL_RECOVERY) {
+                        recoverySplitsUpdated++;
+                    }
+
+                    fitFile.appendTempUpdateLogLn("-- wkti LAP " + (lapIx + 1)
+                        + " -> SPLIT " + (match.splitListIndex + 1)
+                        + " by " + match.matchReason
+                        + " type=" + splitType + " (updated)");
+                } else {
+                    fitFile.appendTempUpdateLogLn("-- wkti LAP " + (lapIx + 1)
+                        + " -> SPLIT " + (match.splitListIndex + 1)
+                        + " by " + match.matchReason
+                        + " type=" + splitType + " (unchanged)");
+                }
+            } else {
+                fitFile.appendTempUpdateLogLn("-- wkti LAP " + (lapIx + 1)
+                    + " -> no matching split found for type assignment.");
+            }
         }
+
+        updateSplitSummaryFromSplitsForTypes(splitTypesToRefreshSummary);
 
         fitFile.appendTempUpdateLogLn("wkti applied: warmup=" + warmupLaps
             + ", cooldown=" + cooldownLaps
@@ -320,8 +363,106 @@ public class LapFix {
             + ", laps=" + lapCount + ".");
         fitFile.appendTempUpdateLogLn("Updated LAP_INTENSITY for " + updatedLaps + " lap messages.");
         fitFile.appendTempUpdateLogLn("Updated SPL_TYPE for " + updatedSplits + " split messages.");
+        fitFile.appendTempUpdateLogLn("Updated split types counts:"
+            + " warmup=" + warmupSplitsUpdated
+            + ", cooldown=" + cooldownSplitsUpdated
+            + ", active=" + activeSplitsUpdated
+            + ", rest=" + restSplitsUpdated
+            + ", recovery=" + recoverySplitsUpdated);
         System.out.println(fitFile.getTempUpdateLog());
         fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private void updateSplitSummaryFromSplitsForTypes(Set<Short> splitTypesToRefreshSummary) {
+        if (splitTypesToRefreshSummary == null || splitTypesToRefreshSummary.isEmpty()) {
+            fitFile.appendTempUpdateLogLn("-- No SPL_TYPE changes, SPLIT_SUMMARY unchanged.");
+            return;
+        }
+        if (fitFile.getSplitSummaryMesg() == null || fitFile.getSplitSummaryMesg().isEmpty()) {
+            fitFile.appendTempUpdateLogLn("-- No SPLIT_SUMMARY messages found.");
+            return;
+        }
+
+        Map<Short, SplitSummaryAgg> aggByType = new HashMap<>();
+        for (Short splitType : splitTypesToRefreshSummary) {
+            aggByType.put(splitType, new SplitSummaryAgg());
+        }
+
+        for (Mesg split : fitFile.getSplitMesg()) {
+            Short splitType = split.getFieldShortValue(FitFile.SPL_TYPE);
+            if (splitType == null || !aggByType.containsKey(splitType)) {
+                continue;
+            }
+            aggByType.get(splitType).addSplit(split);
+        }
+
+        int updatedSummaryRows = 0;
+        for (Mesg splitSummary : fitFile.getSplitSummaryMesg()) {
+            Short splitSummaryType = splitSummary.getFieldShortValue(FitFile.SPLSUM_TYPE);
+            if (splitSummaryType == null || !aggByType.containsKey(splitSummaryType)) {
+                continue;
+            }
+
+            SplitSummaryAgg agg = aggByType.get(splitSummaryType);
+            splitSummary.setFieldValue(FitFile.SPLSUM_TIMER, agg.totalTimer);
+            splitSummary.setFieldValue(FitFile.SPLSUM_MTIMER, agg.totalMovingTimer);
+            splitSummary.setFieldValue(FitFile.SPLSUM_DIST, agg.totalDist);
+            splitSummary.setFieldValue(FitFile.SPLSUM_SPEED, agg.totalTimer > 0f ? agg.totalDist / agg.totalTimer : 0f);
+            splitSummary.setFieldValue(FitFile.SPLSUM_MSPEED, agg.maxSpeed);
+            splitSummary.setFieldValue(FitFile.SPLSUM_VSPEED, agg.vertWeight > 0f ? agg.weightedVertSpeed / agg.vertWeight : 0f);
+            splitSummary.setFieldValue(FitFile.SPLSUM_ASC, agg.totalAscent);
+            splitSummary.setFieldValue(FitFile.SPLSUM_DESC, agg.totalDescent);
+            splitSummary.setFieldValue(FitFile.SPLSUM_CAL, agg.totalCalories);
+            updatedSummaryRows++;
+        }
+
+        fitFile.appendTempUpdateLogLn("-- Updated SPLIT_SUMMARY rows: " + updatedSummaryRows
+            + " for split types " + splitTypesToRefreshSummary + ".");
+    }
+
+    private static final class SplitSummaryAgg {
+        float totalTimer = 0f;
+        float totalMovingTimer = 0f;
+        float totalDist = 0f;
+        float maxSpeed = 0f;
+        float weightedVertSpeed = 0f;
+        float vertWeight = 0f;
+        int totalAscent = 0;
+        int totalDescent = 0;
+        int totalCalories = 0;
+
+        void addSplit(Mesg split) {
+            Float timer = split.getFieldFloatValue(FitFile.SPL_TIMER);
+            Float movingTimer = split.getFieldFloatValue(FitFile.SPL_MTIMER);
+            Float dist = split.getFieldFloatValue(FitFile.SPL_DIST);
+            Float maxSpd = split.getFieldFloatValue(FitFile.SPL_MSPEED);
+            Float vertSpd = split.getFieldFloatValue(FitFile.SPL_VSPEED);
+            Integer ascent = split.getFieldIntegerValue(FitFile.SPL_ASC);
+            Integer descent = split.getFieldIntegerValue(FitFile.SPL_DESC);
+            Integer calories = split.getFieldIntegerValue(FitFile.SPL_CAL);
+
+            float timerVal = timer != null ? timer : 0f;
+            float movingTimerVal = movingTimer != null ? movingTimer : 0f;
+            float distVal = dist != null ? dist : 0f;
+            float maxSpdVal = maxSpd != null ? maxSpd : 0f;
+
+            totalTimer += timerVal;
+            totalMovingTimer += movingTimerVal;
+            totalDist += distVal;
+            if (maxSpdVal > maxSpeed) {
+                maxSpeed = maxSpdVal;
+            }
+
+            if (vertSpd != null && timerVal > 0f) {
+                weightedVertSpeed += vertSpd * timerVal;
+                vertWeight += timerVal;
+            }
+
+            totalAscent += ascent != null ? ascent : 0;
+            totalDescent += descent != null ? descent : 0;
+            totalCalories += calories != null ? calories : 0;
+        }
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
