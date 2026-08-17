@@ -416,6 +416,11 @@ Workout
 --> v3.07 Build
 --> git sync
 
+command spl,watchFitFile.printSplitSummary(), to print in column
+
+--> git sync
+--> v3.08 Build
+--> git sync
 
 
 BUGGAR
