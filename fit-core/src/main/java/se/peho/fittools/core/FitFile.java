@@ -6251,138 +6251,146 @@ public class FitFile {
         int i = 0;
         int summaryCount = 0;
         Float maxSummaryDistance = null;
+
+        int colNo = 2;
+        int colType = 6;
+        int colTime = 8;
+        int colTimer = 6;
+        int colDist = 5;
+        int colPace = 5;
+
         System.out.println();
         System.out.println("==================================================");
         System.out.println("SPLITS IN FILE");
         System.out.println(" File  between " + FitDateTime.toString(timeFirstRecord,diffMinutesLocalUTC) + " >>>> " + FitDateTime.toString(timeLastRecord,diffMinutesLocalUTC));
         System.out.println(String.format(" TotalTime:%1$smin Dist:%2$skm", PehoUtils.sec2minSecLong(totalTimerTime), PehoUtils.m2km2(totalDistance)));
         System.out.println("--------------------------------------------------");
+        System.out.printf("%" + colNo + "s %" + colType + "s %" + colTime + "s %" + colTime + "s %" + colTimer + "s %" + colDist + "s %" + colPace + "s%n",
+            "No", "Ty", "Start", "End", "Time", "Dist", "Pace");
         for (Mesg mesg : splitMesg) {
-            // Display split number as one-based (i + 1) for user clarity
-            System.out.print("No:" + (i + 1));
-
-            Short splitType = mesg.getFieldShortValue(SPL_TYPE);
-            if (splitType == null) {
-                System.out.print(" Type:-");
-            } else {
-                SplitType splitTypeEnum = SplitType.getByValue(splitType);
-                if (splitTypeEnum == null) {
-                    System.out.print(" Type:unknown(" + splitType + ")");
-                } else {
-                    System.out.print(" Type:" + splitTypeEnum + "(" + splitType + ")");
-                }
+            String splitTypeStr = formatSplitTypeLabelShort(mesg.getFieldShortValue(SPL_TYPE));
+            String startTimeStr = "-";
+            Long startTime = mesg.getFieldLongValue(SPL_STIME);
+            if (startTime != null) {
+                startTimeStr = FitDateTime.toStringTime(startTime, diffMinutesLocalUTC);
             }
 
-            Long startTime = mesg.getFieldLongValue(SPL_STIME);
-            if (startTime != null) System.out.print(" Time:" + FitDateTime.toStringTime(startTime, diffMinutesLocalUTC));
-
+            String endTimeStr = "-";
             Long endTime = mesg.getFieldLongValue(SPL_ETIME);
-            if (endTime != null) System.out.print("->" + FitDateTime.toStringTime(endTime, diffMinutesLocalUTC));
+            if (endTime != null) {
+                endTimeStr = FitDateTime.toStringTime(endTime, diffMinutesLocalUTC);
+            }
 
+            String splitTimerStr = "-";
             Float totalTimer = mesg.getFieldFloatValue(SPL_TIMER);
-            if (totalTimer != null)  System.out.print(" SplTime:" + PehoUtils.sec2minSecLong(totalTimer) + "min");
+            if (totalTimer != null) {
+                splitTimerStr = PehoUtils.sec2minSecLong(totalTimer);
+            }
 
+            String distStr = "-";
             Float totalDistance = mesg.getFieldFloatValue(SPL_DIST);
-            if (totalDistance != null) System.out.print(" Dist:" + PehoUtils.m2km2(totalDistance) + "km");
+            if (totalDistance != null) {
+                distStr = PehoUtils.m2km2(totalDistance);
+            }
 
+            String paceStr = "-";
             Float avgPace = mesg.getFieldFloatValue(SPL_SPEED);
-            if (avgPace != null) System.out.print(" AvgPace:" + PehoUtils.mps2minpkm(avgPace));
+            if (avgPace != null) {
+                paceStr = PehoUtils.mps2minpkm(avgPace);
+            }
 
-            Float maxPace = mesg.getFieldFloatValue(SPL_MSPEED);
-            if (maxPace != null) System.out.print(" MaxPace:" + PehoUtils.mps2minpkm(maxPace));
-
-            Integer ascent = mesg.getFieldIntegerValue(SPL_ASC);
-            if (ascent != null) System.out.print(" Asc:" + ascent + "m");
-
-            Integer descent = mesg.getFieldIntegerValue(SPL_DESC);
-            if (descent != null) System.out.print(" Desc:" + descent + "m");
-
-            /* Integer startLat = mesg.getFieldIntegerValue(SPL_START_LAT);
-            Integer startLon = mesg.getFieldIntegerValue(SPL_START_LON);
-            Integer endLat = mesg.getFieldIntegerValue(SPL_END_LAT);
-            Integer endLon = mesg.getFieldIntegerValue(SPL_END_LON);
-            if (startLat != null && startLon != null && endLat != null && endLon != null) {
-                System.out.print(" StartPos: " + startLat + "/" + startLon);
-                System.out.print(" EndPos: " + endLat + "/" + endLon);
-            } */
-
-            /* Float vertSpeed = mesg.getFieldFloatValue(SPL_AVG_VERT_SPEED);
-            if (vertSpeed != null) System.out.print(" AvgVertSpeed: " + vertSpeed + " m/s"); */
-
-            Integer startElev = mesg.getFieldIntegerValue(SPL_SELE);
-            if (startElev != null) System.out.print(" StartEle: " + startElev + "m");
-
-            Float movingTime = mesg.getFieldFloatValue(SPL_MTIMER);
-            if (movingTime != null) System.out.print(" MovingTime: " + PehoUtils.sec2minSecShort(movingTime));
-
-            System.out.println();
+            System.out.printf("%" + colNo + "d %" + colType + "s %" + colTime + "s %" + colTime + "s %" + colTimer + "s %" + colDist + "s %" + colPace + "s%n",
+                (i + 1), splitTypeStr, startTimeStr, endTimeStr, splitTimerStr, distStr, paceStr);
             i++;
         }
         System.out.println("---- END SPLITS ---------");
         System.out.println();
         System.out.println("-------------------------");
         System.out.println("---- SPLIT SUMMARIES ----");
+        System.out.printf("%" + colNo + "s %" + colType + "s %" + colTimer + "s %" + colDist + "s %" + colPace + "s%n",
+            "No", "Ty", "Time", "Dist", "Pace");
         for (Mesg mesg : allMesg) {
             if (mesg.getNum() != MesgNum.SPLIT_SUMMARY) {
                 continue;
             }
 
             summaryCount++;
-            System.out.print("SummaryNo:" + summaryCount);
+            String splitSummaryTypeStr = formatSplitTypeLabelShort(mesg.getFieldShortValue(SPLSUM_TYPE));
 
-            Short splitSummaryType = mesg.getFieldShortValue(SPLSUM_TYPE);
-            if (splitSummaryType == null) {
-                System.out.print(" Type:-");
-            } else {
-                SplitType splitSummaryTypeEnum = SplitType.getByValue(splitSummaryType);
-                if (splitSummaryTypeEnum == null) {
-                    System.out.print(" Type:unknown(" + splitSummaryType + ")");
-                } else {
-                    System.out.print(" Type:" + splitSummaryTypeEnum + "(" + splitSummaryType + ")");
-                }
+            String totalTimerStr = "-";
+            Float totalTimer = mesg.getFieldFloatValue(SPLSUM_TIMER);
+            if (totalTimer != null) {
+                totalTimerStr = PehoUtils.sec2minSecLong(totalTimer);
             }
 
-            Float totalTimer = mesg.getFieldFloatValue(SPLSUM_TIMER);
-            if (totalTimer != null)  System.out.print(" SplTime:" + PehoUtils.sec2minSecLong(totalTimer) + "min");
-
+            String summaryDistStr = "-";
             Float summaryDistance = mesg.getFieldFloatValue(SPLSUM_DIST);
             if (summaryDistance != null) {
-                System.out.print(" TotalDist:" + PehoUtils.m2km2(summaryDistance) + "km");
+                summaryDistStr = PehoUtils.m2km2(summaryDistance);
                 if (maxSummaryDistance == null || summaryDistance > maxSummaryDistance) {
                     maxSummaryDistance = summaryDistance;
                 }
             }
 
-            Float summaryAvgSpeed = mesg.getFieldFloatValue(SPLSUM_SPEED);
-            if (summaryAvgSpeed != null) {
-                System.out.print(" AvgSpeed:" + String.format("%.2f", summaryAvgSpeed) + "m/s");
+            String paceStr = "-";
+            Float avgPace = mesg.getFieldFloatValue(SPLSUM_SPEED);
+            if (avgPace != null) {
+                paceStr = PehoUtils.mps2minpkm(avgPace);
             }
 
-            Float avgPace = mesg.getFieldFloatValue(SPLSUM_SPEED);
-            if (avgPace != null) System.out.print(" AvgPace:" + PehoUtils.mps2minpkm(avgPace));
-
-            Float maxPace = mesg.getFieldFloatValue(SPLSUM_MSPEED);
-            if (maxPace != null) System.out.print(" MaxPace:" + PehoUtils.mps2minpkm(maxPace));
-
-            Integer ascent = mesg.getFieldIntegerValue(SPLSUM_ASC);
-            if (ascent != null) System.out.print(" Asc:" + ascent + "m");
-
-            Integer descent = mesg.getFieldIntegerValue(SPL_DESC);
-            if (descent != null) System.out.print(" Desc:" + descent + "m");
-
-            Float vertSpeed = mesg.getFieldFloatValue(SPL_VSPEED);
-            if (vertSpeed != null) System.out.print(" AvgVertSpeed: " + vertSpeed + " m/s");
-
-            Float movingTime = mesg.getFieldFloatValue(SPLSUM_MTIMER);
-            if (movingTime != null) System.out.print(" MovingTime: " + PehoUtils.sec2minSecShort(movingTime));
-
-            System.out.println();
+            System.out.printf("%" + colNo + "d %" + colType + "s %" + colTimer + "s %" + colDist + "s %" + colPace + "s%n",
+                summaryCount, splitSummaryTypeStr, totalTimerStr, summaryDistStr, paceStr);
         }
 
         if (maxSummaryDistance != null) {
             System.out.println("Max split distance: " + PehoUtils.m2km2(maxSummaryDistance) + "km");
         }
         System.out.println("---- END SPLITS ----");
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private String formatSplitTypeLabel(Short splitType) {
+        if (splitType == null) {
+            return "-";
+        }
+        SplitType splitTypeEnum = SplitType.getByValue(splitType);
+        if (splitTypeEnum == null) {
+            return "unknown(" + splitType + ")";
+        }
+        return splitTypeEnum + "(" + splitType + ")";
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private String formatSplitTypeLabelShort(Short splitType) {
+        if (splitType == null) {
+            return "-";
+        }
+        SplitType splitTypeEnum = SplitType.getByValue(splitType);
+        if (splitTypeEnum == null) {
+            return "U" + splitType;
+        }
+
+        String name = splitTypeEnum.toString();
+        if (name.startsWith("INTERVAL_")) {
+            name = name.substring("INTERVAL_".length());
+        }
+        switch (name) {
+            case "WARMUP":
+                return "WU";
+            case "ACTIVE":
+                return "ACT";
+            case "REST":
+                return "RST";
+            case "RECOVERY":
+                return "RCV";
+            case "COOLDOWN":
+                return "CD";
+            default:
+                if (name.length() > 6) {
+                    return name.substring(0, 6);
+                }
+                return name;
+        }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printLapRecord(int ix) {
