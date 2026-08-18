@@ -47,6 +47,16 @@ public class LapFix {
             return;
         }
 
+        List<String> combinedFixLog = detectAndFixCombinedSplits();
+        if (!combinedFixLog.isEmpty()) {
+            System.out.println("COMBINED SPLIT DETECTION (Garmin merged laps into one split)");
+            System.out.println("--------------------------------------------------");
+            for (String line : combinedFixLog) {
+                System.out.println(line);
+            }
+            System.out.println("--------------------------------------------------");
+        }
+
         System.out.println("LAP -> SPLIT");
         System.out.println("--------------------------------------------------");
         Set<Integer> usedSplitIndexes = new HashSet<>();
@@ -260,6 +270,10 @@ public class LapFix {
             fitFile.appendTempUpdateLogLn("==XX> warmup + cooldown exceeds number of laps (" + lapCount + "). wkti aborted.");
             System.out.println(fitFile.getTempUpdateLog());
             return;
+        }
+
+        for (String line : detectAndFixCombinedSplits()) {
+            fitFile.appendTempUpdateLogLn(line);
         }
 
         int overviewSplitIx = findOverviewSplitIndex();
@@ -1006,6 +1020,131 @@ public class LapFix {
             }
         }
         return matches;
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    // Garmin sometimes merges 2+ consecutive laps into a single SPLIT (e.g. when it
+    // considers them the same split type). Recognized by: SPL_LAPIX points at the
+    // first of those laps, no other SPLIT claims any of the succeeding lap indexes,
+    // and the split timer equals the summed timer of those consecutive laps.
+    private List<String> detectAndFixCombinedSplits() {
+        List<String> logLines = new ArrayList<>();
+        if (fitFile.getLapMesg() == null || fitFile.getLapMesg().isEmpty()
+            || fitFile.getSplitMesg() == null || fitFile.getSplitMesg().isEmpty()) {
+            return logLines;
+        }
+
+        int totalFixed = 0;
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            for (int splitIx = 0; splitIx < fitFile.getSplitMesg().size(); splitIx++) {
+                Mesg split = fitFile.getSplitMesg().get(splitIx);
+                Integer splitLapIx = getMesgFieldAsInt(split, SPL_LAP_INDEX_FIELD_NUM);
+                if (splitLapIx == null || splitLapIx < 0 || splitLapIx >= fitFile.getLapMesg().size()) {
+                    continue;
+                }
+                Float splitTimer = split.getFieldFloatValue(FitFile.SPL_TIMER);
+                int combinedLapCount = detectCombinedLapCountForSplit(splitLapIx, splitTimer);
+                if (combinedLapCount < 2) {
+                    continue;
+                }
+
+                logLines.add("-- SPLIT " + (splitIx + 1) + " (lapIx=" + (splitLapIx + 1)
+                    + ", timer=" + formatSec(splitTimer) + ") combines " + combinedLapCount
+                    + " laps (LAP " + (splitLapIx + 1) + "-" + (splitLapIx + combinedLapCount) + ")");
+                logLines.add(splitCombinedSplitAcrossLaps(split, splitIx, splitLapIx, combinedLapCount));
+                renumberSplitMesgIndexes();
+                totalFixed++;
+                changed = true;
+                break; // split list mutated; restart the scan
+            }
+        }
+
+        if (totalFixed > 0) {
+            logLines.add("-- Combined-split detection: fixed " + totalFixed + " split(s).");
+        }
+        return logLines;
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    // Returns the number of consecutive laps (>=2) starting at firstLapIx whose summed
+    // LAP_TIMER matches splitTimer, or 0 if no such combination is found.
+    private int detectCombinedLapCountForSplit(int firstLapIx, Float splitTimer) {
+        if (splitTimer == null || firstLapIx < 0 || firstLapIx >= fitFile.getLapMesg().size()) {
+            return 0;
+        }
+
+        float sum = 0f;
+        int lapIx = firstLapIx;
+        int lapCount = 0;
+        while (lapIx < fitFile.getLapMesg().size()) {
+            if (lapCount > 0 && hasSplitWithLapIx(lapIx)) {
+                // A later lap in the sequence already has its own dedicated split.
+                return 0;
+            }
+            Float lapTimer = fitFile.getLapMesg().get(lapIx).getFieldFloatValue(FitFile.LAP_TIMER);
+            if (lapTimer == null) {
+                return 0;
+            }
+            sum += lapTimer;
+            lapCount++;
+
+            if (Math.abs(sum - splitTimer) <= SPLIT_TIMER_MATCH_TOLERANCE_SEC) {
+                return lapCount >= 2 ? lapCount : 0;
+            }
+            if (sum > splitTimer + SPLIT_TIMER_MATCH_TOLERANCE_SEC) {
+                return 0;
+            }
+            lapIx++;
+        }
+        return 0;
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private boolean hasSplitWithLapIx(int lapIx) {
+        for (Mesg split : fitFile.getSplitMesg()) {
+            Integer splitLapIx = getMesgFieldAsInt(split, SPL_LAP_INDEX_FIELD_NUM);
+            if (splitLapIx != null && splitLapIx == lapIx) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    // Splits one combined SPLIT mesg into lapCount SPLIT messages (one per lap), each
+    // inheriting its data from the corresponding lap.
+    private String splitCombinedSplitAcrossLaps(Mesg originalSplit, int originalSplitListIndex, int firstLapIx, int lapCount) {
+        int splitMesgIx = fitFile.getSplitMesg().indexOf(originalSplit);
+        int allMesgIx = fitFile.getAllMesg().indexOf(originalSplit);
+
+        Mesg firstLap = fitFile.getLapMesg().get(firstLapIx);
+        applyLapMetricsToSplit(firstLapIx, originalSplit, firstLap);
+        setIntIfPresent(originalSplit, SPL_LAP_INDEX_FIELD_NUM, firstLapIx);
+
+        int insertSplitIx = splitMesgIx + 1;
+        int insertAllIx = allMesgIx + 1;
+        for (int k = 1; k < lapCount; k++) {
+            int lapIx = firstLapIx + k;
+            Mesg lap = fitFile.getLapMesg().get(lapIx);
+            Mesg newSplit = new Mesg(originalSplit);
+            applyLapMetricsToSplit(lapIx, newSplit, lap);
+            setIntIfPresent(newSplit, SPL_LAP_INDEX_FIELD_NUM, lapIx);
+
+            fitFile.getSplitMesg().add(insertSplitIx, newSplit);
+            if (insertAllIx <= fitFile.getAllMesg().size()) {
+                fitFile.getAllMesg().add(insertAllIx, newSplit);
+            } else {
+                fitFile.getAllMesg().add(newSplit);
+            }
+            insertSplitIx++;
+            insertAllIx++;
+        }
+
+        return "-- SPLIT " + (originalSplitListIndex + 1)
+            + " split into " + lapCount + " SPLIT messages for LAP " + (firstLapIx + 1)
+            + "-" + (firstLapIx + lapCount) + ".";
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
