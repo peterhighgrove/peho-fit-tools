@@ -340,6 +340,10 @@ public class LapFix {
                     match.splitMesg.setFieldValue(FitFile.SPL_TYPE, splitType.getValue());
                     updatedSplits++;
                     splitTypesToRefreshSummary.add(splitType.getValue());
+                    if (currentSplitType != null) {
+                        // Old type lost a split; its SPLIT_SUMMARY totals must shrink too.
+                        splitTypesToRefreshSummary.add(currentSplitType);
+                    }
 
                     if (splitType == SplitType.INTERVAL_WARMUP) {
                         warmupSplitsUpdated++;
@@ -412,27 +416,105 @@ public class LapFix {
         }
 
         int updatedSummaryRows = 0;
+        int removedSummaryRows = 0;
+        Set<Short> typesWithExistingRow = new HashSet<>();
+        List<Mesg> summaryRowsToRemove = new ArrayList<>();
+
         for (Mesg splitSummary : fitFile.getSplitSummaryMesg()) {
             Short splitSummaryType = splitSummary.getFieldShortValue(FitFile.SPLSUM_TYPE);
             if (splitSummaryType == null || !aggByType.containsKey(splitSummaryType)) {
                 continue;
             }
+            typesWithExistingRow.add(splitSummaryType);
 
             SplitSummaryAgg agg = aggByType.get(splitSummaryType);
-            splitSummary.setFieldValue(FitFile.SPLSUM_TIMER, agg.totalTimer);
-            splitSummary.setFieldValue(FitFile.SPLSUM_MTIMER, agg.totalMovingTimer);
-            splitSummary.setFieldValue(FitFile.SPLSUM_DIST, agg.totalDist);
-            splitSummary.setFieldValue(FitFile.SPLSUM_SPEED, agg.totalTimer > 0f ? agg.totalDist / agg.totalTimer : 0f);
-            splitSummary.setFieldValue(FitFile.SPLSUM_MSPEED, agg.maxSpeed);
-            splitSummary.setFieldValue(FitFile.SPLSUM_VSPEED, agg.vertWeight > 0f ? agg.weightedVertSpeed / agg.vertWeight : 0f);
-            splitSummary.setFieldValue(FitFile.SPLSUM_ASC, agg.totalAscent);
-            splitSummary.setFieldValue(FitFile.SPLSUM_DESC, agg.totalDescent);
-            splitSummary.setFieldValue(FitFile.SPLSUM_CAL, agg.totalCalories);
+            if (agg.splitCount == 0) {
+                // No splits of this type remain; drop the now-stale summary row.
+                summaryRowsToRemove.add(splitSummary);
+                continue;
+            }
+            applySplitSummaryAgg(splitSummary, agg);
             updatedSummaryRows++;
         }
 
+        for (Mesg toRemove : summaryRowsToRemove) {
+            fitFile.getSplitSummaryMesg().remove(toRemove);
+            fitFile.getAllMesg().remove(toRemove);
+            removedSummaryRows++;
+        }
+
+        int createdSummaryRows = 0;
+        for (Map.Entry<Short, SplitSummaryAgg> entry : aggByType.entrySet()) {
+            Short splitType = entry.getKey();
+            SplitSummaryAgg agg = entry.getValue();
+            if (typesWithExistingRow.contains(splitType) || agg.splitCount == 0) {
+                continue;
+            }
+            createSplitSummaryRow(splitType, agg);
+            createdSummaryRows++;
+        }
+
+        if (createdSummaryRows > 0) {
+            renumberSplitSummaryMesgIndexes();
+        }
+
         fitFile.appendTempUpdateLogLn("-- Updated SPLIT_SUMMARY rows: " + updatedSummaryRows
+            + ", created: " + createdSummaryRows
+            + ", removed (no splits left): " + removedSummaryRows
             + " for split types " + splitTypesToRefreshSummary + ".");
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private void applySplitSummaryAgg(Mesg splitSummary, SplitSummaryAgg agg) {
+        splitSummary.setFieldValue(FitFile.SPLSUM_TIMER, agg.totalTimer);
+        splitSummary.setFieldValue(FitFile.SPLSUM_MTIMER, agg.totalMovingTimer);
+        splitSummary.setFieldValue(FitFile.SPLSUM_DIST, agg.totalDist);
+        splitSummary.setFieldValue(FitFile.SPLSUM_SPEED, agg.totalTimer > 0f ? agg.totalDist / agg.totalTimer : 0f);
+        splitSummary.setFieldValue(FitFile.SPLSUM_MSPEED, agg.maxSpeed);
+        splitSummary.setFieldValue(FitFile.SPLSUM_VSPEED, agg.vertWeight > 0f ? agg.weightedVertSpeed / agg.vertWeight : 0f);
+        splitSummary.setFieldValue(FitFile.SPLSUM_ASC, agg.totalAscent);
+        splitSummary.setFieldValue(FitFile.SPLSUM_DESC, agg.totalDescent);
+        splitSummary.setFieldValue(FitFile.SPLSUM_CAL, agg.totalCalories);
+        setIntIfPresent(splitSummary, FitFile.SPLSUM_NUM, agg.splitCount);
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private void createSplitSummaryRow(Short splitType, SplitSummaryAgg agg) {
+        Mesg template = fitFile.getSplitSummaryMesg().get(0);
+        Mesg newSummary = new Mesg(template);
+        newSummary.setFieldValue(FitFile.SPLSUM_TYPE, splitType);
+        applySplitSummaryAgg(newSummary, agg);
+
+        fitFile.getSplitSummaryMesg().add(newSummary);
+
+        int insertAllIx = findLastSplitSummaryAllMesgIndex();
+        if (insertAllIx >= 0) {
+            fitFile.getAllMesg().add(insertAllIx + 1, newSummary);
+        } else {
+            fitFile.getAllMesg().add(newSummary);
+        }
+
+        fitFile.appendTempUpdateLogLn("-- Created SPLIT_SUMMARY row for split type " + splitType + ".");
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private int findLastSplitSummaryAllMesgIndex() {
+        int lastIx = -1;
+        for (int i = 0; i < fitFile.getAllMesg().size(); i++) {
+            if (fitFile.getAllMesg().get(i).getNum() == MesgNum.SPLIT_SUMMARY) {
+                lastIx = i;
+            }
+        }
+        return lastIx;
+    }
+
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    private void renumberSplitSummaryMesgIndexes() {
+        int ix = 0;
+        for (Mesg summary : fitFile.getSplitSummaryMesg()) {
+            summary.setFieldValue(FitFile.SPLSUM_MESGIX, ix);
+            ix++;
+        }
     }
 
     private static final class SplitSummaryAgg {
@@ -445,6 +527,7 @@ public class LapFix {
         int totalAscent = 0;
         int totalDescent = 0;
         int totalCalories = 0;
+        int splitCount = 0;
 
         void addSplit(Mesg split) {
             Float timer = split.getFieldFloatValue(FitFile.SPL_TIMER);
@@ -461,6 +544,7 @@ public class LapFix {
             float distVal = dist != null ? dist : 0f;
             float maxSpdVal = maxSpd != null ? maxSpd : 0f;
 
+            splitCount++;
             totalTimer += timerVal;
             totalMovingTimer += movingTimerVal;
             totalDist += distVal;

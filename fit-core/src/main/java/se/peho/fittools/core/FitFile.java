@@ -57,6 +57,7 @@ public class FitFile {
     public static final int EVE_STIME = EventMesg.StartTimestampFieldNum; //long
     public static final int EVE_EVENT = EventMesg.EventFieldNum; //long
     public static final int EVE_TYPE = EventMesg.EventTypeFieldNum; //long
+    public static final int SPL_TIME = 253; //long
     public static final int SPL_STIME = SplitMesg.StartTimeFieldNum; //long
     public static final int SPL_ETIME = SplitMesg.EndTimeFieldNum; //long
     public static final int SPL_MESGIX = SplitMesg.MessageIndexFieldNum; // int
@@ -98,6 +99,8 @@ public class FitFile {
     public static final int SPLSUM_DESC = SplitSummaryMesg.TotalDescentFieldNum; // int
     public static final int SPLSUM_CAL = SplitSummaryMesg.TotalCaloriesFieldNum; // int
     public static final int SPLSUM_TYPE = SplitSummaryMesg.SplitTypeFieldNum; // enum
+    public static final int SPLSUM_NUM = SplitSummaryMesg.NumSplitsFieldNum; // int
+    public static final int SPLSUM_MESGIX = SplitSummaryMesg.MessageIndexFieldNum; // int
     public static final int LAP_TIME = LapMesg.TimestampFieldNum; //long
     public static final int LAP_IX = LapMesg.MessageIndexFieldNum; //int
     public static final int LAP_STIME = LapMesg.StartTimeFieldNum; //long
@@ -5367,6 +5370,10 @@ public class FitFile {
                     }
                     break;
                 case MesgNum.SPLIT:
+                    timeToChange = mesg.getFieldLongValue(SPL_TIME);
+                    if (timeToChange != null) {
+                        mesg.setFieldValue(SPL_TIME, timeToChange + changeSeconds);
+                    }
                     timeToChange = mesg.getFieldLongValue(SPL_STIME);
                     if (timeToChange != null) {
                         mesg.setFieldValue(SPL_STIME, timeToChange + changeSeconds);
