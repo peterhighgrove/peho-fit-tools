@@ -979,8 +979,8 @@ public class LapFix {
         float maxSpeed = lapMaxSpeed != null ? lapMaxSpeed : speed;
         setFloatIfPresent(splitMesg, FitFile.SPL_MSPEED, maxSpeed);
 
-        setIntIfPresent(splitMesg, FitFile.SPL_CAD, getMesgFieldAsInt(lapMesg, FitFile.LAP_CAD));
-        setIntIfPresent(splitMesg, FitFile.SPL_MCAD, getMesgFieldAsInt(lapMesg, FitFile.LAP_MCAD));
+        splitMesg.setFieldValue(FitFile.SPL_CAD, Math.round(lapMesg.getFieldShortValue(FitFile.LAP_CAD) * 256/2f));
+        splitMesg.setFieldValue(FitFile.SPL_MCAD, Math.round(lapMesg.getFieldShortValue(FitFile.LAP_MCAD) * 256/2f));
         setIntIfPresent(splitMesg, FitFile.SPL_POW, getMesgFieldAsInt(lapMesg, FitFile.LAP_POW));
         setIntIfPresent(splitMesg, FitFile.SPL_MPOW, getMesgFieldAsInt(lapMesg, FitFile.LAP_MPOW));
         setIntIfPresent(splitMesg, FitFile.SPL_ASC, lapMesg.getFieldIntegerValue(FitFile.LAP_ASC));
