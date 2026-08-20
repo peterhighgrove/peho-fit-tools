@@ -373,7 +373,9 @@ public class LapFix {
             }
         }
 
-        updateSplitSummaryFromSplitsForTypes(splitTypesToRefreshSummary);
+        for (String line : updateSplitSummaryFromSplitsForTypes(splitTypesToRefreshSummary)) {
+            fitFile.appendTempUpdateLogLn(line);
+        }
 
         fitFile.appendTempUpdateLogLn("wkti applied: warmup=" + warmupLaps
             + ", cooldown=" + cooldownLaps
@@ -392,14 +394,18 @@ public class LapFix {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    private void updateSplitSummaryFromSplitsForTypes(Set<Short> splitTypesToRefreshSummary) {
+    // Recalculates SPLIT_SUMMARY rows (incl. SPLSUM_SPLITS, the number of splits of that
+    // type) from the current SPLIT list. Returns the log lines instead of writing them
+    // directly to fitFile's shared temp log, since callers (spla vs wkti) manage logging differently.
+    private List<String> updateSplitSummaryFromSplitsForTypes(Set<Short> splitTypesToRefreshSummary) {
+        List<String> logLines = new ArrayList<>();
         if (splitTypesToRefreshSummary == null || splitTypesToRefreshSummary.isEmpty()) {
-            fitFile.appendTempUpdateLogLn("-- No SPL_TYPE changes, SPLIT_SUMMARY unchanged.");
-            return;
+            logLines.add("-- No SPL_TYPE changes, SPLIT_SUMMARY unchanged.");
+            return logLines;
         }
         if (fitFile.getSplitSummaryMesg() == null || fitFile.getSplitSummaryMesg().isEmpty()) {
-            fitFile.appendTempUpdateLogLn("-- No SPLIT_SUMMARY messages found.");
-            return;
+            logLines.add("-- No SPLIT_SUMMARY messages found.");
+            return logLines;
         }
 
         Map<Short, SplitSummaryAgg> aggByType = new HashMap<>();
@@ -458,10 +464,11 @@ public class LapFix {
             renumberSplitSummaryMesgIndexes();
         }
 
-        fitFile.appendTempUpdateLogLn("-- Updated SPLIT_SUMMARY rows: " + updatedSummaryRows
+        logLines.add("-- Updated SPLIT_SUMMARY rows: " + updatedSummaryRows
             + ", created: " + createdSummaryRows
             + ", removed (no splits left): " + removedSummaryRows
             + " for split types " + splitTypesToRefreshSummary + ".");
+        return logLines;
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -1122,6 +1129,7 @@ public class LapFix {
         }
 
         int totalFixed = 0;
+        Set<Short> affectedSplitTypes = new HashSet<>();
         boolean changed = true;
         while (changed) {
             changed = false;
@@ -1152,6 +1160,10 @@ public class LapFix {
                     + ", timer=" + formatSec(splitTimer) + ") combines " + combinedLapCount
                     + " laps (LAP " + (splitLapIx + 1) + "-" + (splitLapIx + combinedLapCount) + ")"
                     + " [detected by " + detectedBy + "]");
+                Short splitType = split.getFieldShortValue(FitFile.SPL_TYPE);
+                if (splitType != null) {
+                    affectedSplitTypes.add(splitType);
+                }
                 logLines.add(splitCombinedSplitAcrossLaps(split, splitIx, splitLapIx, combinedLapCount));
                 renumberSplitMesgIndexes();
                 totalFixed++;
@@ -1162,6 +1174,9 @@ public class LapFix {
 
         if (totalFixed > 0) {
             logLines.add("-- Combined-split detection: fixed " + totalFixed + " split(s).");
+            // Splitting a combined split increases how many splits share its type, so
+            // SPLSUM_SPLITS (and other aggregated SPLIT_SUMMARY fields) must be recalculated.
+            logLines.addAll(updateSplitSummaryFromSplitsForTypes(affectedSplitTypes));
         }
         return logLines;
     }

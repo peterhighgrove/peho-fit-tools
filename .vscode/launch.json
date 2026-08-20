@@ -21,7 +21,7 @@
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
       "args": "\"Fartlek Gnejsskogen\" 1 \
-      \"2026-08-16.zip\""
+      \"2025-09-02.zip\""
     },
     {
       "type": "java",

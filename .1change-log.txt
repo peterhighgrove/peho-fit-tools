@@ -432,6 +432,9 @@ Fixed that GC got confused by the undoc field 68 in SplitMesg, number of laps
 
 --> git sync
 
+Fixed recalc of split sum fields (incl number of splits) when using detectAndFixCombinedSplits().
+Root cause: detectAndFixCombinedSplits() (called by both spla and wkti) splits one combined SPLIT into multiple per-lap splits, but never recalculated SPLSUM_SPLITS (or the other aggregated SPLIT_SUMMARY fields) for the split's type. Only wkti's own type-reassignment loop refreshed SPLIT_SUMMARY, and only for types whose SPL_TYPE actually changed — so if the combined split's type stayed the same after being split apart (the common case), the summary's split count silently stayed stale (explaining your "more luck than correct" observation).
+
 
 
 BUGGAR
