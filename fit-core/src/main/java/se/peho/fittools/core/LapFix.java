@@ -475,7 +475,7 @@ public class LapFix {
         splitSummary.setFieldValue(FitFile.SPLSUM_ASC, agg.totalAscent);
         splitSummary.setFieldValue(FitFile.SPLSUM_DESC, agg.totalDescent);
         splitSummary.setFieldValue(FitFile.SPLSUM_CAL, agg.totalCalories);
-        setIntIfPresent(splitSummary, FitFile.SPLSUM_NUM, agg.splitCount);
+        setIntIfPresent(splitSummary, FitFile.SPLSUM_SPLITS, agg.splitCount);
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -994,6 +994,9 @@ public class LapFix {
         setIntIfPresent(splitMesg, FitFile.SPL_SLON, lapMesg.getFieldIntegerValue(FitFile.LAP_SLON));
         setIntIfPresent(splitMesg, FitFile.SPL_ELAT, lapMesg.getFieldIntegerValue(FitFile.LAP_ELAT));
         setIntIfPresent(splitMesg, FitFile.SPL_ELON, lapMesg.getFieldIntegerValue(FitFile.LAP_ELON));
+
+        // This split now represents exactly one lap; undocumented field 68 (num laps combined) must reflect that.
+        setIntIfPresent(splitMesg, FitFile.SPL_LAPS, 1);
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -1108,9 +1111,9 @@ public class LapFix {
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     // Garmin sometimes merges 2+ consecutive laps into a single SPLIT (e.g. when it
-    // considers them the same split type). Recognized by: SPL_LAPIX points at the
-    // first of those laps, no other SPLIT claims any of the succeeding lap indexes,
-    // and the split timer equals the summed timer of those consecutive laps.
+    // considers them the same split type). Recognized primarily by the undocumented
+    // SPL_NUM_LAPS (field 68): when > 1, SPL_LAPIX is the first of those laps. Falls
+    // back to summed LAP_TIMER matching when SPL_NUM_LAPS is absent/unreliable.
     private List<String> detectAndFixCombinedSplits() {
         List<String> logLines = new ArrayList<>();
         if (fitFile.getLapMesg() == null || fitFile.getLapMesg().isEmpty()
@@ -1129,14 +1132,26 @@ public class LapFix {
                     continue;
                 }
                 Float splitTimer = split.getFieldFloatValue(FitFile.SPL_TIMER);
-                int combinedLapCount = detectCombinedLapCountForSplit(splitLapIx, splitTimer);
+
+                Integer declaredNumLaps = getMesgFieldAsInt(split, FitFile.SPL_LAPS);
+                int combinedLapCount;
+                String detectedBy;
+                if (declaredNumLaps != null && declaredNumLaps >= 2
+                    && splitLapIx + declaredNumLaps <= fitFile.getLapMesg().size()) {
+                    combinedLapCount = declaredNumLaps;
+                    detectedBy = "SPL_NUM_LAPS";
+                } else {
+                    combinedLapCount = detectCombinedLapCountForSplit(splitLapIx, splitTimer);
+                    detectedBy = "summed LAP_TIMER";
+                }
                 if (combinedLapCount < 2) {
                     continue;
                 }
 
                 logLines.add("-- SPLIT " + (splitIx + 1) + " (lapIx=" + (splitLapIx + 1)
                     + ", timer=" + formatSec(splitTimer) + ") combines " + combinedLapCount
-                    + " laps (LAP " + (splitLapIx + 1) + "-" + (splitLapIx + combinedLapCount) + ")");
+                    + " laps (LAP " + (splitLapIx + 1) + "-" + (splitLapIx + combinedLapCount) + ")"
+                    + " [detected by " + detectedBy + "]");
                 logLines.add(splitCombinedSplitAcrossLaps(split, splitIx, splitLapIx, combinedLapCount));
                 renumberSplitMesgIndexes();
                 totalFixed++;

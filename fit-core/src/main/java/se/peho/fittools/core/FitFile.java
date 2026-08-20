@@ -62,6 +62,7 @@ public class FitFile {
     public static final int SPL_ETIME = SplitMesg.EndTimeFieldNum; //long
     public static final int SPL_MESGIX = SplitMesg.MessageIndexFieldNum; // int
     public static final int SPL_LAPIX = 67; // int
+    public static final int SPL_LAPS = 68; // int
     public static final int SPL_TYPE = SplitMesg.SplitTypeFieldNum; // enum
     public static final int SPL_TIMER = SplitMesg.TotalTimerTimeFieldNum; // float
     public static final int SPL_ETIMER = SplitMesg.TotalElapsedTimeFieldNum; // float
@@ -86,9 +87,6 @@ public class FitFile {
     public static final int SPL_TEMP = 32; // int
     public static final int SPL_MAXTEMP = 33; // int
     public static final int SPL_MINTEMP = 34; // int
-    //public static final int SPL_TOTAL_CALORIES = SplitMesg.TotalCaloriesFieldNum; // int
-    //public static final int SPL_START_ELEVATION = SplitMesg.StartElevationFieldNum; // int
-    //public static final int SPL_TOTAL_MOVING_TIME = SplitMesg.TotalMovingTimeFieldNum; // float
     public static final int SPLSUM_TIMER = SplitSummaryMesg.TotalTimerTimeFieldNum; // float
     public static final int SPLSUM_MTIMER = SplitSummaryMesg.TotalMovingTimeFieldNum; // float
     public static final int SPLSUM_DIST = SplitSummaryMesg.TotalDistanceFieldNum; // float
@@ -99,7 +97,7 @@ public class FitFile {
     public static final int SPLSUM_DESC = SplitSummaryMesg.TotalDescentFieldNum; // int
     public static final int SPLSUM_CAL = SplitSummaryMesg.TotalCaloriesFieldNum; // int
     public static final int SPLSUM_TYPE = SplitSummaryMesg.SplitTypeFieldNum; // enum
-    public static final int SPLSUM_NUM = SplitSummaryMesg.NumSplitsFieldNum; // int
+    public static final int SPLSUM_SPLITS = SplitSummaryMesg.NumSplitsFieldNum; // int
     public static final int SPLSUM_MESGIX = SplitSummaryMesg.MessageIndexFieldNum; // int
     public static final int LAP_TIME = LapMesg.TimestampFieldNum; //long
     public static final int LAP_IX = LapMesg.MessageIndexFieldNum; //int
@@ -6265,6 +6263,9 @@ public class FitFile {
         int colTimer = 6;
         int colDist = 5;
         int colPace = 5;
+        int colLapIx = 3;
+        int colNumOfLaps = 4;
+        int colNumOfSplits = 4;
 
         System.out.println();
         System.out.println("==================================================");
@@ -6272,8 +6273,8 @@ public class FitFile {
         System.out.println(" File  between " + FitDateTime.toString(timeFirstRecord,diffMinutesLocalUTC) + " >>>> " + FitDateTime.toString(timeLastRecord,diffMinutesLocalUTC));
         System.out.println(String.format(" TotalTime:%1$smin Dist:%2$skm", PehoUtils.sec2minSecLong(totalTimerTime), PehoUtils.m2km2(totalDistance)));
         System.out.println("--------------------------------------------------");
-        System.out.printf("%" + colNo + "s %" + colType + "s %" + colTime + "s %" + colTime + "s %" + colTimer + "s %" + colDist + "s %" + colPace + "s%n",
-            "No", "Ty", "Start", "End", "Time", "Dist", "Pace");
+        System.out.printf("%" + colNo + "s %" + colType + "s %" + colTime + "s %" + colTime + "s %" + colTimer + "s %" + colDist + "s %" + colPace + "s %" + colLapIx + "s %" + colNumOfLaps + "s%n",
+            "No", "Ty", "Start", "End", "Time", "Dist", "Pace", "LapIx", "Laps");
         for (Mesg mesg : splitMesg) {
             String splitTypeStr = formatSplitTypeLabelShort(mesg.getFieldShortValue(SPL_TYPE));
             String startTimeStr = "-";
@@ -6306,16 +6307,28 @@ public class FitFile {
                 paceStr = PehoUtils.mps2minpkm(avgPace);
             }
 
-            System.out.printf("%" + colNo + "d %" + colType + "s %" + colTime + "s %" + colTime + "s %" + colTimer + "s %" + colDist + "s %" + colPace + "s%n",
-                (i + 1), splitTypeStr, startTimeStr, endTimeStr, splitTimerStr, distStr, paceStr);
+            String lapIxStr = "-";
+            Integer lapIx = mesg.getFieldIntegerValue(SPL_LAPIX);
+            if (lapIx != null) {
+                lapIxStr = lapIx.toString();
+            }
+
+            String numOfLapsStr = "-";
+            Integer numOfLaps = mesg.getFieldIntegerValue(SPL_LAPS);
+            if (numOfLaps != null) {
+                numOfLapsStr = numOfLaps.toString();
+            }
+
+            System.out.printf("%" + colNo + "d %" + colType + "s %" + colTime + "s %" + colTime + "s %" + colTimer + "s %" + colDist + "s %" + colPace +  "s %" + colLapIx + "s %" + colNumOfLaps + "s%n",
+                (i + 1), splitTypeStr, startTimeStr, endTimeStr, splitTimerStr, distStr, paceStr, lapIxStr, numOfLapsStr);
             i++;
         }
         System.out.println("---- END SPLITS ---------");
         System.out.println();
         System.out.println("-------------------------");
         System.out.println("---- SPLIT SUMMARIES ----");
-        System.out.printf("%" + colNo + "s %" + colType + "s %" + colTimer + "s %" + colDist + "s %" + colPace + "s%n",
-            "No", "Ty", "Time", "Dist", "Pace");
+        System.out.printf("%" + colNo + "s %" + colType + "s %" + colTimer + "s %" + colDist + "s %" + colPace + "s %" + colNumOfSplits + "s%n",
+            "No", "Ty", "Time", "Dist", "Pace", "Splits");
         for (Mesg mesg : allMesg) {
             if (mesg.getNum() != MesgNum.SPLIT_SUMMARY) {
                 continue;
@@ -6345,8 +6358,14 @@ public class FitFile {
                 paceStr = PehoUtils.mps2minpkm(avgPace);
             }
 
-            System.out.printf("%" + colNo + "d %" + colType + "s %" + colTimer + "s %" + colDist + "s %" + colPace + "s%n",
-                summaryCount, splitSummaryTypeStr, totalTimerStr, summaryDistStr, paceStr);
+            String numOfSplitsStr = "-";
+            Integer numOfSplits = mesg.getFieldIntegerValue(SPLSUM_SPLITS);
+            if (numOfSplits != null) {
+                numOfSplitsStr = numOfSplits.toString();
+            }
+
+            System.out.printf("%" + colNo + "d %" + colType + "s %" + colTimer + "s %" + colDist + "s %" + colPace + "s %" + colNumOfSplits + "s%n",
+                summaryCount, splitSummaryTypeStr, totalTimerStr, summaryDistStr, paceStr, numOfSplitsStr);
         }
 
         if (maxSummaryDistance != null) {
@@ -6383,15 +6402,15 @@ public class FitFile {
         }
         switch (name) {
             case "WARMUP":
-                return "WU";
+                return "WARMUP";
             case "ACTIVE":
-                return "ACT";
+                return "ACTIVE";
             case "REST":
-                return "RST";
+                return "REST";
             case "RECOVERY":
-                return "RCV";
+                return "RECOVE";
             case "COOLDOWN":
-                return "CD";
+                return "C_DOWN";
             default:
                 if (name.length() > 6) {
                     return name.substring(0, 6);

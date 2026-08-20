@@ -422,6 +422,17 @@ command spl,watchFitFile.printSplitSummary(), to print in column
 --> v3.08 Build
 --> git sync
 
+Fix around splitting splits
+
+--> git sync
+--> v3.09 Build
+--> git sync
+
+Fixed that GC got confused by the undoc field 68 in SplitMesg, number of laps
+
+--> git sync
+
+
 
 BUGGAR
 
