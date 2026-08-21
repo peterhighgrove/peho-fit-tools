@@ -965,7 +965,7 @@ public class LapFix {
 
         Float lapStartDist = findLapStartDistanceMeters(lapIx, lapStartTime);
         if (lapStartDist != null) {
-            setFloatIfPresent(splitMesg, FitFile.SPL_SDIST, lapStartDist * 100f);
+            splitMesg.setFieldValue(FitFile.SPL_SDIST, Math.round(lapStartDist * 100f));
         }
 
         float speed = 0f;
@@ -1041,7 +1041,12 @@ public class LapFix {
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private Float findLapStartDistanceMeters(int lapIx, Long lapStartTime) {
-        int startRecordIx = findRecordIndexAtOrAfterTime(lapStartTime);
+        int startRecordIx = findRecordIndexAtOrAfterTime(lapStartTime) - 1;
+        System.out.println("findLapStartDistanceMeters: lapIx=" + lapIx + ", lapStartTime=" + new Tstr(lapStartTime).get()
+            + ", startRecordIx=" + startRecordIx);
+        if (startRecordIx < 0) {
+            return 0f;
+        }
         if (startRecordIx >= 0 && startRecordIx < fitFile.getRecordMesg().size()) {
             return fitFile.getRecordMesg().get(startRecordIx).getFieldFloatValue(FitFile.REC_DIST);
         }
@@ -1060,7 +1065,7 @@ public class LapFix {
         if (splitStartTime == null || totalElapsedSeconds == null) {
             return null;
         }
-        return splitStartTime + Math.round(totalElapsedSeconds);
+        return splitStartTime + Math.round(totalElapsedSeconds - 0.5f);
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -1252,6 +1257,7 @@ public class LapFix {
             } else {
                 fitFile.getAllMesg().add(newSplit);
             }
+            renumberSplitMesgIndexes();
             insertSplitIx++;
             insertAllIx++;
         }
