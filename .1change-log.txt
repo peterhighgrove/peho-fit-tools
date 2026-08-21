@@ -440,6 +440,8 @@ Root cause: detectAndFixCombinedSplits() (called by both spla and wkti) splits o
 Corrected writing to SPL_CAD and SPL_MCAD. For some reason it should be the value of cad*256/2.
 
 --> git sync
+--> v3.10 Build
+--> git sync
 
 Corrected calc of SPL_SDIST and SPL_ETIME. 
 SPL_SDIST now use findRecordIndexAtOrAfterTime(lapStartTime) - 1
