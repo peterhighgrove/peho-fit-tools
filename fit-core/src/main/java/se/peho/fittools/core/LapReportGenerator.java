@@ -357,41 +357,146 @@ public class LapReportGenerator {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printLapAllSummary() {
         int i = 0;
-
-        int colLapNo = 3;
-        int colTimeStart = 9;
-        int colTimeEnd = 9;
-        int colHrStart = 4;
-        int colHrEnd = 4;
-        int colHrMin = 4;
-        int colRecordIxStart = 6;
-        int colRecordIxEnd = 6;
-        int colDistStart = 8;
-        int colDistEnd = 8;
-        int colDistCalc = 8;
-        int colDistOrg = 8;
-        int colAltStart = 4;
-        int colAltEnd = 4;
-        int colLevel = 3;
-        int colAvgStrokeLen = 4;
-        int colMaxStrokeLen = 4;
-        int colAvgDragFactor = 4;
-        int colMaxDragFactor = 4;
-        int colStepLen = 4;
-        int colSpeedLapSum = 4;
-        int colCadLapSum = 4;
-        int colIntensity = 10;
-        int colSum = colLapNo + colTimeStart + colTimeEnd + colHrStart + colHrEnd + colHrMin + colRecordIxStart + colRecordIxEnd + colDistStart + colDistEnd + colDistCalc + colDistOrg + colAltStart + colAltEnd + colLevel + colAvgStrokeLen + colMaxStrokeLen + colAvgDragFactor + colMaxDragFactor + colStepLen + colSpeedLapSum + colCadLapSum + colIntensity;
         
+        int colSum = 0;
+        List<String> headerFormat = new ArrayList<>();
+        List<String> header1Values = new ArrayList<>();
+        List<String> header2Values = new ArrayList<>();
+        int colLapNo = 3;
+        colSum += colLapNo;
+        headerFormat.add("%" + colLapNo + "s");
+        header1Values.add("Lap");
+        header2Values.add("no");
+        int colTimeStart = 9;
+        colSum += colTimeStart;
+        headerFormat.add("%" + colTimeStart + "s");
+        header1Values.add("Time");
+        header2Values.add("1st");
+        int colTimeEnd = 9;
+        colSum += colTimeEnd;
+        headerFormat.add("%" + colTimeEnd + "s");
+        header1Values.add("Time");
+        header2Values.add("last");
+        int colHrStart = 4;
+        colSum += colHrStart;
+        headerFormat.add("%" + colHrStart + "s");
+        header1Values.add("HR");
+        header2Values.add("1st");
+        int colHrEnd = 4;
+        colSum += colHrEnd;
+        headerFormat.add("%" + colHrEnd + "s");
+        header1Values.add("");
+        header2Values.add("end");
+        int colHrMin = 4;
+        colSum += colHrMin;
+        headerFormat.add("%" + colHrMin + "s");
+        header1Values.add("");
+        header2Values.add("min");
+        int colRecordIxStart = 6;
+        colSum += colRecordIxStart;
+        headerFormat.add("%" + colRecordIxStart + "s");
+        header1Values.add("Rec");
+        header2Values.add("1st");
+        int colRecordIxEnd = 6;
+        colSum += colRecordIxEnd;
+        headerFormat.add("%" + colRecordIxEnd + "s");
+        header1Values.add("");
+        header2Values.add("end");
+        int colDistStart = 8;
+        colSum += colDistStart;
+        headerFormat.add("%" + colDistStart + "s");
+        header1Values.add("Dist");
+        header2Values.add("start");
+        int colDistEnd = 8;
+        colSum += colDistEnd;
+        headerFormat.add("%" + colDistEnd + "s");
+        header1Values.add("");
+        header2Values.add("end");
+        int colDistCalc = 7;
+        colSum += colDistCalc;
+        headerFormat.add("%" + colDistCalc + "s");
+        header1Values.add("");
+        header2Values.add("calc");
+        int colDistOrg = 7;
+        colSum += colDistOrg;
+        headerFormat.add("%" + colDistOrg + "s");
+        header1Values.add("");
+        header2Values.add("org");
+        int colAltStart = 4;
+        colSum += colAltStart;
+        headerFormat.add("%" + colAltStart + "s");
+        header1Values.add("Alt");
+        header2Values.add("1st");
+        int colAltEnd = 4;
+        colSum += colAltEnd;
+        headerFormat.add("%" + colAltEnd + "s");
+        header1Values.add("");
+        header2Values.add("end");
+        int colLevel = 4;
+        colSum += colLevel;
+        headerFormat.add("%" + colLevel + "s");
+        header1Values.add("Lv");
+        header2Values.add("");
+        int colAvgStrokeLen = 6;
+        colSum += colAvgStrokeLen;
+        headerFormat.add("%" + colAvgStrokeLen + "s");
+        header1Values.add("strL");
+        header2Values.add("avg");
+        int colMaxStrokeLen = 6;
+        colSum += colMaxStrokeLen;
+        headerFormat.add("%" + colMaxStrokeLen + "s");
+        header1Values.add("");
+        header2Values.add("max");
+        int colAvgDragFactor = 4;
+        colSum += colAvgDragFactor;
+        headerFormat.add("%" + colAvgDragFactor + "s");
+        header1Values.add("DF");
+        header2Values.add("avg");
+        int colMaxDragFactor = 4;
+        colSum += colMaxDragFactor;
+        headerFormat.add("%" + colMaxDragFactor + "s");
+        header1Values.add("");
+        header2Values.add("max");
+        int colStepLen = 4;
+        colSum += colStepLen;
+        headerFormat.add("%" + colStepLen + "s");
+        header1Values.add("Step");
+        header2Values.add("Len");
+        int colSpeedLapSum = 4;
+        colSum += colSpeedLapSum;
+        headerFormat.add("%" + colSpeedLapSum + "s");
+        header1Values.add("Sp");
+        header2Values.add("sum");
+        int colCadLapSum = 4;
+        colSum += colCadLapSum;
+        headerFormat.add("%" + colCadLapSum + "s");
+        header1Values.add("Cad");
+        header2Values.add("sum");
+        int colIntensity = 10;
+        colSum += colIntensity;
+        headerFormat.add("%" + colIntensity + "s");
+        header1Values.add("Intensity");
+        header2Values.add("");
+
+        String headerFormatStr = "";
+        for (String fmt : headerFormat) {
+            headerFormatStr += fmt;
+        }
+
         System.out.println();
         System.out.println("-".repeat(colSum));
         System.out.println("--- LAPS IN FILE - LapExtraDebug (lap4-LapAllSummary) ---");
         System.out.println("-".repeat(colSum));
         System.out.printf("Laps: %d  LapsExtras: %d  Records: %d%n%n", fitFile.getLapMesg().size(), fitFile.getLapExtraRecords().size(), fitFile.getRecordMesg().size());
-        System.out.printf("%" + colLapNo + "s%" + colTimeStart + "s%" + colTimeEnd + "s%" + colHrStart + "s%" + colHrEnd + "s%" + colHrMin + "s%" + colRecordIxStart + "s%" + colRecordIxEnd + "s%" + colDistStart + "s%" + colDistEnd + "s%" + colDistCalc + "s%" + colDistOrg + "s%" + colAltStart + "s%" + colAltEnd + "s%" + colLevel + "s%" + colAvgStrokeLen + "s%" + colMaxStrokeLen + "s%" + colAvgDragFactor + "s%" + colMaxDragFactor + "s%" + colStepLen + "s%" + colSpeedLapSum + "s%" + colCadLapSum + "s%" + colIntensity + "s%n"
-            , "Lap", "Time", "", "HR", "", "", "Rec", "", "Dist", "", "", "", "Alt", "", "Lv", "strL", "", "DF", "",  "Step", "Spee", "Cad", "Inten");
-        System.out.printf("%" + colLapNo + "s%" + colTimeStart + "s%" + colTimeEnd + "s%" + colHrStart + "s%" + colHrEnd + "s%" + colHrMin + "s%" + colRecordIxStart + "s%" + colRecordIxEnd + "s%" + colDistStart + "s%" + colDistEnd + "s%" + colDistCalc + "s%" + colDistOrg + "s%" + colAltStart + "s%" + colAltEnd + "s%" + colLevel + "s%" + colAvgStrokeLen + "s%" + colMaxStrokeLen + "s%" + colAvgDragFactor + "s%" + colMaxDragFactor + "s%" + colStepLen + "s%" + colSpeedLapSum + "s%" + colCadLapSum + "s%" + colIntensity + "s%n"
-            , "no", "start", "end", "st", "end", "min", "stIx", "eIx", "st", "end", "calc", "org", "st", "end", "", "avg", "max", "avg", "max", "Len", "sum", "sum", ""); 
+        
+        System.out.printf(headerFormatStr + "%n", header1Values.toArray());
+        System.out.printf(headerFormatStr + "%n", header2Values.toArray());
+        
+
+        // System.out.printf(headerFormatStr + "%" + colTimeStart + "s%" + colTimeEnd + "s%" + colHrStart + "s%" + colHrEnd + "s%" + colHrMin + "s%" + colRecordIxStart + "s%" + colRecordIxEnd + "s%" + colDistStart + "s%" + colDistEnd + "s%" + colDistCalc + "s%" + colDistOrg + "s%" + colAltStart + "s%" + colAltEnd + "s%" + colLevel + "s%" + colAvgStrokeLen + "s%" + colMaxStrokeLen + "s%" + colAvgDragFactor + "s%" + colMaxDragFactor + "s%" + colStepLen + "s%" + colSpeedLapSum + "s%" + colCadLapSum + "s%" + colIntensity + "s%n"
+        //     , "Lap", "Time", "", "HR", "", "", "Rec", "", "Dist", "", "", "", "Alt", "", "Lv", "strL", "", "DF", "",  "Step", "Spee", "Cad", "Inten");
+        // System.out.printf("%" + colLapNo + "s%" + colTimeStart + "s%" + colTimeEnd + "s%" + colHrStart + "s%" + colHrEnd + "s%" + colHrMin + "s%" + colRecordIxStart + "s%" + colRecordIxEnd + "s%" + colDistStart + "s%" + colDistEnd + "s%" + colDistCalc + "s%" + colDistOrg + "s%" + colAltStart + "s%" + colAltEnd + "s%" + colLevel + "s%" + colAvgStrokeLen + "s%" + colMaxStrokeLen + "s%" + colAvgDragFactor + "s%" + colMaxDragFactor + "s%" + colStepLen + "s%" + colSpeedLapSum + "s%" + colCadLapSum + "s%" + colIntensity + "s%n"
+        //     , "no", "first", "end", "st", "end", "min", "stIx", "eIx", "start", "end", "calc", "org", "st", "end", "", "avg", "max", "avg", "max", "Len", "sum", "sum", ""); 
         System.out.println("-".repeat(colSum));
 
         for (Mesg mesg : fitFile.getLapMesg()) {
