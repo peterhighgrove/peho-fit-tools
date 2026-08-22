@@ -17,10 +17,6 @@ import se.peho.fittools.core.strings.*;
 public class LapFix {
 
     private static final float SPLIT_TIMER_MATCH_TOLERANCE_SEC = 1.1f;
-    private static final int SPL_LAP_INDEX_FIELD_NUM = 67;
-    private static final int SPL_TEMP_FIELD_NUM = 32;
-    private static final int SPL_MAXTEMP_FIELD_NUM = 33;
-    private static final int SPL_MINTEMP_FIELD_NUM = 34;
 
     private final FitFile fitFile;
 
@@ -34,7 +30,7 @@ public class LapFix {
         System.out.println();
         System.out.println("==================================================");
         System.out.println("SPLIT vs LAP MATCH ANALYZE");
-        System.out.println("Rule 1: SPL_LAPIX (field " + SPL_LAP_INDEX_FIELD_NUM + ")");
+        System.out.println("Rule 1: SPL_LAPIX (field " + FitFile.SPL_LAPIX + ")");
         System.out.println("Rule 2: SPL_TIMER fallback (tolerance +/-" + SPLIT_TIMER_MATCH_TOLERANCE_SEC + "s)");
         System.out.println("--------------------------------------------------");
 
@@ -86,7 +82,7 @@ public class LapFix {
         int missingLapIxCount = 0;
         for (int splitIx = 0; splitIx < fitFile.getSplitMesg().size(); splitIx++) {
             Mesg split = fitFile.getSplitMesg().get(splitIx);
-            Integer splitLapIx = getMesgFieldAsInt(split, SPL_LAP_INDEX_FIELD_NUM);
+            Integer splitLapIx = getMesgFieldAsInt(split, FitFile.SPL_LAPIX);
             Float splitTimer = split.getFieldFloatValue(FitFile.SPL_TIMER);
             String splitType = formatSplitType(split);
 
@@ -825,7 +821,7 @@ public class LapFix {
                 continue;
             }
             Mesg split = fitFile.getSplitMesg().get(splitIx);
-            Integer splitLapIx = getMesgFieldAsInt(split, SPL_LAP_INDEX_FIELD_NUM);
+            Integer splitLapIx = getMesgFieldAsInt(split, FitFile.SPL_LAPIX);
             if (splitLapIx != null && splitLapIx == lapIx) {
                 return new SplitMatch(split, splitIx, lapIx, split.getFieldFloatValue(FitFile.SPL_TIMER),
                     lapMesg.getFieldFloatValue(FitFile.LAP_TIMER), "SPL_LAPIX");
@@ -898,7 +894,7 @@ public class LapFix {
         }
 
         applyLapMetricsToSplit(toLapIx, keeper.splitMesg, mergedLap);
-        setIntIfPresent(keeper.splitMesg, SPL_LAP_INDEX_FIELD_NUM, toLapIx);
+        setIntIfPresent(keeper.splitMesg, FitFile.SPL_LAPIX, toLapIx);
 
         fitFile.appendTempUpdateLogLn("-- SPLIT merge result: kept SPLIT " + (keeper.splitListIndex + 1)
             + ", removed " + removedSplits + " split(s), tied to LAP " + (toLapIx + 1));
@@ -919,8 +915,8 @@ public class LapFix {
         applyLapMetricsToSplit(lapIx, firstSplit, firstLap);
         applyLapMetricsToSplit(lapIx + 1, secondSplit, secondLap);
 
-        setIntIfPresent(firstSplit, SPL_LAP_INDEX_FIELD_NUM, lapIx);
-        setIntIfPresent(secondSplit, SPL_LAP_INDEX_FIELD_NUM, lapIx + 1);
+        setIntIfPresent(firstSplit, FitFile.SPL_LAPIX, lapIx);
+        setIntIfPresent(secondSplit, FitFile.SPL_LAPIX, lapIx + 1);
 
         int splitMesgIx = fitFile.getSplitMesg().indexOf(firstSplit);
         if (splitMesgIx >= 0) {
@@ -955,7 +951,8 @@ public class LapFix {
         Float lapSpeed = lapMesg.getFieldFloatValue(FitFile.LAP_ESPEED);
         Float lapMaxSpeed = lapMesg.getFieldFloatValue(FitFile.LAP_EMSPEED);
 
-        Long splitEndTime = estimateSplitEndTime(lapStartTime, lapElapsed != null ? lapElapsed : lapTimer);
+        Long splitEndTime = fitFile.getLapExtraRecords().get(lapIx).getTimeEnd();
+        //Long splitEndTime = estimateSplitEndTime(lapStartTime, lapElapsed != null ? lapElapsed : lapTimer);
         setLongIfPresent(splitMesg, FitFile.SPL_ETIME, splitEndTime);
 
         setFloatIfPresent(splitMesg, FitFile.SPL_TIMER, lapTimer != null ? lapTimer : 0f);
@@ -987,15 +984,15 @@ public class LapFix {
         setIntIfPresent(splitMesg, FitFile.SPL_DESC, lapMesg.getFieldIntegerValue(FitFile.LAP_DESC));
 
         int splitStartElevation = 0;
-        int lapStartRecordIx = findRecordIndexAtOrAfterTime(lapStartTime);
+        int lapStartRecordIx = fitFile.getLapExtraRecords().get(lapIx).getRecordIxStart();
         if (lapStartRecordIx >= 0 && lapStartRecordIx < fitFile.getRecordMesg().size()) {
             Float startAlt = fitFile.getRecordMesg().get(lapStartRecordIx).getFieldFloatValue(FitFile.REC_EALT);
             splitStartElevation = Math.round(startAlt != null ? startAlt : 0f);
         }
         setIntIfPresent(splitMesg, FitFile.SPL_SELE, splitStartElevation);
-        setIntIfPresent(splitMesg, SPL_TEMP_FIELD_NUM, getMesgFieldAsInt(lapMesg, FitFile.LAP_TEMP));
-        setIntIfPresent(splitMesg, SPL_MAXTEMP_FIELD_NUM, getMesgFieldAsInt(lapMesg, FitFile.LAP_MTEMP));
-        setIntIfPresent(splitMesg, SPL_MINTEMP_FIELD_NUM, getMesgFieldAsInt(lapMesg, FitFile.LAP_MINTEMP));
+        setIntIfPresent(splitMesg, FitFile.SPL_TEMP, getMesgFieldAsInt(lapMesg, FitFile.LAP_TEMP));
+        setIntIfPresent(splitMesg, FitFile.SPL_MAXTEMP, getMesgFieldAsInt(lapMesg, FitFile.LAP_MTEMP));
+        setIntIfPresent(splitMesg, FitFile.SPL_MINTEMP, getMesgFieldAsInt(lapMesg, FitFile.LAP_MINTEMP));
 
         setIntIfPresent(splitMesg, FitFile.SPL_SLAT, lapMesg.getFieldIntegerValue(FitFile.LAP_SLAT));
         setIntIfPresent(splitMesg, FitFile.SPL_SLON, lapMesg.getFieldIntegerValue(FitFile.LAP_SLON));
@@ -1031,7 +1028,7 @@ public class LapFix {
 
             usedSplitIndexes.add(match.splitListIndex);
             applyLapMetricsToSplit(lapIx, match.splitMesg, lap);
-            setIntIfPresent(match.splitMesg, SPL_LAP_INDEX_FIELD_NUM, lapIx);
+            setIntIfPresent(match.splitMesg, FitFile.SPL_LAPIX, lapIx);
             synced++;
         }
 
@@ -1140,7 +1137,7 @@ public class LapFix {
             changed = false;
             for (int splitIx = 0; splitIx < fitFile.getSplitMesg().size(); splitIx++) {
                 Mesg split = fitFile.getSplitMesg().get(splitIx);
-                Integer splitLapIx = getMesgFieldAsInt(split, SPL_LAP_INDEX_FIELD_NUM);
+                Integer splitLapIx = getMesgFieldAsInt(split, FitFile.SPL_LAPIX);
                 if (splitLapIx == null || splitLapIx < 0 || splitLapIx >= fitFile.getLapMesg().size()) {
                     continue;
                 }
@@ -1223,7 +1220,7 @@ public class LapFix {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     private boolean hasSplitWithLapIx(int lapIx) {
         for (Mesg split : fitFile.getSplitMesg()) {
-            Integer splitLapIx = getMesgFieldAsInt(split, SPL_LAP_INDEX_FIELD_NUM);
+            Integer splitLapIx = getMesgFieldAsInt(split, FitFile.SPL_LAPIX);
             if (splitLapIx != null && splitLapIx == lapIx) {
                 return true;
             }
@@ -1240,7 +1237,7 @@ public class LapFix {
 
         Mesg firstLap = fitFile.getLapMesg().get(firstLapIx);
         applyLapMetricsToSplit(firstLapIx, originalSplit, firstLap);
-        setIntIfPresent(originalSplit, SPL_LAP_INDEX_FIELD_NUM, firstLapIx);
+        setIntIfPresent(originalSplit, FitFile.SPL_LAPIX, firstLapIx);
 
         int insertSplitIx = splitMesgIx + 1;
         int insertAllIx = allMesgIx + 1;
@@ -1249,7 +1246,7 @@ public class LapFix {
             Mesg lap = fitFile.getLapMesg().get(lapIx);
             Mesg newSplit = new Mesg(originalSplit);
             applyLapMetricsToSplit(lapIx, newSplit, lap);
-            setIntIfPresent(newSplit, SPL_LAP_INDEX_FIELD_NUM, lapIx);
+            setIntIfPresent(newSplit, FitFile.SPL_LAPIX, lapIx);
 
             fitFile.getSplitMesg().add(insertSplitIx, newSplit);
             if (insertAllIx <= fitFile.getAllMesg().size()) {
@@ -1589,9 +1586,9 @@ public class LapFix {
                 if (mesg == insertedSplit) {
                     continue;
                 }
-                Integer splitLapIx = getMesgFieldAsInt(mesg, SPL_LAP_INDEX_FIELD_NUM);
+                Integer splitLapIx = getMesgFieldAsInt(mesg, FitFile.SPL_LAPIX);
                 if (splitLapIx != null && splitLapIx > insertedAfterLapIx) {
-                    mesg.setFieldValue(SPL_LAP_INDEX_FIELD_NUM, splitLapIx + 1);
+                    mesg.setFieldValue(FitFile.SPL_LAPIX, splitLapIx + 1);
                 }
             }
         }
@@ -1720,9 +1717,9 @@ public class LapFix {
             }
 
             if (mesg.getNum() == MesgNum.SPLIT) {
-                Integer splitLapIx = getMesgFieldAsInt(mesg, SPL_LAP_INDEX_FIELD_NUM);
+                Integer splitLapIx = getMesgFieldAsInt(mesg, FitFile.SPL_LAPIX);
                 if (splitLapIx != null && splitLapIx > deletedLapIx) {
-                    mesg.setFieldValue(SPL_LAP_INDEX_FIELD_NUM, splitLapIx - 1);
+                    mesg.setFieldValue(FitFile.SPL_LAPIX, splitLapIx - 1);
                 }
             }
         }

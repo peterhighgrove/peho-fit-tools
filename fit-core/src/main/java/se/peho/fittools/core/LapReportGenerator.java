@@ -357,105 +357,147 @@ public class LapReportGenerator {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void printLapAllSummary() {
         int i = 0;
-        int lapNo = 1;
+
+        int colLapNo = 3;
+        int colTimeStart = 9;
+        int colTimeEnd = 9;
+        int colHrStart = 4;
+        int colHrEnd = 4;
+        int colHrMin = 4;
+        int colRecordIxStart = 6;
+        int colRecordIxEnd = 6;
+        int colDistStart = 8;
+        int colDistEnd = 8;
+        int colDistCalc = 8;
+        int colDistOrg = 8;
+        int colAltStart = 4;
+        int colAltEnd = 4;
+        int colLevel = 3;
+        int colAvgStrokeLen = 4;
+        int colMaxStrokeLen = 4;
+        int colAvgDragFactor = 4;
+        int colMaxDragFactor = 4;
+        int colStepLen = 4;
+        int colSpeedLapSum = 4;
+        int colCadLapSum = 4;
+        int colIntensity = 10;
+        int colSum = colLapNo + colTimeStart + colTimeEnd + colHrStart + colHrEnd + colHrMin + colRecordIxStart + colRecordIxEnd + colDistStart + colDistEnd + colDistCalc + colDistOrg + colAltStart + colAltEnd + colLevel + colAvgStrokeLen + colMaxStrokeLen + colAvgDragFactor + colMaxDragFactor + colStepLen + colSpeedLapSum + colCadLapSum + colIntensity;
+        
         System.out.println();
-        System.out.println("================================================");
-        System.out.println("====LAPS IN FILE (lap4-LapAllSummary)");
+        System.out.println("-".repeat(colSum));
+        System.out.println("--- LAPS IN FILE - LapExtraDebug (lap4-LapAllSummary) ---");
+        System.out.println("-".repeat(colSum));
+        System.out.printf("Laps: %d  LapsExtras: %d  Records: %d%n%n", fitFile.getLapMesg().size(), fitFile.getLapExtraRecords().size(), fitFile.getRecordMesg().size());
+        System.out.printf("%" + colLapNo + "s%" + colTimeStart + "s%" + colTimeEnd + "s%" + colHrStart + "s%" + colHrEnd + "s%" + colHrMin + "s%" + colRecordIxStart + "s%" + colRecordIxEnd + "s%" + colDistStart + "s%" + colDistEnd + "s%" + colDistCalc + "s%" + colDistOrg + "s%" + colAltStart + "s%" + colAltEnd + "s%" + colLevel + "s%" + colAvgStrokeLen + "s%" + colMaxStrokeLen + "s%" + colAvgDragFactor + "s%" + colMaxDragFactor + "s%" + colStepLen + "s%" + colSpeedLapSum + "s%" + colCadLapSum + "s%" + colIntensity + "s%n"
+            , "Lap", "Time", "", "HR", "", "", "Rec", "", "Dist", "", "", "", "Alt", "", "Lv", "strL", "", "DF", "",  "Step", "Spee", "Cad", "Inten");
+        System.out.printf("%" + colLapNo + "s%" + colTimeStart + "s%" + colTimeEnd + "s%" + colHrStart + "s%" + colHrEnd + "s%" + colHrMin + "s%" + colRecordIxStart + "s%" + colRecordIxEnd + "s%" + colDistStart + "s%" + colDistEnd + "s%" + colDistCalc + "s%" + colDistOrg + "s%" + colAltStart + "s%" + colAltEnd + "s%" + colLevel + "s%" + colAvgStrokeLen + "s%" + colMaxStrokeLen + "s%" + colAvgDragFactor + "s%" + colMaxDragFactor + "s%" + colStepLen + "s%" + colSpeedLapSum + "s%" + colCadLapSum + "s%" + colIntensity + "s%n"
+            , "no", "start", "end", "st", "end", "min", "stIx", "eIx", "st", "end", "calc", "org", "st", "end", "", "avg", "max", "avg", "max", "Len", "sum", "sum", ""); 
+        System.out.println("-".repeat(colSum));
+
         for (Mesg mesg : fitFile.getLapMesg()) {
-            System.out.print("Lap:" + lapNo);
+            
+            Integer lapNo = fitFile.getLapExtraRecords().get(i).getLapNo();
+            String lapNoStr = lapNo != null ? String.format("%d", lapNo) : "-";
+            System.out.printf("%" + colLapNo + "s", lapNoStr);
 
-            // Start time
             Long startTime = mesg.getFieldLongValue(FitFile.LAP_STIME);
-            if (startTime != null) {
-                System.out.print(" StartTime:" + FitDateTime.toString(startTime, fitFile.getDiffMinutesLocalUTC()));
-            }
-
+            String startTimeStr = startTime != null ? new Tstr(startTime).get() : "-";
+            System.out.printf("%" + colTimeStart + "s", startTimeStr);
             
-            // Extra fields: level and step length (skip if SkiErg)
-            if (fitFile.getLapExtraRecords().get(i).getLevel() != null) {
-                if (fitFile.getMySport() == FitFile.MySport.TREADMILL) {
-                    System.out.print(" " + fitFile.getLapExtraRecords().get(i).getLevel().intValue() + "%");
-                } else 
-                if (fitFile.getMySport() == FitFile.MySport.ELLIPTICAL) {
-                    System.out.print(" lv" + fitFile.getLapExtraRecords().get(i).getLevel().intValue());
-                }
-            }
+            Long endTime = fitFile.getLapExtraRecords().get(i).getTimeEnd();
+            String endTimeStr = endTime != null ? new Tstr(endTime).get() : "-";
+            System.out.printf("%" + colTimeEnd + "s", endTimeStr);
 
-            if (fitFile.getLapExtraRecords().get(i).getStepLen() != null
-                 && fitFile.getMySport() != FitFile.MySport.SKIERG) {
-                System.out.print(" steplen" + (int) (fitFile.getLapExtraRecords().get(i).getStepLen() * 100) + "cm");
-            }
-           
-
-            // Total timer
-            Float totalTimer = mesg.getFieldFloatValue(FitFile.LAP_TIMER);
-            if (totalTimer != null) System.out.print(" LapTime: " + totalTimer);
-
-            // Intensity
-            Short intensityVal = (Short) mesg.getFieldValue(FitFile.LAP_INTENSITY);
-            String intensity = intensityVal != null ? Intensity.getStringFromValue(Intensity.getByValue(intensityVal)) : "UNKNOWN";
-
-            System.out.print(" WktIntensity: " + intensity);
-
+            Short hrStart = fitFile.getLapExtraRecords().get(i).getHrStart();
+            String hrStartStr = hrStart != null ? String.format("%d", hrStart) : "-";
+            System.out.printf("%" + colHrStart + "s", hrStartStr);
             
-            // Heart rate logic
-            Integer maxHr = mesg.getFieldIntegerValue(FitFile.LAP_MHR);
-            if ("ACTIVE".equals(intensity) || "WARMUP".equals(intensity)) {
-                System.out.print(" HR start:" + fitFile.getLapExtraRecords().get(i).getHrStart());
-                System.out.print(" min:" + fitFile.getLapExtraRecords().get(i).getHrMin());
-                System.out.print("+" + ((maxHr != null ? maxHr : 0) - fitFile.getLapExtraRecords().get(i).getHrMin()));
-                System.out.print("-->max:" + (maxHr != null ? maxHr : "N/A"));
-                System.out.print(" end:" + fitFile.getLapExtraRecords().get(i).getHrEnd());
+            Short hrEnd = fitFile.getLapExtraRecords().get(i).getHrEnd();
+            String hrEndStr = hrEnd != null ? String.format("%d", hrEnd) : "-";
+            System.out.printf("%" + colHrEnd + "s", hrEndStr);
+            
+            Short hrMin = fitFile.getLapExtraRecords().get(i).getHrMin();
+            String hrMinStr = hrMin != null ? String.format("%d", hrMin) : "-";
+            System.out.printf("%" + colHrMin + "s", hrMinStr);
+            
+            Integer recordIxStart = fitFile.getLapExtraRecords().get(i).getRecordIxStart();
+            String recordIxStartStr = recordIxStart != null ? String.format("%d", recordIxStart) : "-";
+            System.out.printf("%" + colRecordIxStart + "s", recordIxStartStr);
+
+            Integer recordIxEnd = fitFile.getLapExtraRecords().get(i).getRecordIxEnd();
+            String recordIxEndStr = recordIxEnd != null ? String.format("%d", recordIxEnd) : "-";
+            System.out.printf("%" + colRecordIxEnd + "s", recordIxEndStr);
+
+            Float distStart = fitFile.getLapExtraRecords().get(i).getDistStart();
+            String distStartStr = distStart != null ? String.format("%.1f", distStart) : "-";
+            System.out.printf("%" + colDistStart + "s", distStartStr);
+
+            Float distEnd = fitFile.getLapExtraRecords().get(i).getDistEnd();
+            String distEndStr = distEnd != null ? String.format("%.1f", distEnd) : "-";
+            System.out.printf("%" + colDistEnd + "s", distEndStr);
+
+            Float distDiff = 0f;
+            if (distEnd != null && distStart != null) {
+                distDiff = distEnd - distStart;
+                String distDiffStr = String.format("%.1f", distDiff);
+                System.out.printf("%" + colDistCalc + "s", distDiffStr);
             } else {
-                System.out.print(" HR start:" + fitFile.getLapExtraRecords().get(i).getHrStart());
-                System.out.print(" max:" + (maxHr != null ? maxHr : "N/A"));
-                System.out.print("" + (fitFile.getLapExtraRecords().get(i).getHrMin() - (maxHr != null ? maxHr : 0)));
-                System.out.print("-->min:" + fitFile.getLapExtraRecords().get(i).getHrMin());
-                System.out.print(" end:" + fitFile.getLapExtraRecords().get(i).getHrEnd());
-            }
-           
-
-            // Distance
-            Float totalDist = mesg.getFieldFloatValue(FitFile.LAP_DIST);
-            if (totalDist != null) System.out.print("--Dist:" + totalDist);
-
-            // Speed
-            Float enhAvgSpeed = mesg.getFieldFloatValue(FitFile.LAP_ESPEED);
-            Float enhMaxSpeed = mesg.getFieldFloatValue(FitFile.LAP_EMSPEED);
-            printLapAvgMaxSpeed(enhAvgSpeed, enhMaxSpeed);
-
-            // Cadence
-            Short avgCadence = mesg.getFieldShortValue(FitFile.LAP_CAD);
-            Short maxCadence = mesg.getFieldShortValue(FitFile.LAP_MCAD);
-            if (avgCadence != null) {
-                System.out.print("--Cad avg:" + avgCadence);
-                System.out.print(" max:" + (maxCadence != null ? maxCadence : "N/A"));
+                System.out.printf("%" + colDistCalc + "s", "-");
             }
 
-            // Power
-            Integer avgPower = mesg.getFieldIntegerValue(FitFile.LAP_POW);
-            Integer maxPower = mesg.getFieldIntegerValue(FitFile.LAP_MPOW);
-            if (avgPower != null) {
-                System.out.print("--Pow avg:" + avgPower);
-                System.out.print(" max:" + (maxPower != null ? maxPower : "N/A"));
-            }
+            Float distOrg = mesg.getFieldFloatValue(FitFile.LAP_DIST);
+            String distOrgStr = distOrg != null ? String.format("%.1f", distOrg) : "-";
+            System.out.printf("%" + colDistOrg + "s", distOrgStr);
 
+            Integer altStart = fitFile.getLapExtraRecords().get(i).getAltStart();
+            String altStartStr = altStart != null ? String.format("%d", altStart) : "-";
+            System.out.printf("%" + colAltStart + "s", altStartStr);
+
+            Integer altEnd = fitFile.getLapExtraRecords().get(i).getAltEnd();
+            String altEndStr = altEnd != null ? String.format("%d", altEnd) : "-";
+            System.out.printf("%" + colAltEnd + "s", altEndStr);
+
+            Float level = fitFile.getLapExtraRecords().get(i).getLevel();
+            String levelStr = level != null ? String.format("%f", level) : "-";
+            System.out.printf("%" + colLevel + "s", levelStr);
+
+            Float avgStrokeLen = fitFile.getLapExtraRecords().get(i).getAvgStrokeLen();
+            String avgStrokeLenStr = avgStrokeLen != null ? String.format("%.1f", avgStrokeLen) : "-";
+            System.out.printf("%" + colAvgStrokeLen + "s", avgStrokeLenStr);
+
+            Float maxStrokeLen = fitFile.getLapExtraRecords().get(i).getMaxStrokeLen();
+            String maxStrokeLenStr = maxStrokeLen != null ? String.format("%.1f", maxStrokeLen) : "-";
+            System.out.printf("%" + colMaxStrokeLen + "s", maxStrokeLenStr);
+
+            Float avgDragFactor = fitFile.getLapExtraRecords().get(i).getAvgDragFactor();
+            String avgDragFactorStr = avgDragFactor != null ? String.format("%.1f", avgDragFactor) : "-";
+            System.out.printf("%" + colAvgDragFactor + "s", avgDragFactorStr);
+
+            Float maxDragFactor = fitFile.getLapExtraRecords().get(i).getMaxDragFactor();
+            String maxDragFactorStr = maxDragFactor != null ? String.format("%.1f", maxDragFactor) : "-";
+            System.out.printf("%" + colMaxDragFactor + "s", maxDragFactorStr);
+
+            Float stepLen = fitFile.getLapExtraRecords().get(i).getStepLen();
+            String stepLenStr = stepLen != null ? String.format("%.1f", stepLen) : "-";
+            System.out.printf("%" + colStepLen + "s", stepLenStr);
+
+            Float speedLapSum = fitFile.getLapExtraRecords().get(i).getSpeedLapSum();
+            String speedLapSumStr = speedLapSum != null ? String.format("%.1f", speedLapSum) : "-";
+            System.out.printf("%" + colSpeedLapSum + "s", speedLapSumStr);
+
+            Float cadLapSum = fitFile.getLapExtraRecords().get(i).getCadLapSum();
+            String cadLapSumStr = cadLapSum != null ? String.format("%.1f", cadLapSum) : "-";
+            System.out.printf("%" + colCadLapSum + "s", cadLapSumStr);
             
-            // Extra lap info: Drag Factor and Stroke Length
-            if (fitFile.getLapExtraRecords().get(i).getAvgDragFactor() != null) {
-                System.out.print("--DFavg:" + (int) Math.round(fitFile.getLapExtraRecords().get(i).getAvgDragFactor()));
-                System.out.print(" max:" + (int) Math.round(fitFile.getLapExtraRecords().get(i).getMaxDragFactor()));
-            }
-            if (fitFile.getLapExtraRecords().get(i).getAvgStrokeLen() != null) {
-                System.out.print("--SLavg:" + fitFile.getLapExtraRecords().get(i).getAvgStrokeLen());
-                System.out.print(" max:" + fitFile.getLapExtraRecords().get(i).getMaxStrokeLen());
-            }
-           
+            Short intensityVal = mesg.getFieldShortValue(FitFile.LAP_INTENSITY);
+            String intensity = intensityVal != null ? Intensity.getStringFromValue(Intensity.getByValue(intensityVal)) : "UNKNOWN";
+            System.out.printf("%" + colIntensity + "s", intensity);
 
             System.out.println();
             i++;
             lapNo++;
         }
+        System.out.println("-".repeat(colSum));
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -836,7 +878,7 @@ public class LapReportGenerator {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     // Debug method to print lap and record details for verification
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        public void debugLapRecords(List<Mesg> lapMesgs, List<Mesg> recordMesgs) {
+    public void debugLapRecords(List<Mesg> lapMesgs, List<Mesg> recordMesgs) {
         System.out.println("-------------------------------------------");
         System.out.println("----- L A P   R E C O R D   D E B U G -----");
         System.out.printf("Laps: %d  Records: %d%n%n", lapMesgs.size(), recordMesgs.size());

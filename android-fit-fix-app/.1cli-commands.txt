@@ -3,8 +3,9 @@ $ pwd
 $ cd Downloads/
 
 java -jar ../dev/jars/fit-ren-3.06.jar zip . aaa
-java -jar ../dev/jars/fit-fix-3.06.jar //looks for aaa. file
+java -jar ../dev/jars/fit-fix-3.10.jar //looks for aaa. file
 
 ./collect-jars.sh 3.10
+
 
 

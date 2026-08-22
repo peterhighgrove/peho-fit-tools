@@ -141,6 +141,7 @@ public class FitFile {
     public static final int REC_POW = RecordMesg.PowerFieldNum; //int
     public static final int REC_LAT = RecordMesg.PositionLatFieldNum; //int
     public static final int REC_LON = RecordMesg.PositionLongFieldNum; //int
+    public static final int REC_ALT = RecordMesg.AltitudeFieldNum; //float
     public static final int REC_EALT = RecordMesg.EnhancedAltitudeFieldNum; //float
     public static final int MESG_TIMESTAMP = 253; // standard FIT timestamp field
     public static final int SP_SPORT = SportMesg.SportFieldNum; //short -> .getByValue -> Sport
@@ -604,22 +605,31 @@ public class FitFile {
         private Short hrEnd;
         private Short hrMin;
         private Long timeEnd;
-        private int lapNo;
-        private int recordIxStart;
-        private int recordIxEnd;
+        private Integer lapNo;
+        private Integer recordIxStart;
+        private Integer recordIxEnd;
         private Float stepLen;
         private Float level;
         private Float avgStrokeLen;
         private Float maxStrokeLen;
         private Float avgDragFactor;
         private Float maxDragFactor;
+        private Float distStart;
+        private Float distEnd;
+        private Integer altStart;
+        private Integer altEnd;
         private Float speedLapSum;
         private Float cadLapSum;
+        
 
         public LapExtraMesg() {
         }
-        public LapExtraMesg(Short hrStart, Short hrEnd, Short hrMin, Long timeEnd, int lapNo, int recordIxStart, 
-                int recordIxEnd, Float stepLen, Float level, Float avgStrokeLen, Float maxStrokeLen, Float avgDragFactor, Float maxDragFactor) {
+        public LapExtraMesg(Short hrStart, Short hrEnd, Short hrMin, Long timeEnd, Integer lapNo, 
+                Integer recordIxStart, Integer recordIxEnd,
+                Float stepLen, Float level, Float avgStrokeLen, Float maxStrokeLen, 
+                Float avgDragFactor, Float maxDragFactor,
+                Float distStart, Float distEnd, Integer altStart, Integer altEnd
+            ) {
             this.hrStart = hrStart;
             this.hrEnd = hrEnd;
             this.hrMin = hrMin;
@@ -633,6 +643,10 @@ public class FitFile {
             this.maxStrokeLen = maxStrokeLen;
             this.avgDragFactor = avgDragFactor;
             this.maxDragFactor = maxDragFactor;
+            this.distStart = distStart;
+            this.distEnd = distEnd;
+            this.altStart = altStart;
+            this.altEnd = altEnd;
         }
 
         public Short getHrStart() { return hrStart; }
@@ -643,12 +657,12 @@ public class FitFile {
         public void setHrMin(Short hrMin) { this.hrMin = hrMin; }
         public Long getTimeEnd() { return timeEnd; }
         public void setTimeEnd(Long timeEnd) { this.timeEnd = timeEnd; }
-        public int getLapNo() { return lapNo; }
-        public void setLapNo(int lapNo) { this.lapNo = lapNo; }
-        public int getRecordIxStart() { return recordIxStart; }
-        public void setRecordIxStart(int recordIxStart) { this.recordIxStart = recordIxStart; }
-        public int getRecordIxEnd() { return recordIxEnd; }
-        public void setRecordIxEnd(int recordIxEnd) { this.recordIxEnd = recordIxEnd; }
+        public Integer getLapNo() { return lapNo; }
+        public void setLapNo(Integer lapNo) { this.lapNo = lapNo; }
+        public Integer getRecordIxStart() { return recordIxStart; }
+        public void setRecordIxStart(Integer recordIxStart) { this.recordIxStart = recordIxStart; }
+        public Integer getRecordIxEnd() { return recordIxEnd; }
+        public void setRecordIxEnd(Integer recordIxEnd) { this.recordIxEnd = recordIxEnd; }
         public Float getStepLen() { return stepLen; }
         public void setStepLen(Float stepLen) { this.stepLen = stepLen; }
         public Float getLevel() { return level; }
@@ -665,14 +679,22 @@ public class FitFile {
         public void setSpeedLapSum(Float speedLapSum) { this.speedLapSum = speedLapSum; }
         public Float getCadLapSum() { return cadLapSum; }
         public void setCadLapSum(Float cadLapSum) { this.cadLapSum = cadLapSum; }
+        public Float getDistStart() { return distStart; }
+        public void setDistStart(Float distStart) { this.distStart = distStart; }
+        public Float getDistEnd() { return distEnd; }
+        public void setDistEnd(Float distEnd) { this.distEnd = distEnd; }
+        public Integer getAltStart() { return altStart; }
+        public void setAltStart(Integer altStart) { this.altStart = altStart; }
+        public Integer getAltEnd() { return altEnd; }
+        public void setAltEnd(Integer altEnd) { this.altEnd = altEnd; }
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void initLapExtraRecords() {
 
-        int hrStart = 0;
-        int hrEnd = 0;
-        int hrMin = 9999;
+        Short hrStart = 0;
+        Short hrEnd = 0;
+        Short hrMin = 9999;
         Long timeEnd = null;
         int lapNo = 0;
         int recordIxStart = 0;
@@ -686,7 +708,11 @@ public class FitFile {
 
         System.out.println("----- INIT LapExtra Records for ALL MESG -----");
         for (Mesg record : lapMesg) {
-            LapExtraMesg newLapExtra = new LapExtraMesg((short) hrStart, (short) hrEnd, (short) hrMin, timeEnd, lapNo, recordIxStart, recordIxEnd, stepLen, level, avgStrokeLen, maxStrokeLen, avgDragFactor, maxDragFactor);
+            LapExtraMesg newLapExtra = new LapExtraMesg(hrStart, hrEnd, hrMin, timeEnd, lapNo, 
+                recordIxStart, recordIxEnd, stepLen, 
+                level, avgStrokeLen, maxStrokeLen, avgDragFactor, maxDragFactor,
+                null, null, null, null
+                );
             newLapExtra.setSpeedLapSum(0f);
             newLapExtra.setCadLapSum(0f);
             lapExtraRecords.add(newLapExtra);
@@ -778,11 +804,43 @@ public class FitFile {
                 if (currentTimeStamp != null && nextLapStartTime != null && currentTimeStamp.equals(nextLapStartTime)) {
 
                     LapExtraMesg newLapExtra = new LapExtraMesg();
-                    lapExtraRecords.add(newLapExtra);
+
+                    newLapExtra.setLapNo(lapNo);
 
                     // Save HR and recordIx START
-                    lapExtraRecords.get(lapIx).setHrStart(currentHr);
-                    lapExtraRecords.get(lapIx).setRecordIxStart(recordIx);
+                    newLapExtra.setHrStart(currentHr);
+                    newLapExtra.setRecordIxStart(recordIx);
+
+                    newLapExtra.setAltStart(record.getFieldIntegerValue(REC_EALT));
+
+                    lapExtraRecords.add(newLapExtra);
+
+
+                    // Save DIST START to table, distance value from previous record, if available, else 0
+                    int prevRecordIx = recordIx - 1;
+                    if (prevRecordIx < 0) {
+                        lapExtraRecords.get(lapIx).setDistStart(0f);
+                    } else {
+                        Float prevRecordDist = getRecordMesg().get(prevRecordIx).getFieldFloatValue(REC_DIST);
+                        if (prevRecordDist != null) {
+                            lapExtraRecords.get(lapIx).setDistStart(prevRecordDist);
+                        } else {
+                            // if NULL search back for last non-null distance value
+
+                            while (prevRecordIx >= 0 && prevRecordDist == null) {
+                                prevRecordIx--;
+                                if (prevRecordIx < 0) {
+                                    lapExtraRecords.get(lapIx).setDistStart(0f);
+                                } else {
+                                    prevRecordDist = getRecordMesg().get(prevRecordIx).getFieldFloatValue(REC_DIST);
+                                }
+                            }
+                            if (prevRecordDist == null) {
+                                prevRecordDist = 0f;
+                            }
+                            lapExtraRecords.get(lapIx).setDistStart(prevRecordDist);
+                        }
+                    }
 
                     // Get LAP DATA to be used to find lap-start-end
                     Float lapTotalTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
@@ -846,6 +904,8 @@ public class FitFile {
                     lapExtraRecords.get(lapIx).setHrEnd(currentHr);
                     lapExtraRecords.get(lapIx).setRecordIxEnd(recordIx);
                     lapExtraRecords.get(lapIx).setTimeEnd(record.getFieldLongValue(REC_TIME));
+                    lapExtraRecords.get(lapIx).setAltEnd(record.getFieldIntegerValue(REC_EALT));
+                    lapExtraRecords.get(lapIx).setDistEnd(record.getFieldFloatValue(REC_DIST));
 
                     Float lapCad = lapMesg.get(lapIx).getFieldFloatValue(LAP_CAD);
                     Float lapTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
