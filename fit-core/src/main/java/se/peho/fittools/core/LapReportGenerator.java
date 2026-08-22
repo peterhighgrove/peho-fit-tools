@@ -432,6 +432,11 @@ public class LapReportGenerator {
         headerFormat.add("%" + colAltEnd + "s");
         header1Values.add("");
         header2Values.add("end");
+        int colIntensity = 10;
+        colSum += colIntensity;
+        headerFormat.add("%" + colIntensity + "s");
+        header1Values.add("Intensity");
+        header2Values.add("");
         int colLevel = 4;
         colSum += colLevel;
         headerFormat.add("%" + colLevel + "s");
@@ -472,11 +477,6 @@ public class LapReportGenerator {
         headerFormat.add("%" + colCadLapSum + "s");
         header1Values.add("Cad");
         header2Values.add("sum");
-        int colIntensity = 10;
-        colSum += colIntensity;
-        headerFormat.add("%" + colIntensity + "s");
-        header1Values.add("Intensity");
-        header2Values.add("");
 
         String headerFormatStr = "";
         for (String fmt : headerFormat) {
@@ -506,11 +506,11 @@ public class LapReportGenerator {
             System.out.printf("%" + colLapNo + "s", lapNoStr);
 
             Long startTime = mesg.getFieldLongValue(FitFile.LAP_STIME);
-            String startTimeStr = startTime != null ? new Tstr(startTime).get() : "-";
+            String startTimeStr = startTime != null ? new Tstr(startTime, fitFile.getDiffMinutesLocalUTC()).get() : "-";
             System.out.printf("%" + colTimeStart + "s", startTimeStr);
             
             Long endTime = fitFile.getLapExtraRecords().get(i).getTimeEnd();
-            String endTimeStr = endTime != null ? new Tstr(endTime).get() : "-";
+            String endTimeStr = endTime != null ? new Tstr(endTime, fitFile.getDiffMinutesLocalUTC()).get() : "-";
             System.out.printf("%" + colTimeEnd + "s", endTimeStr);
 
             Short hrStart = fitFile.getLapExtraRecords().get(i).getHrStart();
@@ -562,6 +562,10 @@ public class LapReportGenerator {
             String altEndStr = altEnd != null ? String.format("%d", altEnd) : "-";
             System.out.printf("%" + colAltEnd + "s", altEndStr);
 
+            Short intensityVal = mesg.getFieldShortValue(FitFile.LAP_INTENSITY);
+            String intensity = intensityVal != null ? Intensity.getStringFromValue(Intensity.getByValue(intensityVal)) : "UNKNOWN";
+            System.out.printf("%" + colIntensity + "s", intensity);
+
             Float level = fitFile.getLapExtraRecords().get(i).getLevel();
             String levelStr = level != null ? String.format("%f", level) : "-";
             System.out.printf("%" + colLevel + "s", levelStr);
@@ -594,10 +598,6 @@ public class LapReportGenerator {
             String cadLapSumStr = cadLapSum != null ? String.format("%.1f", cadLapSum) : "-";
             System.out.printf("%" + colCadLapSum + "s", cadLapSumStr);
             
-            Short intensityVal = mesg.getFieldShortValue(FitFile.LAP_INTENSITY);
-            String intensity = intensityVal != null ? Intensity.getStringFromValue(Intensity.getByValue(intensityVal)) : "UNKNOWN";
-            System.out.printf("%" + colIntensity + "s", intensity);
-
             System.out.println();
             i++;
             lapNo++;
