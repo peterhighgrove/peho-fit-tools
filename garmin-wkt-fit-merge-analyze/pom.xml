@@ -7,7 +7,7 @@
     <parent>
         <groupId>se.peho.fittools</groupId>
         <artifactId>peho-fit-tools</artifactId>
-        <version>3.10</version>
+        <version>3.11</version>
     </parent>
 
     <artifactId>garmin-wkt-fit-merge-analyze</artifactId>

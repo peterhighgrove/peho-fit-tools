@@ -451,6 +451,9 @@ SPL_ETIME now use splitStartTime + Math.round(totalElapsedSeconds - 0.5f)
 
 Use LapExtraRecords to set values, split/lap en especially
 
+--> git sync
+--> v3.11 Build
+--> git sync
 
 
 ***********
