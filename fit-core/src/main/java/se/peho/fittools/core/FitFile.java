@@ -1353,6 +1353,8 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    // List all stops with the specified duration and distance values.
+    // A stop is defined as a record with a duration and distance that matches the specified values.
     public void listStops(Long durationForStopToBeSearched, Float distanceForStopToBeSearched) {
 
         Long durationCounter = 0L;

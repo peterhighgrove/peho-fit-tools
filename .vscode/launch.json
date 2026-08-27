@@ -20,7 +20,7 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"Fartlek Gnejsskogen\" 1 \
+      "args": "\"Fartlek Gnejsskogen\" 10 \
       \"2026-08-16.zip\""
     },
     {

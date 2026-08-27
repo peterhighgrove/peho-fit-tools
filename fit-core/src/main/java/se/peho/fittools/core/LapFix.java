@@ -204,16 +204,20 @@ public class LapFix {
         int deleteCount = toLap - fromLap;
         int targetLapIx = fromLap - 1;
         for (int deleteCounter = 0; deleteCounter < deleteCount; deleteCounter++) {
+
+            // Find the index of the LAP message in the ALL messages list that corresponds to the target lap index.
             int lapAllMesgIx = findLapMesgIndexInAllMesgByLapIx(targetLapIx);
             if (lapAllMesgIx < 0) {
                 fitFile.appendTempUpdateLogLn("-- Could not find LAP mesg in allMesg for lap ix:" + targetLapIx);
                 continue;
             }
 
+            // Delete the LAP message from the ALL messages list, and also delete any linked TIME_IN_ZONE message for this lap, if it exists.
             Mesg lapMesgToDelete = fitFile.getAllMesg().get(lapAllMesgIx);
             fitFile.appendTempUpdateLogLn("-- Deleting lap ix:" + targetLapIx + " time:"
                 + FitDateTime.toString(lapMesgToDelete.getFieldLongValue(FitFile.LAP_STIME), fitFile.getDiffMinutesLocalUTC()));
 
+            // Delete any linked TIME_IN_ZONE message for this lap, if it exists.
             int timeInZoneIx = findLinkedTimeInZoneMesgIndex(lapAllMesgIx, targetLapIx);
             if (timeInZoneIx >= 0) {
                 fitFile.appendTempUpdateLogLn("-- Deleting linked TIME_IN_ZONE mesg for lap ix:" + targetLapIx);
@@ -233,6 +237,10 @@ public class LapFix {
 
             decrementLapReferencesAfterDeletedLap(targetLapIx);
         }
+
+        // Update LapExtra records to reflect that the merged laps have been deleted, and the remaining laps have been renumbered.
+        fitFile.fillLapExtraRecords();
+
         fitFile.setNumberOfLaps(fitFile.getNumberOfLaps() - (toLap - fromLap));
 
         // Update SES_LAPS
@@ -240,7 +248,8 @@ public class LapFix {
             fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_LAPS, fitFile.getNumberOfLaps());
         }
 
-        syncSplitsFromLapsAfterLapChange("lapMerge");
+        // Only need to sync the merged lap, since the others were deleted.
+        syncSplitsFromLapsAfterLapChange("lapMerge", fromLapIx, fromLapIx); 
 
         // Print and save logs
         System.out.println(fitFile.getTempUpdateLog());
@@ -268,11 +277,18 @@ public class LapFix {
             return;
         }
 
+        // Detect and fix any combined splits first, so that SPL_TYPE assignment can be done correctly.
+        // ------------------------------------------------
         for (String line : detectAndFixCombinedSplits()) {
             fitFile.appendTempUpdateLogLn(line);
         }
 
+        // Find the overview split (if any) that represents the entire activity, and skip it for SPL_TYPE assignment.
+        // ------------------------------------------------
         int overviewSplitIx = findOverviewSplitIndex();
+
+        // Keep track of which SPLIT messages have already been assigned to a LAP, so that we don't assign the same SPLIT to multiple laps.
+        // ------------------------------------------------
         Set<Integer> usedSplitIndexes = new HashSet<>();
         if (overviewSplitIx >= 0) {
             usedSplitIndexes.add(overviewSplitIx);
@@ -290,9 +306,12 @@ public class LapFix {
         int intervalStartIx = warmupLaps;
         int cooldownStartIx = lapCount - cooldownLaps;
 
+        // Assign LAP_INTENSITY and SPL_TYPE for each lap, based on the workout interval pattern.
+        // ------------------------------------------------
         for (int lapIx = 0; lapIx < lapCount; lapIx++) {
             Mesg lap = fitFile.getLapMesg().get(lapIx);
 
+            // Assign LAP_INTENSITY based on the lap index and the workout interval pattern.
             Intensity intensity;
             if (lapIx < intervalStartIx) {
                 intensity = Intensity.WARMUP;
@@ -311,8 +330,10 @@ public class LapFix {
             lap.setFieldValue(FitFile.LAP_INTENSITY, intensity.getValue());
             updatedLaps++;
             
+            // Find the best matching SPLIT for this lap, if any, and assign SPL_TYPE based on the lap index and the workout interval pattern.
             SplitMatch match = findBestSplitMatchForLap(lapIx, lap, usedSplitIndexes);
 
+            // Assign SPL_TYPE for the matched split, if any, based on the lap index and the workout interval pattern.
             SplitType splitType;
             if (match != null) {
                 usedSplitIndexes.add(match.splitListIndex);
@@ -331,6 +352,7 @@ public class LapFix {
                     }
                 }
 
+                // Assign SPL_TYPE for the matched split, if it differs from the current value.
                 Short currentSplitType = match.splitMesg.getFieldShortValue(FitFile.SPL_TYPE);
                 if (currentSplitType == null || currentSplitType.shortValue() != splitType.getValue()) {
                     match.splitMesg.setFieldValue(FitFile.SPL_TYPE, splitType.getValue());
@@ -367,8 +389,10 @@ public class LapFix {
                 fitFile.appendTempUpdateLogLn("-- wkti LAP " + (lapIx + 1)
                     + " -> no matching split found for type assignment.");
             }
-        }
+        } // end foor loop over laps
 
+        // Update SPLIT_SUMMARY rows for any SPL_TYPEs that were changed, so that the summary totals reflect the new split counts and totals.
+        // ------------------------------------------------
         for (String line : updateSplitSummaryFromSplitsForTypes(splitTypesToRefreshSummary)) {
             fitFile.appendTempUpdateLogLn(line);
         }
@@ -468,6 +492,8 @@ public class LapFix {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    // Applies the aggregated totals from SplitSummaryAgg to the given SPLIT_SUMMARY message.
+    // This is used when recalculating SPLIT_SUMMARY rows after SPL_TYPE changes or split merges.
     private void applySplitSummaryAgg(Mesg splitSummary, SplitSummaryAgg agg) {
         splitSummary.setFieldValue(FitFile.SPLSUM_TIMER, agg.totalTimer);
         splitSummary.setFieldValue(FitFile.SPLSUM_MTIMER, agg.totalMovingTimer);
@@ -482,6 +508,8 @@ public class LapFix {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    // Creates a new SPLIT_SUMMARY message for the given split type, using the aggregated totals from SplitSummaryAgg.
+    // The new SPLIT_SUMMARY message is added to both the SPLIT_SUMMARY list and the ALL messages list in the FitFile.
     private void createSplitSummaryRow(Short splitType, SplitSummaryAgg agg) {
         Mesg template = fitFile.getSplitSummaryMesg().get(0);
         Mesg newSummary = new Mesg(template);
@@ -501,6 +529,8 @@ public class LapFix {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    // Finds the last index of a SPLIT_SUMMARY message in the ALL messages list, so that new SPLIT_SUMMARY messages can be inserted after it.
+    // Returns -1 if no SPLIT_SUMMARY messages are found in the ALL messages list.
     private int findLastSplitSummaryAllMesgIndex() {
         int lastIx = -1;
         for (int i = 0; i < fitFile.getAllMesg().size(); i++) {
@@ -512,6 +542,7 @@ public class LapFix {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    // Renumbers the SPLSUM_MESGIX field in all SPLIT_SUMMARY messages to ensure they are sequential and consistent after any changes to the SPLIT list.
     private void renumberSplitSummaryMesgIndexes() {
         int ix = 0;
         for (Mesg summary : fitFile.getSplitSummaryMesg()) {
@@ -520,6 +551,9 @@ public class LapFix {
         }
     }
 
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    // Aggregates the totals for a specific SPLIT type, used when creating or updating SPLIT_SUMMARY messages.
+    // This class accumulates the total timer, moving timer, distance, max speed, vertical speed, ascent, descent, calories, and split count for a given SPLIT type.
     private static final class SplitSummaryAgg {
         float totalTimer = 0f;
         float totalMovingTimer = 0f;
@@ -567,6 +601,7 @@ public class LapFix {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    // Finds the index of the SPLIT message that represents the entire activity overview, if any.
     private int findOverviewSplitIndex() {
         if (fitFile.getSplitMesg() == null || fitFile.getSplitMesg().isEmpty()) {
             return -1;
@@ -601,6 +636,9 @@ public class LapFix {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    // Splits a lap into two at the specified total timer value. The first lap retains the original start time, while the second lap starts at the split time.
+    // The lap values (timer, distance, etc.) are recalculated for both laps based on the record messages.
+    // The split must occur within the bounds of an existing lap, and the total timer value must correspond to a record message.
     public void lapNew(Long totalTimer) {
         fitFile.clearTempUpdateLog();
 
@@ -620,6 +658,8 @@ public class LapFix {
             return;
         }
 
+        // Find the record index corresponding to the provided total timer value.
+        // ------------------------------------------------
         int splitRecordIx = findFirstRecordIndexAtOrAfterTimer(totalTimer);
         if (splitRecordIx <= 0 || splitRecordIx >= fitFile.getRecordMesg().size()) {
             fitFile.appendTempUpdateLogLn("==XX> Timer cannot be used for lap split (outside record range): "
@@ -633,6 +673,8 @@ public class LapFix {
 
         Long splitTime = splitRecord.getFieldLongValue(FitFile.REC_TIME);
         Long prevTime = prevRecord.getFieldLongValue(FitFile.REC_TIME);
+
+        // Get the timer value from the add-on record for the split record index.
         Long splitTimer = fitFile.getRecordMesgAddOnRecords().get(splitRecordIx).getTimer();
 
         if (splitTime == null || prevTime == null || splitTimer == null) {
@@ -641,6 +683,7 @@ public class LapFix {
             return;
         }
 
+        // Find the lap index that contains the split time. The split must occur within an existing lap.
         int lapIx = findLapIndexForTime(splitTime);
         if (lapIx < 0 || lapIx >= fitFile.getLapMesg().size()) {
             fitFile.appendTempUpdateLogLn("==XX> Could not find lap for timer " + PehoUtils.sec2minSecLong(totalTimer));
@@ -650,7 +693,11 @@ public class LapFix {
 
         // Creating a new lap message based on the first lap message
         Mesg firstLap = fitFile.getLapMesg().get(lapIx);
+
+        // Analyze the split match for the single lap to determine how to split the lap values.
         SplitMatch splitToSplit = analyzeSplitMatchForSingleLap(lapIx, firstLap, "LAP NEW");
+
+        // Create a new lap message for the second lap, copying the first lap's values.
         Mesg secondLap = new Mesg(firstLap);
 
         Long originalLapStartTime = firstLap.getFieldLongValue(FitFile.LAP_STIME);
@@ -665,8 +712,8 @@ public class LapFix {
             return;
         }
 
-        int originalLapStartRecordIx = findRecordIndexAtOrAfterTime(lapStartTime);
-        int originalLapEndRecordIx = findLapRecordEndIndex(lapIx);
+        int originalLapStartRecordIx = fitFile.getLapExtraRecords().get(lapIx).getRecordIxStart(); // findRecordIndexAtOrAfterTime(lapStartTime);
+        int originalLapEndRecordIx = fitFile.getLapExtraRecords().get(lapIx).getRecordIxEnd(); // findLapRecordEndIndex(lapIx);
         
         if (originalLapStartRecordIx < 0 || originalLapEndRecordIx < 0 || originalLapStartRecordIx > originalLapEndRecordIx) {
             fitFile.appendTempUpdateLogLn("==XX> Could not resolve record range for lap " + (lapIx + 1));
@@ -684,6 +731,9 @@ public class LapFix {
         // Set the start time of the second lap to the split time
         setLongIfPresent(secondLap, FitFile.LAP_STIME, splitTime);
 
+        // Recalculate the lap values for both the first and second laps based on the record messages in their respective ranges.
+        // The first lap will cover the records from the original start to just before the split record.
+        // The second lap will cover the records from the split record to the original end.
         LapBoundaryValues firstLapBoundary = recalculateLapValuesFromRecords(
             firstLap,
             originalLapStartRecordIx,
@@ -714,9 +764,13 @@ public class LapFix {
         }
 
         setIntIfPresent(secondLap, FitFile.LAP_IX, lapIx + 1);
+
+        // Insert the new second lap into the lap list and the all messages list.
         fitFile.getLapMesg().add(lapIx + 1, secondLap);
         fitFile.getAllMesg().add(insertAllMesgIx, secondLap);
+        fitFile.fillLapExtraRecords();
 
+        // If there was a linked TIME_IN_ZONE message for the original lap, create a new TIME_IN_ZONE message for the second lap and insert it into the all messages list.
         if (sourceTimeInZone != null) {
             insertedTimeInZone = new Mesg(sourceTimeInZone);
             insertedTimeInZone.setFieldValue(FitFile.TIZ_REF_MESG, MesgNum.LAP);
@@ -724,17 +778,21 @@ public class LapFix {
             fitFile.getAllMesg().add(insertAllMesgIx + 1, insertedTimeInZone);
         }
 
+        // Split the matched split message for the lap into two, creating a new split message for the second lap.
         Mesg insertedSplit = splitMatchedSplitForLapNew(splitToSplit, lapIx, firstLap, secondLap);
         renumberSplitMesgIndexes();
 
+        // Update the references in the TIME_IN_ZONE messages and other related messages to account for the newly inserted lap.
         incrementLapReferencesAfterInsertedLap(lapIx, secondLap, insertedTimeInZone, insertedSplit);
 
+        // Update the total number of laps in the fit file and the session message.
         fitFile.setNumberOfLaps(fitFile.getNumberOfLaps() + 1);
         if (!fitFile.getSessionMesg().isEmpty()) {
             fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_LAPS, fitFile.getNumberOfLaps());
         }
 
-        syncSplitsFromLapsAfterLapChange("lapNew");
+        // Synchronize the split messages with the lap messages after the lap change.
+        syncSplitsFromLapsAfterLapChange("lapNew", lapIx, lapIx + 1);
 
         fitFile.appendTempUpdateLogLn("Split lap " + (lapIx + 1)
             + " at totalTimer=" + PehoUtils.sec2minSecLong(totalTimer)
@@ -960,7 +1018,7 @@ public class LapFix {
         setFloatIfPresent(splitMesg, FitFile.SPL_MTIMER, lapMoving != null ? lapMoving : (lapTimer != null ? lapTimer : 0f));
         setFloatIfPresent(splitMesg, FitFile.SPL_DIST, lapDist != null ? lapDist : 0f);
 
-        Float lapStartDist = findLapStartDistanceMeters(lapIx, lapStartTime);
+        Float lapStartDist = fitFile.getLapExtraRecords().get(lapIx).getDistStart();
         if (lapStartDist != null) {
             splitMesg.setFieldValue(FitFile.SPL_SDIST, Math.round(lapStartDist * 100f));
         }
@@ -983,12 +1041,7 @@ public class LapFix {
         setIntIfPresent(splitMesg, FitFile.SPL_ASC, lapMesg.getFieldIntegerValue(FitFile.LAP_ASC));
         setIntIfPresent(splitMesg, FitFile.SPL_DESC, lapMesg.getFieldIntegerValue(FitFile.LAP_DESC));
 
-        int splitStartElevation = 0;
-        int lapStartRecordIx = fitFile.getLapExtraRecords().get(lapIx).getRecordIxStart();
-        if (lapStartRecordIx >= 0 && lapStartRecordIx < fitFile.getRecordMesg().size()) {
-            Float startAlt = fitFile.getRecordMesg().get(lapStartRecordIx).getFieldFloatValue(FitFile.REC_EALT);
-            splitStartElevation = Math.round(startAlt != null ? startAlt : 0f);
-        }
+        int splitStartElevation = fitFile.getLapExtraRecords().get(lapIx).getAltStart() != null ? Math.round(fitFile.getLapExtraRecords().get(lapIx).getAltStart()) : 0;
         setIntIfPresent(splitMesg, FitFile.SPL_SELE, splitStartElevation);
         setIntIfPresent(splitMesg, FitFile.SPL_TEMP, getMesgFieldAsInt(lapMesg, FitFile.LAP_TEMP));
         setIntIfPresent(splitMesg, FitFile.SPL_MAXTEMP, getMesgFieldAsInt(lapMesg, FitFile.LAP_MTEMP));
@@ -1004,7 +1057,8 @@ public class LapFix {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    private void syncSplitsFromLapsAfterLapChange(String context) {
+    // Synchronizes the SPLIT messages with the LAP messages after a lap change (e.g., after a lap split or merge).
+    private void syncSplitsFromLapsAfterLapChange(String context, int updateFromLapIx, int updateToLapIx) {
         if (fitFile.getLapMesg() == null || fitFile.getLapMesg().isEmpty()) {
             fitFile.appendTempUpdateLogLn("-- Split sync skipped (no laps) [" + context + "]");
             return;
@@ -1026,8 +1080,20 @@ public class LapFix {
                 continue;
             }
 
+            // Mark this split index as used to avoid matching it with another lap.
             usedSplitIndexes.add(match.splitListIndex);
-            applyLapMetricsToSplit(lapIx, match.splitMesg, lap);
+
+            // Update the SPLIT message to reflect the metrics of the corresponding LAP message.
+            if (lapIx >= updateFromLapIx && lapIx <= updateToLapIx) {
+                applyLapMetricsToSplit(lapIx, match.splitMesg, lap);
+                fitFile.appendTempUpdateLogLn("-- Split sync [" + context + "] LAP " + (lapIx + 1)
+                    + " -> SPLIT " + (match.splitListIndex + 1)
+                    + " by " + match.matchReason
+                    + " (splitTimer=" + formatSec(match.splitTimer)
+                    + ", lapTimer=" + formatSec(match.lapTimer) + ")");
+            }   
+
+            // Ensure the SPL_LAPIX field in the split message correctly references the lap index.
             setIntIfPresent(match.splitMesg, FitFile.SPL_LAPIX, lapIx);
             synced++;
         }
@@ -1295,6 +1361,7 @@ public class LapFix {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    // Returns the index of the first record whose timer is >= totalTimer, or the last record index if none found.
     private int findFirstRecordIndexAtOrAfterTimer(Long totalTimer) {
         for (int i = 0; i < fitFile.getRecordMesgAddOnRecords().size(); i++) {
             Long timer = fitFile.getRecordMesgAddOnRecords().get(i).getTimer();

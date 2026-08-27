@@ -482,6 +482,7 @@ public class LapReportGenerator {
         for (String fmt : headerFormat) {
             headerFormatStr += fmt;
         }
+        headerFormatStr += "%n";
 
         System.out.println();
         System.out.println("-".repeat(colSum));
@@ -489,8 +490,8 @@ public class LapReportGenerator {
         System.out.println("-".repeat(colSum));
         System.out.printf("Laps: %d  LapsExtras: %d  Records: %d%n%n", fitFile.getLapMesg().size(), fitFile.getLapExtraRecords().size(), fitFile.getRecordMesg().size());
         
-        System.out.printf(headerFormatStr + "%n", header1Values.toArray());
-        System.out.printf(headerFormatStr + "%n", header2Values.toArray());
+        System.out.printf(headerFormatStr, header1Values.toArray());
+        System.out.printf(headerFormatStr, header2Values.toArray());
         
 
         // System.out.printf(headerFormatStr + "%" + colTimeStart + "s%" + colTimeEnd + "s%" + colHrStart + "s%" + colHrEnd + "s%" + colHrMin + "s%" + colRecordIxStart + "s%" + colRecordIxEnd + "s%" + colDistStart + "s%" + colDistEnd + "s%" + colDistCalc + "s%" + colDistOrg + "s%" + colAltStart + "s%" + colAltEnd + "s%" + colLevel + "s%" + colAvgStrokeLen + "s%" + colMaxStrokeLen + "s%" + colAvgDragFactor + "s%" + colMaxDragFactor + "s%" + colStepLen + "s%" + colSpeedLapSum + "s%" + colCadLapSum + "s%" + colIntensity + "s%n"

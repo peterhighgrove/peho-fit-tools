@@ -449,8 +449,44 @@ SPL_ETIME now use splitStartTime + Math.round(totalElapsedSeconds - 0.5f)
 
 --> git sync
 
+Use LapExtraRecords to set values, split/lap en especially
 
-BUGGAR
+
+
+***********
+**** BUGGAR
+
+!!fitFile.findTimerBasedOnTime(startTime); do not work on treadmill files
+    LapReportGenerator 
+                    String lapTimerStr = "-";
+                Long timerTime = fitFile.findTimerBasedOnTime(startTime);
+                if (startTime != null && timerTime != null) lapTimerStr = PehoUtils.sec2minSecLong(timerTime);
+
+**********
+**** TODO
+
+public void fillLapExtraRecords() 
+class LapExtraMesg 
+    Move to LapFix ???
+
+private int findFirstRecordIndexAtOrAfterTimer(Long totalTimer) in LapFix
+    Why in LapFix, didn't I create a class for finding in lists
+    Don't I have a similar one
+
+All print methods use appendTempUpdateLog and return String and (Boolean printToConsoleAndSaveToLog)
+MAYBE to change to (Boolean printToConsole, Boolean saveToLog)
+
+Add the menu inputs to tempUpdateLogg
+
+
+*********
+**** NEW patterns
+
+
+*********
+**** DONE
+
+Change updateLogg to updateLog
 
 Do not handle args correctly
 $  cd /home/hoglund/dev/peho-fit-tools ; /usr/bin/env /usr/lib/jvm/java-21-openjdk-amd64/bin/java @/tmp/cp_46w5te5i30n47ik6i39j5p65d.argfile se.peho.fittools.gpsfix.Main CourseTest 0 test3.fit 
@@ -462,21 +498,5 @@ filePathPrefix: /home/hoglund/Downloads/
 profileNameSuffix: CourseTest
 timeOffsetSec: 120
 
-!!fitFile.findTimerBasedOnTime(startTime); do not work on treadmill files
-    LapReportGenerator 
-                    String lapTimerStr = "-";
-                Long timerTime = fitFile.findTimerBasedOnTime(startTime);
-                if (startTime != null && timerTime != null) lapTimerStr = PehoUtils.sec2minSecLong(timerTime);
-
-TODO
-All print methods use appendTempUpdateLog and return String and (Boolean printToConsoleAndSaveToLog)
-MAYBE to change to (Boolean printToConsole, Boolean saveToLog)
-
-Add the menu inputs to tempUpdateLogg
-
-
-DONE
-
-Change updateLogg to updateLog
 
 
