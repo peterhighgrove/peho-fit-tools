@@ -45,7 +45,7 @@ resolve_jar() {
     fi
 
     local latest
-    latest="$(ls ./jars/fit-fix-[0-9]*.jar 2>/dev/null | sort -V | tail -n 1 || true)"
+    latest="$(ls ../dev/jars/fit-fix-[0-9]*.jar 2>/dev/null | sort -V | tail -n 1 || true)"
     if [[ -z "$latest" ]]; then
         echo "ERROR: could not find fit-fix jar in ./jars" >&2
         exit 2

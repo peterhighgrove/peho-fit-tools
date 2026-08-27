@@ -7,5 +7,5 @@ java -jar ../dev/jars/fit-fix-3.10.jar //looks for aaa. file
 
 ./collect-jars.sh 3.10
 
-
+./regr-gps.sh --version 2.11
 
