@@ -102,6 +102,10 @@ preview_diff() {
         return
     fi
 
+    echo "=================================================================="
+    echo "Command to use for full diff:"
+    echo "diff -u $file_a $file_b"
+    echo "=================================================================="
     diff -u "$file_a" "$file_b" | sed -n '1,140p' || true
 }
 
