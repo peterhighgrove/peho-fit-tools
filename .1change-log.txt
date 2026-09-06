@@ -455,6 +455,8 @@ Use LapExtraRecords to set values, split/lap en especially
 --> v3.11 Build
 --> git sync
 
+
+
 Moving the LapBoundaryValues mergedBoundary = recalculateLapValuesFromRecords(
     to after lap change and fillLapExtra to be able to 
     in bot lapNew and lapMerge.
@@ -466,6 +468,9 @@ A lot of other fixes too.
 --> git sync
 --> v3.12 Build
 --> git sync
+
+--> regr-gps/wkt.sh --version 3.12 some diffs, but think they are ok
+
 
 ***********
 **** BUGGAR

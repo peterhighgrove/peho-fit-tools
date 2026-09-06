@@ -1,24 +1,44 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 2439, Time between: 2026-04-11-14-12-34 -- 2026-04-11-14-58-04
 ======== Non-course file detected. All commands will be available.
-Merged laps: 1 to 3
--- New lap 2 time: 26:09 min, dist: 3000 m
+-- Split analyze for lap range 1-3
+-- No split match for LAP 1 (lapTimer=482.7s)
+-- No split match for LAP 2 (lapTimer=572.8s)
+-- No split match for LAP 3 (lapTimer=513.0s)
 -- Deleting lap ix:0 time:2026-04-11-14-12-34
 -- Deleting linked TIME_IN_ZONE mesg for lap ix:0
 -- Deleting lap ix:0 time:2026-04-11-14-20-38
 -- Deleting linked TIME_IN_ZONE mesg for lap ix:0
-Merged laps: 2 to 4
--- New lap 3 time: 14:22 min, dist: 2192 m
+lapMerge: originalLapTTimer=1568.583, newLapTTimer=1569.0, diffLapTTimer=-0.4169922
+lapMerge: adjusted tTimer=1568.583
+lapMerge: originalLapETimer=1867.517, newLapETimer=1867.0, diffLapETimer=0.5169678
+lapMerge: adjusted eTimer=1867.517
+-- No matching SPLIT records found for merge range.
+-- No SPL_TYPE changes, SPLIT_SUMMARY unchanged.
+Merged laps: 1 to 3
+-- New lap 1 time: 26:09min, dist: 3000 m
+-- Split analyze for lap range 2-4
+-- No split match for LAP 2 (lapTimer=396.3s)
+-- No split match for LAP 3 (lapTimer=390.8s)
+-- No split match for LAP 4 (lapTimer=74.9s)
 -- Deleting lap ix:1 time:2026-04-11-14-43-42
 -- Deleting linked TIME_IN_ZONE mesg for lap ix:1
 -- Deleting lap ix:1 time:2026-04-11-14-50-19
 -- Deleting linked TIME_IN_ZONE mesg for lap ix:1
+lapMerge: originalLapTTimer=861.993, newLapTTimer=863.0, diffLapTTimer=-1.007019
+lapMerge: adjusted tTimer=861.993
+lapMerge: originalLapETimer=861.993, newLapETimer=863.0, diffLapETimer=-1.007019
+lapMerge: adjusted eTimer=861.993
+-- No matching SPLIT records found for merge range.
+-- No SPL_TYPE changes, SPLIT_SUMMARY unchanged.
+Merged laps: 2 to 4
+-- New lap 2 time: 14:23min, dist: 2191 m
 PAUSE - INCREASE, forgot to stop before
 ---------------------------------------
 Increased pause no: 4
 -- Pause increased with 70sec to 1:16min
 Dist:1912.32-1787.43=-124.88989
-Updating LAP Ix: 0 DIST from 3000.0 to 2875.11m, speed: 9:06min/km
+Updating LAP Ix: 0 DIST from 3000.21 to 2875.32m, speed: 9:06min/km
 Updating SPLIT w start dist 0.0 DIST from 5191.54 to 5066.6504m, speed: 8:00min/km type=INTERVAL_ACTIVE(3)
 Updating SPLITSUM w type 3 DIST from 5191.54 to 5066.6504m, speed: 8:00min/km
 Updating SPLIT w start dist 1740.55 DIST from 383.25 to 258.3601m, speed: 13:36min/km type=RWD_RUN(17)

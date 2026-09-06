@@ -135,6 +135,12 @@ public class LapFix {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void lapMerge(int fromLap, int toLap) {
 
+        fitFile.printAndAppendUpdateLogLn("");
+        fitFile.printAndAppendUpdateLogLn("LAP MERGE");
+        fitFile.printAndAppendUpdateLogLn("--------------------------------------------");
+        fitFile.printAndAppendUpdateLogLn("Merge laps no: " + fromLap + " -> " + toLap);
+        fitFile.printAndAppendUpdateLogLn("--------------------------------------------");
+
         if (fitFile.getLapMesg() == null || fitFile.getLapMesg().isEmpty()) {
             fitFile.printAndAppendUpdateLogLn("==XX> No lap messages found.");
             return;
@@ -682,6 +688,12 @@ public class LapFix {
     // The split must occur within the bounds of an existing lap, and the total timer value must correspond to a record message.
     public void lapNew(Long totalTimer) {
 
+        fitFile.printAndAppendUpdateLogLn("");
+        fitFile.printAndAppendUpdateLogLn("LAP NEW - Split a lap into two.");
+        fitFile.printAndAppendUpdateLogLn("--------------------------------------------");
+        fitFile.printAndAppendUpdateLogLn("Split lap at timer: " + PehoUtils.sec2minSecLong(totalTimer));
+        fitFile.printAndAppendUpdateLogLn("--------------------------------------------");
+
         if (totalTimer == null) {
             fitFile.printAndAppendUpdateLogLn("==XX> No timer value provided.");
             return;
@@ -724,6 +736,9 @@ public class LapFix {
             fitFile.printAndAppendUpdateLogLn("==XX> Could not find lap for timer " + PehoUtils.sec2minSecLong(totalTimer));
             return;
         }
+
+        fitFile.printAndAppendUpdateLogLn("Split lap no " + (lapIx + 1) + " at timer: " + PehoUtils.sec2minSecLong(totalTimer));
+        fitFile.printAndAppendUpdateLogLn("--------------------------------------------");
 
         // Creating a new lap message based on the first lap message
         Mesg firstLap = fitFile.getLapMesg().get(lapIx);
