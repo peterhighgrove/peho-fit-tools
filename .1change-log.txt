@@ -469,7 +469,14 @@ A lot of other fixes too.
 --> v3.12 Build
 --> git sync
 
+Log change to add banner to lap merge/new
+
 --> regr-gps/wkt.sh --version 3.12 some diffs, but think they are ok
+
+--> git sync
+--> v3.13 Build
+--> git sync
+
 
 
 ***********
