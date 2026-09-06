@@ -455,6 +455,10 @@ Use LapExtraRecords to set values, split/lap en especially
 --> v3.11 Build
 --> git sync
 
+Moving the LapBoundaryValues mergedBoundary = recalculateLapValuesFromRecords(
+    to after lap change and fillLapExtra to be able to 
+    in bot lapNew and lapMerge.
+---> LAP START TIME MUST BE SET BEFORE fillLapExtra
 
 ***********
 **** BUGGAR
@@ -485,6 +489,14 @@ Add the menu inputs to tempUpdateLogg
 *********
 **** NEW patterns
 
+logging before return
+        fitFile.printAndAppendUpdateLogLn("==XX> Could not find LAP in allMesg for lap ix: " + lapIx);
+        return;
+logging in method
+        fitFile.printAndAppendUpdateLogLn("lapNew: adjusted firstLapTTimer=" + firstLap.getFieldFloatValue(FitFile.LAP_TIMER)
+            + ", adjusted secondLapTTimer=" + secondLap.getFieldFloatValue(FitFile.LAP_TIMER));
+
+        setFloatIfNotNull(splitMesg, FitFile.SPL_CAD, lapMesg.getFieldShortValue(FitFile.LAP_CAD) * 256/2f);
 
 *********
 **** DONE

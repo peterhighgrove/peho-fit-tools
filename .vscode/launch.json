@@ -9,9 +9,9 @@
       "projectName": "fit-wkt-merge-analyze",
       //"args": "\"Friskis Orminge\" 6 \"2026-05-14-10-22-20-SkiErg-4-3×3-4×2-5×1min-0km-50.58min-garmin-e2pro-v26.09-renamed.zip\" \"2026-05-14-10-22-20-indoor_skiing-10.1km-51.02min-c2-org.fit\""
       //"args": "\"Friskis Orminge\" 2 \"2026-05-14-10-16-40-SkiErg-TestRow Custom Workout-0km-4.46min-garmin-e2pro-v26.09-renamed.zip\" \"2026-05-14-10-16-40-indoor_skiing-1km-4.57min-c2-org.fit\""
-      "args": "\"Friskis Orminge\" 8 \
+      "args": "\"Friskis Orminge\" 10 \
       \"2025-12-30-16-31-30-Elliptical-2x(3-2-1min)-0km-33.54min-garmin-e2pro-v25.03-renamed.zip\" \
-      \"2025-12-30-16-31-30-Elliptical-2x(3-2-1min)-Friskis Orminge-7.1km-33.54min-garmin-e2pro-v25.03-manualLaps.txt\" --debugDevfields"
+      \"2025-12-30-16-31-30-Elliptical-2x(3-2-1min)-Friskis Orminge-7.1km-33.54min-garmin-e2pro-v25.03-manualLaps.txt\""
       //"args": "\"Friskis Orminge\""
     },
     {
@@ -20,8 +20,8 @@
       "request": "launch",
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
-      "args": "\"Fartlek Gnejsskogen\" 10 \
-      \"2026-08-16.zip\""
+      "args": "\"Fartlek Lill-Jans och Fiskartorpets elljus\" 12 \
+      \"2025-09-10.zip\""
     },
     {
       "type": "java",

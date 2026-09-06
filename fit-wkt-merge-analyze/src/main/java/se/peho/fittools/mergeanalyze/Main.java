@@ -39,6 +39,7 @@ public class Main {
         // READING FIT FILE
         watchFitFile.readFitFile (conf.getInputFilePath());
 
+        watchFitFile.createTimerList();
         watchFitFile.createFileSummaryIndoor();
         //watchFitFile.printFileIdInfo();
         //watchFitFile.printDeviceInfo();

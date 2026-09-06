@@ -148,10 +148,11 @@ public class MenuRunner {
             watchFitFile.printAndAppendUpdateLogLn("======== Non-course file detected. All commands will be available.");
         }
 
-        watchFitFile.saveFileInfoBefore();
         watchFitFile.createTimerList();
         watchFitFile.createPauseList();
         watchFitFile.createGapList();
+        watchFitFile.fillLapExtraRecords();
+        watchFitFile.saveFileInfoBefore();
     }
 
     private void printMainMenu() {

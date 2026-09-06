@@ -1073,7 +1073,7 @@ public class FitFileForIndoor extends FitFile {
                     getLapMesg().get(lapIx).setFieldValue(LAP_MPOW, 0);
 
                     // Save HR and recordIx START
-                    Short hrStart = record.getFieldShortValue(REC_HR);
+                    Integer hrStart = record.getFieldIntegerValue(REC_HR);
                     getLapExtraRecords().get(lapIx).setHrStart(hrStart);
                     getLapExtraRecords().get(lapIx).setRecordIxStart(recordIx);
 
@@ -1096,15 +1096,15 @@ public class FitFileForIndoor extends FitFile {
                 }
 
                 // Calc LAP HR min
-                Short recHr = record.getFieldShortValue(REC_HR);
+                Integer recHr = record.getFieldIntegerValue(REC_HR);
                 if (recHr == null) {
                     if (recordIx > 0) {
-                        Short prevHr = getRecordMesg().get(recordIx - 1).getFieldShortValue(REC_HR);
-                        record.setFieldValue(REC_HR, (prevHr == null) ? (short) 60 : prevHr);
-                        recHr = record.getFieldShortValue(REC_HR);
+                        Integer prevHr = getRecordMesg().get(recordIx - 1).getFieldIntegerValue(REC_HR);
+                        record.setFieldValue(REC_HR, (prevHr == null) ? 60 : prevHr);
+                        recHr = record.getFieldIntegerValue(REC_HR);
                     } else {
-                        record.setFieldValue(REC_HR, (short) 60);
-                        recHr = record.getFieldShortValue(REC_HR);
+                        record.setFieldValue(REC_HR, 60);
+                        recHr = record.getFieldIntegerValue(REC_HR);
                     }
                 } else if (recHr < getLapExtraRecords().get(lapIx).getHrMin()) {
                     getLapExtraRecords().get(lapIx).setHrMin(recHr);
@@ -1224,7 +1224,7 @@ public class FitFileForIndoor extends FitFile {
                 if (currentTimeStamp.equals(currentLapTimeEnd)) {
 
                     // Save HR and recordIx END
-                    getLapExtraRecords().get(lapIx).setHrEnd(record.getFieldShortValue(REC_HR));
+                    getLapExtraRecords().get(lapIx).setHrEnd(record.getFieldIntegerValue(REC_HR));
                     getLapExtraRecords().get(lapIx).setRecordIxEnd(recordIx);
                     getLapExtraRecords().get(lapIx).setTimeEnd(record.getFieldLongValue(REC_TIME));
 
@@ -1510,7 +1510,7 @@ public class FitFileForIndoor extends FitFile {
                 getLapMesg().get(lapIx).setFieldValue(LapMesg.MaxPowerFieldNum, 0);
                 
                 // Save HR and recordIx START
-                Short hrStart = record.getFieldShortValue(REC_HR);
+                Integer hrStart = record.getFieldIntegerValue(REC_HR);
                 getLapExtraRecords().get(lapIx).setHrStart(hrStart != null ? hrStart : 0);
                 getLapExtraRecords().get(lapIx).setRecordIxStart(recordIx);
 
@@ -1534,14 +1534,14 @@ public class FitFileForIndoor extends FitFile {
             }
 
             // Calc LAP HR min
-            Short recHr = record.getFieldShortValue(REC_HR);
+            Integer recHr = record.getFieldIntegerValue(REC_HR);
             if (recHr == null) {
                 if (recordIx > 0) {
-                    Short prevHr = getRecordMesg().get(recordIx-1).getFieldShortValue(REC_HR);
-                    record.setFieldValue(REC_HR, prevHr != null ? prevHr : (short)60);
-                    recHr = record.getFieldShortValue(REC_HR);
+                    Integer prevHr = getRecordMesg().get(recordIx-1).getFieldIntegerValue(REC_HR);
+                    record.setFieldValue(REC_HR, prevHr != null ? prevHr : 60);
+                    recHr = record.getFieldIntegerValue(REC_HR);
                 } else {
-                    record.setFieldValue(REC_HR, (short)60);
+                    record.setFieldValue(REC_HR, 60);
                     recHr = 60;
                 }
             }
@@ -1640,7 +1640,7 @@ public class FitFileForIndoor extends FitFile {
                 //System.out.println("LapEND " + lapIx + "  " + lapExtraRecords.get(lapIx).recordIxStart + "  " + recordIx);
 
                 // Save HR and recordIx END
-                getLapExtraRecords().get(lapIx).setHrEnd(record.getFieldShortValue(REC_HR) != null ? record.getFieldShortValue(REC_HR) : 0);
+                getLapExtraRecords().get(lapIx).setHrEnd(record.getFieldIntegerValue(REC_HR) != null ? record.getFieldIntegerValue(REC_HR) : 0);
                 getLapExtraRecords().get(lapIx).setRecordIxEnd(recordIx);
                 getLapExtraRecords().get(lapIx).setTimeEnd(currentTimeStamp);
 
@@ -2093,7 +2093,7 @@ public class FitFileForIndoor extends FitFile {
                 getLapMesg().get(lapIx).setFieldValue(LAP_EMSPEED, 0f);
                 
                 // Save HR and recordIx START
-                getLapExtraRecords().get(lapIx).setHrStart(record.getFieldShortValue(REC_HR));
+                getLapExtraRecords().get(lapIx).setHrStart(record.getFieldIntegerValue(REC_HR));
                 getLapExtraRecords().get(lapIx).setRecordIxStart(recordIx);
 
                 // Get LAP DATA to be used to find lap-start-end
@@ -2143,15 +2143,15 @@ public class FitFileForIndoor extends FitFile {
 
             //--------------
             // Calc LAP HR min
-            Short recHr = record.getFieldShortValue(REC_HR);
+            Integer recHr = record.getFieldIntegerValue(REC_HR);
             if (recHr == null) {
                 if (recordIx > 0) {
-                    Short prevHr = getRecordMesg().get(recordIx - 1).getFieldShortValue(REC_HR);
-                    record.setFieldValue(REC_HR, (prevHr == null) ? (short) 60 : prevHr);
-                    recHr = record.getFieldShortValue(REC_HR);
+                    Integer prevHr = getRecordMesg().get(recordIx - 1).getFieldIntegerValue(REC_HR);
+                    record.setFieldValue(REC_HR, (prevHr == null) ? 60 : prevHr);
+                    recHr = record.getFieldIntegerValue(REC_HR);
                 } else {
-                    record.setFieldValue(REC_HR, (short) 60);
-                    recHr = record.getFieldShortValue(REC_HR);
+                    record.setFieldValue(REC_HR, 60);
+                    recHr = record.getFieldIntegerValue(REC_HR);
                 }
             } else if (recHr < getLapExtraRecords().get(lapIx).getHrMin()) {
                 getLapExtraRecords().get(lapIx).setHrMin(recHr);
@@ -2179,7 +2179,7 @@ public class FitFileForIndoor extends FitFile {
                 if (debugLaps) System.out.println("LapEND lapIx: " + lapIx + " recordIxStart: " + getLapExtraRecords().get(lapIx).getRecordIxStart() + " recordIx: " + recordIx);
 
                 // Save HR and recordIx END
-                getLapExtraRecords().get(lapIx).setHrEnd(record.getFieldShortValue(REC_HR));
+                getLapExtraRecords().get(lapIx).setHrEnd(record.getFieldIntegerValue(REC_HR));
                 getLapExtraRecords().get(lapIx).setRecordIxEnd(recordIx);
                 getLapExtraRecords().get(lapIx).setTimeEnd(record.getFieldLongValue(REC_TIME));
 

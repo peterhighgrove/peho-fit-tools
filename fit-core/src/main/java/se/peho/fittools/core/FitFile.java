@@ -72,10 +72,13 @@ public class FitFile {
     public static final int SPL_SPEED = SplitMesg.AvgSpeedFieldNum; // float
     public static final int SPL_MSPEED = SplitMesg.MaxSpeedFieldNum; // float
     public static final int SPL_VSPEED = SplitMesg.AvgVertSpeedFieldNum; // float
+    public static final int SPL_HR = 15; // short
+    public static final int SPL_MHR = 16; // short
     public static final int SPL_CAD = 29; // short
     public static final int SPL_MCAD = 30; // short
     public static final int SPL_POW = 40; // int
     public static final int SPL_MPOW = 41; // int
+    public static final int SPL_STEP = 39; // int
     public static final int SPL_SELE = SplitMesg.StartElevationFieldNum; // int
     public static final int SPL_ASC = SplitMesg.TotalAscentFieldNum; // int
     public static final int SPL_DESC = SplitMesg.TotalDescentFieldNum; // int
@@ -93,6 +96,10 @@ public class FitFile {
     public static final int SPLSUM_SPEED = SplitSummaryMesg.AvgSpeedFieldNum; // float
     public static final int SPLSUM_MSPEED = SplitSummaryMesg.MaxSpeedFieldNum; // float
     public static final int SPLSUM_VSPEED = SplitSummaryMesg.AvgVertSpeedFieldNum; // float
+    public static final int SPLSUM_HR = SplitSummaryMesg.AvgHeartRateFieldNum; // int
+    public static final int SPLSUM_MHR = SplitSummaryMesg.MaxHeartRateFieldNum; // int
+    public static final int SPLSUM_CAD = 14; // float
+    public static final int SPLSUM_MCAD = 15; // float
     public static final int SPLSUM_ASC = SplitSummaryMesg.TotalAscentFieldNum; // int
     public static final int SPLSUM_DESC = SplitSummaryMesg.TotalDescentFieldNum; // int
     public static final int SPLSUM_CAL = SplitSummaryMesg.TotalCaloriesFieldNum; // int
@@ -118,17 +125,21 @@ public class FitFile {
     public static final int LAP_WKT_STEP_IDX = LapMesg.WktStepIndexFieldNum; // integer
     public static final int LAP_POW = LapMesg.AvgPowerFieldNum; // int
     public static final int LAP_MPOW = LapMesg.MaxPowerFieldNum; // int
+    public static final int LAP_STEP = LapMesg.AvgStepLengthFieldNum; // float
     public static final int LAP_ASC = LapMesg.TotalAscentFieldNum; // int
     public static final int LAP_DESC = LapMesg.TotalDescentFieldNum; // int
     public static final int LAP_ALT = LapMesg.AvgAltitudeFieldNum; // float
     public static final int LAP_MALT = LapMesg.MaxAltitudeFieldNum; // float
     public static final int LAP_MINALT = LapMesg.MinAltitudeFieldNum; // float
+    public static final int LAP_EALT = LapMesg.EnhancedAvgAltitudeFieldNum; // float
+    public static final int LAP_EMALT = LapMesg.EnhancedMaxAltitudeFieldNum; // float
+    public static final int LAP_EMINALT = LapMesg.EnhancedMinAltitudeFieldNum; // float
     public static final int LAP_SLAT = LapMesg.StartPositionLatFieldNum; // int (semicircles)
     public static final int LAP_SLON = LapMesg.StartPositionLongFieldNum; // int (semicircles)
     public static final int LAP_ELAT = LapMesg.EndPositionLatFieldNum; // int (semicircles)
     public static final int LAP_ELON = LapMesg.EndPositionLongFieldNum; // int (semicircles)
     public static final int LAP_TEMP = LapMesg.AvgTemperatureFieldNum; // byte
-    public static final int LAP_MTEMP = LapMesg.MaxTemperatureFieldNum; // byte
+    public static final int LAP_MAXTEMP = LapMesg.MaxTemperatureFieldNum; // byte
     public static final int LAP_MINTEMP = LapMesg.MinTemperatureFieldNum; // byte
     public static final int LAP_SPORT = LapMesg.SportFieldNum; //short -> .getByValue -> Sport
     public static final int LAP_SUBSPORT = LapMesg.SubSportFieldNum; //short -> .getByValue -> SubSport
@@ -143,6 +154,7 @@ public class FitFile {
     public static final int REC_LON = RecordMesg.PositionLongFieldNum; //int
     public static final int REC_ALT = RecordMesg.AltitudeFieldNum; //float
     public static final int REC_EALT = RecordMesg.EnhancedAltitudeFieldNum; //float
+    public static final int REC_TEMP = RecordMesg.TemperatureFieldNum; //int
     public static final int MESG_TIMESTAMP = 253; // standard FIT timestamp field
     public static final int SP_SPORT = SportMesg.SportFieldNum; //short -> .getByValue -> Sport
     public static final int SP_SUBSPORT = SportMesg.SubSportFieldNum;
@@ -327,6 +339,7 @@ public class FitFile {
     private Float restTime = 0f;
     private Float activeDist = 0f;
     private Float restDist = 0f;
+    private float altitudeSmoothingFactor = 4f;
     public Float getActiveTime() { return activeTime; }
     public void setActiveTime(Float activeTime) { this.activeTime = activeTime; }
     public Float getRestTime() { return restTime; }
@@ -335,6 +348,13 @@ public class FitFile {
     public void setActiveDist(Float activeDist) { this.activeDist = activeDist; }
     public Float getRestDist() { return restDist; }
     public void setRestDist(Float restDist) { this.restDist = restDist; }
+    public float getAltitudeSmoothingFactor() { return altitudeSmoothingFactor; }
+    public void setAltitudeSmoothingFactor(float altitudeSmoothingFactor) {
+        if (altitudeSmoothingFactor < 0f) {
+            throw new IllegalArgumentException("Altitude smoothing factor must be >= 0");
+        }
+        this.altitudeSmoothingFactor = altitudeSmoothingFactor;
+    }
 
     private Float activeAvgSpeed = 0f;
     private Float activeAvgCad = 0f;
@@ -382,7 +402,9 @@ public class FitFile {
     public void setUpdateLog(String savedFileUpdateLogg) { this.updateLog = savedFileUpdateLogg; }
     public void appendUpdateLog(String text) { this.updateLog += text; }
     public void appendUpdateLogLn(String text) { this.updateLog += text + System.lineSeparator(); }
-    public void printAndAppendUpdateLogLn(String text) { System.out.println(text); this.updateLog += text + System.lineSeparator(); }
+    public void printAndAppendUpdateLogLn(String text) { 
+        System.out.println(text); 
+        this.updateLog += text + System.lineSeparator(); }
     public void clearUpdateLog() { this.updateLog = ""; }
 
     private String tempUpdateLog = "";
@@ -601,38 +623,88 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     class LapExtraMesg {
-        private Short hrStart;
-        private Short hrEnd;
-        private Short hrMin;
-        private Long timeEnd;
         private Integer lapNo;
         private Integer recordIxStart;
         private Integer recordIxEnd;
+
+        private Long timeStartCalc; // To use for calc, last value from lap before
+        private Long timeStart;
+        private Long timeEnd;
+        private Float eTimerLap;
+
+        private Float tTimerStartCalc; // To use for calc, last value from lap before
+        private Float tTimerStart;
+        private Float tTimerEnd;
+        private Float tTimerLap;
+        private Float mTimerLap;
+
+        private Float distStartCalc; // To use for calc, last value from lap before
+        private Float distStart;
+        private Float distEnd;
+        private Float distLap;
+
+        private Float speedMax;
+        private Float speedMin;
+        private Float speedAvg;
+        private Boolean speedEnhancedUsed; // true if enhanced speed used, false if normal speed used
+
+        private Integer hrStart;
+        private Integer hrEnd;
+        private Integer hrMax;
+        private Integer hrMin;
+        private Integer hrAvg;
+
+        private Integer cadMax;
+        private Integer cadMin;
+        private Integer cadAvg;
+
+        private Integer powerMax;
+        private Integer powerMin;
+        private Integer powerAvg;
+
+        private Float altStart;
+        private Float altEnd;
+        private Float altMax;
+        private Float altMin;
+        private Float altAvg;
+        private Float ascent;
+        private Float descent;
+        private Boolean altEnhancedUsed; // true if enhanced altitude used, false if normal altitude used
+
+        private Integer latStart;
+        private Integer lonStart;
+        private Integer latEnd;
+        private Integer lonEnd;
+
+        private Integer tempStart;
+        private Integer tempEnd;
+        private Integer tempMax;
+        private Integer tempMin;
+        private Integer tempAvg;
+
         private Float stepLen;
         private Float level;
         private Float avgStrokeLen;
         private Float maxStrokeLen;
         private Float avgDragFactor;
         private Float maxDragFactor;
-        private Float distStart;
-        private Float distEnd;
-        private Integer altStart;
-        private Integer altEnd;
         private Float speedLapSum;
         private Float cadLapSum;
         
 
         public LapExtraMesg() {
         }
-        public LapExtraMesg(Short hrStart, Short hrEnd, Short hrMin, Long timeEnd, Integer lapNo, 
+        public LapExtraMesg(Integer hrStart, Integer hrEnd, Integer hrMin, Long timeStartCalc, Long timeStart, Long timeEnd, Integer lapNo, 
                 Integer recordIxStart, Integer recordIxEnd,
                 Float stepLen, Float level, Float avgStrokeLen, Float maxStrokeLen, 
                 Float avgDragFactor, Float maxDragFactor,
-                Float distStart, Float distEnd, Integer altStart, Integer altEnd
+                Float distStartCalc, Float distStart, Float distEnd, Float altStart, Float altEnd
             ) {
             this.hrStart = hrStart;
             this.hrEnd = hrEnd;
             this.hrMin = hrMin;
+            this.timeStartCalc = timeStartCalc;
+            this.timeStart = timeStart;
             this.timeEnd = timeEnd;
             this.lapNo = lapNo;
             this.recordIxStart = recordIxStart;
@@ -643,28 +715,123 @@ public class FitFile {
             this.maxStrokeLen = maxStrokeLen;
             this.avgDragFactor = avgDragFactor;
             this.maxDragFactor = maxDragFactor;
+            this.distStartCalc = distStartCalc;
             this.distStart = distStart;
             this.distEnd = distEnd;
             this.altStart = altStart;
             this.altEnd = altEnd;
         }
 
-        public Short getHrStart() { return hrStart; }
-        public void setHrStart(Short hrStart) { this.hrStart = hrStart; }
-        public Short getHrEnd() { return hrEnd; }
-        public void setHrEnd(Short hrEnd) { this.hrEnd = hrEnd; }
-        public Short getHrMin() { return hrMin; }
-        public void setHrMin(Short hrMin) { this.hrMin = hrMin; }
-        public Long getTimeEnd() { return timeEnd; }
-        public void setTimeEnd(Long timeEnd) { this.timeEnd = timeEnd; }
         public Integer getLapNo() { return lapNo; }
         public void setLapNo(Integer lapNo) { this.lapNo = lapNo; }
         public Integer getRecordIxStart() { return recordIxStart; }
         public void setRecordIxStart(Integer recordIxStart) { this.recordIxStart = recordIxStart; }
         public Integer getRecordIxEnd() { return recordIxEnd; }
         public void setRecordIxEnd(Integer recordIxEnd) { this.recordIxEnd = recordIxEnd; }
+
+        public Long getTimeStartCalc() { return timeStartCalc; }
+        public void setTimeStartCalc(Long timeStartCalc) { this.timeStartCalc = timeStartCalc; }
+        public Long getTimeStart() { return timeStart; }
+        public void setTimeStart(Long timeStart) { this.timeStart = timeStart; }
+        public Long getTimeEnd() { return timeEnd; }
+        public void setTimeEnd(Long timeEnd) { this.timeEnd = timeEnd; }
+        public Float getETimerLap() { return eTimerLap; }
+        public void setETimerLap(Float eTimerLap) { this.eTimerLap = eTimerLap; }
+
+        public Float getTTimerStartCalc() { return tTimerStartCalc; }
+        public void setTTimerStartCalc(Float tTimerStartCalc) { this.tTimerStartCalc = tTimerStartCalc; }
+        public Float getTTimerStart() { return tTimerStart; }
+        public void setTTimerStart(Float tTimerStart) { this.tTimerStart = tTimerStart; }
+        public Float getTTimerEnd() { return tTimerEnd; }
+        public void setTTimerEnd(Float tTimerEnd) { this.tTimerEnd = tTimerEnd; }
+        public Float getTTimerLap() { return tTimerLap; }
+        public void setTTimerLap(Float tTimerLap) { this.tTimerLap = tTimerLap; }
+        public Float getMTimerLap() { return mTimerLap; }
+        public void setMTimerLap(Float mTimerLap) { this.mTimerLap = mTimerLap; }
+
+        public Float getDistStartCalc() { return distStartCalc; }
+        public void setDistStartCalc(Float distStartCalc) { this.distStartCalc = distStartCalc; }
+        public Float getDistStart() { return distStart; }
+        public void setDistStart(Float distStart) { this.distStart = distStart; }
+        public Float getDistEnd() { return distEnd; }
+        public void setDistEnd(Float distEnd) { this.distEnd = distEnd; }
+        public Float getDistLap() { return distLap; }
+        public void setDistLap(Float distLap) { this.distLap = distLap; }
+
+        public Float getSpeedMax() { return speedMax; }
+        public void setSpeedMax(Float speedMax) { this.speedMax = speedMax; }
+        public Float getSpeedMin() { return speedMin; }
+        public void setSpeedMin(Float speedMin) { this.speedMin = speedMin; }
+        public Float getSpeedAvg() { return speedAvg; }
+        public void setSpeedAvg(Float speedAvg) { this.speedAvg = speedAvg; }
+        public Boolean getSpeedEnhancedUsed() { return speedEnhancedUsed; }
+        public void setSpeedEnhancedUsed(Boolean speedEnhancedUsed) { this.speedEnhancedUsed = speedEnhancedUsed; }
+        
+        public Integer getHrStart() { return hrStart; }
+        public void setHrStart(Integer hrStart) { this.hrStart = hrStart; }
+        public Integer getHrEnd() { return hrEnd; }
+        public void setHrEnd(Integer hrEnd) { this.hrEnd = hrEnd; }
+        public Integer getHrMax() { return hrMax; }
+        public void setHrMax(Integer hrMax) { this.hrMax = hrMax; }
+        public Integer getHrMin() { return hrMin; }
+        public void setHrMin(Integer hrMin) { this.hrMin = hrMin; }
+        public Integer getHrAvg() { return hrAvg; }
+        public void setHrAvg(Integer hrAvg) { this.hrAvg = hrAvg; }
+
+        public Integer getCadMax() { return cadMax; }
+        public void setCadMax(Integer cadMax) { this.cadMax = cadMax; }
+        public Integer getCadMin() { return cadMin; }
+        public void setCadMin(Integer cadMin) { this.cadMin = cadMin; }
+        public Integer getCadAvg() { return cadAvg; }
+        public void setCadAvg(Integer cadAvg) { this.cadAvg = cadAvg; }
+        
+        public Integer getPowerMax() { return powerMax; }
+        public void setPowerMax(Integer powerMax) { this.powerMax = powerMax; }
+        public Integer getPowerMin() { return powerMin; }
+        public void setPowerMin(Integer powerMin) { this.powerMin = powerMin; }
+        public Integer getPowerAvg() { return powerAvg; }
+        public void setPowerAvg(Integer powerAvg) { this.powerAvg = powerAvg; }
+
+        public Float getAltStart() { return altStart; }
+        public void setAltStart(Float altStart) { this.altStart = altStart; }
+        public Float getAltEnd() { return altEnd; }
+        public void setAltEnd(Float altEnd) { this.altEnd = altEnd; }
+        public Float getAltMax() { return altMax; }
+        public void setAltMax(Float altMax) { this.altMax = altMax; }
+        public Float getAltMin() { return altMin; }
+        public void setAltMin(Float altMin) { this.altMin = altMin; }
+        public Float getAltAvg() { return altAvg; }
+        public void setAltAvg(Float altAvg) { this.altAvg = altAvg; }
+        public Float getAscent() { return ascent; }
+        public void setAscent(Float ascent) { this.ascent = ascent; }
+        public Float getDescent() { return descent; }
+        public void setDescent(Float descent) { this.descent = descent; }
+        public Boolean getAltEnhancedUsed() { return altEnhancedUsed; }
+        public void setAltEnhancedUsed(Boolean altEnhancedUsed) { this.altEnhancedUsed = altEnhancedUsed; }
+
+        public Integer getLatStart() { return latStart; }
+        public void setLatStart(Integer latStart) { this.latStart = latStart; }
+        public Integer getLonStart() { return lonStart; }
+        public void setLonStart(Integer lonStart) { this.lonStart = lonStart; }
+        public Integer getLatEnd() { return latEnd; }
+        public void setLatEnd(Integer latEnd) { this.latEnd = latEnd; }
+        public Integer getLonEnd() { return lonEnd; }
+        public void setLonEnd(Integer lonEnd) { this.lonEnd = lonEnd; }
+
+        public Integer getTempStart() { return tempStart; }
+        public void setTempStart(Integer tempStart) { this.tempStart = tempStart; }
+        public Integer getTempEnd() { return tempEnd; }
+        public void setTempEnd(Integer tempEnd) { this.tempEnd = tempEnd; }
+        public Integer getTempMax() { return tempMax; }
+        public void setTempMax(Integer tempMax) { this.tempMax = tempMax; }
+        public Integer getTempMin() { return tempMin; }
+        public void setTempMin(Integer tempMin) { this.tempMin = tempMin; }
+        public Integer getTempAvg() { return tempAvg; }
+        public void setTempAvg(Integer tempAvg) { this.tempAvg = tempAvg; }
+
         public Float getStepLen() { return stepLen; }
         public void setStepLen(Float stepLen) { this.stepLen = stepLen; }
+
         public Float getLevel() { return level; }
         public void setLevel(Float level) { this.level = level; }
         public Float getAvgStrokeLen() { return avgStrokeLen; }
@@ -675,85 +842,12 @@ public class FitFile {
         public void setAvgDragFactor(Float avgDragFactor) { this.avgDragFactor = avgDragFactor; }
         public Float getMaxDragFactor() { return maxDragFactor; }
         public void setMaxDragFactor(Float maxDragFactor) { this.maxDragFactor = maxDragFactor; }
+
         public Float getSpeedLapSum() { return speedLapSum; }
         public void setSpeedLapSum(Float speedLapSum) { this.speedLapSum = speedLapSum; }
         public Float getCadLapSum() { return cadLapSum; }
         public void setCadLapSum(Float cadLapSum) { this.cadLapSum = cadLapSum; }
-        public Float getDistStart() { return distStart; }
-        public void setDistStart(Float distStart) { this.distStart = distStart; }
-        public Float getDistEnd() { return distEnd; }
-        public void setDistEnd(Float distEnd) { this.distEnd = distEnd; }
-        public Integer getAltStart() { return altStart; }
-        public void setAltStart(Integer altStart) { this.altStart = altStart; }
-        public Integer getAltEnd() { return altEnd; }
-        public void setAltEnd(Integer altEnd) { this.altEnd = altEnd; }
 
-    }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void initLapExtraRecords() {
-
-        Short hrStart = 0;
-        Short hrEnd = 0;
-        Short hrMin = 9999;
-        Long timeEnd = null;
-        int lapNo = 0;
-        int recordIxStart = 0;
-        int recordIxEnd = 0;
-        Float stepLen = null;
-        Float level = 0f;
-        Float avgStrokeLen = 0f;
-        Float maxStrokeLen = 0f;
-        Float avgDragFactor = 0f;
-        Float maxDragFactor = 0f;
-
-        System.out.println("----- INIT LapExtra Records for ALL MESG -----");
-        for (Mesg record : lapMesg) {
-            LapExtraMesg newLapExtra = new LapExtraMesg(hrStart, hrEnd, hrMin, timeEnd, lapNo, 
-                recordIxStart, recordIxEnd, stepLen, 
-                level, avgStrokeLen, maxStrokeLen, avgDragFactor, maxDragFactor,
-                null, null, null, null
-                );
-            newLapExtra.setSpeedLapSum(0f);
-            newLapExtra.setCadLapSum(0f);
-            lapExtraRecords.add(newLapExtra);
-        }
-    }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    class RecordExtraMesg {
-        private int lapNo;
-        private Long C2DateTime;
-
-        public RecordExtraMesg(int lapNo, Long C2DateTime) {
-            this.lapNo = lapNo;
-            this.C2DateTime = C2DateTime;
-        }
-
-        public int getLapNo() { return lapNo; }
-        public void setLapNo(int lapNo) { this.lapNo = lapNo; }
-        public Long getC2DateTime() { return C2DateTime; }
-        public void setC2DateTime(Long C2DateTime) { this.C2DateTime = C2DateTime; }
-
-    }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    class RecordMesgAddOnRecords {
-        Long timer;
-        int lapNo;
-
-        public RecordMesgAddOnRecords() {
-        }
-        public RecordMesgAddOnRecords(Long timer) {
-            this.timer = timer;
-        }
-        public RecordMesgAddOnRecords(int lapNo, Long timer) {
-            this.lapNo = lapNo;
-            this.timer = timer;
-        }
-
-        public Long getTimer() { return timer; }
-        public void setTimer(Long timer) { this.timer = timer; }
-
-        public int getLapNo() { return lapNo; }
-        public void setLapNo(int lapNo) { this.lapNo = lapNo; }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void fillLapExtraRecords() {
@@ -768,8 +862,48 @@ public class FitFile {
             Long currentLapTimeEnd = 0L;
             Float lastLapTotalDistance = 0f;
 
-            int currentLapSumCadence = 0;
-            int currentLapSumPower = 0;
+            // int currentLapSumCadence = 0;
+            // int currentLapSumPower = 0;
+
+            float speedMax = Float.NEGATIVE_INFINITY;
+            float speedMin = Float.POSITIVE_INFINITY;
+            float speedSum = 0f;
+            int speedCount = 0;
+            boolean speedEnhancedUsed = false;
+
+            int hrSum = 0;
+            int hrCount = 0;
+            Integer hrMin = Integer.MAX_VALUE;
+            Integer hrMax = Integer.MIN_VALUE;
+
+            int powerSum = 0;
+            int powerCount = 0;
+            int powerMin = Integer.MAX_VALUE;
+            int powerMax = Integer.MIN_VALUE;
+
+            int cadenceSum = 0;
+            int cadenceCount = 0;
+            int cadenceMin = Integer.MAX_VALUE;
+            int cadenceMax = Integer.MIN_VALUE;
+
+            int tempSum = 0;
+            int tempCount = 0;
+            int tempMin = Integer.MAX_VALUE;
+            int tempMax = Integer.MIN_VALUE;
+
+            float altSum = 0f;
+            int altCount = 0;
+            int altStandardCount = 0;
+            int altEnhancedCount = 0;
+            float altMin = Float.POSITIVE_INFINITY;
+            float altMax = Float.NEGATIVE_INFINITY;
+            float ascent = 0f;
+            float descent = 0f;
+            boolean altEnhancedUsed = false;
+            Float previousAlt = null;
+            Float filteredAlt = null;
+            setAltitudeSmoothingFactor(4f);
+
             Float currentLapSumStrokeLen = 0f;
             Float currentLapSumDragFactor = 0f;
             Float currentLapMaxStrokeLen = 0f;
@@ -795,62 +929,151 @@ public class FitFile {
 
             Boolean nextRecordLastInLap = false;
 
+            // System.out.println("fillLapExtraRecords: numberOfLaps: " + numberOfLaps + ", numberOfRecords: " + numberOfRecords + ", nextLapStartTime: " + nextLapStartTime);
+
+            LapExtraMesg newLapExtra = new LapExtraMesg();
+
             for (Mesg record : recordMesg) {
 
-                Short currentHr = record.getFieldShortValue(REC_HR) == null ? (short) 60 : record.getFieldShortValue(REC_HR);
+                Integer currentHr = record.getFieldIntegerValue(REC_HR) == null ? 60 : record.getFieldIntegerValue(REC_HR);
+
+                Float currentStandardAlt = record.getFieldFloatValue(REC_ALT) == null ? null : record.getFieldFloatValue(REC_ALT);
+                Float currentEnhancedAlt = record.getFieldFloatValue(REC_EALT) == null ? null : record.getFieldFloatValue(REC_EALT);
+                Float currentAlt = null;
+
+                Integer currentTemp = record.getFieldIntegerValue(REC_TEMP);
+
                 //--------------
                 // IF LAP START
                 currentTimeStamp = record.getFieldLongValue(REC_TIME);
                 if (currentTimeStamp != null && nextLapStartTime != null && currentTimeStamp.equals(nextLapStartTime)) {
 
-                    LapExtraMesg newLapExtra = new LapExtraMesg();
+                    speedMax = Float.NEGATIVE_INFINITY;
+                    speedMin = Float.POSITIVE_INFINITY;
+                    speedSum = 0f;
+                    speedCount = 0;
 
-                    newLapExtra.setLapNo(lapNo);
+                    hrSum = 0;
+                    hrCount = 0;
+                    hrMin = Integer.MAX_VALUE;
+                    hrMax = Integer.MIN_VALUE;
 
-                    // Save HR and recordIx START
-                    newLapExtra.setHrStart(currentHr);
-                    newLapExtra.setRecordIxStart(recordIx);
+                    cadenceSum = 0;
+                    cadenceCount = 0;
+                    cadenceMin = Integer.MAX_VALUE;
+                    cadenceMax = Integer.MIN_VALUE;
 
-                    newLapExtra.setAltStart(record.getFieldIntegerValue(REC_EALT));
+                    powerSum = 0;
+                    powerCount = 0;
+                    powerMin = Integer.MAX_VALUE;
+                    powerMax = Integer.MIN_VALUE;
 
+                    // System.out.println("LapExtraMesg: Lap " + lapNo + " start at recordIx " + recordIx + ", timeStamp: " + currentTimeStamp);
+
+                    // create new LapExtraMesg and add to list
+                    newLapExtra = new LapExtraMesg();
                     lapExtraRecords.add(newLapExtra);
 
+                    newLapExtra.setLapNo(lapNo);
+                    newLapExtra.setRecordIxStart(recordIx);
 
-                    // Save DIST START to table, distance value from previous record, if available, else 0
+                    // Save LAP FIRST/START values
+                    newLapExtra.setTimeStart(currentTimeStamp);
+                    newLapExtra.setTTimerStart((float) getRecordMesgAddOnRecords().get(recordIx).getTimer());
+
+                    // Set DIST START to value from record, if available, else go forward to find last non-null distance value, else 0
+                    Float recordDist = getRecordMesg().get(recordIx).getFieldFloatValue(REC_DIST);
+                    if (recordDist != null) {
+                        newLapExtra.setDistStart(recordDist);
+                    } else {
+                        // if NULL search forward for last non-null distance value
+                        int targetRecordIx = recordIx;
+                        while (targetRecordIx < getRecordMesg().size() && recordDist == null) {
+                            targetRecordIx++;
+                            if (targetRecordIx >= getRecordMesg().size()) {
+                                newLapExtra.setDistStartCalc(0f);
+                            } else {
+                                recordDist = getRecordMesg().get(targetRecordIx).getFieldFloatValue(REC_DIST);
+                            }
+                        }
+                        if (recordDist == null) {
+                            recordDist = 0f;
+                        }
+                        newLapExtra.setDistStart(recordDist);
+                    }
+                    newLapExtra.setHrStart(currentHr);
+
+                    altSum = 0f;
+                    altCount = 0;
+                    altStandardCount = 0;
+                    altEnhancedCount = 0;
+                    altMax = Float.NEGATIVE_INFINITY;
+                    altMin = Float.POSITIVE_INFINITY;
+                    ascent = 0f;
+                    descent = 0f;
+                    previousAlt = null;
+                    filteredAlt = null;
+                    if (currentEnhancedAlt != null) {
+                        newLapExtra.setAltStart(currentEnhancedAlt);
+                    } else if (currentStandardAlt != null) {
+                        newLapExtra.setAltStart(currentStandardAlt);
+                    }
+
+                    tempSum = 0;
+                    tempCount = 0;
+                    tempMin = Integer.MAX_VALUE;
+                    tempMax = Integer.MIN_VALUE;
+                    newLapExtra.setTempStart(currentTemp);
+
+                    newLapExtra.setLatStart(record.getFieldIntegerValue(FitFile.REC_LAT));
+                    newLapExtra.setLonStart(record.getFieldIntegerValue(FitFile.REC_LON));
+
+                    // Save START values to table, values from previous record, if available, else 0
                     int prevRecordIx = recordIx - 1;
                     if (prevRecordIx < 0) {
-                        lapExtraRecords.get(lapIx).setDistStart(0f);
+                        newLapExtra.setTimeStartCalc(currentTimeStamp);
+                        newLapExtra.setTTimerStartCalc((float) getRecordMesgAddOnRecords().get(recordIx).getTimer());
+                        newLapExtra.setDistStartCalc(0f);
                     } else {
+                        // Set TIME START to value from previous record, if available, else current timestamp
+                        Long prevRecordTime = getRecordMesg().get(prevRecordIx).getFieldLongValue(REC_TIME);
+                        if (prevRecordTime != null) {
+                            newLapExtra.setTimeStartCalc(prevRecordTime);
+                        } else {
+                            newLapExtra.setTimeStartCalc(currentTimeStamp);
+                        }
+
+                        // Set DIST START to value from previous record, if available, else go back to find last non-null distance value, else 0
                         Float prevRecordDist = getRecordMesg().get(prevRecordIx).getFieldFloatValue(REC_DIST);
                         if (prevRecordDist != null) {
-                            lapExtraRecords.get(lapIx).setDistStart(prevRecordDist);
+                            newLapExtra.setDistStartCalc(prevRecordDist);
                         } else {
                             // if NULL search back for last non-null distance value
 
-                            while (prevRecordIx >= 0 && prevRecordDist == null) {
-                                prevRecordIx--;
-                                if (prevRecordIx < 0) {
-                                    lapExtraRecords.get(lapIx).setDistStart(0f);
+                            int targetRecordIx = prevRecordIx;
+                            while (targetRecordIx >= 0 && prevRecordDist == null) {
+                                targetRecordIx--;
+                                if (targetRecordIx < 0) {
+                                    newLapExtra.setDistStartCalc(0f);
                                 } else {
-                                    prevRecordDist = getRecordMesg().get(prevRecordIx).getFieldFloatValue(REC_DIST);
+                                    prevRecordDist = getRecordMesg().get(targetRecordIx).getFieldFloatValue(REC_DIST);
                                 }
                             }
                             if (prevRecordDist == null) {
                                 prevRecordDist = 0f;
                             }
-                            lapExtraRecords.get(lapIx).setDistStart(prevRecordDist);
+                            newLapExtra.setDistStartCalc(prevRecordDist);
                         }
-                    }
 
-                    // Get LAP DATA to be used to find lap-start-end
-                    Float lapTotalTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
-                    currentLapTime = (lapTotalTimer == null) ? 0f : lapTotalTimer;
+                        Float prevRecordTTimer = (float) getRecordMesgAddOnRecords().get(prevRecordIx).getTimer();
+                        newLapExtra.setTTimerStartCalc(prevRecordTTimer);
+                    }
 
                     Short lapIntensityShort = lapMesg.get(lapIx).getFieldShortValue(LAP_INTENSITY);
                     Intensity lapIntensity = (lapIntensityShort == null) ? Intensity.INVALID : Intensity.getByValue(lapIntensityShort);
                     currentLapIntensity = Intensity.getStringFromValue(lapIntensity);
 
-                    // Save LAP END to table (DateTime)
+                    // Save LAP END to table
                     lapExtraRecords.get(lapIx).setTimeEnd(currentLapTimeEnd);
                     if (lapNo < numberOfLaps) {
                         currentLapTimeEnd = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
@@ -859,23 +1082,120 @@ public class FitFile {
                         currentLapTimeEnd = timeLastRecord;
                     }
 
-                    // Save LAP END to table (DateTime)
+                    // Save TIME END to table
                     lapExtraRecords.get(lapIx).setTimeEnd(currentLapTimeEnd);
                 }
+                //--------------
+                // END OF - IF LAP START
 
-                // Find out if next record is first record in next Lap
-                if ((recordIx + 1 >= recordMesg.size()) || 
-                        (recordMesg.get(recordIx + 1).getFieldLongValue(REC_TIME) > currentLapTimeEnd)) {
-                    nextRecordLastInLap = true;
-                } else {
-                    nextRecordLastInLap = false;
+                Float enhancedSpeed = record.getFieldFloatValue(FitFile.REC_ESPEED);
+                Float standardSpeed = record.getFieldFloatValue(FitFile.REC_SPEED);
+                if (enhancedSpeed != null) {
+                    speedCount++;
+                    speedEnhancedUsed = true;
+                    if (enhancedSpeed > speedMax) {
+                        speedMax = enhancedSpeed;
+                    }
+                    if (enhancedSpeed < speedMin) {
+                        speedMin = enhancedSpeed;
+                    }
+                } else if (!speedEnhancedUsed && standardSpeed != null) {
+                    speedCount++;
+                    if (standardSpeed > speedMax) {
+                        speedMax = standardSpeed;
+                    }
+                    if (standardSpeed < speedMin) {
+                        speedMin = standardSpeed;
+                    }
                 }
 
-                // Calc LAP HR min
-                if (lapExtraRecords.get(lapIx).getHrMin() == null) {
-                    lapExtraRecords.get(lapIx).setHrMin(currentHr);
-                } else if (currentHr < lapExtraRecords.get(lapIx).getHrMin()) {
-                    lapExtraRecords.get(lapIx).setHrMin(currentHr);
+                // HR Avg, Max, Min
+                if (currentHr != null) {
+                    hrSum += currentHr;
+                    hrCount++;
+                    if (currentHr > hrMax) {
+                        hrMax = currentHr;
+                    }
+                    // Calc LAP HR min
+                    if (currentHr < hrMin) {
+                        hrMin = currentHr;
+                    }
+                }
+
+                // CADENCE
+                Integer currentCadence = record.getFieldIntegerValue(FitFile.REC_CAD);
+                if (currentCadence != null) {
+                    cadenceSum += currentCadence;
+                    cadenceCount++;
+                    if (currentCadence > cadenceMax) {
+                        cadenceMax = currentCadence;
+                    }
+                    if (currentCadence < cadenceMin) {
+                        cadenceMin = currentCadence;
+                    }
+                }
+
+                // POWER
+                Integer power = record.getFieldIntegerValue(FitFile.REC_POW);
+                if (power != null) {
+                    powerSum += power;
+                    powerCount++;
+                    if (power > powerMax) {
+                        powerMax = power;
+                    }
+                    if (power < powerMin) {
+                        powerMin = power;
+                    }
+                }
+
+                // ALTITUDE
+                if (currentEnhancedAlt != null) {
+                    currentAlt = currentEnhancedAlt;
+                    altEnhancedCount++;
+                } else if (currentStandardAlt != null) {
+                    currentAlt = currentStandardAlt;
+                    altStandardCount++;
+                }
+                if (currentAlt != null) {
+                    altSum += currentAlt;
+                    altCount++;
+                    if (currentAlt > altMax) {
+                        altMax = currentAlt;
+                    }
+                    if (currentAlt < altMin) {
+                        altMin = currentAlt;
+                    }
+                    if (previousAlt != null) {
+                        if (filteredAlt == null) {
+                            filteredAlt = previousAlt;
+                        }
+
+                        float filteredDiff = currentAlt - filteredAlt;
+                        setAltitudeSmoothingFactor(1f);
+                        if (Math.abs(filteredDiff) >= getAltitudeSmoothingFactor()) {
+                            if (filteredDiff > 0f) {
+                                ascent += filteredDiff;
+                            } else {
+                                descent += -filteredDiff;
+                            }
+                            filteredAlt = currentAlt;
+                        }
+                    }
+                    previousAlt = currentAlt;
+                    if (filteredAlt == null) {
+                        filteredAlt = currentAlt;
+                    }
+                }
+
+                if (currentTemp != null) {
+                    tempSum += currentTemp;
+                    tempCount++;
+                    if (currentTemp > tempMax) {
+                        tempMax = currentTemp;
+                    }
+                    if (currentTemp < tempMin) {
+                        tempMin = currentTemp;
+                    }
                 }
 
                 // Calc LAPSUM & MLAPMAX for Developer fields from current record
@@ -895,50 +1215,124 @@ public class FitFile {
                     }
                 }
 
+                // Find out if next record is first record in next Lap
+                if ((recordIx + 1 >= recordMesg.size()) || 
+                        (recordMesg.get(recordIx + 1).getFieldLongValue(REC_TIME) > currentLapTimeEnd)) {
+                    nextRecordLastInLap = true;
+                } else {
+                    nextRecordLastInLap = false;
+                }
+
                 // --------------
                 // IF LAP END
                 //if (currentTimeStamp != null && currentLapTimeEnd != null && currentTimeStamp.equal(currentLapTimeEnd)) {
                 if (currentTimeStamp != null && currentLapTimeEnd != null && nextRecordLastInLap) {
 
-                    // Save HR and recordIx END
-                    lapExtraRecords.get(lapIx).setHrEnd(currentHr);
-                    lapExtraRecords.get(lapIx).setRecordIxEnd(recordIx);
-                    lapExtraRecords.get(lapIx).setTimeEnd(record.getFieldLongValue(REC_TIME));
-                    lapExtraRecords.get(lapIx).setAltEnd(record.getFieldIntegerValue(REC_EALT));
-                    lapExtraRecords.get(lapIx).setDistEnd(record.getFieldFloatValue(REC_DIST));
+                    // Save END and CALC LAP values
+                    newLapExtra.setRecordIxEnd(recordIx);
+                    
+                    newLapExtra.setTimeEnd(record.getFieldLongValue(REC_TIME));
+                    newLapExtra.setTTimerEnd((float) getRecordMesgAddOnRecords().get(recordIx).getTimer());
+                    newLapExtra.setDistEnd(record.getFieldFloatValue(REC_DIST));
+                    Float calcETimerLap = (float) (newLapExtra.getTimeEnd() - newLapExtra.getTimeStartCalc());
+                    newLapExtra.setETimerLap(calcETimerLap);
+                    Float calcTTimerLap = newLapExtra.getTTimerEnd() - newLapExtra.getTTimerStartCalc();
+                    newLapExtra.setTTimerLap(calcTTimerLap);
+                    Float calcMTimerLap = calcTTimerLap;
+                    newLapExtra.setMTimerLap(calcMTimerLap);
 
-                    Float lapCad = lapMesg.get(lapIx).getFieldFloatValue(LAP_CAD);
-                    Float lapTimer = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
-                    Float lapDist = lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST);
-                    if (lapCad != null && lapCad > 0 && lapTimer != null && lapTimer > 0 && lapDist != null && lapDist > 0) {
-                        getLapExtraRecords().get(lapIx).setStepLen(lapDist / ( lapCad * lapTimer / 60 )); // step length acc to FFRT
+                    Float calcDistLap = newLapExtra.getDistEnd() - newLapExtra.getDistStartCalc();
+                    newLapExtra.setDistLap(calcDistLap);
+
+                    float avgSpeed = calcTTimerLap > 0f ? calcDistLap / calcTTimerLap : 0f;
+                    if (calcDistLap > 0f && calcTTimerLap > 0f) {
+                        newLapExtra.setSpeedAvg(avgSpeed);
+                    }
+                    if (speedCount > 0) {
+                        newLapExtra.setSpeedMax(speedMax);
+                        newLapExtra.setSpeedMin(speedMin);
+                        if (speedEnhancedUsed) {
+                            newLapExtra.setSpeedEnhancedUsed(true);
+                        } else {
+                            newLapExtra.setSpeedEnhancedUsed(false);
+                        }
+                    }
+                    // HR
+                    if (hrCount > 0) {
+                        newLapExtra.setHrEnd(currentHr);
+                        newLapExtra.setHrMin(hrMin);
+                        newLapExtra.setHrMax(hrMax);
+                        newLapExtra.setHrAvg(hrCount > 0 ? Math.round((float) (hrSum / hrCount)) : 0);
                     }
 
-                    // Calc LAP SUM & LAP MAX
+                    // CAD and POWER
+                    int cadenceAvg = 0;
+                    if (cadenceCount > 0) {
+                        cadenceAvg = cadenceCount > 0 ? Math.round((float) cadenceSum / cadenceCount) : 0;
+                        newLapExtra.setCadAvg(cadenceAvg);
+                        newLapExtra.setCadMax(cadenceMax);
+                        newLapExtra.setCadMin(cadenceMin);
+                    }
+                    if (powerCount > 0) {
+                        newLapExtra.setPowerAvg(powerCount > 0 ? Math.round((float) powerSum / powerCount) : 0);
+                        newLapExtra.setPowerMax(powerMax);
+                        newLapExtra.setPowerMin(powerMin);
+                    }
+
+                    // Calc step length according to FFRT formula: stepLen = lapDist / (lapCad * lapTimer / 60)
+                    if (cadenceAvg > 0 && calcTTimerLap != null && calcTTimerLap > 0 && calcDistLap != null && calcDistLap > 0) {
+                        newLapExtra.setStepLen(calcDistLap / ( cadenceAvg * calcTTimerLap / 60 )); // step length acc to FFRT
+                    }
+
+                    // Calc ALT values
+                    if (altCount > 0) {
+                        newLapExtra.setAltEnd(currentAlt);
+                        newLapExtra.setAltMax(altMax);
+                        newLapExtra.setAltMin(altMin);
+                        newLapExtra.setAltAvg(altSum / altCount);
+                        newLapExtra.setAscent(ascent);
+                        newLapExtra.setDescent(descent);
+                        newLapExtra.setAltEnhancedUsed(altEnhancedCount > altStandardCount);
+                    }
+                    // TEMP
+                    if (tempCount > 0) {
+                        newLapExtra.setTempEnd(currentTemp);
+                        newLapExtra.setTempMax(tempMax);
+                        newLapExtra.setTempMin(tempMin);
+                        newLapExtra.setTempAvg(Math.round((float) tempSum / tempCount));
+                    }
+
+                    newLapExtra.setLatEnd(record.getFieldIntegerValue(FitFile.REC_LAT));
+                    newLapExtra.setLonEnd(record.getFieldIntegerValue(FitFile.REC_LON));
+
+
+                    // Calc DEV FIELDS LAP SUM & LAP MAX
                     for (DeveloperField field : recordMesg.get(recordIx).getDeveloperFields()) {
                         if ("StrokeLength".equals(field.getName())) {
-                            lapExtraRecords.get(lapIx).setAvgStrokeLen(
+                            newLapExtra.setAvgStrokeLen(
                                 (float) Math.round(100 * currentLapSumStrokeLen 
-                                    / (recordIx-lapExtraRecords.get(lapIx).getRecordIxStart()+1)) 
+                                    / (recordIx-newLapExtra.getRecordIxStart()+1)) 
                                     /100);
-                            lapExtraRecords.get(lapIx).setMaxStrokeLen(currentLapMaxStrokeLen);
+                            newLapExtra.setMaxStrokeLen(currentLapMaxStrokeLen);
                             currentLapSumStrokeLen = 0f;
                             currentLapMaxStrokeLen = 0f;
                         }
                         if ("DragFactor".equals(field.getName())) {
-                            lapExtraRecords.get(lapIx).setAvgDragFactor(
+                            newLapExtra.setAvgDragFactor(
                                 (float) Math.round(100 * currentLapSumDragFactor 
-                                    / (recordIx-lapExtraRecords.get(lapIx).getRecordIxStart()+1)) 
+                                    / (recordIx-newLapExtra.getRecordIxStart()+1)) 
                                     /100);
-                            lapExtraRecords.get(lapIx).setMaxDragFactor(currentLapMaxDragFactor);
+                            newLapExtra.setMaxDragFactor(currentLapMaxDragFactor);
                             currentLapSumDragFactor = 0f;
                             currentLapMaxDragFactor = 0f;
                         }
                         if ("Level".equals(field.getName())) {
-                            getLapExtraRecords().get(lapIx).setLevel(field.getFloatValue());
+                            newLapExtra.setLevel(field.getFloatValue());
                         }
                     }
 
+                    // --------------
+                    // Calculating ACTIVE/REST values from LAP MESG fields, NOT LAPEXTRA fields
                     Float lapTotalTimerTime = lapMesg.get(lapIx).getFieldFloatValue(LAP_TIMER);
                     Float lapTotDist = lapMesg.get(lapIx).getFieldFloatValue(LAP_DIST);
                     Short lapAvgCad = lapMesg.get(lapIx).getFieldShortValue(LAP_CAD);
@@ -989,6 +1383,72 @@ public class FitFile {
             System.out.println("SOME FUNCTIONS WITH LAP EXTRA VALUES MAY NOT WORK.");
             System.out.println("============================================================");
         }
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public void initLapExtraRecords() {
+
+        Integer hrStart = 0;
+        Integer hrEnd = 0;
+        Integer hrMin = 9999;
+        Long timeEnd = null;
+        int lapNo = 0;
+        int recordIxStart = 0;
+        int recordIxEnd = 0;
+        Float stepLen = null;
+        Float level = 0f;
+        Float avgStrokeLen = 0f;
+        Float maxStrokeLen = 0f;
+        Float avgDragFactor = 0f;
+        Float maxDragFactor = 0f;
+
+        System.out.println("----- INIT LapExtra Records for ALL MESG -----");
+        for (Mesg record : lapMesg) {
+            LapExtraMesg newLapExtra = new LapExtraMesg(hrStart, hrEnd, hrMin, null, null, timeEnd, lapNo, 
+                recordIxStart, recordIxEnd, stepLen, 
+                level, avgStrokeLen, maxStrokeLen, avgDragFactor, maxDragFactor,
+                null, null, null, null, null
+                );
+            newLapExtra.setSpeedLapSum(0f);
+            newLapExtra.setCadLapSum(0f);
+            lapExtraRecords.add(newLapExtra);
+        }
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    class RecordExtraMesg {
+        private int lapNo;
+        private Long C2DateTime;
+
+        public RecordExtraMesg(int lapNo, Long C2DateTime) {
+            this.lapNo = lapNo;
+            this.C2DateTime = C2DateTime;
+        }
+
+        public int getLapNo() { return lapNo; }
+        public void setLapNo(int lapNo) { this.lapNo = lapNo; }
+        public Long getC2DateTime() { return C2DateTime; }
+        public void setC2DateTime(Long C2DateTime) { this.C2DateTime = C2DateTime; }
+
+    }
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    class RecordMesgAddOnRecords {
+        Long timer;
+        int lapNo;
+
+        public RecordMesgAddOnRecords() {
+        }
+        public RecordMesgAddOnRecords(Long timer) {
+            this.timer = timer;
+        }
+        public RecordMesgAddOnRecords(int lapNo, Long timer) {
+            this.lapNo = lapNo;
+            this.timer = timer;
+        }
+
+        public Long getTimer() { return timer; }
+        public void setTimer(Long timer) { this.timer = timer; }
+
+        public int getLapNo() { return lapNo; }
+        public void setLapNo(int lapNo) { this.lapNo = lapNo; }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void addTimeToLapAndSession(int lapIx, Float timeToAdd) {
