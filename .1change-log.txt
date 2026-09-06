@@ -458,7 +458,14 @@ Use LapExtraRecords to set values, split/lap en especially
 Moving the LapBoundaryValues mergedBoundary = recalculateLapValuesFromRecords(
     to after lap change and fillLapExtra to be able to 
     in bot lapNew and lapMerge.
----> LAP START TIME MUST BE SET BEFORE fillLapExtra
+LAP START TIME MUST BE SET BEFORE fillLapExtra
+
+LapExtra list expanded a lot to be able to be used to set all new values if a lap is changed or added.
+A lot of other fixes too.
+
+--> git sync
+--> v3.12 Build
+--> git sync
 
 ***********
 **** BUGGAR
@@ -484,6 +491,7 @@ All print methods use appendTempUpdateLog and return String and (Boolean printTo
 MAYBE to change to (Boolean printToConsole, Boolean saveToLog)
 
 Add the menu inputs to tempUpdateLogg
+
 
 
 *********
