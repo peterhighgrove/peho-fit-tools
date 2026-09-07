@@ -478,6 +478,10 @@ Log change to add banner to lap merge/new
 --> git sync
 
 lapNew, lapMerge added the end lat/lon, recalculateLapValuesFromRecords() added calc for stepLen
+--> git sync
+--> v3.14 Build
+--> git sync
+
 
 
 ***********
