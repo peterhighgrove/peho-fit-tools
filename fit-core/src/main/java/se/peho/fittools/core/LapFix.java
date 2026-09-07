@@ -173,6 +173,8 @@ public class LapFix {
         }
         Integer originalMergedStartLat = firstLap.getFieldIntegerValue(FitFile.LAP_SLAT);
         Integer originalMergedStartLon = firstLap.getFieldIntegerValue(FitFile.LAP_SLON);
+        Integer originalMergedEndLat = firstLap.getFieldIntegerValue(FitFile.LAP_ELAT);
+        Integer originalMergedEndLon = firstLap.getFieldIntegerValue(FitFile.LAP_ELON);
 
         if (orgLapStartTime == null) {
             fitFile.printAndAppendUpdateLogLn("==XX> First lap in merge range has no start time.");
@@ -262,7 +264,9 @@ public class LapFix {
 
         setIntIfNotNull(mergedLap, FitFile.LAP_SLAT, originalMergedStartLat);
         setIntIfNotNull(mergedLap, FitFile.LAP_SLON, originalMergedStartLon);
-
+        setIntIfNotNull(mergedLap, FitFile.LAP_ELAT, originalMergedEndLat);
+        setIntIfNotNull(mergedLap, FitFile.LAP_ELON, originalMergedEndLon);
+        
         mergeMatchedSplitsForLapMerge(splitMatchesToMerge, fromLapIx, toLapIx, mergedLap);
         renumberSplitMesgIndexes();
         updateSplitSummaryFromSplitsForTypes(affectedSplitTypes);
@@ -759,6 +763,8 @@ public class LapFix {
         Float originalLapETimer = firstLap.getFieldFloatValue(FitFile.LAP_ETIMER);
         Integer originalLapStartLat = firstLap.getFieldIntegerValue(FitFile.LAP_SLAT);
         Integer originalLapStartLon = firstLap.getFieldIntegerValue(FitFile.LAP_SLON);
+        Integer originalLapEndLat = firstLap.getFieldIntegerValue(FitFile.LAP_ELAT);
+        Integer originalLapEndLon = firstLap.getFieldIntegerValue(FitFile.LAP_ELON);
 
         // Get first lap start time to find the record range for the lap
         Long lapStartTime = firstLap.getFieldLongValue(FitFile.LAP_STIME);
@@ -841,7 +847,9 @@ public class LapFix {
 
         setIntIfNotNull(firstLap, FitFile.LAP_SLAT, originalLapStartLat);
         setIntIfNotNull(firstLap, FitFile.LAP_SLON, originalLapStartLon);
-
+        setIntIfNotNull(secondLap, FitFile.LAP_ELAT, originalLapEndLat);
+        setIntIfNotNull(secondLap, FitFile.LAP_ELON, originalLapEndLon);
+        
         // Split the matched split message for the lap into two, creating a new split message for the second lap.
         Mesg insertedSplit = splitMatchedSplitForLapNew(splitToSplit, lapIx, firstLap, secondLap);
         renumberSplitMesgIndexes();
@@ -1549,13 +1557,14 @@ public class LapFix {
             if (maxAvgSpeed != null) lapMesg.setFieldValue(FitFile.LAP_ESPEED, maxAvgSpeed);
         }
 
-        // HR, POWER, CADENCE
+        // HR, POWER, CADENCE, STEP Length
         if (lapExtra.getHrAvg() != null) lapMesg.setFieldValue(FitFile.LAP_HR, lapExtra.getHrAvg());
         if (lapExtra.getHrMax() != null) lapMesg.setFieldValue(FitFile.LAP_MHR, lapExtra.getHrMax());
         if (lapExtra.getPowerAvg() != null) lapMesg.setFieldValue(FitFile.LAP_POW, lapExtra.getPowerAvg());
         if (lapExtra.getPowerMax() != null) lapMesg.setFieldValue(FitFile.LAP_MPOW, lapExtra.getPowerMax());
         if (lapExtra.getCadAvg() != null) lapMesg.setFieldValue(FitFile.LAP_CAD, lapExtra.getCadAvg());
         if (lapExtra.getCadMax() != null) lapMesg.setFieldValue(FitFile.LAP_MCAD, lapExtra.getCadMax());
+        if (lapExtra.getStepLen() != null) lapMesg.setFieldValue(FitFile.LAP_STEP, lapExtra.getStepLen());
 
         // ALT, COORDS
         if (lapExtra.getAltEnhancedUsed() != null && lapExtra.getAltEnhancedUsed()) {
