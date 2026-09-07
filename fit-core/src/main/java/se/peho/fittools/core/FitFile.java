@@ -1281,7 +1281,8 @@ public class FitFile {
 
                     // Calc step length according to FFRT formula: stepLen = lapDist / (lapCad * lapTimer / 60)
                     if (cadenceAvg > 0 && calcTTimerLap != null && calcTTimerLap > 0 && calcDistLap != null && calcDistLap > 0) {
-                        newLapExtra.setStepLen(calcDistLap / ( cadenceAvg * calcTTimerLap / 60 )); // step length acc to FFRT
+                        Float stepLenFFRT = (calcDistLap / ( cadenceAvg * calcTTimerLap / 60 )); // step length acc to FFRT in m
+                        newLapExtra.setStepLen(stepLenFFRT * 1000 / 2); // step length acc to Garmin in mm
                     }
 
                     // Calc ALT values

@@ -482,6 +482,8 @@ lapNew, lapMerge added the end lat/lon, recalculateLapValuesFromRecords() added 
 --> v3.14 Build
 --> git sync
 
+Updated fillLapExtra w step calc for as Garmin stepLenFFRT * 1000 / 2
+--> git sync
 
 
 ***********

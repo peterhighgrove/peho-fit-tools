@@ -699,7 +699,7 @@ public class LapReportGenerator {
         header1Values.add("");
         header2Values.add("avg");
 
-        int colStepLen = 5;
+        int colStepLen = 7;
         colSum += colStepLen;
         headerFormat.add("%" + colStepLen + "s");
         header1Values.add("Step");
@@ -787,8 +787,8 @@ public class LapReportGenerator {
             System.out.printf("%" + colPowerAvg + "s", powerAvgStr);
             
             // StepLen
-            Float stepLen = lapExtra.getStepLen(); // Convert from FFRT double step to Garmin single step
-            String stepLenStr = stepLen != null ? String.format("%.2f", stepLen / 2) : "-";
+            Float stepLen = lapExtra.getStepLen();
+            String stepLenStr = stepLen != null ? String.format("%.1f", stepLen) : "-";
             System.out.printf("%" + colStepLen + "s", stepLenStr);
 
             // Intensity only in file, not in LapExtra
@@ -845,7 +845,7 @@ public class LapReportGenerator {
             
             // StepLen
             Float stepLenFile = mesg.getFieldFloatValue(FitFile.LAP_STEP);
-            String stepLenStrFile = stepLenFile != null ? String.format("%.2f", stepLenFile / 1000) : "-";
+            String stepLenStrFile = stepLenFile != null ? String.format("%.1f", stepLenFile) : "-";
             System.out.printf("%" + colStepLen + "s", stepLenStrFile);
 
             // Intensity
