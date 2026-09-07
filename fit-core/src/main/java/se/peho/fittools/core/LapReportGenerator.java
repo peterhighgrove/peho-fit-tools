@@ -260,7 +260,7 @@ public class LapReportGenerator {
             System.out.print(" end@" 
                 + FitDateTime.toStringTime(fitFile.getLapExtraRecords().get(ix).getTimeEnd(), fitFile.getDiffMinutesLocalUTC()));
         if (fitFile.getLapExtraRecords().get(ix).getStepLen() != null) 
-            System.out.print(" StepLen:" + fitFile.getLapExtraRecords().get(ix).getStepLen());
+            System.out.print(" StepLen:" + String.format("%.1f",fitFile.getLapExtraRecords().get(ix).getStepLen()));
         if (fitFile.getLapExtraRecords().get(ix).getAvgDragFactor() != null) 
             System.out.print(" DFavg:" + fitFile.getLapExtraRecords().get(ix).getAvgDragFactor());
         if (fitFile.getLapExtraRecords().get(ix).getMaxDragFactor() != null) 
@@ -1515,7 +1515,7 @@ public class LapReportGenerator {
                         || fitFile.getMySport() == FitFile.MySport.TREADMILL
                         || fitFile.getMySport() == FitFile.MySport.OTHER
                             )) {
-                        fitFile.appendTempUpdateLog(" step" + (int) (fitFile.getLapExtraRecords().get(i).getStepLen() * 100) + "cm");
+                        fitFile.appendTempUpdateLog(" step" + Math.round(fitFile.getLapExtraRecords().get(i).getStepLen() / 10) + "cm");
                     }
 
                     fitFile.appendTempUpdateLogLn("");
@@ -1606,7 +1606,7 @@ public class LapReportGenerator {
                         || fitFile.getMySport() == FitFile.MySport.TREADMILL
                         || fitFile.getMySport() == FitFile.MySport.OTHER
                             )) {
-                        fitFile.appendTempUpdateLog(" step" + (int) (fitFile.getLapExtraRecords().get(i).getStepLen() * 100) + "cm");
+                        fitFile.appendTempUpdateLog(" step" + Math.round(fitFile.getLapExtraRecords().get(i).getStepLen() / 10) + "cm");
                     }
 
                     fitFile.appendTempUpdateLogLn("");
