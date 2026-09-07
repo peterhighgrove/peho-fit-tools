@@ -489,6 +489,12 @@ Updated fillLapExtra w step calc for as Garmin stepLenFFRT * 1000 / 2
 
 printActiveRestLapSummeryWithPrintOption fixed output to cm
 Math.round(fitFile.getLapExtraRecords().get(i).getStepLen() / 10) + "cm")
+--> git sync
+--> v3.16 Build
+--> git sync
+
+printActiveRestLapSummeryWithPrintOption fixed output to x2
+Math.round(fitFile.getLapExtraRecords().get(i).getStepLen() / 10 * 2) + "cm")
 
 ***********
 **** BUGGAR

@@ -1515,7 +1515,7 @@ public class LapReportGenerator {
                         || fitFile.getMySport() == FitFile.MySport.TREADMILL
                         || fitFile.getMySport() == FitFile.MySport.OTHER
                             )) {
-                        fitFile.appendTempUpdateLog(" step" + Math.round(fitFile.getLapExtraRecords().get(i).getStepLen() / 10) + "cm");
+                        fitFile.appendTempUpdateLog(" step" + Math.round(fitFile.getLapExtraRecords().get(i).getStepLen() / 10 * 2) + "cm");
                     }
 
                     fitFile.appendTempUpdateLogLn("");
@@ -1606,7 +1606,7 @@ public class LapReportGenerator {
                         || fitFile.getMySport() == FitFile.MySport.TREADMILL
                         || fitFile.getMySport() == FitFile.MySport.OTHER
                             )) {
-                        fitFile.appendTempUpdateLog(" step" + Math.round(fitFile.getLapExtraRecords().get(i).getStepLen() / 10) + "cm");
+                        fitFile.appendTempUpdateLog(" step" + Math.round(fitFile.getLapExtraRecords().get(i).getStepLen() / 10 * 2) + "cm");
                     }
 
                     fitFile.appendTempUpdateLogLn("");
