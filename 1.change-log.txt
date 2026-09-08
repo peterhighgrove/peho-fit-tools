@@ -509,6 +509,10 @@ Changed that Header logging & fix for apply interval pattern.
 --> git sync
 --> v3.18 Build
 
+--> git sync
+--> regr-gps --bless
+--> git sync
+
 
 ***********
 **** BUGGAR

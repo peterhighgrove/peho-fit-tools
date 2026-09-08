@@ -41,66 +41,13 @@ lapNew: adjusted firstLapETimer=289.749, adjusted secondLapETimer=94.749
 -- Updated SPLIT_SUMMARY rows: 1, created: 0, removed (no splits left): 0 for split types [7].
 Split lap 9 at totalTimer=28:40 (recordIx=1720)
 -- Lap 9 new timer: 4:50min, new lap 10 timer: 1:35min
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
---------------------------------------------------
-COMBINED SPLIT DETECTION (Garmin merged laps into one split)
---------------------------------------------------
+
+Apply WORKOUT INTERVAL pattern - to laps and splits
+--------------------------------------------
+Warmup laps: 1
+Cooldown laps: 1
+After-active laps: recovery
+--------------------------------------------
 -- Updated SPLIT_SUMMARY rows: 2, created: 0, removed (no splits left): 1 for split types [3, 4, 7].
 wkti applied: warmup=1, cooldown=1, after-active=recover, laps=13.
 Updated LAP_INTENSITY for 13 lap messages.
