@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Scanner;
 
 import se.peho.fittools.core.FitFile.LapExtraMesg;
 import se.peho.fittools.core.strings.*;
@@ -20,6 +21,7 @@ public class LapFix {
 
     private static final float SPLIT_TIMER_MATCH_TOLERANCE_SEC = 1.1f;
 
+    private final Scanner sc = new Scanner(System.in);
     private final FitFile fitFile;
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -46,7 +48,29 @@ public class LapFix {
             return;
         }
 
-        detectAndFixCombinedSplits();
+        detectAndFixCombinedSplits(false);
+
+        fitFile.printAndAppendUpdateLogLn("--------------------------------------------------");
+        boolean reRunAndAlsoFix = true;
+        fitFile.printAndAppendUpdateLogLn("Would you like to rerun the analysis AND FIX combined splits? (y/n): ");
+        while (true) {
+            String choice = sc.nextLine().trim().toLowerCase();
+            if (choice.equals("y") || choice.equals("yes")) {
+                fitFile.printAndAppendUpdateLogLn("Rerunning analysis AND FIXING combined splits...");
+                reRunAndAlsoFix = true;
+                break;
+            }
+            if (choice.equals("n") || choice.equals("no")) {
+                fitFile.printAndAppendUpdateLogLn("Rerunning analysis WITHOUT fixing combined splits...");
+                reRunAndAlsoFix = false;
+                break;
+            }
+            System.out.println("==XX> Enter y or n.");
+        }
+
+        if (reRunAndAlsoFix) {
+            detectAndFixCombinedSplits(true);
+        }
 
         fitFile.printAndAppendUpdateLogLn("--------------------------------------------------");
         fitFile.printAndAppendUpdateLogLn("LAP -> SPLIT");
@@ -285,6 +309,15 @@ public class LapFix {
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void applyWorkoutIntervalPattern(int warmupLaps, int cooldownLaps, boolean useRestAfterActive) {
+
+        fitFile.printAndAppendUpdateLogLn("");
+        fitFile.printAndAppendUpdateLogLn("Apply WORKOUT INTERVAL pattern - to laps and splits");
+        fitFile.printAndAppendUpdateLogLn("--------------------------------------------");
+        fitFile.printAndAppendUpdateLogLn("Warmup laps: " + warmupLaps);
+        fitFile.printAndAppendUpdateLogLn("Cooldown laps: " + cooldownLaps);
+        fitFile.printAndAppendUpdateLogLn("After-active laps: " + (useRestAfterActive ? "rest" : "recovery"));
+        fitFile.printAndAppendUpdateLogLn("--------------------------------------------");
+
         if (fitFile.getLapMesg() == null || fitFile.getLapMesg().isEmpty()) {
             fitFile.printAndAppendUpdateLogLn("==XX> No LAP messages found. wkti aborted.");
             return;
@@ -302,7 +335,7 @@ public class LapFix {
 
         // Detect and fix any combined splits first, so that SPL_TYPE assignment can be done correctly.
         // ------------------------------------------------
-        detectAndFixCombinedSplits();
+        detectAndFixCombinedSplits(true);
 
         // Find the overview split (if any) that represents the entire activity, and skip it for SPL_TYPE assignment.
         // ------------------------------------------------
@@ -1263,7 +1296,7 @@ public class LapFix {
     // considers them the same split type). Recognized primarily by the undocumented
     // SPL_NUM_LAPS (field 68): when > 1, SPL_LAPIX is the first of those laps. Falls
     // back to summed LAP_TIMER matching when SPL_NUM_LAPS is absent/unreliable.
-    private void detectAndFixCombinedSplits() {
+    private void detectAndFixCombinedSplits(boolean autoFix) {
 
         if (fitFile.getLapMesg() == null || fitFile.getLapMesg().isEmpty()
             || fitFile.getSplitMesg() == null || fitFile.getSplitMesg().isEmpty()) {
@@ -1271,16 +1304,12 @@ public class LapFix {
         }
 
         int totalFixed = 0;
+        boolean showHeader = true;
         Set<Short> affectedSplitTypes = new HashSet<>();
         boolean changed = true;
         while (changed) {
             changed = false;
             for (int splitIx = 0; splitIx < fitFile.getSplitMesg().size(); splitIx++) {
-                if (totalFixed == 0) {
-                    fitFile.printAndAppendUpdateLogLn("--------------------------------------------------");
-                    fitFile.printAndAppendUpdateLogLn("COMBINED SPLIT DETECTION (Garmin merged laps into one split)");
-                    fitFile.printAndAppendUpdateLogLn("--------------------------------------------------");
-                }
                 Mesg split = fitFile.getSplitMesg().get(splitIx);
                 Integer splitLapIx = split.getFieldIntegerValue(FitFile.SPL_LAPIX);
                 if (splitLapIx == null || splitLapIx < 0 || splitLapIx >= fitFile.getLapMesg().size()) {
@@ -1303,6 +1332,12 @@ public class LapFix {
                     continue;
                 }
 
+                if (showHeader) {
+                    fitFile.printAndAppendUpdateLogLn("--------------------------------------------------");
+                    fitFile.printAndAppendUpdateLogLn("COMBINED SPLIT DETECTION (Garmin merged laps into one split)");
+                    fitFile.printAndAppendUpdateLogLn("--------------------------------------------------");
+                    showHeader = false;
+                }
                 fitFile.printAndAppendUpdateLogLn("-- SPLIT " + (splitIx + 1) + " (lapIx=" + (splitLapIx + 1)
                     + ", timer=" + formatSec(splitTimer) + ") combines " + combinedLapCount
                     + " laps (LAP " + (splitLapIx + 1) + "-" + (splitLapIx + combinedLapCount) + ")"
@@ -1310,6 +1345,9 @@ public class LapFix {
                 Short splitType = split.getFieldShortValue(FitFile.SPL_TYPE);
                 if (splitType != null) {
                     affectedSplitTypes.add(splitType);
+                }
+                if (!autoFix) {
+                    continue;
                 }
                 splitCombinedSplitAcrossLaps(split, splitIx, splitLapIx, combinedLapCount);
                 renumberSplitMesgIndexes();

@@ -502,6 +502,9 @@ Math.round(fitFile.getLapExtraRecords().get(i).getStepLen() / 10 * 2) + "cm")
 --> regr-wkt --bless
 --> regr-gps --bless
 
+Enhanced detectAndFixCombinedSplits(autoFix:true/false) to be optional to fix
+Question in printSplitLapMatchReport() if fix or not.
+Changed that Header logging & fix for apply interval pattern. 
 
 ***********
 **** BUGGAR
