@@ -1,0 +1,108 @@
+FIT SDK profile version: 21.205 Release (21205)
+FIT file successfully read. Total records: 2732, Time between: 2026-08-11-16-39-45 -- 2026-08-11-17-25-37
+======== Non-course file detected. All commands will be available.
+
+LAP MERGE
+--------------------------------------------
+Merge laps no: 10 -> 12
+--------------------------------------------
+-- Split analyze for lap range 10-12
+-- Split match LAP 10 -> SPLIT 11 by SPL_LAPIX (splitTimer=4.8s, lapTimer=3.6s)
+-- No split match for LAP 11 (lapTimer=1.2s)
+-- Split match LAP 12 -> SPLIT 12 by SPL_LAPIX (splitTimer=353.7s, lapTimer=353.7s)
+-- Deleting lap ix:9 time:2026-08-11-17-10-00
+-- Deleting linked TIME_IN_ZONE mesg for lap ix:9
+-- Deleting lap ix:9 time:2026-08-11-17-10-03
+-- Deleting linked TIME_IN_ZONE mesg for lap ix:9
+lapMerge: originalLapTTimer=358.439, newLapTTimer=358.0, diffLapTTimer=0.43899536
+lapMerge: adjusted tTimer=358.439
+lapMerge: originalLapETimer=358.439, newLapETimer=358.0, diffLapETimer=0.43899536
+lapMerge: adjusted eTimer=358.439
+-- SPLIT merge result: kept SPLIT 11, removed 1 split(s), tied to LAP 10
+-- Updated SPLIT_SUMMARY rows: 2, created: 0, removed (no splits left): 0 for split types [4, 7].
+Merged laps: 10 to 12
+-- New lap 10 time: 5:58min, dist: 996 m
+
+LAP NEW - Split a lap into two.
+--------------------------------------------
+Split lap at timer: 28:40
+--------------------------------------------
+Split lap no 9 at timer: 28:40
+--------------------------------------------
+-- Split analyze [LAP NEW] LAP 9 -> SPLIT 10 by SPL_LAPIX (splitTimer=384.4s, lapTimer=384.5s)
+lapNew: originalLapTTimer=384.497, firstLapTTimer=290.0, secondLapTTimer=95.0, diffLapTTimer=-0.5029907
+lapNew: adjusted firstLapTTimer=289.749, adjusted secondLapTTimer=94.749
+lapNew: originalLapETimer=384.497, firstLapETimer=290.0, secondLapETimer=95.0, diffLapETimer=-0.5029907
+lapNew: adjusted firstLapETimer=289.749, adjusted secondLapETimer=94.749
+-- SPLIT update: split SPLIT 10 into two splits for LAP 9 and LAP 10
+-- Split sync [lapNew] LAP 9 -> SPLIT 10 by SPL_LAPIX (splitTimer=289.7s, lapTimer=289.7s)
+-- Split sync [lapNew] LAP 10 -> SPLIT 11 by SPL_LAPIX (splitTimer=94.7s, lapTimer=94.7s)
+-- Split sync complete [lapNew]: synced=13, lapsWithoutSplit=0
+-- Updated SPLIT_SUMMARY rows: 1, created: 0, removed (no splits left): 0 for split types [7].
+Split lap 9 at totalTimer=28:40 (recordIx=1720)
+-- Lap 9 new timer: 4:50min, new lap 10 timer: 1:35min
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+--------------------------------------------------
+COMBINED SPLIT DETECTION (Garmin merged laps into one split)
+--------------------------------------------------
+-- Updated SPLIT_SUMMARY rows: 2, created: 0, removed (no splits left): 1 for split types [3, 4, 7].
+wkti applied: warmup=1, cooldown=1, after-active=recover, laps=13.
+Updated LAP_INTENSITY for 13 lap messages.
+Updated SPL_TYPE for 2 split messages.
+Updated split types counts: warmup=0, cooldown=0, active=1, rest=0, recovery=1

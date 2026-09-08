@@ -1,6 +1,11 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 2439, Time between: 2026-04-11-14-12-34 -- 2026-04-11-14-58-04
 ======== Non-course file detected. All commands will be available.
+
+LAP MERGE
+--------------------------------------------
+Merge laps no: 1 -> 3
+--------------------------------------------
 -- Split analyze for lap range 1-3
 -- No split match for LAP 1 (lapTimer=482.7s)
 -- No split match for LAP 2 (lapTimer=572.8s)
@@ -17,6 +22,11 @@ lapMerge: adjusted eTimer=1867.517
 -- No SPL_TYPE changes, SPLIT_SUMMARY unchanged.
 Merged laps: 1 to 3
 -- New lap 1 time: 26:09min, dist: 3000 m
+
+LAP MERGE
+--------------------------------------------
+Merge laps no: 2 -> 4
+--------------------------------------------
 -- Split analyze for lap range 2-4
 -- No split match for LAP 2 (lapTimer=396.3s)
 -- No split match for LAP 3 (lapTimer=390.8s)

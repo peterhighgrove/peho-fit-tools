@@ -499,6 +499,9 @@ Math.round(fitFile.getLapExtraRecords().get(i).getStepLen() / 10 * 2) + "cm")
 --> v3.17 Build
 --> git sync
 
+--> regr-wkt --bless
+--> regr-gps --bless
+
 
 ***********
 **** BUGGAR
