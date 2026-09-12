@@ -514,6 +514,10 @@ Changed that Header logging & fix for apply interval pattern.
 --> git sync
 
 Pause shorten added to update lap from LapExtra Data and sync splits
+--> git sync
+--> v3.19 Build
+--> git sync
+
 
 
 ***********
