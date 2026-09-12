@@ -467,7 +467,7 @@ public class LapFix {
     // Recalculates SPLIT_SUMMARY rows (incl. SPLSUM_SPLITS, the number of splits of that
     // type) from the current SPLIT list. Returns the log lines instead of writing them
     // directly to fitFile's shared temp log, since callers (spla vs wkti) manage logging differently.
-    private void updateSplitSummaryFromSplitsForTypes(Set<Short> splitTypesToRefreshSummary) {
+    public void updateSplitSummaryFromSplitsForTypes(Set<Short> splitTypesToRefreshSummary) {
 
         if (splitTypesToRefreshSummary == null || splitTypesToRefreshSummary.isEmpty()) {
             fitFile.printAndAppendUpdateLogLn("-- No SPL_TYPE changes, SPLIT_SUMMARY unchanged.");
@@ -953,7 +953,7 @@ public class LapFix {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    private SplitMatch analyzeSplitMatchForSingleLap(int lapIx, Mesg lap, String context) {
+    SplitMatch analyzeSplitMatchForSingleLap(int lapIx, Mesg lap, String context) {
         Set<Integer> usedSplitIndexes = new HashSet<>();
         SplitMatch match = findBestSplitMatchForLap(lapIx, lap, usedSplitIndexes);
         if (match != null) {
@@ -1159,7 +1159,7 @@ public class LapFix {
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     // Synchronizes the SPLIT messages with the LAP messages after a lap change (e.g., after a lap split or merge).
-    private void syncSplitsFromLapsAfterLapChange(String context, int updateFromLapIx, int updateToLapIx) {
+    public void syncSplitsFromLapsAfterLapChange(String context, int updateFromLapIx, int updateToLapIx) {
         if (fitFile.getLapMesg() == null || fitFile.getLapMesg().isEmpty()) {
             fitFile.printAndAppendUpdateLogLn("-- Split sync skipped (no laps) [" + context + "]");
             return;
@@ -1175,13 +1175,8 @@ public class LapFix {
 
         for (int lapIx = 0; lapIx < fitFile.getLapMesg().size(); lapIx++) {
             Mesg lap = fitFile.getLapMesg().get(lapIx);
-            System.out.println("syncSplitsFromLapsAfterLapChange: lapIx in loop=" + lapIx
-                 + ", lapIx in lap=" + lap.getFieldIntegerValue(FitFile.LAP_IX));
-            
             SplitMatch match = findBestSplitMatchForLap(lapIx, lap, usedSplitIndexes);
 
-            System.out.println("syncSplitsFromLapsAfterLapChange: lapIx=" + lapIx
-                + ", match=" + (match != null ? "SPLIT " + (match.splitListIndex + 1) : "null"));
             if (match == null) {
                 noMatch++;
                 continue;
@@ -1193,6 +1188,8 @@ public class LapFix {
             // Update the SPLIT message to reflect the metrics of the corresponding LAP message.
             if (lapIx >= updateFromLapIx && lapIx <= updateToLapIx) {
                 applyLapMetricsToSplit(lapIx, match.splitMesg);
+                fitFile.printAndAppendUpdateLogLn("syncSplitsFromLapsAfterLapChange: lapIx=" + lapIx
+                    + ", match=" + (match != null ? "SPLIT " + (match.splitListIndex + 1) : "null"));
                 fitFile.printAndAppendUpdateLogLn("-- Split sync [" + context + "] LAP " + (lapIx + 1)
                     + " -> SPLIT " + (match.splitListIndex + 1)
                     + " by " + match.matchReason
@@ -1564,7 +1561,7 @@ public class LapFix {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    private LapBoundaryValues recalculateLapValuesFromRecords(int lapIx) {
+    public LapBoundaryValues recalculateLapValuesFromRecords(int lapIx) {
         
         Mesg lapMesg = fitFile.getLapMesg().get(lapIx);
         LapExtraMesg lapExtra = fitFile.getLapExtraRecords().get(lapIx);
@@ -1737,13 +1734,13 @@ public class LapFix {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    private static class SplitMatch {
-        private final Mesg splitMesg;
-        private final int splitListIndex;
-        private final int lapIx;
-        private final Float splitTimer;
-        private final Float lapTimer;
-        private final String matchReason;
+    static class SplitMatch {
+        final Mesg splitMesg;
+        final int splitListIndex;
+        final int lapIx;
+        final Float splitTimer;
+        final Float lapTimer;
+        final String matchReason;
 
         private SplitMatch(Mesg splitMesg, int splitListIndex, int lapIx, Float splitTimer, Float lapTimer, String matchReason) {
             this.splitMesg = splitMesg;

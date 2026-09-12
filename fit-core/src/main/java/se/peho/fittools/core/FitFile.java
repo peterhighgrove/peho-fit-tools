@@ -929,7 +929,7 @@ public class FitFile {
 
             Boolean nextRecordLastInLap = false;
 
-            // System.out.println("fillLapExtraRecords: numberOfLaps: " + numberOfLaps + ", numberOfRecords: " + numberOfRecords + ", nextLapStartTime: " + nextLapStartTime);
+            printAndAppendUpdateLogLn("fillLapExtraRecords starting: numberOfLaps: " + numberOfLaps + ", numberOfRecords: " + numberOfRecords + ", nextLapStartTime: " + nextLapStartTime);
 
             LapExtraMesg newLapExtra = new LapExtraMesg();
 
@@ -1379,10 +1379,10 @@ public class FitFile {
         }
         catch (Exception e) {
             e.printStackTrace();
-            System.out.println("============================================================");
-            System.out.println("Error in fillLapExtraRecords: " + e.getMessage());
-            System.out.println("SOME FUNCTIONS WITH LAP EXTRA VALUES MAY NOT WORK.");
-            System.out.println("============================================================");
+            printAndAppendUpdateLogLn("============================================================");
+            printAndAppendUpdateLogLn("Error in fillLapExtraRecords: " + e.getMessage());
+            printAndAppendUpdateLogLn("SOME FUNCTIONS WITH LAP EXTRA VALUES MAY NOT WORK.");
+            printAndAppendUpdateLogLn("============================================================");
         }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -1500,22 +1500,21 @@ public class FitFile {
             fromDist = recordMesg.get(fromRecordIx).getFieldFloatValue(REC_DIST);
         }
 
+        // Add the specified distance to all records starting from fromRecordIx
         Float recordDist;
         //  +1 cause not to update 3 new records
         int ix = 0;
+        int counter = 0;
         for (ix = fromRecordIx; ix < getNumberOfRecords(); ix++) {
             recordDist = recordMesg.get(ix).getFieldFloatValue(REC_DIST);
             recordMesg.get(ix).setFieldValue(REC_DIST, (recordDist + distToAdd));
+            counter++;
         }
 
-        /* for (int lapIdx = 0; lapIdx < lapMesg.size(); lapIdx++) {
-            Mesg lap = lapMesg.get(lapIdx);
-            System.out.println("LAP " + lapIdx
-                    + " ix=" + lap.getFieldIntegerValue(LAP_IX)
-                    + " dist=" + PehoUtils.m2km2(lap.getFieldFloatValue(LAP_DIST))
-                    + " avgSpd=" + PehoUtils.mps2minpkm(lap.getFieldFloatValue(LAP_SPEED))
-                    + " enhAvgSpd=" + PehoUtils.mps2minpkm(lap.getFieldFloatValue(LAP_ESPEED)));
-        } */
+        printAndAppendUpdateLogLn("addDist: Updated " + counter 
+            + " records starting from distance " + fromDist + "m"
+            + " index " + fromRecordIx 
+            + " by adding distance " + distToAdd + "m.");
 
         // Update the lap that contains fromRecordIx
         if (fromRecordIx < getNumberOfRecords() && !lapMesg.isEmpty()) {
@@ -1535,19 +1534,11 @@ public class FitFile {
             lapMesg.get(affectedLapIx).setFieldValue(LAP_DIST, newLapDist);
             //lapMesg.get(affectedLapIx).setFieldValue(LAP_SPEED, newLapDist / lapTimer);
             lapMesg.get(affectedLapIx).setFieldValue(LAP_ESPEED, newLapDist / lapTimer);
-            appendTempUpdateLog("Updating LAP Ix: " + affectedLapIx + " DIST from " + lapDist);
-            appendTempUpdateLogLn(" to " + newLapDist + "m, speed: " + PehoUtils.mps2minpkm(newLapDist / lapTimer) + "min/km");
+            printAndAppendUpdateLogLn("addDist: Updating LAP Ix: " + affectedLapIx 
+                + " DIST from " + lapDist
+                + " to " + newLapDist + "m, speed: "
+                + PehoUtils.mps2minpkm(newLapDist / lapTimer) + "min/km");
         }
-
-        /* System.out.println("FromDist: " + PehoUtils.m2km2(fromDist) + ", distToAdd: " + PehoUtils.m2km2(distToAdd));
-        for (int lapIdx = 0; lapIdx < lapMesg.size(); lapIdx++) {
-            Mesg lap = lapMesg.get(lapIdx);
-            System.out.println("LAP " + lapIdx
-                    + " ix=" + lap.getFieldIntegerValue(LAP_IX)
-                    + " dist=" + PehoUtils.m2km2(lap.getFieldFloatValue(LAP_DIST))
-                    + " avgSpd=" + PehoUtils.mps2minpkm(lap.getFieldFloatValue(LAP_SPEED))
-                    + " enhAvgSpd=" + PehoUtils.mps2minpkm(lap.getFieldFloatValue(LAP_ESPEED)));
-        } */
 
         // Update split distances using fromDist reference:
         // 1) if fromDist is inside split [startDist, totalDist], update totalDist.
@@ -1571,47 +1562,11 @@ public class FitFile {
             }
             java.util.Map<Short, Integer> splitTypeOccurrence = new java.util.HashMap<>();
 
-            /* for (Mesg split : splitMesg) {
-                Short splitType = split.getFieldShortValue(SPL_TYPE);
-                System.out.println("SPLIT"
-                        + " startTime=" + FitDateTime.toStringTime(split.getFieldLongValue(SPL_STIME), diffMinutesLocalUTC)
-                        + " totalTime=" + FitDateTime.toTimerString(split.getFieldLongValue(SPL_TIMER))
-                        + " startDist=" + PehoUtils.m2km2(split.getFieldFloatValue(SPL_SDIST)/100)
-                        + " totalDist=" + PehoUtils.m2km2(split.getFieldFloatValue(SPL_DIST))
-                    + " type=" + splitType + "(" + (splitType != null ? SplitType.getByValue(splitType) : "unknown") + ")"
-                    );
-            } */
-
+            int splitNo = 0;
             for (Mesg split : splitMesg) {
-                /* if (splitStartDistFieldNum < 0) {
-                    for (Field field : split.getFields()) {
-                        if (field != null && field.getName() != null) {
-                            String normalized = field.getName().replaceAll("[^A-Za-z0-9]", "").toLowerCase();
-                            //System.out.println("Checking split field: " + field.getName() + " normalized: " + normalized);
-                            if (normalized.contains("start") && normalized.contains("dist")) {
-                                splitStartDistFieldNum = field.getNum();
-                                break;
-                            }
-                        }
-                    }
-                } */
-
+                splitNo++;
                 Float splitStartDist = split.getFieldFloatValue(SPL_SDIST) / 100;
-                /* Float splitStartDist = null;
-                 if (splitStartDistFieldNum >= 0) {
-                    Object startDistObj = split.getFieldValue(splitStartDistFieldNum);
-                    if (startDistObj instanceof Number) {
-                        splitStartDist = ((Number) startDistObj).floatValue();
-                    }
-                } */
-
                 Float splitTotalDist = split.getFieldFloatValue(SPL_DIST);
-                /* Float splitTotalDist = null;
-                Object splitTotalDistObj = split.getFieldValue(SPL_DIST);
-                if (splitTotalDistObj instanceof Number) {
-                    splitTotalDist = ((Number) splitTotalDistObj).floatValue();
-                } */
-
 
                 Short splitType = split.getFieldShortValue(SPL_TYPE);
                 if (splitType != null) {
@@ -1627,8 +1582,9 @@ public class FitFile {
 
                     split.setFieldValue(SPL_DIST, newSplitTotalDist);
                     split.setFieldValue(SPL_SPEED, newSplitTotalDist / splitTimer);
-                    appendTempUpdateLog("Updating SPLIT w start dist " + splitStartDist + " DIST from " + splitTotalDist);
-                    appendTempUpdateLogLn(" to " + newSplitTotalDist + "m, speed: " 
+                    printAndAppendUpdateLogLn("addDist: Updating SPLIT no " + splitNo + " w start dist " + splitStartDist 
+                        + " DIST from " + splitTotalDist
+                        + " to " + newSplitTotalDist + "m, speed: " 
                         + PehoUtils.mps2minpkm(newSplitTotalDist / splitTimer) + "min/km"
                         + " type=" + (splitType != null ? SplitType.getByValue(splitType) : "unknown") + "(" + splitType + ")");
 
@@ -1646,8 +1602,9 @@ public class FitFile {
                             summaryMesg.setFieldValue(SPLSUM_DIST, newSummaryDist);
                             summaryMesg.setFieldValue(SPLSUM_SPEED, newSummaryDist / summaryTimer);
                             updatedSplitSummaries++;
-                            appendTempUpdateLog("Updating SPLITSUM w type " + splitType + " DIST from " + summaryDist);
-                            appendTempUpdateLogLn(" to " + newSummaryDist + "m, speed: " 
+                            printAndAppendUpdateLogLn("addDist: Updating SPLITSUM w type " + splitType 
+                                + " DIST from " + summaryDist
+                                + " to " + newSummaryDist + "m, speed: " 
                                 + PehoUtils.mps2minpkm(newSummaryDist / summaryTimer) + "min/km");
                         }
                         splitTypeOccurrence.put(splitType, occurrenceIx + 1);
@@ -1658,12 +1615,16 @@ public class FitFile {
                 // When split start is after fromDist, shift start distance.
                 // ------------------------------------------------------------------
                 if (splitStartDist != null && splitStartDist > fromDist) {
-                    split.setFieldValue(SPL_SDIST, (splitStartDist + distToAdd) * 100);
+                    float newSplitStartDist = splitStartDist + distToAdd;
+                    split.setFieldValue(SPL_SDIST, newSplitStartDist * 100);
                     updatedSplitStarts++;
+                    printAndAppendUpdateLogLn("addDist: Updating SPLIT no " + splitNo + " w new start dist from " + splitStartDist 
+                        + " to " + newSplitStartDist + "m"
+                        + " type=" + (splitType != null ? SplitType.getByValue(splitType) : "unknown") + "(" + splitType + ")");
                 }
             } // end forloop split 
 
-            appendTempUpdateLogLn("Split updates: "
+            printAndAppendUpdateLogLn("addDist: Split updates: "
                     + "totalUpdated=" + updatedSplitTotals
                     + ", summaryUpdated=" + updatedSplitSummaries
                     + ", startShifted=" + updatedSplitStarts);
@@ -1691,12 +1652,12 @@ public class FitFile {
         sessionMesg.get(0).setFieldValue(SES_SPEED, getAvgSpeed());
         sessionMesg.get(0).setFieldValue(SES_ESPEED, getAvgSpeed());
 
-        appendTempUpdateLog("Increasing SESSION_DIST from " + oldTotalDist + "m");
-        appendTempUpdateLogLn(" to " + getTotalDistance() + "m");
+        printAndAppendUpdateLogLn("addDist: Increasing SESSION_DIST from " + oldTotalDist + "m" 
+            +" to " + getTotalDistance() + "m");
 
-        appendTempUpdateLog("Increasing SESSION_SPEED from " + oldAvgSpeed + "m/s" 
-            + " / " + PehoUtils.mps2minpkm(oldAvgSpeed) + "min/km");
-        appendTempUpdateLogLn(" to " + getAvgSpeed() + "m/s" 
+        printAndAppendUpdateLogLn("addDist: Increasing SESSION_SPEED from " + oldAvgSpeed + "m/s" 
+            + " / " + PehoUtils.mps2minpkm(oldAvgSpeed) + "min/km" 
+            + " to " + getAvgSpeed() + "m/s" 
             + " / " + PehoUtils.mps2minpkm(getAvgSpeed()) + "min/km");
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -3524,7 +3485,8 @@ public class FitFile {
                         if (eventTimerMesg.get(eventTimerIx).getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
                             // If not inPause - warning
                             if (!inPause) {
-                                System.out.println("==> WARNING - START when not in pause, START event w/o Stopping first @"
+                                printAndAppendUpdateLogLn("Create Timer List");
+                                printAndAppendUpdateLogLn("==> WARNING - START when not in pause, START event w/o Stopping first @"
                                     + eventTimerIx + " @time: "
                                     + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
                             } else {
@@ -3542,7 +3504,8 @@ public class FitFile {
 
                 // If record not the same as event timer
                 if (!isEventTImerTime && inPause) {
-                    System.out.println("==> WARNING - Records in pause @"
+                    printAndAppendUpdateLogLn("Create Timer List");
+                    printAndAppendUpdateLogLn("==> WARNING - Records in pause @"
                         + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
                     increaseTimer = false;
                 }
@@ -3565,8 +3528,9 @@ public class FitFile {
             lastRecordTime = record.getFieldLongValue(REC_TIME);
 
         }
-        System.out.println("======== Records: " + recordMesg.size() + " extraRecords: " + recordMesgAddOnRecords.size());
-        System.out.println("======== TotalTimerTime: " + PehoUtils.sec2minSecLong(totalTimerTime)
+        printAndAppendUpdateLogLn("Create timer list done w results");
+        printAndAppendUpdateLogLn("======== Records: " + recordMesg.size() + " extraRecords: " + recordMesgAddOnRecords.size());
+        printAndAppendUpdateLogLn("======== TotalTimerTime: " + PehoUtils.sec2minSecLong(totalTimerTime)
              + " last timer value: "
              + PehoUtils.sec2minSecLong(recordMesgAddOnRecords.get(recordMesgAddOnRecords.size()-1).getTimer()));
     }
@@ -5184,10 +5148,10 @@ public class FitFile {
         int mesgIx = 0;
         int eventCounter = 0;
         List<Integer> mesgToDelete = new ArrayList<>();
-        appendTempUpdateLogLn("START - Deleting events" + System.lineSeparator() + "------------------------------");
-        appendTempUpdateLogLn("Input values to delete events between " + FitDateTime.toString(new DateTime(eventTimeStartToDelete),diffMinutesLocalUTC) + " and " + FitDateTime.toString(new DateTime(eventTimeStopToDelete),diffMinutesLocalUTC));
-        appendTempUpdateLogLn("Event to delete: " + (eventToDelete.equals(Event.INVALID) ? "ALL" : eventToDelete));
-        appendTempUpdateLogLn("Event type to delete: " + (eventTypeToDelete.equals(EventType.INVALID) ? "ALL" : eventTypeToDelete));
+        printAndAppendUpdateLogLn("START - Deleting events" + System.lineSeparator() + "------------------------------");
+        printAndAppendUpdateLogLn("Input values to delete events between " + FitDateTime.toString(new DateTime(eventTimeStartToDelete),diffMinutesLocalUTC) + " and " + FitDateTime.toString(new DateTime(eventTimeStopToDelete),diffMinutesLocalUTC));
+        printAndAppendUpdateLogLn("Event to delete: " + (eventToDelete.equals(Event.INVALID) ? "ALL" : eventToDelete));
+        printAndAppendUpdateLogLn("Event type to delete: " + (eventTypeToDelete.equals(EventType.INVALID) ? "ALL" : eventTypeToDelete));
 
 
         for (Mesg mesg:allMesg) {
@@ -5212,7 +5176,7 @@ public class FitFile {
                         // If event is a TIMER event
                         if (eventTypeToDelete.equals(EventType.INVALID)) {
                             mesgToDelete.add(mesgIx);
-                                appendTempUpdateLogLn("Found matching EVENT to delete in allMesg: " + 
+                                printAndAppendUpdateLogLn("Found matching EVENT to delete in allMesg: " + 
                                     Event.getByValue(mesg.getFieldShortValue(EVE_EVENT)) + 
                                     EventType.getByValue(mesg.getFieldShortValue(EVE_TYPE)) + 
                                     " @ix:" + mesgIx);
@@ -5221,7 +5185,7 @@ public class FitFile {
                         } else {
                             if (mesgEventType.equals(eventTypeToDelete)) {
                                 mesgToDelete.add(mesgIx);
-                                appendTempUpdateLogLn("Found matching EVENT and eventTYPE to delete in allMesg: " + 
+                                printAndAppendUpdateLogLn("Found matching EVENT and eventTYPE to delete in allMesg: " + 
                                     Event.getByValue(mesg.getFieldShortValue(EVE_EVENT)) + 
                                     EventType.getByValue(mesg.getFieldShortValue(EVE_TYPE)) + 
                                     " @ix:" + mesgIx);

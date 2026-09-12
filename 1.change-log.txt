@@ -513,6 +513,8 @@ Changed that Header logging & fix for apply interval pattern.
 --> regr-gps --bless
 --> git sync
 
+Pause shorten added to update lap from LapExtra Data and sync splits
+
 
 ***********
 **** BUGGAR

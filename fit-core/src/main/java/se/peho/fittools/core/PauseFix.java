@@ -6,6 +6,14 @@ import com.garmin.fit.Mesg;
 import com.garmin.fit.MesgNum;
 import com.garmin.fit.RecordMesg;
 
+import se.peho.fittools.core.FitFile.LapExtraMesg;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 public class PauseFix {
 
     private final FitFile fitFile;
@@ -35,6 +43,10 @@ public class PauseFix {
             startGapPow = fitFile.getRecordMesg().get(pauseToShorten.getIxStop()+1).getFieldIntegerValue(FitFile.REC_POW);
         }
 
+        int lapIx = pauseToShorten.getIxLap();
+        Mesg lap = fitFile.getLapMesg().get(lapIx);
+        LapExtraMesg lapExtra = fitFile.getLapExtraRecords().get(lapIx);
+
         Long stopGapTime = stopGapRecord.getFieldLongValue(FitFile.REC_TIME); // New GAP END
         Float stopGapDist = startGapDist + pauseToShorten.getDistPause(); // New GAP END
         int stopGapPow = startGapPow;
@@ -42,20 +54,22 @@ public class PauseFix {
         // Speed Vaules
         Float startGapSpeed = (float) (pauseToShorten.getDistPause() / (stopGapTime - startGapTime)) ;
         Float stopGapSpeed = startGapSpeed;
-
-        stopGapRecord.setFieldValue(FitFile.REC_SPEED, stopGapSpeed);
-        stopGapRecord.setFieldValue(FitFile.REC_ESPEED, stopGapSpeed);
+        if (lapExtra.getSpeedEnhancedUsed()) {
+            stopGapRecord.setFieldValue(FitFile.REC_ESPEED, stopGapSpeed);
+        } else {
+            stopGapRecord.setFieldValue(FitFile.REC_SPEED, stopGapSpeed);
+        }
 
         // Power Value always missing in record after Pause
         stopGapRecord.setFieldValue(FitFile.REC_POW, stopGapPow);
 
         fitFile.clearTempUpdateLog();
-        fitFile.appendTempUpdateLogLn("");
-        fitFile.appendTempUpdateLogLn("PAUSE - SHORTEN@end, forgot to resume timer after pause");
-        fitFile.appendTempUpdateLogLn("--------------------------------------------");
-        fitFile.appendTempUpdateLogLn("Shortened pause no: " + pauseNo);
-        fitFile.appendTempUpdateLogLn("-- Pause decreased from " + pauseToShorten.getTimePause() + "sec to " + newPauseTime + "sec");
-        fitFile.appendTempUpdateLogLn("-->"
+        fitFile.printAndAppendUpdateLogLn("");
+        fitFile.printAndAppendUpdateLogLn("PAUSE - SHORTEN@end, forgot to resume timer after pause");
+        fitFile.printAndAppendUpdateLogLn("--------------------------------------------");
+        fitFile.printAndAppendUpdateLogLn("Shortened pause no: " + pauseNo);
+        fitFile.printAndAppendUpdateLogLn("-- Pause decreased from " + pauseToShorten.getTimePause() + "sec to " + newPauseTime + "sec");
+        fitFile.printAndAppendUpdateLogLn("-->"
             + "new speed:" + PehoUtils.mps2minpkm(startGapSpeed) + "min/km" 
             + " / " + PehoUtils.mps2kmph3(startGapSpeed) + "km/h"
             + " dist:" + pauseToShorten.getDistPause() + "m"
@@ -81,16 +95,48 @@ public class PauseFix {
         // ------------------------------------------------------
         fitFile.addDistToRecords(pauseToShorten.getIxStop()+1, pauseToShorten.getDistPause());
 
+        // Save original lap start and end coordinates before modifying the lap.
+        Integer originalStartLat = lap.getFieldIntegerValue(FitFile.LAP_SLAT);
+        Integer originalStartLon = lap.getFieldIntegerValue(FitFile.LAP_SLON);
+        Integer originalEndLat = lap.getFieldIntegerValue(FitFile.LAP_ELAT);
+        Integer originalEndLon = lap.getFieldIntegerValue(FitFile.LAP_ELON);
+
+        // Analyze the split match for the single lap to determine how to split the lap values.
+        LapFix.SplitMatch splitToSplit = new LapFix(fitFile).analyzeSplitMatchForSingleLap(lapIx, lap, "PAUSE SHORTEN");
+        Set<Short> affectedSplitTypes = new HashSet<>();
+        Short splitType = splitToSplit.splitMesg.getFieldShortValue(FitFile.SPL_TYPE);
+        if (splitType != null) {
+            affectedSplitTypes.add(splitType);
+        }
+
         // Updating LAP DATA
         //------------------
+        fitFile.createTimerList();
+        fitFile.fillLapExtraRecords();
         Float lapTime = fitFile.getLapMesg().get(pauseToShorten.getIxLap()).getFieldFloatValue(FitFile.LAP_TIMER) + pauseToShorten.getTimePause() - newPauseTime;
+        Float lapTimeLapExtra = fitFile.getLapExtraRecords().get(pauseToShorten.getIxLap()).getTTimerLap();
+        fitFile.printAndAppendUpdateLogLn("Pause shorten: Lap time (Lap Extra): " + lapTimeLapExtra + " (Lap time: " + lapTime + ")");
+        
+        // Get new LAP dist because updated in addDistToRecords 
+        Float lapDist = fitFile.getLapMesg().get(pauseToShorten.getIxLap()).getFieldFloatValue(FitFile.LAP_DIST);
+        Float lapDistLapExtra = fitFile.getLapExtraRecords().get(pauseToShorten.getIxLap()).getDistLap();
+        fitFile.printAndAppendUpdateLogLn("Pause shorten: Lap dist (Lap Extra): " + lapDistLapExtra + " (Lap dist: " + lapDist + ")");
+        // fitFile.getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(FitFile.LAP_SPEED, lapDist / lapTime);
+        // fitFile.getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(FitFile.LAP_ESPEED, lapDist / lapTime);
+
+        new LapFix(fitFile).recalculateLapValuesFromRecords(lapIx);
+
         fitFile.getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(FitFile.LAP_TIMER, lapTime);
         //fitFile.getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(FitFile.LAP_ETIMER, lapTime);
 
-        // Get new LAP dist because updated in addDistToRecords 
-        Float lapDist = fitFile.getLapMesg().get(pauseToShorten.getIxLap()).getFieldFloatValue(FitFile.LAP_DIST);
-        fitFile.getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(FitFile.LAP_SPEED, lapDist / lapTime);
-        fitFile.getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(FitFile.LAP_ESPEED, lapDist / lapTime);
+        lap.setFieldValue(FitFile.LAP_SLAT, originalStartLat);
+        lap.setFieldValue(FitFile.LAP_SLON, originalStartLon);
+        lap.setFieldValue(FitFile.LAP_ELAT, originalEndLat);
+        lap.setFieldValue(FitFile.LAP_ELON, originalEndLon);
+
+        // Synchronize the split messages with the lap messages after the lap change.
+        new LapFix(fitFile).syncSplitsFromLapsAfterLapChange("PAUSE SHORTEN", lapIx, lapIx);
+        new LapFix(fitFile).updateSplitSummaryFromSplitsForTypes(affectedSplitTypes);
 
         //LAP dist and speed is updated in addDistToRecords
         //fitFile.getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(FitFile.LAP_DIST, lapDist);
@@ -107,18 +153,19 @@ public class PauseFix {
         // Updating SESS speed again, even if updated in addDistToRecords 
         Float oldAvgSpeed = fitFile.getAvgSpeed();
         fitFile.setAvgSpeed(fitFile.getTotalDistance() / fitFile.getTotalTimerTime());
-        fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_SPEED, fitFile.getAvgSpeed());
-        fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_ESPEED, fitFile.getAvgSpeed());
-        fitFile.appendTempUpdateLog("Increasing SESSION_SPEED from " + oldAvgSpeed + "m/s" 
-            + " / " + PehoUtils.mps2minpkm(oldAvgSpeed) + "min/km");
-        fitFile.appendTempUpdateLogLn(" to " + fitFile.getAvgSpeed() + "m/s" 
+        if (fitFile.getSessionMesg().get(0).getFieldFloatValue(FitFile.SES_ESPEED) != null){
+            fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_ESPEED, fitFile.getAvgSpeed());
+        } else {
+            fitFile.getSessionMesg().get(0).setFieldValue(FitFile.SES_SPEED, fitFile.getAvgSpeed());
+        }
+        fitFile.printAndAppendUpdateLogLn("Pause shorten: Increasing SESSION_SPEED from " + oldAvgSpeed + "m/s" 
+            + " / " + PehoUtils.mps2minpkm(oldAvgSpeed) + "min/km" 
+            + " to " + fitFile.getAvgSpeed() + "m/s" 
             + " / " + PehoUtils.mps2minpkm(fitFile.getAvgSpeed()) + "min/km");
 
         // Delete all events in new gap because those event time will be out of order after shortening the pause, and can cause issues in Garmin Connect when uploading the file.
         fitFile.deleteEvents(startGapTime, stopGapTime, Event.INVALID, EventType.INVALID);
 
-        System.out.println(fitFile.getTempUpdateLog());
-        fitFile.appendUpdateLog(fitFile.getTempUpdateLog());
     }
 
     public void pauseIncrease(int pauseNo, Long secondsToPutIntoPause) {
