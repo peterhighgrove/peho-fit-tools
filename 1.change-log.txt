@@ -521,6 +521,10 @@ Pause shorten added to update lap from LapExtra Data and sync splits
 Fixed null check if no splits when using analyzeSplitMatchForSingleLap in pauseShorten amd lapMew
 LapFix.SplitMatch splitToSplit = new LapFix(fitFile).analyzeSplitMatchForSingleLap(lapIx, lap, "PAUSE SHORTEN");
 --> git sync
+--> v3.20 Build
+--> git sync
+
+
 
 
 ***********
