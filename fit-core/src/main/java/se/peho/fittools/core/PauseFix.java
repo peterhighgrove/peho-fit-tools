@@ -75,6 +75,7 @@ public class PauseFix {
             + " dist:" + pauseToShorten.getDistPause() + "m"
             + " gap dist start:" + startGapDist + "m end:" + stopGapDist + "m"
             + " gap time end-start:" + (stopGapTime - startGapTime) + "s");
+        fitFile.printAndAppendUpdateLogLn("--------------------------------------------");
 
         // Updating EVENT-TIMER-START DATA
         //----------------------   
@@ -104,9 +105,11 @@ public class PauseFix {
         // Analyze the split match for the single lap to determine how to split the lap values.
         LapFix.SplitMatch splitToSplit = new LapFix(fitFile).analyzeSplitMatchForSingleLap(lapIx, lap, "PAUSE SHORTEN");
         Set<Short> affectedSplitTypes = new HashSet<>();
-        Short splitType = splitToSplit.splitMesg.getFieldShortValue(FitFile.SPL_TYPE);
-        if (splitType != null) {
-            affectedSplitTypes.add(splitType);
+        if (splitToSplit != null && splitToSplit.splitMesg != null) {
+            Short splitType = splitToSplit.splitMesg.getFieldShortValue(FitFile.SPL_TYPE);
+            if (splitType != null) {
+                affectedSplitTypes.add(splitType);
+            }
         }
 
         // Updating LAP DATA

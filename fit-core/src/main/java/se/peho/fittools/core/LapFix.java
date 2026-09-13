@@ -783,9 +783,11 @@ public class LapFix {
         // Analyze the split match for the single lap to determine how to split the lap values.
         SplitMatch splitToSplit = analyzeSplitMatchForSingleLap(lapIx, firstLap, "LAP NEW");
         Set<Short> affectedSplitTypes = new HashSet<>();
-        Short splitType = splitToSplit.splitMesg.getFieldShortValue(FitFile.SPL_TYPE);
-        if (splitType != null) {
-            affectedSplitTypes.add(splitType);
+        if (splitToSplit != null && splitToSplit.splitMesg != null) {
+            Short splitType = splitToSplit.splitMesg.getFieldShortValue(FitFile.SPL_TYPE);
+            if (splitType != null) {
+                affectedSplitTypes.add(splitType);
+            }
         }
 
         // Create a new lap message for the second lap, copying the first lap's values.

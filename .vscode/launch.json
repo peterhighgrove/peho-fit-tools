@@ -21,7 +21,7 @@
       "mainClass": "se.peho.fittools.gpsfix.Main",
       "projectName": "fit-fix-gps-activities",
       "args": "\"Fartlek Lill-Jans och Fiskartorpets elljus\" 12 \
-      \"2025-09-10.zip\""
+      \"input.fit\""
     },
     {
       "type": "java",
