@@ -1,11 +1,45 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 2626, Time between: 2025-09-17-17-06-21 -- 2025-09-17-17-51-03
 ======== Non-course file detected. All commands will be available.
+Create timer list done w results
+======== Records: 2626 extraRecords: 2626
+======== TotalTimerTime: 43:41 last timer value: 43:42
+fillLapExtraRecords starting: numberOfLaps: 19, numberOfRecords: 2626, nextLapStartTime: 1127055981
+fillLapExtraRecords starting: numberOfLaps: 19, numberOfRecords: 2626, nextLapStartTime: 1127055981
 -- New START coordinates:59.34934, 18.09934
     Decimal Degrees: Lat 59.34934000, Lon 18.09934000
     Garmin Semicircles: Lat 708065206, Lon 215933537
     Back to Decimal: Lat 59.34933996, Lon 18.09933999
    >>> Dist/Time from new point:60m / 1sec 0:01min
+addDist: Updated 2626 records starting from distance 0.91m index 1 by adding distance 60.41463m.
+addDist: Updating LAP Ix: 0 DIST from 1000.0 to 1060.4147m, speed: 4:46min/km
+addDist: Updating SPLIT no 1 w start dist 0.0 DIST from 399.24 to 459.65463m, speed: 4:25min/km type=RWD_RUN(17)
+addDist: Updating SPLITSUM w type 17 DIST from 8275.31 to 8335.725m, speed: 5:14min/km
+addDist: Updating SPLIT no 2 w start dist 0.0 DIST from 1834.06 to 1894.4747m, speed: 5:15min/km type=INTERVAL_WARMUP(5)
+addDist: Updating SPLITSUM w type 5 DIST from 1834.06 to 1894.4747m, speed: 5:15min/km
+addDist: Updating SPLIT no 3 w new start dist from 399.24 to 459.65463m type=RWD_WALK(18)
+addDist: Updating SPLIT no 4 w new start dist from 399.24 to 459.65463m type=RWD_RUN(17)
+addDist: Updating SPLIT no 5 w new start dist from 1834.06 to 1894.4747m type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLIT no 6 w new start dist from 2140.21 to 2200.6245m type=INTERVAL_REST(4)
+addDist: Updating SPLIT no 7 w new start dist from 2725.23 to 2785.6445m type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLIT no 8 w new start dist from 2832.5 to 2892.9146m type=INTERVAL_REST(4)
+addDist: Updating SPLIT no 9 w new start dist from 3166.18 to 3226.5945m type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLIT no 10 w new start dist from 3350.56 to 3410.9746m type=INTERVAL_REST(4)
+addDist: Updating SPLIT no 11 w new start dist from 4057.0 to 4117.4146m type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLIT no 12 w new start dist from 4311.73 to 4372.1445m type=INTERVAL_REST(4)
+addDist: Updating SPLIT no 13 w new start dist from 4454.03 to 4514.4443m type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLIT no 14 w new start dist from 4559.38 to 4619.7944m type=INTERVAL_REST(4)
+addDist: Updating SPLIT no 15 w new start dist from 5160.96 to 5221.3745m type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLIT no 16 w new start dist from 5495.86 to 5556.2744m type=INTERVAL_REST(4)
+addDist: Updating SPLIT no 17 w new start dist from 6036.86 to 6097.2744m type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLIT no 18 w new start dist from 6269.65 to 6330.0645m type=INTERVAL_REST(4)
+addDist: Updating SPLIT no 19 w new start dist from 6367.71 to 6428.1245m type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLIT no 20 w new start dist from 6819.78 to 6880.1943m type=INTERVAL_COOLDOWN(6)
+addDist: Updating SPLIT no 21 w new start dist from 8275.31 to 8335.725m type=RWD_WALK(18)
+addDist: Updating SPLIT no 22 w new start dist from 8275.31 to 8335.725m type=RWD_RUN(17)
+addDist: Split updates: totalUpdated=2, summaryUpdated=2, startShifted=20
+addDist: Increasing SESSION_DIST from 8275.31m to 8335.725m
+addDist: Increasing SESSION_SPEED from 3.158m/s / 5:17min/km to 3.1807344m/s / 5:14min/km
 ORG TIMES
 startTime:2025-09-17-15-06-21
 Lap time/stime:2025-09-17-15-06-21 / 2025-09-17-15-06-21
@@ -18,22 +52,56 @@ Lap time/stime:2025-09-17-15-06-20 / 2025-09-17-15-06-20
 Ses time/stime:2025-09-17-15-06-20 / 2025-09-17-15-06-20
 Act time UTC:2025-09-17-15-06-21
 Act time Loc:2025-09-17-17-06-20
+Create timer list done w results
+======== Records: 2627 extraRecords: 2627
+======== TotalTimerTime: 43:42 last timer value: 43:43
+addDist: Updated 2602 records starting from distance 156.19m index 25 by adding distance -54.098457m.
+addDist: Updating LAP Ix: 0 DIST from 1060.41 to 1006.3116m, speed: 5:03min/km
+addDist: Updating SPLIT no 1 w start dist 0.0 DIST from 459.65 to 405.55154m, speed: 5:00min/km type=RWD_RUN(17)
+addDist: Updating SPLITSUM w type 17 DIST from 8335.72 to 8281.621m, speed: 5:16min/km
+addDist: Updating SPLIT no 2 w start dist 0.0 DIST from 1894.47 to 1840.3715m, speed: 5:24min/km type=INTERVAL_WARMUP(5)
+addDist: Updating SPLITSUM w type 5 DIST from 1894.47 to 1840.3715m, speed: 5:24min/km
+addDist: Updating SPLIT no 3 w new start dist from 459.65466 to 405.5562m type=RWD_WALK(18)
+addDist: Updating SPLIT no 4 w new start dist from 459.65466 to 405.5562m type=RWD_RUN(17)
+addDist: Updating SPLIT no 5 w new start dist from 1894.4747 to 1840.3762m type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLIT no 6 w new start dist from 2200.6245 to 2146.5261m type=INTERVAL_REST(4)
+addDist: Updating SPLIT no 7 w new start dist from 2785.6443 to 2731.546m type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLIT no 8 w new start dist from 2892.9148 to 2838.8164m type=INTERVAL_REST(4)
+addDist: Updating SPLIT no 9 w new start dist from 3226.5945 to 3172.496m type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLIT no 10 w new start dist from 3410.9746 to 3356.8762m type=INTERVAL_REST(4)
+addDist: Updating SPLIT no 11 w new start dist from 4117.4146 to 4063.3162m type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLIT no 12 w new start dist from 4372.1445 to 4318.046m type=INTERVAL_REST(4)
+addDist: Updating SPLIT no 13 w new start dist from 4514.4443 to 4460.3457m type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLIT no 14 w new start dist from 4619.7944 to 4565.696m type=INTERVAL_REST(4)
+addDist: Updating SPLIT no 15 w new start dist from 5221.3745 to 5167.276m type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLIT no 16 w new start dist from 5556.2744 to 5502.176m type=INTERVAL_REST(4)
+addDist: Updating SPLIT no 17 w new start dist from 6097.2744 to 6043.176m type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLIT no 18 w new start dist from 6330.0645 to 6275.966m type=INTERVAL_REST(4)
+addDist: Updating SPLIT no 19 w new start dist from 6428.1245 to 6374.026m type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLIT no 20 w new start dist from 6880.1943 to 6826.0957m type=INTERVAL_COOLDOWN(6)
+addDist: Updating SPLIT no 21 w new start dist from 8335.725 to 8281.626m type=RWD_WALK(18)
+addDist: Updating SPLIT no 22 w new start dist from 8335.725 to 8281.626m type=RWD_RUN(17)
+addDist: Split updates: totalUpdated=2, summaryUpdated=2, startShifted=20
+addDist: Increasing SESSION_DIST from 8335.725m to 8281.626m
+addDist: Increasing SESSION_SPEED from 3.1807344m/s / 5:14min/km to 3.158886m/s / 5:17min/km
 -------------------------
 Deleting records to create a GAP
 -------------------------
-Updating LAP Ix: 0 DIST from 1060.41 to 1006.3116m, speed: 5:03min/km
-Updating SPLIT w start dist 0.0 DIST from 459.65 to 405.55154m, speed: 5:00min/km type=RWD_RUN(17)
-Updating SPLITSUM w type 17 DIST from 8335.72 to 8281.621m, speed: 5:16min/km
-Updating SPLIT w start dist 0.0 DIST from 1894.47 to 1840.3715m, speed: 5:24min/km type=INTERVAL_WARMUP(5)
-Updating SPLITSUM w type 5 DIST from 1894.47 to 1840.3715m, speed: 5:24min/km
-Split updates: totalUpdated=2, summaryUpdated=2, startShifted=20
-Increasing SESSION_DIST from 8335.725m to 8281.626m
-Increasing SESSION_SPEED from 3.1807344m/s / 5:14min/km to 3.158886m/s / 5:17min/km
 ===> Input values: 1 sec, 25 sec
 ===> Adjusted record distances from ix 25 with diff -54.10m
 ===> RecordMesgIx to delete from-to: 1 - 25
 ===> AllMesgIx to delete from: 127 and number of records: 25
 ===> Deleting records to create gap of 27 sec, from 1 sec into the activity
 ===> Deleting records from 2025-09-17-15-06-21 to 2025-09-17-15-06-45
+Create timer list done w results
+======== Records: 2603 extraRecords: 2603
+======== TotalTimerTime: 43:42 last timer value: 43:43
 Filling gaps with 1sec records
 -- GapNo: 1, dist: 102.09m, time: 25sec, @Dist: 0.0-102.09m, time: 2025-09-17-17-06-20
+Create timer list done w results
+======== Records: 2627 extraRecords: 2627
+======== TotalTimerTime: 43:42 last timer value: 43:43
+Create timer list done w results
+======== Records: 2627 extraRecords: 2627
+======== TotalTimerTime: 43:42 last timer value: 43:43
+fillLapExtraRecords starting: numberOfLaps: 19, numberOfRecords: 2627, nextLapStartTime: 1127056520

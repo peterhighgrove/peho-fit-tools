@@ -524,6 +524,9 @@ LapFix.SplitMatch splitToSplit = new LapFix(fitFile).analyzeSplitMatchForSingleL
 --> v3.20 Build
 --> git sync
 
+Added lapNo to LapExtra AND C2DateTime to RecordMesgAddOnRecords
+Changed RecordExtraMesg to RecordMesgAddOnRecords for INDOOR files
+--> git sync
 
 
 

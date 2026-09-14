@@ -1,6 +1,12 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 2439, Time between: 2026-04-11-14-12-34 -- 2026-04-11-14-58-04
 ======== Non-course file detected. All commands will be available.
+Create timer list done w results
+======== Records: 2439 extraRecords: 2439
+======== TotalTimerTime: 40:31 last timer value: 40:32
+fillLapExtraRecords starting: numberOfLaps: 6, numberOfRecords: 2439, nextLapStartTime: 1144843954
+fillLapExtraRecords starting: numberOfLaps: 6, numberOfRecords: 2439, nextLapStartTime: 1144843954
+fillLapExtraRecords starting: numberOfLaps: 6, numberOfRecords: 2439, nextLapStartTime: 1144843954
 
 LAP MERGE
 --------------------------------------------
@@ -14,6 +20,7 @@ Merge laps no: 1 -> 3
 -- Deleting linked TIME_IN_ZONE mesg for lap ix:0
 -- Deleting lap ix:0 time:2026-04-11-14-20-38
 -- Deleting linked TIME_IN_ZONE mesg for lap ix:0
+fillLapExtraRecords starting: numberOfLaps: 4, numberOfRecords: 2439, nextLapStartTime: 1144843954
 lapMerge: originalLapTTimer=1568.583, newLapTTimer=1569.0, diffLapTTimer=-0.4169922
 lapMerge: adjusted tTimer=1568.583
 lapMerge: originalLapETimer=1867.517, newLapETimer=1867.0, diffLapETimer=0.5169678
@@ -22,6 +29,11 @@ lapMerge: adjusted eTimer=1867.517
 -- No SPL_TYPE changes, SPLIT_SUMMARY unchanged.
 Merged laps: 1 to 3
 -- New lap 1 time: 26:09min, dist: 3000 m
+Create timer list done w results
+======== Records: 2439 extraRecords: 2439
+======== TotalTimerTime: 40:31 last timer value: 40:32
+fillLapExtraRecords starting: numberOfLaps: 4, numberOfRecords: 2439, nextLapStartTime: 1144843954
+fillLapExtraRecords starting: numberOfLaps: 4, numberOfRecords: 2439, nextLapStartTime: 1144843954
 
 LAP MERGE
 --------------------------------------------
@@ -35,6 +47,7 @@ Merge laps no: 2 -> 4
 -- Deleting linked TIME_IN_ZONE mesg for lap ix:1
 -- Deleting lap ix:1 time:2026-04-11-14-50-19
 -- Deleting linked TIME_IN_ZONE mesg for lap ix:1
+fillLapExtraRecords starting: numberOfLaps: 2, numberOfRecords: 2439, nextLapStartTime: 1144843954
 lapMerge: originalLapTTimer=861.993, newLapTTimer=863.0, diffLapTTimer=-1.007019
 lapMerge: adjusted tTimer=861.993
 lapMerge: originalLapETimer=861.993, newLapETimer=863.0, diffLapETimer=-1.007019
@@ -43,17 +56,43 @@ lapMerge: adjusted eTimer=861.993
 -- No SPL_TYPE changes, SPLIT_SUMMARY unchanged.
 Merged laps: 2 to 4
 -- New lap 2 time: 14:23min, dist: 2191 m
+Create timer list done w results
+======== Records: 2439 extraRecords: 2439
+======== TotalTimerTime: 40:31 last timer value: 40:32
+fillLapExtraRecords starting: numberOfLaps: 2, numberOfRecords: 2439, nextLapStartTime: 1144843954
+addDist: Updated 1427 records starting from distance 1912.32m index 942 by adding distance -124.88989m.
+addDist: Updating LAP Ix: 0 DIST from 3000.21 to 2875.32m, speed: 9:06min/km
+addDist: Updating SPLIT no 2 w start dist 0.0 DIST from 5191.54 to 5066.6504m, speed: 8:00min/km type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLITSUM w type 3 DIST from 5191.54 to 5066.6504m, speed: 8:00min/km
+addDist: Updating SPLIT no 28 w start dist 1740.55 DIST from 383.25 to 258.3601m, speed: 13:36min/km type=RWD_RUN(17)
+addDist: Updating SPLITSUM w type 17 DIST from 5163.14 to 5038.25m, speed: 7:57min/km
+addDist: Updating SPLIT no 29 w new start dist from 2123.8 to 1998.9102m type=RWD_STAND(22)
+addDist: Updating SPLIT no 30 w new start dist from 2123.8 to 1998.9102m type=RWD_WALK(18)
+addDist: Updating SPLIT no 31 w new start dist from 2123.8 to 1998.9102m type=RWD_RUN(17)
+addDist: Updating SPLIT no 32 w new start dist from 2123.8 to 1998.9102m type=RWD_STAND(22)
+addDist: Updating SPLIT no 33 w new start dist from 2123.8 to 1998.9102m type=RWD_WALK(18)
+addDist: Updating SPLIT no 34 w new start dist from 2123.8 to 1998.9102m type=RWD_STAND(22)
+addDist: Updating SPLIT no 35 w new start dist from 2123.8 to 1998.9102m type=RWD_WALK(18)
+addDist: Updating SPLIT no 36 w new start dist from 2132.02 to 2007.1301m type=RWD_RUN(17)
+addDist: Updating SPLIT no 37 w new start dist from 2632.0 to 2507.11m type=RWD_STAND(22)
+addDist: Updating SPLIT no 38 w new start dist from 2632.0 to 2507.11m type=RWD_WALK(18)
+addDist: Updating SPLIT no 39 w new start dist from 2634.05 to 2509.1602m type=RWD_RUN(17)
+addDist: Updating SPLIT no 40 w new start dist from 2937.42 to 2812.53m type=RWD_WALK(18)
+addDist: Updating SPLIT no 41 w new start dist from 2938.91 to 2814.02m type=RWD_RUN(17)
+addDist: Updating SPLIT no 42 w new start dist from 5191.54 to 5066.6504m type=RWD_WALK(18)
+addDist: Split updates: totalUpdated=2, summaryUpdated=2, startShifted=14
+addDist: Increasing SESSION_DIST from 5191.54m to 5066.6504m
+addDist: Increasing SESSION_SPEED from 2.136m/s / 7:48min/km to 2.0845473m/s / 8:00min/km
 PAUSE - INCREASE, forgot to stop before
 ---------------------------------------
 Increased pause no: 4
 -- Pause increased with 70sec to 1:16min
 Dist:1912.32-1787.43=-124.88989
-Updating LAP Ix: 0 DIST from 3000.21 to 2875.32m, speed: 9:06min/km
-Updating SPLIT w start dist 0.0 DIST from 5191.54 to 5066.6504m, speed: 8:00min/km type=INTERVAL_ACTIVE(3)
-Updating SPLITSUM w type 3 DIST from 5191.54 to 5066.6504m, speed: 8:00min/km
-Updating SPLIT w start dist 1740.55 DIST from 383.25 to 258.3601m, speed: 13:36min/km type=RWD_RUN(17)
-Updating SPLITSUM w type 17 DIST from 5163.14 to 5038.25m, speed: 7:57min/km
-Split updates: totalUpdated=2, summaryUpdated=2, startShifted=14
-Increasing SESSION_DIST from 5191.54m to 5066.6504m
-Increasing SESSION_SPEED from 2.136m/s / 7:48min/km to 2.0845473m/s / 8:00min/km
 Increasing SESSION_SPEED from 2.0845473m/s / 8:00min/km to 2.146362m/s / 7:46min/km
+Create timer list done w results
+======== Records: 2369 extraRecords: 2369
+======== TotalTimerTime: 39:21 last timer value: 39:22
+Create timer list done w results
+======== Records: 2369 extraRecords: 2369
+======== TotalTimerTime: 39:21 last timer value: 39:22
+fillLapExtraRecords starting: numberOfLaps: 2, numberOfRecords: 2369, nextLapStartTime: 1144844074

@@ -1,23 +1,42 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 6975, Time between: 2026-03-12-10-03-11 -- 2026-03-12-13-57-52
 ======== Non-course file detected. All commands will be available.
+Create timer list done w results
+======== Records: 6975 extraRecords: 6975
+======== TotalTimerTime: 115:54 last timer value: 115:55
+fillLapExtraRecords starting: numberOfLaps: 25, numberOfRecords: 6975, nextLapStartTime: 1142240591
+fillLapExtraRecords starting: numberOfLaps: 25, numberOfRecords: 6975, nextLapStartTime: 1142240591
+fillLapExtraRecords starting: numberOfLaps: 25, numberOfRecords: 6975, nextLapStartTime: 1142240591
+addDist: Updated 4837 records starting from distance 5726.2m index 2088 by adding distance -8.950195m.
+addDist: Updating LAP Ix: 5 DIST from 1000.0 to 991.0498m, speed: 6:54min/km
+addDist: Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
+addDist: Increasing SESSION_DIST from 24336.5m to 24327.55m
+addDist: Increasing SESSION_SPEED from 3.5m/s / 4:46min/km to 3.498348m/s / 4:46min/km
 PAUSE - INCREASE, forgot to stop before
 ---------------------------------------
 Increased pause no: 7
 -- Pause increased with 50sec to 2:51min
 Dist:5726.2-5717.25=-8.950195
-Updating LAP Ix: 5 DIST from 1000.0 to 991.0498m, speed: 6:54min/km
-Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
-Increasing SESSION_DIST from 24336.5m to 24327.55m
-Increasing SESSION_SPEED from 3.5m/s / 4:46min/km to 3.498348m/s / 4:46min/km
 Increasing SESSION_SPEED from 3.498348m/s / 4:46min/km to 3.5236835m/s / 4:44min/km
+Create timer list done w results
+======== Records: 6925 extraRecords: 6925
+======== TotalTimerTime: 115:04 last timer value: 115:05
+addDist: Updated 3847 records starting from distance 8648.09m index 3038 by adding distance -4.620117m.
+addDist: Updating LAP Ix: 8 DIST from 1000.0 to 995.3799m, speed: 6:08min/km
+addDist: Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
+addDist: Increasing SESSION_DIST from 24327.55m to 24322.93m
+addDist: Increasing SESSION_SPEED from 3.5236835m/s / 4:44min/km to 3.5230143m/s / 4:44min/km
 PAUSE - INCREASE, forgot to stop before
 ---------------------------------------
 Increased pause no: 11
 -- Pause increased with 40sec to 1:31min
 Dist:8648.09-8643.47=-4.620117
-Updating LAP Ix: 8 DIST from 1000.0 to 995.3799m, speed: 6:08min/km
-Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
-Increasing SESSION_DIST from 24327.55m to 24322.93m
-Increasing SESSION_SPEED from 3.5236835m/s / 4:44min/km to 3.5230143m/s / 4:44min/km
 Increasing SESSION_SPEED from 3.5230143m/s / 4:44min/km to 3.5435445m/s / 4:42min/km
+Create timer list done w results
+======== Records: 6885 extraRecords: 6885
+======== TotalTimerTime: 114:24 last timer value: 114:25
+fillLapExtraRecords starting: numberOfLaps: 25, numberOfRecords: 6885, nextLapStartTime: 1142240591
+Create timer list done w results
+======== Records: 6885 extraRecords: 6885
+======== TotalTimerTime: 114:24 last timer value: 114:25
+fillLapExtraRecords starting: numberOfLaps: 25, numberOfRecords: 6885, nextLapStartTime: 1142240771

@@ -1,6 +1,11 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 129, Time between: 2026-05-14-10-15-23 -- 2026-05-14-10-17-31
 ======== Non-course file detected. All commands will be available.
+Create timer list done w results
+======== Records: 129 extraRecords: 129
+======== TotalTimerTime: 2:08 last timer value: 2:08
+fillLapExtraRecords starting: numberOfLaps: 1, numberOfRecords: 129, nextLapStartTime: 1147680923
+fillLapExtraRecords starting: numberOfLaps: 1, numberOfRecords: 129, nextLapStartTime: 1147680923
 Adding activity from another file
 Selected segment in second file: ix 33 to 661 (629 messages)
 Adjusted TIME_IN_ZONE reference_index by +1 for 5 message(s).
@@ -20,6 +25,9 @@ TotalTimerTime:6:55
 TotalDistance:1265.0
 TotalElapsedTimer first file:2:08
 TotalElapsedTimer second file:4:46
+Create timer list done w results
+======== Records: 416 extraRecords: 416
+======== TotalTimerTime: 6:55 last timer value: 6:54
 Adding activity from another file
 Selected segment in second file: ix 99 to 6443 (6345 messages)
 Adjusted TIME_IN_ZONE reference_index by +6 for 27 message(s).
@@ -40,3 +48,10 @@ TotalTimerTime:57:53
 TotalDistance:11386.0
 TotalElapsedTimer first file:8:03
 TotalElapsedTimer second file:50:58
+Create timer list done w results
+======== Records: 3474 extraRecords: 3474
+======== TotalTimerTime: 57:53 last timer value: 57:51
+Create timer list done w results
+======== Records: 3474 extraRecords: 3474
+======== TotalTimerTime: 57:53 last timer value: 57:51
+fillLapExtraRecords starting: numberOfLaps: 33, numberOfRecords: 129, nextLapStartTime: 1147681823

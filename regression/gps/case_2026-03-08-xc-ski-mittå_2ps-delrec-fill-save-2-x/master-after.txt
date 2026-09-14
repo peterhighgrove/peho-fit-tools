@@ -14,12 +14,12 @@ New file info AFTER update:
 ---- ACTIVE LAPS ----
 Lap1 HR>st76+67->max143 end143 6:54min 6:54min/km 8.7km/h 1.0km
 Lap2 HRmin76>st143+0->max143 end141 6:52min 6:52min/km 8.7km/h 1.0km
-Lap3 HRmin115>st141+1->max142 end110 8:26min 6:47min/km 8.8km/h 1.2km
+Lap3 HRmin115>st141+1->max142 end110 8:26min 6:47min/km 8.8km/h 0W 1.2km
 Lap4 HRmin104>st111+46->max150 end125 5:41min 5:41min/km 10.6km/h 1.0km
 Lap5 HRmin108>st125+37->max145 end126 6:55min 6:56min/km 8.6km/h 1.0km
 Lap6 HRmin108>st126+29->max137 end131 4:27min 4:27min/km 13.5km/h 1.0km
 Lap7 HRmin113>st131+30->max143 end141 4:45min 4:45min/km 12.6km/h 1.0km
-Lap8 HRmin105>st141+3->max144 end124 4:25min 3:03min/km 19.7km/h 1.4km
+Lap8 HRmin105>st141+3->max144 end124 4:25min 3:02min/km 19.7km/h 0W 1.5km
 Lap9 HRmin103>st124+23->max147 end143 7:32min 7:32min/km 8.0km/h 1.0km
 Lap10 HRmin120>st143+1->max144 end132 5:42min 5:42min/km 10.5km/h 1.0km
 Lap11 HRmin125>st132+21->max146 end129 4:41min 4:41min/km 12.8km/h 1.0km

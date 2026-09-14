@@ -1,6 +1,13 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 9591, Time between: 2025-10-02-11-33-35 -- 2025-10-02-16-06-26
 ======== Non-course file detected. All commands will be available.
+Create Timer List
+==> WARNING - START when not in pause, START event w/o Stopping first @59 @time: 2025-10-02-13-56-24
+Create timer list done w results
+======== Records: 9591 extraRecords: 9591
+======== TotalTimerTime: 158:51 last timer value: 164:22
+fillLapExtraRecords starting: numberOfLaps: 16, numberOfRecords: 9591, nextLapStartTime: 1128332015
+fillLapExtraRecords starting: numberOfLaps: 16, numberOfRecords: 9591, nextLapStartTime: 1128332015
 START - Deleting events
 ------------------------------
 Input values to delete events between 2025-10-02-13-50-58 and 2025-10-02-13-56-24
@@ -8,6 +15,9 @@ Event to delete: TIMER
 Event type to delete: ALL
 Found matching EVENT to delete in allMesg: TIMERSTART @ix:19023
 ==>> Deleted Timer events between 2025-10-02-13-50-58 and 2025-10-02-13-56-24 (inclusive).
+Create timer list done w results
+======== Records: 9591 extraRecords: 9591
+======== TotalTimerTime: 158:51 last timer value: 164:22
 -------------------------
 Creating timer events in GAP to create a PAUSE
 For GAP no: 1
@@ -22,6 +32,11 @@ Event Type is a STOP_ALL. Insert of Event record will be AFTER data record with 
 Created event @ix: 18698
 Event Type is NOT STOP_ALL. Insert of Event record will be BEFORE data record with the same time.Data record was found at wanted event time.
 Created event @ix: 19036
+addDist: Updated 5412 records starting from distance 5208.94m index 4179 by adding distance -0.0m.
+addDist: Updating LAP Ix: 5 DIST from 558.01 to 558.01m, speed: 17:29min/km
+addDist: Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
+addDist: Increasing SESSION_DIST from 15220.45m to 15220.45m
+addDist: Increasing SESSION_SPEED from 1.597m/s / 10:26min/km to 1.5969563m/s / 10:26min/km
 -------------------------
 Creating timer events in GAP to create a PAUSE
 For GAP no: 1
@@ -31,27 +46,47 @@ Created event @ix: 18698
 Event Type is NOT STOP_ALL. Insert of Event record will be BEFORE data record with the same time.Data record was found at wanted event time.
 Created event @ix: 19036
 ==>> Created Timer events between 2025-10-02-13-50-58 and 2025-10-02-13-56-24 (inclusive).
-Updating LAP Ix: 5 DIST from 558.01 to 558.01m, speed: 17:29min/km
-Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
-Increasing SESSION_DIST from 15220.45m to 15220.45m
-Increasing SESSION_SPEED from 1.597m/s / 10:26min/km to 1.5969563m/s / 10:26min/km
 Decreasing LAP_TIMER for lap 5 from 585.585 to 259.58502s
 Decreasing SESSION_TIMER from 9530.912 to 9204.912s
+Create timer list done w results
+======== Records: 9591 extraRecords: 9591
+======== TotalTimerTime: 153:25 last timer value: 158:56
 
 PAUSE - SHORTEN@end, forgot to resume timer after pause
 --------------------------------------------
 Shortened pause no: 30
 -- Pause decreased from 326sec to 300sec
 -->new speed:5:52min/km / 10.233km/h dist:73.906555m gap dist start:5208.94m end:5282.8467m gap time end-start:26s
-Updating LAP Ix: 5 DIST from 558.01 to 631.91656m, speed: 6:51min/km
-Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
-Increasing SESSION_DIST from 15220.45m to 15294.356m
-Increasing SESSION_SPEED from 1.5969563m/s / 10:26min/km to 1.6615429m/s / 10:02min/km
-Increasing SESSION_SPEED from 1.6615429m/s / 10:02min/km to 1.656863m/s / 10:04min/km
+--------------------------------------------
+addDist: Updated 5412 records starting from distance 5208.94m index 4180 by adding distance 73.906555m.
+addDist: Updating LAP Ix: 5 DIST from 558.01 to 631.91656m, speed: 6:51min/km
+addDist: Split updates: totalUpdated=0, summaryUpdated=0, startShifted=0
+addDist: Increasing SESSION_DIST from 15220.45m to 15294.356m
+addDist: Increasing SESSION_SPEED from 1.5969563m/s / 10:26min/km to 1.6615429m/s / 10:02min/km
+-- Split analyze [PAUSE SHORTEN] LAP 6 -> no matching SPLIT
+Create timer list done w results
+======== Records: 9592 extraRecords: 9592
+======== TotalTimerTime: 153:25 last timer value: 159:22
+fillLapExtraRecords starting: numberOfLaps: 16, numberOfRecords: 9592, nextLapStartTime: 1128332015
+Pause shorten: Lap time (Lap Extra): 610.0 (Lap time: 285.58496)
+Pause shorten: Lap dist (Lap Extra): 631.27 (Lap dist: 631.92)
+-- Split sync skipped (no splits) [PAUSE SHORTEN]
+-- No SPL_TYPE changes, SPLIT_SUMMARY unchanged.
+Pause shorten: Increasing SESSION_SPEED from 1.6615429m/s / 10:02min/km to 1.656863m/s / 10:04min/km
 START - Deleting events
 ------------------------------
 Input values to delete events between 2025-10-02-13-55-58 and 2025-10-02-13-56-24
 Event to delete: ALL
 Event type to delete: ALL
+Create timer list done w results
+======== Records: 9592 extraRecords: 9592
+======== TotalTimerTime: 153:51 last timer value: 159:22
 Filling gaps with 1sec records
 -- GapNo: 1, dist: 73.91016m, time: 26sec, @Dist: 5208.94-5282.85m, time: 2025-10-02-13-55-58
+Create timer list done w results
+======== Records: 9617 extraRecords: 9617
+======== TotalTimerTime: 153:51 last timer value: 159:22
+Create timer list done w results
+======== Records: 9617 extraRecords: 9617
+======== TotalTimerTime: 153:51 last timer value: 159:22
+fillLapExtraRecords starting: numberOfLaps: 16, numberOfRecords: 9617, nextLapStartTime: 1128332195

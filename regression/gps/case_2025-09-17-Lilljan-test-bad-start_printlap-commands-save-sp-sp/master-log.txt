@@ -1,6 +1,16 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 2626, Time between: 2025-09-17-17-06-21 -- 2025-09-17-17-51-03
 ======== Non-course file detected. All commands will be available.
+Create timer list done w results
+======== Records: 2626 extraRecords: 2626
+======== TotalTimerTime: 43:41 last timer value: 43:42
+fillLapExtraRecords starting: numberOfLaps: 19, numberOfRecords: 2626, nextLapStartTime: 1127055981
+fillLapExtraRecords starting: numberOfLaps: 19, numberOfRecords: 2626, nextLapStartTime: 1127055981
+fillLapExtraRecords starting: numberOfLaps: 19, numberOfRecords: 2626, nextLapStartTime: 1127055981
+fillLapExtraRecords starting: numberOfLaps: 19, numberOfRecords: 2626, nextLapStartTime: 1127055981
+fillLapExtraRecords starting: numberOfLaps: 19, numberOfRecords: 2626, nextLapStartTime: 1127055981
+fillLapExtraRecords starting: numberOfLaps: 19, numberOfRecords: 2626, nextLapStartTime: 1127055981
+fillLapExtraRecords starting: numberOfLaps: 19, numberOfRecords: 2626, nextLapStartTime: 1127055981
 ---- ACTIVE LAPS ----
 Lap3 HRmin122>st122+15->max137 end137 1:27min 174spm 4:46min/km 340W 0.3km
 Lap5 HRmin130>st130+6->max136 end136 0:31min 174spm 4:45min/km 232W 0.1km
@@ -22,3 +32,7 @@ Lap16 HRst145>max145-1->min144 end145 0:37min 166spm 6:15min/km 334W 0.1km
 Lap18 HRst148>max148-21->min127 end143 5:08min 168spm 5:08min/km 284W 1.0km
 Lap19 HRst144>max144-18->min126 end143 2:15min 170spm 4:55min/km 314W 0.5km
 avgCad: 84spm, avgPace: 5:35min/km, avgSp: 10.8km/h, sumDist: 4.5km
+Create timer list done w results
+======== Records: 2626 extraRecords: 2626
+======== TotalTimerTime: 43:41 last timer value: 43:42
+fillLapExtraRecords starting: numberOfLaps: 19, numberOfRecords: 2626, nextLapStartTime: 1127056101

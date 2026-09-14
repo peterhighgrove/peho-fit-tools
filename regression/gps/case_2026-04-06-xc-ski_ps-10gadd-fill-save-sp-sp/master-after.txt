@@ -12,8 +12,8 @@ New file info AFTER update:
  --> New start datetime UTC:     2026-04-06-08-10-18
 --------------------------------------------------
 ---- ACTIVE LAPS ----
-Lap1 HR>st87+28->max115 end93 5:41min 3:47min/km 15.8km/h 32W 1.5km
-Lap2 HRmin70>st93+35->max128 end120 11:43min 8:47min/km 6.8km/h 33W 1.3km
+Lap1 HR>st87+28->max115 end93 5:41min 3:47min/km 15.9km/h 33W 1.5km
+Lap2 HRmin70>st93+35->max128 end120 11:43min 8:47min/km 6.8km/h 35W 1.3km
 Lap3 HRmin93>st120+9->max129 end127 4:47min 4:47min/km 12.5km/h 75W 1.0km
 Lap4 HRmin120>st127+13->max133 end129 4:52min 4:52min/km 12.3km/h 36W 1.0km
 Lap5 HRmin122>st129+11->max133 end126 4:17min 4:17min/km 14.0km/h 76W 1.0km

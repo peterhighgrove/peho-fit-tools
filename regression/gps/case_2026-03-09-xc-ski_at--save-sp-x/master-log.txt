@@ -1,6 +1,13 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 7544, Time between: 2026-03-09-06-16-18 -- 2026-03-09-09-40-48
 ======== Non-course file detected. All commands will be available.
+Create Timer List
+==> WARNING - START when not in pause, START event w/o Stopping first @22 @time: 2026-03-09-08-50-54
+Create timer list done w results
+======== Records: 7544 extraRecords: 7544
+======== TotalTimerTime: 125:44 last timer value: 131:19
+fillLapExtraRecords starting: numberOfLaps: 27, numberOfRecords: 7544, nextLapStartTime: 1141983618
+fillLapExtraRecords starting: numberOfLaps: 27, numberOfRecords: 7544, nextLapStartTime: 1141983618
 --------------------------------------------------
  --> Manufacturer:GARMIN, EPIX_GEN2_PRO_51(4314), SW: v26.03
  --> Sport:CROSS_COUNTRY_SKIING, SubSport:GENERIC, SportProfile:XC Classic Ski, WktName:
@@ -22,3 +29,9 @@ Changing ACTIVITY LOCAL time to DateTime string:
 --------------------------------------------------
 Changing Activity Local Time: 2026-03-09-09-40-18 to 2026-03-09-10-40-18
 --------------------------------------------------
+Create Timer List
+==> WARNING - START when not in pause, START event w/o Stopping first @22 @time: 2026-03-09-13-14-54
+Create timer list done w results
+======== Records: 7544 extraRecords: 7544
+======== TotalTimerTime: 125:44 last timer value: 131:19
+fillLapExtraRecords starting: numberOfLaps: 27, numberOfRecords: 7544, nextLapStartTime: 1141983738

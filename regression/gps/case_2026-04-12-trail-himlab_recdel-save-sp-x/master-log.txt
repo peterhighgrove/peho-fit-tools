@@ -1,20 +1,40 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 2186, Time between: 2026-04-12-12-17-30 -- 2026-04-12-12-54-48
 ======== Non-course file detected. All commands will be available.
+Create timer list done w results
+======== Records: 2186 extraRecords: 2186
+======== TotalTimerTime: 36:22 last timer value: 36:22
+fillLapExtraRecords starting: numberOfLaps: 6, numberOfRecords: 2186, nextLapStartTime: 1144923450
+fillLapExtraRecords starting: numberOfLaps: 6, numberOfRecords: 2186, nextLapStartTime: 1144923450
+fillLapExtraRecords starting: numberOfLaps: 6, numberOfRecords: 2186, nextLapStartTime: 1144923450
+addDist: Updated 984 records starting from distance 2994.71m index 1202 by adding distance -642.2586m.
+addDist: Updating LAP Ix: 2 DIST from 1000.0 to 357.7414m, speed: 18:19min/km
+addDist: Updating SPLIT no 2 w start dist 0.0 DIST from 5559.29 to 4917.0312m, speed: 7:24min/km type=INTERVAL_ACTIVE(3)
+addDist: Updating SPLITSUM w type 3 DIST from 5559.29 to 4917.0312m, speed: 7:24min/km
+addDist: Updating SPLIT no 7 w start dist 1230.2 DIST from 2671.69 to 2029.4314m, speed: 8:54min/km type=RWD_RUN(17)
+addDist: Updating SPLITSUM w type 17 DIST from 5554.11 to 4911.851m, speed: 7:24min/km
+addDist: Updating SPLIT no 8 w new start dist from 3901.89 to 3259.6313m type=RWD_STAND(22)
+addDist: Updating SPLIT no 9 w new start dist from 3901.89 to 3259.6313m type=RWD_WALK(18)
+addDist: Updating SPLIT no 10 w new start dist from 3901.89 to 3259.6313m type=RWD_STAND(22)
+addDist: Updating SPLIT no 11 w new start dist from 3901.89 to 3259.6313m type=RWD_WALK(18)
+addDist: Updating SPLIT no 12 w new start dist from 3904.03 to 3261.7715m type=RWD_RUN(17)
+addDist: Split updates: totalUpdated=2, summaryUpdated=2, startShifted=5
+addDist: Increasing SESSION_DIST from 5559.29m to 4917.0312m
+addDist: Increasing SESSION_SPEED from 2.547m/s / 6:33min/km to 2.2531686m/s / 7:24min/km
 -------------------------
 Deleting records to create a GAP
 -------------------------
-Updating LAP Ix: 2 DIST from 1000.0 to 357.7414m, speed: 18:19min/km
-Updating SPLIT w start dist 0.0 DIST from 5559.29 to 4917.0312m, speed: 7:24min/km type=INTERVAL_ACTIVE(3)
-Updating SPLITSUM w type 3 DIST from 5559.29 to 4917.0312m, speed: 7:24min/km
-Updating SPLIT w start dist 1230.2 DIST from 2671.69 to 2029.4314m, speed: 8:54min/km type=RWD_RUN(17)
-Updating SPLITSUM w type 17 DIST from 5554.11 to 4911.851m, speed: 7:24min/km
-Split updates: totalUpdated=2, summaryUpdated=2, startShifted=5
-Increasing SESSION_DIST from 5559.29m to 4917.0312m
-Increasing SESSION_SPEED from 2.547m/s / 6:33min/km to 2.2531686m/s / 7:24min/km
 ===> Input values: 14:00 min, 20:00 min
 ===> Adjusted record distances from ix 1202 with diff -642.26m
 ===> RecordMesgIx to delete from-to: 842 - 1202
 ===> AllMesgIx to delete from: 2805 and number of records: 361
 ===> Deleting records to create gap of 6:03 min, from 14:00 min into the activity
 ===> Deleting records from 2026-04-12-10-32-02 to 2026-04-12-10-38-02
+Create timer list done w results
+======== Records: 1826 extraRecords: 1826
+======== TotalTimerTime: 36:22 last timer value: 36:22
+fillLapExtraRecords starting: numberOfLaps: 6, numberOfRecords: 1826, nextLapStartTime: 1144923450
+Create timer list done w results
+======== Records: 1826 extraRecords: 1826
+======== TotalTimerTime: 36:22 last timer value: 36:22
+fillLapExtraRecords starting: numberOfLaps: 6, numberOfRecords: 1826, nextLapStartTime: 1144923570

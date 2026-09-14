@@ -210,12 +210,12 @@ public class FitFile {
     private List<PauseMesg> pauseRecords = new ArrayList<>(); //Not Garmin SDK
     private List<GapMesg> gapRecords = new ArrayList<>(); //Not Garmin SDK
     private List<RecordMesgAddOnRecords> recordMesgAddOnRecords = new ArrayList<>(); //Not Garmin SDK
-    private List<RecordExtraMesg> secExtraRecords = new ArrayList<>(); //Not Garmin SDK
+    private List<RecordMesgAddOnRecords> secExtraRecords = new ArrayList<>(); //Not Garmin SDK
     private List<LapExtraMesg> lapExtraRecords = new ArrayList<>(); //Not Garmin SDK
     public List<PauseMesg> getPauseList() { return pauseRecords; }
     public List<GapMesg> getGapList() { return gapRecords; }
     public List<RecordMesgAddOnRecords> getRecordMesgAddOnRecords() { return recordMesgAddOnRecords; }
-    public List<RecordExtraMesg> getSecExtraRecords() { return secExtraRecords; }
+    public List<RecordMesgAddOnRecords> getSecExtraRecords() { return secExtraRecords; }
     public List<LapExtraMesg> getLapExtraRecords() { return lapExtraRecords; }
 
     private Integer manufacturerNo;
@@ -1434,22 +1434,30 @@ public class FitFile {
     class RecordMesgAddOnRecords {
         Long timer;
         int lapNo;
+        private Long C2DateTime;
 
         public RecordMesgAddOnRecords() {
+        }
+        public RecordMesgAddOnRecords(int lapNo, Long C2DateTime) {
+            this.lapNo = lapNo;
+            this.C2DateTime = C2DateTime;
         }
         public RecordMesgAddOnRecords(Long timer) {
             this.timer = timer;
         }
-        public RecordMesgAddOnRecords(int lapNo, Long timer) {
-            this.lapNo = lapNo;
-            this.timer = timer;
-        }
+        // public RecordMesgAddOnRecords(int lapNo, Long timer) {
+        //     this.lapNo = lapNo;
+        //     this.timer = timer;
+        // }
 
         public Long getTimer() { return timer; }
         public void setTimer(Long timer) { this.timer = timer; }
 
         public int getLapNo() { return lapNo; }
         public void setLapNo(int lapNo) { this.lapNo = lapNo; }
+
+        public Long getC2DateTime() { return C2DateTime; }
+        public void setC2DateTime(Long C2DateTime) { this.C2DateTime = C2DateTime; }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void addTimeToLapAndSession(int lapIx, Float timeToAdd) {
@@ -1517,9 +1525,9 @@ public class FitFile {
             + " by adding distance " + distToAdd + "m.");
 
         // Update the lap that contains fromRecordIx
+        int affectedLapIx = 0;
         if (fromRecordIx < getNumberOfRecords() && !lapMesg.isEmpty()) {
             Long fromRecordTime = recordMesg.get(fromRecordIx).getFieldLongValue(REC_TIME);
-            int affectedLapIx = 0;
             for (int lapIdx = 0; lapIdx < lapMesg.size(); lapIdx++) {
                 Long lapSTime = lapMesg.get(lapIdx).getFieldLongValue(LAP_STIME);
                 if (lapSTime != null && fromRecordTime != null && lapSTime <= fromRecordTime) {
@@ -1532,8 +1540,11 @@ public class FitFile {
             Float newLapDist = lapDist + distToAdd;
             Float lapTimer = lapMesg.get(affectedLapIx).getFieldFloatValue(LAP_TIMER);
             lapMesg.get(affectedLapIx).setFieldValue(LAP_DIST, newLapDist);
-            //lapMesg.get(affectedLapIx).setFieldValue(LAP_SPEED, newLapDist / lapTimer);
-            lapMesg.get(affectedLapIx).setFieldValue(LAP_ESPEED, newLapDist / lapTimer);
+            if (getLapExtraRecords().get(affectedLapIx).getSpeedEnhancedUsed()) {
+                lapMesg.get(affectedLapIx).setFieldValue(LAP_ESPEED, newLapDist / lapTimer);
+            } else {
+                lapMesg.get(affectedLapIx).setFieldValue(LAP_SPEED, newLapDist / lapTimer);
+            }
             printAndAppendUpdateLogLn("addDist: Updating LAP Ix: " + affectedLapIx 
                 + " DIST from " + lapDist
                 + " to " + newLapDist + "m, speed: "
@@ -1630,17 +1641,6 @@ public class FitFile {
                     + ", startShifted=" + updatedSplitStarts);
         } // end if fromDist != null
 
-        /* for (Mesg split : splitMesg) {
-            Short splitType = split.getFieldShortValue(SPL_TYPE);
-            System.out.println("SPLIT"
-                    + " startTime=" + FitDateTime.toStringTime(split.getFieldLongValue(SPL_STIME), diffMinutesLocalUTC)
-                    + " totalTime=" + FitDateTime.toTimerString(split.getFieldLongValue(SPL_TIMER))
-                    + " startDist=" + PehoUtils.m2km2(split.getFieldFloatValue(SPL_SDIST)/100)
-                    + " totalDist=" + PehoUtils.m2km2(split.getFieldFloatValue(SPL_DIST))
-                + " type=" + splitType + "(" + (splitType != null ? SplitType.getByValue(splitType) : "unknown") + ")"
-                );
-        } */
-
         // Update session total distance and average speed
         // ------------------------------------------------------------------
         Float oldTotalDist = getTotalDistance();
@@ -1649,8 +1649,11 @@ public class FitFile {
 
         Float oldAvgSpeed = getAvgSpeed();
         setAvgSpeed(getTotalDistance() / getTotalTimerTime());
-        sessionMesg.get(0).setFieldValue(SES_SPEED, getAvgSpeed());
-        sessionMesg.get(0).setFieldValue(SES_ESPEED, getAvgSpeed());
+        if (getLapExtraRecords().get(affectedLapIx).getSpeedEnhancedUsed()) {
+            sessionMesg.get(0).setFieldValue(SES_ESPEED, getAvgSpeed());
+        } else {
+            sessionMesg.get(0).setFieldValue(SES_SPEED, getAvgSpeed());
+        }
 
         printAndAppendUpdateLogLn("addDist: Increasing SESSION_DIST from " + oldTotalDist + "m" 
             +" to " + getTotalDistance() + "m");
@@ -3446,55 +3449,101 @@ public class FitFile {
         Boolean increaseTimer = true;
         Boolean isEventTImerTime = false;
 
+        int recordIx = 0;
+        Long currentTimeStamp = 0L;
+        int pauseCounter = 0;
+        Long nextEventTimerTime = 0L;
+        int lapIx = 0;
+        int lapNo = 1;
+        // nextLapStartTime from lapMesg start time field
+        Long nextLapStartTime = 0L;
+        nextLapStartTime = (lapMesg.isEmpty() || lapMesg.get(0).getFieldLongValue(LAP_STIME) == null) ? 
+            getTimeFirstRecord() : 
+            lapMesg.get(0).getFieldLongValue(LAP_STIME);
+        Long currentLapTimeEnd = 0L;
+        Float currentLapTime = 0f;
+        Float sumLapTime = 0f;
+        Float currentLapExtraTime = 0f;
+        Float sumLapExtraTime = 0f;
+
+        Boolean nextRecordLastInLap = false;
+
         recordMesgAddOnRecords.clear();
 
+        printAndAppendUpdateLogLn("Create Timer List");
+        printAndAppendUpdateLogLn("-----------------");
         for (Mesg record : recordMesg) {
 
+            currentTimeStamp = record.getFieldLongValue(REC_TIME);
+            nextEventTimerTime = eventTimerMesg.get(eventTimerIx).getFieldLongValue(EVE_TIME);
             increaseTimer = true;
 
             if (eventTimerMesg.size() > 0 ) { // Not empty eventTimerMesg list
 
                 if (eventTimerMesg.size() > 2 ) { // More than First START and last STOP
                         
-                    // If record time is the same or more than NEXT eventTimer mesg
-                    // ------------------------------------------------------------
-                    if (eventTimerIx < eventTimerMesg.size()
-                        && record.getFieldLongValue(REC_TIME)
-                        >= eventTimerMesg.get(eventTimerIx).getFieldLongValue(EVE_TIME)) {
+                    if (eventTimerIx < eventTimerMesg.size() && currentTimeStamp >= nextEventTimerTime) {
+                        // Record time is the same or more than NEXT Timer Event mesg
+                        // ------------------------------------------------------------
+
                         isEventTImerTime = true;
-                                /* System.out.println();
-                                System.out.println("==> EVENT TIMER MESG Ix:" + eventTimerIx + " @"
-                                    + EventType.getByValue(eventTimerMesg.get(eventTimerIx).getFieldShortValue(EVE_TYPE)) + " @time: "
-                                    + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC)); */
+                                // System.out.println(" ==> EVENT TIMER MESG Ix:" + eventTimerIx + " @"
+                                //     + EventType.getByValue(eventTimerMesg.get(eventTimerIx).getFieldShortValue(EVE_TYPE)) + " @time: "
+                                //     + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
 
                         if (eventTimerMesg.get(eventTimerIx).getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
-                            // If inPause - warning
+                            // STOP_ALL event encountered
                             if (inPause) {
-                                /* System.out.println("==> WARNING - STOP AGAIN when already in pause, STOP event w/o Starting first @"
-                                    + eventTimerIx + " @time: "
-                                    + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC)); */
+                                // If already inPause - warning
+                                printAndAppendUpdateLogLn("" 
+                                    + " ==> WARNING - STOP EVENT AGAIN when already in pause, w/o Starting first"
+                                    + " pause no: " + pauseCounter
+                                    + " time: " + new Tstr(nextEventTimerTime,diffMinutesLocalUTC).get()
+                                    + " lapNo: " + lapNo
+                                    + " event ix: " + eventTimerIx 
+                                );
                             } else {
-                                /* System.out.println("==> EVENT TIMER STOP MESG @"
-                                    + eventTimerIx + " @time: "
-                                    + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC)); */
+                                // START of pause
+                                pauseCounter++;
                                 inPause = true;
                                 increaseTimer = true;
+                                printAndAppendUpdateLogLn(""
+                                    + " Record ix: " + recordIx
+                                    + " time: " + new Tstr(currentTimeStamp,diffMinutesLocalUTC).get()
+                                    + " START pause no: " + pauseCounter
+                                    + " ---> Stop  EVENT"
+                                    //+ " tTimer: " + PehoUtils.sec2minSecLong(timerCounter)
+                                    + " ix: " + eventTimerIx 
+                                    + " time: " + new Tstr(nextEventTimerTime,diffMinutesLocalUTC).get()
+                                    + " lapNo: " + lapNo
+                                );
                             }
                         }
                         
                         if (eventTimerMesg.get(eventTimerIx).getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
                             // If not inPause - warning
                             if (!inPause) {
-                                printAndAppendUpdateLogLn("Create Timer List");
-                                printAndAppendUpdateLogLn("==> WARNING - START when not in pause, START event w/o Stopping first @"
-                                    + eventTimerIx + " @time: "
-                                    + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
+                                printAndAppendUpdateLogLn("" 
+                                    + " ==> WARNING - START EVENT AGAIN when not in pause, w/o Stopping first"
+                                    + " time: " + new Tstr(nextEventTimerTime,diffMinutesLocalUTC).get()
+                                    + " tTimer: " + PehoUtils.sec2minSecLong(timerCounter)
+                                    + " lapNo: " + lapNo
+                                    + " event ix: " + eventTimerIx 
+                                );
                             } else {
-                                /* System.out.println("==> EVENT TIMER START MESG @"
-                                    + eventTimerIx + " @time: "
-                                    + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC)); */
+
                                 inPause = false;
                                 increaseTimer = false;
+                                printAndAppendUpdateLogLn(""
+                                    + " Record ix: " + recordIx
+                                    + " time: " + new Tstr(currentTimeStamp,diffMinutesLocalUTC).get()
+                                    + " END   pause no: " + pauseCounter
+                                    + " ---> Start EVENT" 
+                                    //+ " tTimer: " + PehoUtils.sec2minSecLong(timerCounter)
+                                    + " ix: " + eventTimerIx 
+                                    + " time: " + new Tstr(nextEventTimerTime,diffMinutesLocalUTC).get()
+                                    + " lapNo: " + lapNo
+                                );
                             }
                         } 
                         
@@ -3504,14 +3553,14 @@ public class FitFile {
 
                 // If record not the same as event timer
                 if (!isEventTImerTime && inPause) {
-                    printAndAppendUpdateLogLn("Create Timer List");
-                    printAndAppendUpdateLogLn("==> WARNING - Records in pause @"
-                        + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
+                    printAndAppendUpdateLogLn(" ==> WARNING - Records in pause"
+                        + " EVENT ix: " + eventTimerIx 
+                        + " time: " + new Tstr(nextEventTimerTime,diffMinutesLocalUTC).get());
                     increaseTimer = false;
                 }
 
                 if (increaseTimer) {
-                    recordTimerDelta = record.getFieldLongValue(REC_TIME) - lastRecordTime; 
+                    recordTimerDelta = currentTimeStamp - lastRecordTime; 
                     timerCounter += recordTimerDelta;
                     //System.out.println("==> Timer INCREASE for Record @" 
                       //  + FitDateTime.toString(record.getFieldLongValue(REC_TIME),diffMinutesLocalUTC));
@@ -3520,19 +3569,88 @@ public class FitFile {
                         + FitDateTime.toString(record.getFieldLongValue(REC_TIME),diffMinutesLocalUTC)); */
                 }
 
-                RecordMesgAddOnRecords newExtraRecord = new RecordMesgAddOnRecords(timerCounter);
+                //--------------
+                // IF LAP START
+                if (currentTimeStamp != null && nextLapStartTime != null && currentTimeStamp.equals(nextLapStartTime)) {
+
+                    // Get current LAP time for the new lap
+                    currentLapTime = getLapMesg().get(lapIx).getFieldFloatValue(LAP_TIMER);
+                    if (currentLapTime == null) {
+                        currentLapTime = 0f;
+                    }
+                    sumLapTime += currentLapTime;
+
+                    // Get current EXTRA LAP time for the new lap
+                    // currentLapExtraTime = getLapExtraRecords().get(lapIx).getTTimerLap();
+                    // if (currentLapExtraTime == null) {
+                    //     currentLapExtraTime = 0f;
+                    // }
+                    // sumLapExtraTime += currentLapExtraTime;
+
+                    System.out.println(" NEW LAP"
+                        + " lapNo: " + lapNo
+                        + " lapStartTime: " + new Tstr(nextLapStartTime,diffMinutesLocalUTC).get()
+                        + " currentRecordTime: " + new Tstr(currentTimeStamp,diffMinutesLocalUTC).get()
+                        + " timerCounter: " + PehoUtils.sec2minSecLong(timerCounter)
+                        + " Record ix: " + recordIx 
+                    );
+                    System.out.println(" ----"
+                        + " lap time: " + PehoUtils.sec2minSecLong(timerCounter)
+                        // + " lap extra time: " + PehoUtils.sec2minSecLong(currentLapExtraTime)
+                    );
+
+                    // Save LAP END to table
+                    if (lapNo < getNumberOfLaps()) {
+                        currentLapTimeEnd = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
+                        nextLapStartTime = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME);
+                    } else {
+                        currentLapTimeEnd = timeLastRecord;
+                    }
+                }
+
+                // Find out if next record is first record in next Lap
+                if ((recordIx + 1 >= recordMesg.size()) || 
+                        (recordMesg.get(recordIx + 1).getFieldLongValue(REC_TIME) > currentLapTimeEnd)) {
+                    nextRecordLastInLap = true;
+                } else {
+                    nextRecordLastInLap = false;
+                }
+
+                // if (recordIx < 15 || recordIx > 150 && recordIx < 250 || recordIx > (recordMesg.size()-10)) {
+                //     System.out.println(""
+                //         + " Record ix: " + recordIx 
+                //         + " currentRecordTime: " + new Tstr(currentTimeStamp,diffMinutesLocalUTC).get()
+                //         + " timerCounter: " + PehoUtils.sec2minSecLong(timerCounter)
+                //         + " lapNo: " + lapNo
+                //     );
+                // }
+
+                // --------------
+                // IF LAP END
+                //if (currentTimeStamp != null && currentLapTimeEnd != null && currentTimeStamp.equal(currentLapTimeEnd)) {
+                if (currentTimeStamp != null && currentLapTimeEnd != null && nextRecordLastInLap) {
+                    lapIx++;
+                    lapNo++;
+                }
+
+                RecordMesgAddOnRecords newExtraRecord = new RecordMesgAddOnRecords();
+                newExtraRecord.setTimer(timerCounter);
+                newExtraRecord.setLapNo(lapNo);
                 recordMesgAddOnRecords.add(newExtraRecord);
 
             }
 
+            recordIx++;
             lastRecordTime = record.getFieldLongValue(REC_TIME);
-
         }
-        printAndAppendUpdateLogLn("Create timer list done w results");
-        printAndAppendUpdateLogLn("======== Records: " + recordMesg.size() + " extraRecords: " + recordMesgAddOnRecords.size());
-        printAndAppendUpdateLogLn("======== TotalTimerTime: " + PehoUtils.sec2minSecLong(totalTimerTime)
+        printAndAppendUpdateLogLn("Results");
+        printAndAppendUpdateLogLn(" Records: " + recordMesg.size() + " extraRecords: " + recordMesgAddOnRecords.size());
+        printAndAppendUpdateLogLn(" TotalTimerTime: " + PehoUtils.sec2minSecLong(totalTimerTime)
              + " last timer value: "
-             + PehoUtils.sec2minSecLong(recordMesgAddOnRecords.get(recordMesgAddOnRecords.size()-1).getTimer()));
+             + PehoUtils.sec2minSecLong(recordMesgAddOnRecords.get(recordMesgAddOnRecords.size()-1).getTimer())
+             + " sumLapTime: " + PehoUtils.sec2minSecLong(sumLapTime)
+             + " sumLapExtraTime: " + PehoUtils.sec2minSecLong(sumLapExtraTime)
+            );
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -4046,12 +4164,15 @@ public class FitFile {
 
         pauseRecords.clear();
 
+        printAndAppendUpdateLogLn("Create Pause List");
+        printAndAppendUpdateLogLn("-----------------");
+
         for (Mesg record : eventTimerMesg){
 
             // -------------- 
             // STOP event (pause START)
             if (pauseCounter > 0 && !inPause && record.getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
-                System.out.println("==> WARNING - START Event w/o Stopping first (inCreatePause) @"
+                printAndAppendUpdateLogLn(" ==> WARNING - START Event w/o Stopping first (inCreatePause) @"
                      + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
 
             } else if (!inPause && record.getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
@@ -4145,11 +4266,6 @@ public class FitFile {
                 }
 
                 pauseRecords.add(newPause);
-
-                /* pauseRecords.add(new PauseMesg(pauseCounter, startPauseTime, timeStop,
-                    ixRecordStart, ixRecordStop, ixEvStart, ixEvStop, ixLap,
-                    distStart, latStart, lonStart, latStop, lonStop,
-                    altStart, altStop)); */
 
                 inPause = false;
             } else {

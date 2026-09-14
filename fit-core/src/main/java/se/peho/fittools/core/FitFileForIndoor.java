@@ -439,7 +439,7 @@ public class FitFileForIndoor extends FitFile {
             //--------------
             // Initiate secExtraRecords
             int lapNo = 1; // only for INIT of secExtraRecords for now
-            getSecExtraRecords().add(new RecordExtraMesg(lapNo, C2DateTime));
+            getSecExtraRecords().add(new RecordMesgAddOnRecords(lapNo, C2DateTime));
             
             //--------------
             // Look for HR drop outs
@@ -1978,7 +1978,7 @@ public class FitFileForIndoor extends FitFile {
 
             //--------------
             // Initiate secExtraRecords
-            getSecExtraRecords().add(new RecordExtraMesg(lapNo, C2DateTime));
+            getSecExtraRecords().add(new RecordMesgAddOnRecords(lapNo, C2DateTime));
 
             //--------------
             // IF LAP START
@@ -2080,7 +2080,7 @@ public class FitFileForIndoor extends FitFile {
 
             //--------------
             // Initiate secExtraRecords
-            getSecExtraRecords().add(new RecordExtraMesg(lapNo, C2DateTime));
+            getSecExtraRecords().add(new RecordMesgAddOnRecords(lapNo, C2DateTime));
 
             //--------------
             // IF LAP START
