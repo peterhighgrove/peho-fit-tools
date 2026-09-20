@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Scanner;
 
-import se.peho.fittools.core.FitFile.LapExtraMesg;
+import se.peho.fittools.core.FitFile.LapExtraRecord;
 import se.peho.fittools.core.strings.*;
 
 public class LapFix {
@@ -735,7 +735,7 @@ public class LapFix {
             fitFile.printAndAppendUpdateLogLn("==XX> No timer value provided.");
             return;
         }
-        if (fitFile.getRecordMesgAddOnRecords() == null || fitFile.getRecordMesgAddOnRecords().isEmpty()) {
+        if (fitFile.getRecordExtraList() == null || fitFile.getRecordExtraList().isEmpty()) {
             fitFile.printAndAppendUpdateLogLn("==XX> Timer list is empty. Run createTimerList() first.");
             return;
         }
@@ -760,7 +760,7 @@ public class LapFix {
         Long prevTime = prevRecord.getFieldLongValue(FitFile.REC_TIME);
 
         // Get the timer value from the add-on record for the split record index.
-        Long splitTimer = fitFile.getRecordMesgAddOnRecords().get(splitRecordIx).getTimer();
+        Long splitTimer = fitFile.getRecordExtraList().get(splitRecordIx).getTimer();
 
         if (splitTime == null || prevTime == null || splitTimer == null) {
             fitFile.printAndAppendUpdateLogLn("==XX> Could not resolve split record timing values.");
@@ -1103,7 +1103,7 @@ public class LapFix {
             return;
         }
         Mesg lapMesg = fitFile.getLapMesg().get(lapIx);
-        LapExtraMesg lapExtra = fitFile.getLapExtraRecords().get(lapIx);
+        LapExtraRecord lapExtra = fitFile.getLapExtraList().get(lapIx);
 
         Long lapStartTime = lapMesg.getFieldLongValue(FitFile.LAP_STIME);
         setLongIfNotNull(splitMesg, FitFile.SPL_STIME, lapStartTime);
@@ -1143,7 +1143,7 @@ public class LapFix {
         setIntIfNotNull(splitMesg, FitFile.SPL_MPOW, lapMesg.getFieldIntegerValue(FitFile.LAP_MPOW));
         setFloatIfNotNull(splitMesg, FitFile.SPL_STEP, lapMesg.getFieldFloatValue(FitFile.LAP_STEP));
 
-        setFloatIfNotNull(splitMesg, FitFile.SPL_SELE, fitFile.getLapExtraRecords().get(lapIx).getAltStart());
+        setFloatIfNotNull(splitMesg, FitFile.SPL_SELE, fitFile.getLapExtraList().get(lapIx).getAltStart());
         setIntIfNotNull(splitMesg, FitFile.SPL_ASC, lapMesg.getFieldIntegerValue(FitFile.LAP_ASC));
         setIntIfNotNull(splitMesg, FitFile.SPL_DESC, lapMesg.getFieldIntegerValue(FitFile.LAP_DESC));
         setIntIfNotNull(splitMesg, FitFile.SPL_TEMP, lapMesg.getFieldIntegerValue(FitFile.LAP_TEMP));
@@ -1479,13 +1479,13 @@ public class LapFix {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     // Returns the index of the first record whose timer is >= totalTimer, or the last record index if none found.
     private int findFirstRecordIndexAtOrAfterTimer(Long totalTimer) {
-        for (int i = 0; i < fitFile.getRecordMesgAddOnRecords().size(); i++) {
-            Long timer = fitFile.getRecordMesgAddOnRecords().get(i).getTimer();
+        for (int i = 0; i < fitFile.getRecordExtraList().size(); i++) {
+            Long timer = fitFile.getRecordExtraList().get(i).getTimer();
             if (timer != null && timer >= totalTimer) {
                 return i;
             }
         }
-        return fitFile.getRecordMesgAddOnRecords().size() - 1;
+        return fitFile.getRecordExtraList().size() - 1;
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -1552,7 +1552,7 @@ public class LapFix {
 
         Mesg prevLapEndRecord = fitFile.getRecordMesg().get(prevLapEndRecordIx);
         Float previousDistance = prevLapEndRecord.getFieldFloatValue(FitFile.REC_DIST);
-        Long previousTimer = fitFile.getRecordMesgAddOnRecords().get(prevLapEndRecordIx).getTimer();
+        Long previousTimer = fitFile.getRecordExtraList().get(prevLapEndRecordIx).getTimer();
         Long previousRecordTime = prevLapEndRecord.getFieldLongValue(FitFile.REC_TIME);
 
         return new LapBoundaryValues(
@@ -1566,7 +1566,7 @@ public class LapFix {
     public LapBoundaryValues recalculateLapValuesFromRecords(int lapIx) {
         
         Mesg lapMesg = fitFile.getLapMesg().get(lapIx);
-        LapExtraMesg lapExtra = fitFile.getLapExtraRecords().get(lapIx);
+        LapExtraRecord lapExtra = fitFile.getLapExtraList().get(lapIx);
 
         // TIME
         lapMesg.setFieldValue(FitFile.LAP_TIME, fitFile.getActivityDateTimeUTC()); // LAP_TIME is allways the start time of activity

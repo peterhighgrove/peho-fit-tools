@@ -20,7 +20,7 @@ public class PauseReportGenerator {
         System.out.println(String.format(" TotalTime:%1$.0fsec Dist:%2$.0fm", fitFile.getTotalTimerTime(), fitFile.getTotalDistance()));
         System.out.println("------------------------------------------------");
 
-        for (FitFile.PauseMesg record : fitFile.getPauseList()) {
+        for (FitFile.PauseRecord record : fitFile.getPauseList()) {
             if ((record.getIxStop() - record.getIxStart()) > 1) {
                 System.out.println("==> WARNING - Data Records in pause! Pause no: " + record.getNo());
             }
@@ -44,7 +44,7 @@ public class PauseReportGenerator {
     }
 
     public void printPause(int ix) {
-        FitFile.PauseMesg pauseRecord = fitFile.getPauseList().get(ix);
+        FitFile.PauseRecord pauseRecord = fitFile.getPauseList().get(ix);
         int hrDiff = 0;
         String hrSign = "";
 
@@ -62,7 +62,7 @@ public class PauseReportGenerator {
             fitFile.getRecordMesg().get(pauseRecord.getIxStart()).getFieldIntegerValue(FitFile.REC_HR),
             hrSign,
             hrDiff));
-        System.out.print(" @time:" + PehoUtils.sec2minSecShort(fitFile.getRecordMesgAddOnRecords().get(pauseRecord.getIxStart()).getTimer()));
+        System.out.print(" @time:" + PehoUtils.sec2minSecShort(fitFile.getRecordExtraList().get(pauseRecord.getIxStart()).getTimer()));
         System.out.print(" @dist:" + PehoUtils.m2km2(pauseRecord.getDistStart()) + "km");
     }
 

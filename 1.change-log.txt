@@ -558,6 +558,10 @@ Fix with initiating cadLapSum and speedLapSum for ellipt and treadmill
 --> v3.24 Build
 --> git sync
 
+Regr wkt/gps pass
+
+LapExtraMesg->LapExtraRecord, RecordAddOnMesg->RecordExtraRecord, PauseMesg->PauseRecord, GapMesg->GapRecords
+Deleted secExtraRecords and old RecordExtraMesg
 
 ***********
 **** BUGGAR

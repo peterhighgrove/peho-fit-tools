@@ -6,7 +6,7 @@ import com.garmin.fit.Mesg;
 import com.garmin.fit.MesgNum;
 import com.garmin.fit.RecordMesg;
 
-import se.peho.fittools.core.FitFile.LapExtraMesg;
+import se.peho.fittools.core.FitFile.LapExtraRecord;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,7 +25,7 @@ public class PauseFix {
     public void pauseShorten(int pauseNo, Long newPauseTime) {
         // SHORTEN a PAUSE@end when forgot to resume the timer.
 
-        FitFile.PauseMesg pauseToShorten = fitFile.getPauseList().get(pauseNo-1);
+        FitFile.PauseRecord pauseToShorten = fitFile.getPauseList().get(pauseNo-1);
 
         // <- activity start -|-- startPause       --|--              (org)stopPause->stopGap --|-- activity stop ->
         // <- activity start -|-- startPause -newPauseTime- (new)stopPause/startGap - stopGap --|-- activity stop ->
@@ -45,7 +45,7 @@ public class PauseFix {
 
         int lapIx = pauseToShorten.getIxLap();
         Mesg lap = fitFile.getLapMesg().get(lapIx);
-        LapExtraMesg lapExtra = fitFile.getLapExtraRecords().get(lapIx);
+        LapExtraRecord lapExtra = fitFile.getLapExtraList().get(lapIx);
 
         Long stopGapTime = stopGapRecord.getFieldLongValue(FitFile.REC_TIME); // New GAP END
         Float stopGapDist = startGapDist + pauseToShorten.getDistPause(); // New GAP END
@@ -117,12 +117,12 @@ public class PauseFix {
         fitFile.createTimerList();
         fitFile.fillLapExtraRecords();
         Float lapTime = fitFile.getLapMesg().get(pauseToShorten.getIxLap()).getFieldFloatValue(FitFile.LAP_TIMER) + pauseToShorten.getTimePause() - newPauseTime;
-        Float lapTimeLapExtra = fitFile.getLapExtraRecords().get(pauseToShorten.getIxLap()).getTTimerLap();
+        Float lapTimeLapExtra = fitFile.getLapExtraList().get(pauseToShorten.getIxLap()).getTTimerLap();
         fitFile.printAndAppendUpdateLogLn("Pause shorten: Lap time (Lap Extra): " + lapTimeLapExtra + " (Lap time: " + lapTime + ")");
         
         // Get new LAP dist because updated in addDistToRecords 
         Float lapDist = fitFile.getLapMesg().get(pauseToShorten.getIxLap()).getFieldFloatValue(FitFile.LAP_DIST);
-        Float lapDistLapExtra = fitFile.getLapExtraRecords().get(pauseToShorten.getIxLap()).getDistLap();
+        Float lapDistLapExtra = fitFile.getLapExtraList().get(pauseToShorten.getIxLap()).getDistLap();
         fitFile.printAndAppendUpdateLogLn("Pause shorten: Lap dist (Lap Extra): " + lapDistLapExtra + " (Lap dist: " + lapDist + ")");
         // fitFile.getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(FitFile.LAP_SPEED, lapDist / lapTime);
         // fitFile.getLapMesg().get(pauseToShorten.getIxLap()).setFieldValue(FitFile.LAP_ESPEED, lapDist / lapTime);
@@ -173,7 +173,7 @@ public class PauseFix {
 
     public void pauseIncrease(int pauseNo, Long secondsToPutIntoPause) {
 
-        FitFile.PauseMesg pauseToIncrease = fitFile.getPauseList().get(pauseNo-1);
+        FitFile.PauseRecord pauseToIncrease = fitFile.getPauseList().get(pauseNo-1);
 
         Mesg startPauseEvent = fitFile.getEventTimerMesg().get(pauseToIncrease.getIxEvStart());
         Long orgStartEventTime = startPauseEvent.getFieldLongValue(FitFile.EVE_TIME);

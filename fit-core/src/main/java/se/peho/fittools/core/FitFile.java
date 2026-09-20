@@ -207,16 +207,14 @@ public class FitFile {
     public List<Mesg> getDevDataIdMesg() { return devDataIdMesg; }
     public List<Mesg> getFieldDescrMesg() { return fieldDescrMesg; }
 
-    private List<PauseMesg> pauseRecords = new ArrayList<>(); //Not Garmin SDK
-    private List<GapMesg> gapRecords = new ArrayList<>(); //Not Garmin SDK
-    private List<RecordMesgAddOnRecords> recordMesgAddOnRecords = new ArrayList<>(); //Not Garmin SDK
-    private List<RecordMesgAddOnRecords> secExtraRecords = new ArrayList<>(); //Not Garmin SDK
-    private List<LapExtraMesg> lapExtraRecords = new ArrayList<>(); //Not Garmin SDK
-    public List<PauseMesg> getPauseList() { return pauseRecords; }
-    public List<GapMesg> getGapList() { return gapRecords; }
-    public List<RecordMesgAddOnRecords> getRecordMesgAddOnRecords() { return recordMesgAddOnRecords; }
-    public List<RecordMesgAddOnRecords> getSecExtraRecords() { return secExtraRecords; }
-    public List<LapExtraMesg> getLapExtraRecords() { return lapExtraRecords; }
+    private List<PauseRecord> pauseRecords = new ArrayList<>(); //Not Garmin SDK
+    private List<GapRecord> gapRecords = new ArrayList<>(); //Not Garmin SDK
+    private List<RecordExtraRecord> recordExtraRecords = new ArrayList<>(); //Not Garmin SDK
+    private List<LapExtraRecord> lapExtraRecords = new ArrayList<>(); //Not Garmin SDK
+    public List<PauseRecord> getPauseList() { return pauseRecords; }
+    public List<GapRecord> getGapList() { return gapRecords; }
+    public List<RecordExtraRecord> getRecordExtraList() { return recordExtraRecords; }
+    public List<LapExtraRecord> getLapExtraList() { return lapExtraRecords; }
 
     private Integer manufacturerNo;
     private String manufacturer;
@@ -308,33 +306,11 @@ public class FitFile {
     public int getAvgPower() { return avgPower; }
     public void setAvgPower(int avgPower) { this.avgPower = avgPower; }
 
-
-    // private Boolean isSkiErg = false;
-    // private Boolean isElliptical = false;
-    // private Boolean isTreadmill = false;
-    // public Boolean getIsSkiErg() { return isSkiErg; }
-    // public Boolean getIsElliptical() { return isElliptical; }
-    // public Boolean getIsTreadmill() { return isTreadmill; }
-    // public void setIsSkiErg(Boolean isSkiErg) { this.isSkiErg = isSkiErg; }
-    // public void setIsElliptical(Boolean isElliptical) { this.isElliptical = isElliptical; }
-    // public void setIsTreadmill(Boolean isTreadmill) { this.isTreadmill = isTreadmill; }
-
     public enum MySport { SKIERG, ELLIPTICAL, TREADMILL, RUN, BIKE, OTHER }
     private MySport mySport = MySport.OTHER;
     public MySport getMySport() { return mySport; }
     public void setMySport(MySport mySport) { this.mySport = mySport; }
 
-    // SimpleDateFormat sweDateTime = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-
-    // int maxIxFixEmptyBeginning = 100;
-    // int maxCadenceValue = 74;
-    // boolean lookingInBeginningForEmptySpeed = true;
-    // boolean lookingInBeginningForEmptyCadence = true;
-    // boolean lookingInBeginningForEmptyPower = true;
-    // boolean lookingInBeginningForEmptyStrokeLength = true;
-    // boolean lookingInBeginningForEmptyDragFactor = true;
-    // boolean lookingInBeginningForEmptyTrainingSession = true;
-    
     private Float activeTime = 0f;
     private Float restTime = 0f;
     private Float activeDist = 0f;
@@ -415,9 +391,6 @@ public class FitFile {
     public void printAndAppendTempUpdateLogLn(String text) { System.out.println(text); this.tempUpdateLog += text + System.lineSeparator(); }
     public void clearTempUpdateLog() { this.tempUpdateLog = ""; }
 
-    //public int getChangedStartTimeBySec() { return changedStartTimeBySec; }
-    //public void setChangedStartTimeBySec(int changedStartTimeBySec) { this.changedStartTimeBySec = changedStartTimeBySec; }
-    
     public LapReportGenerator getLapReportGenerator() { return new LapReportGenerator(this); }
     public PauseReportGenerator getPauseReportGenerator() { return new PauseReportGenerator(this); }
     public CPointReportGenerator getCPointReportGenerator() { return new CPointReportGenerator(this); }
@@ -430,7 +403,7 @@ public class FitFile {
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public class GapMesg {
+    public class GapRecord {
         private int no;
         private Long timeStart;
         private Long timeStop;
@@ -450,7 +423,7 @@ public class FitFile {
         private Float altStop;
         private Float altGap;
 
-        public GapMesg() {
+        public GapRecord() {
         }
 
         // Getters and Setters
@@ -526,7 +499,7 @@ public class FitFile {
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public class PauseMesg {
+    public class PauseRecord {
         private int no;
         private Long timeStart;
         private Long timeStop;
@@ -546,7 +519,7 @@ public class FitFile {
         private Float altStop;
         private Float altPause;
 
-        public PauseMesg() {
+        public PauseRecord() {
         }
 
         public int getNo() { return no; }
@@ -622,7 +595,7 @@ public class FitFile {
 
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    class LapExtraMesg {
+    class LapExtraRecord {
         private Integer lapNo;
         private Integer recordIxStart;
         private Integer recordIxEnd;
@@ -692,9 +665,9 @@ public class FitFile {
         private Float cadLapSum;
         
 
-        public LapExtraMesg() {
+        public LapExtraRecord() {
         }
-        public LapExtraMesg(Integer hrStart, Integer hrEnd, Integer hrMin, Long timeStartCalc, Long timeStart, Long timeEnd, Integer lapNo, 
+        public LapExtraRecord(Integer hrStart, Integer hrEnd, Integer hrMin, Long timeStartCalc, Long timeStart, Long timeEnd, Integer lapNo, 
                 Integer recordIxStart, Integer recordIxEnd,
                 Float stepLen, Float level, Float avgStrokeLen, Float maxStrokeLen, 
                 Float avgDragFactor, Float maxDragFactor,
@@ -931,7 +904,7 @@ public class FitFile {
 
             printAndAppendUpdateLogLn("fillLapExtraRecords starting: numberOfLaps: " + numberOfLaps + ", numberOfRecords: " + numberOfRecords + ", nextLapStartTime: " + nextLapStartTime);
 
-            LapExtraMesg newLapExtra = new LapExtraMesg();
+            LapExtraRecord newLapExtra = new LapExtraRecord();
 
             for (Mesg record : recordMesg) {
 
@@ -971,7 +944,7 @@ public class FitFile {
                     // System.out.println("LapExtraMesg: Lap " + lapNo + " start at recordIx " + recordIx + ", timeStamp: " + currentTimeStamp);
 
                     // create new LapExtraMesg and add to list
-                    newLapExtra = new LapExtraMesg();
+                    newLapExtra = new LapExtraRecord();
                     lapExtraRecords.add(newLapExtra);
 
                     newLapExtra.setSpeedLapSum(0f);
@@ -982,7 +955,7 @@ public class FitFile {
 
                     // Save LAP FIRST/START values
                     newLapExtra.setTimeStart(currentTimeStamp);
-                    newLapExtra.setTTimerStart((float) getRecordMesgAddOnRecords().get(recordIx).getTimer());
+                    newLapExtra.setTTimerStart((float) getRecordExtraList().get(recordIx).getTimer());
 
                     // Set DIST START to value from record, if available, else go forward to find last non-null distance value, else 0
                     Float recordDist = getRecordMesg().get(recordIx).getFieldFloatValue(REC_DIST);
@@ -1035,7 +1008,7 @@ public class FitFile {
                     int prevRecordIx = recordIx - 1;
                     if (prevRecordIx < 0) {
                         newLapExtra.setTimeStartCalc(currentTimeStamp);
-                        newLapExtra.setTTimerStartCalc((float) getRecordMesgAddOnRecords().get(recordIx).getTimer());
+                        newLapExtra.setTTimerStartCalc((float) getRecordExtraList().get(recordIx).getTimer());
                         newLapExtra.setDistStartCalc(0f);
                     } else {
                         // Set TIME START to value from previous record, if available, else current timestamp
@@ -1068,7 +1041,7 @@ public class FitFile {
                             newLapExtra.setDistStartCalc(prevRecordDist);
                         }
 
-                        Float prevRecordTTimer = (float) getRecordMesgAddOnRecords().get(prevRecordIx).getTimer();
+                        Float prevRecordTTimer = (float) getRecordExtraList().get(prevRecordIx).getTimer();
                         newLapExtra.setTTimerStartCalc(prevRecordTTimer);
                     }
 
@@ -1235,7 +1208,7 @@ public class FitFile {
                     newLapExtra.setRecordIxEnd(recordIx);
                     
                     newLapExtra.setTimeEnd(record.getFieldLongValue(REC_TIME));
-                    newLapExtra.setTTimerEnd((float) getRecordMesgAddOnRecords().get(recordIx).getTimer());
+                    newLapExtra.setTTimerEnd((float) getRecordExtraList().get(recordIx).getTimer());
                     newLapExtra.setDistEnd(record.getFieldFloatValue(REC_DIST));
                     Float calcETimerLap = (float) (newLapExtra.getTimeEnd() - newLapExtra.getTimeStartCalc());
                     newLapExtra.setETimerLap(calcETimerLap);
@@ -1389,63 +1362,34 @@ public class FitFile {
         }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    // public void initLapExtraRecords() {
+    // class RecordExtraMesg {
+    //     private int lapNo;
+    //     private Long C2DateTime;
 
-    //     Integer hrStart = 0;
-    //     Integer hrEnd = 0;
-    //     Integer hrMin = 9999;
-    //     Long timeEnd = null;
-    //     int lapNo = 0;
-    //     int recordIxStart = 0;
-    //     int recordIxEnd = 0;
-    //     Float stepLen = null;
-    //     Float level = 0f;
-    //     Float avgStrokeLen = 0f;
-    //     Float maxStrokeLen = 0f;
-    //     Float avgDragFactor = 0f;
-    //     Float maxDragFactor = 0f;
-
-    //     System.out.println("----- INIT LapExtra Records for ALL MESG -----");
-    //     for (Mesg record : lapMesg) {
-    //         LapExtraMesg newLapExtra = new LapExtraMesg(hrStart, hrEnd, hrMin, null, null, timeEnd, lapNo, 
-    //             recordIxStart, recordIxEnd, stepLen, 
-    //             level, avgStrokeLen, maxStrokeLen, avgDragFactor, maxDragFactor,
-    //             null, null, null, null, null
-    //             );
-    //         newLapExtra.setSpeedLapSum(0f);
-    //         newLapExtra.setCadLapSum(0f);
-    //         lapExtraRecords.add(newLapExtra);
+    //     public RecordExtraMesg(int lapNo, Long C2DateTime) {
+    //         this.lapNo = lapNo;
+    //         this.C2DateTime = C2DateTime;
     //     }
+
+    //     public int getLapNo() { return lapNo; }
+    //     public void setLapNo(int lapNo) { this.lapNo = lapNo; }
+    //     public Long getC2DateTime() { return C2DateTime; }
+    //     public void setC2DateTime(Long C2DateTime) { this.C2DateTime = C2DateTime; }
+
     // }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    class RecordExtraMesg {
-        private int lapNo;
-        private Long C2DateTime;
-
-        public RecordExtraMesg(int lapNo, Long C2DateTime) {
-            this.lapNo = lapNo;
-            this.C2DateTime = C2DateTime;
-        }
-
-        public int getLapNo() { return lapNo; }
-        public void setLapNo(int lapNo) { this.lapNo = lapNo; }
-        public Long getC2DateTime() { return C2DateTime; }
-        public void setC2DateTime(Long C2DateTime) { this.C2DateTime = C2DateTime; }
-
-    }
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    class RecordMesgAddOnRecords {
+    class RecordExtraRecord {
         Long timer;
         int lapNo;
         private Long C2DateTime;
 
-        public RecordMesgAddOnRecords() {
+        public RecordExtraRecord() {
         }
-        public RecordMesgAddOnRecords(int lapNo, Long C2DateTime) {
+        public RecordExtraRecord(int lapNo, Long C2DateTime) {
             this.lapNo = lapNo;
             this.C2DateTime = C2DateTime;
         }
-        public RecordMesgAddOnRecords(Long timer) {
+        public RecordExtraRecord(Long timer) {
             this.timer = timer;
         }
         // public RecordMesgAddOnRecords(int lapNo, Long timer) {
@@ -1543,7 +1487,7 @@ public class FitFile {
             Float newLapDist = lapDist + distToAdd;
             Float lapTimer = lapMesg.get(affectedLapIx).getFieldFloatValue(LAP_TIMER);
             lapMesg.get(affectedLapIx).setFieldValue(LAP_DIST, newLapDist);
-            if (getLapExtraRecords().get(affectedLapIx).getSpeedEnhancedUsed()) {
+            if (getLapExtraList().get(affectedLapIx).getSpeedEnhancedUsed()) {
                 lapMesg.get(affectedLapIx).setFieldValue(LAP_ESPEED, newLapDist / lapTimer);
             } else {
                 lapMesg.get(affectedLapIx).setFieldValue(LAP_SPEED, newLapDist / lapTimer);
@@ -1652,7 +1596,7 @@ public class FitFile {
 
         Float oldAvgSpeed = getAvgSpeed();
         setAvgSpeed(getTotalDistance() / getTotalTimerTime());
-        if (getLapExtraRecords().get(affectedLapIx).getSpeedEnhancedUsed()) {
+        if (getLapExtraList().get(affectedLapIx).getSpeedEnhancedUsed()) {
             sessionMesg.get(0).setFieldValue(SES_ESPEED, getAvgSpeed());
         } else {
             sessionMesg.get(0).setFieldValue(SES_SPEED, getAvgSpeed());
@@ -1668,13 +1612,13 @@ public class FitFile {
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public Long getLastTimerInTimerList() {
-        return recordMesgAddOnRecords.get(recordMesgAddOnRecords.size() - 1).getTimer();
+        return recordExtraRecords.get(recordExtraRecords.size() - 1).getTimer();
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public Long findTimeBasedOnTimer(Long timerValueToSearchFor) {
         int ix = 0;
         // FIND IX i allMesg list
-        for (RecordMesgAddOnRecords record : recordMesgAddOnRecords) {
+        for (RecordExtraRecord record : recordExtraRecords) {
             if (record.getTimer() >= (timerValueToSearchFor)) {
                 break;
             }
@@ -1689,7 +1633,7 @@ public class FitFile {
         if (timeValueToSearchFor == null) {
             return null;
         }
-        if (recordMesg == null || recordMesg.isEmpty() || recordMesgAddOnRecords == null || recordMesgAddOnRecords.isEmpty()) {
+        if (recordMesg == null || recordMesg.isEmpty() || recordExtraRecords == null || recordExtraRecords.isEmpty()) {
             return null;
         }
 
@@ -1704,11 +1648,11 @@ public class FitFile {
         }
 
         // Clamp so timestamp after last record maps to the last known timer value.
-        if (ix >= recordMesgAddOnRecords.size()) {
-            ix = recordMesgAddOnRecords.size() - 1;
+        if (ix >= recordExtraRecords.size()) {
+            ix = recordExtraRecords.size() - 1;
         }
 
-        return recordMesgAddOnRecords.get(ix).getTimer();
+        return recordExtraRecords.get(ix).getTimer();
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public int findIxInAllMesgBasedOnTimer(Long timerValueToSearchFor) {
@@ -1821,7 +1765,7 @@ public class FitFile {
      * Requires recordMesgAddOnRecords (createTimerList must have been run).
      */
     public void printMessagesBetweenTimers(Long fromTimer, Long toTimer) {
-        if (recordMesgAddOnRecords == null || recordMesgAddOnRecords.isEmpty()) {
+        if (recordExtraRecords == null || recordExtraRecords.isEmpty()) {
             System.out.println("Timer list empty - run createTimerList() first.");
             return;
         }
@@ -1881,8 +1825,8 @@ public class FitFile {
 
             if (m.getNum() == MesgNum.RECORD) {
                 Long timer = null;
-                if (recordCounter >= 0 && recordCounter < recordMesgAddOnRecords.size()) {
-                    timer = recordMesgAddOnRecords.get(recordCounter).getTimer();
+                if (recordCounter >= 0 && recordCounter < recordExtraRecords.size()) {
+                    timer = recordExtraRecords.get(recordCounter).getTimer();
                 }
                 Long time = m.getFieldLongValue(REC_TIME);
                 Float dist = m.getFieldFloatValue(REC_DIST);
@@ -2023,7 +1967,7 @@ public class FitFile {
 
             // skip records inside pause
             if (timeL != null && pauseIx < pauseRecords.size()) {
-                PauseMesg p = pauseRecords.get(pauseIx);
+                PauseRecord p = pauseRecords.get(pauseIx);
                 Long pStart = p.getTimeStart();
                 Long pStop = p.getTimeStop();
                 if (pStart != null && pStop != null && timeL >= pStart && timeL <= pStop) {
@@ -2081,10 +2025,10 @@ public class FitFile {
                         e.endTime = timeL;
                         e.recIxStart = lowStartRecIdx - 1;
                         e.recIxEnd = recordIndex - 1;
-                        if (recordMesgAddOnRecords != null && e.recIxStart >= 0 && e.recIxEnd >= 0
-                                && recordMesgAddOnRecords.size() > Math.max(e.recIxStart, e.recIxEnd)) {
-                            e.startTimer = recordMesgAddOnRecords.get(e.recIxStart).getTimer();
-                            e.endTimer = recordMesgAddOnRecords.get(e.recIxEnd).getTimer();
+                        if (recordExtraRecords != null && e.recIxStart >= 0 && e.recIxEnd >= 0
+                                && recordExtraRecords.size() > Math.max(e.recIxStart, e.recIxEnd)) {
+                            e.startTimer = recordExtraRecords.get(e.recIxStart).getTimer();
+                            e.endTimer = recordExtraRecords.get(e.recIxEnd).getTimer();
                         }
                         if (e.recIxStart >= 0 && e.recIxStart < recordMesg.size()) {
                             e.distStart = recordMesg.get(e.recIxStart).getFieldFloatValue(REC_DIST);
@@ -2114,10 +2058,10 @@ public class FitFile {
             e.endTime = null;
             e.recIxStart = lowStartRecIdx - 1;
             e.recIxEnd = recordIndex - 1;
-            if (recordMesgAddOnRecords != null && e.recIxStart >= 0 && e.recIxEnd >= 0
-                    && recordMesgAddOnRecords.size() > Math.max(e.recIxStart, e.recIxEnd)) {
-                e.startTimer = recordMesgAddOnRecords.get(e.recIxStart).getTimer();
-                e.endTimer = recordMesgAddOnRecords.get(e.recIxEnd).getTimer();
+            if (recordExtraRecords != null && e.recIxStart >= 0 && e.recIxEnd >= 0
+                    && recordExtraRecords.size() > Math.max(e.recIxStart, e.recIxEnd)) {
+                e.startTimer = recordExtraRecords.get(e.recIxStart).getTimer();
+                e.endTimer = recordExtraRecords.get(e.recIxEnd).getTimer();
             }
             if (e.recIxStart >= 0 && e.recIxStart < recordMesg.size()) {
                 e.distStart = recordMesg.get(e.recIxStart).getFieldFloatValue(REC_DIST);
@@ -2133,7 +2077,7 @@ public class FitFile {
         }
 
         // ---------- Add pauses and compute time where distance before pause reaches threshold ----------
-        for (PauseMesg p : pauseRecords) {
+        for (PauseRecord p : pauseRecords) {
             Long pauseStartTime = p.getTimeStart();
             int pauseStartRecIdx = p.getIxStart();
 
@@ -2207,7 +2151,7 @@ public class FitFile {
         }
 
         // ---------- Add gaps ----------
-        for (GapMesg g : gapRecords) {
+        for (GapRecord g : gapRecords) {
             CombinedEntry e = new CombinedEntry(CombinedEntry.Type.GAP);
             e.no = g.getNo();
             e.startTime = g.getTimeStart();
@@ -2340,7 +2284,7 @@ public class FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void updateActivityInfoWhenDeletingPauseToGap(int pauseIndex) {
 
-        PauseMesg pause = getPauseList().get(pauseIndex);
+        PauseRecord pause = getPauseList().get(pauseIndex);
 
         // Increase distance after the shortened pause, starting from 1 after pause stop
         // ------------------------------------------------------
@@ -2372,7 +2316,7 @@ public class FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void updateActivityInfoWhenDeletingGapToPause(int gapIndex) {
 
-        GapMesg gap = getGapList().get(gapIndex);
+        GapRecord gap = getGapList().get(gapIndex);
 
         // Increase distance after the shortened pause, starting from 1 after pause stop
         // ------------------------------------------------------
@@ -2431,7 +2375,7 @@ public class FitFile {
         List<Integer> unmatchedStartPauses = new ArrayList<>();
         List<Integer> unmatchedStopPauses = new ArrayList<>();
 
-        for (PauseMesg pause : pauseRecords) {
+        for (PauseRecord pause : pauseRecords) {
             Long start = pause.getTimeStart();
             Long stop = pause.getTimeStop();
             int ix = pause.getNo() - 1;
@@ -3474,7 +3418,7 @@ public class FitFile {
 
         Boolean nextRecordLastInLap = false;
 
-        recordMesgAddOnRecords.clear();
+        recordExtraRecords.clear();
 
         printAndAppendUpdateLogLn("Create Timer List");
         printAndAppendUpdateLogLn("-----------------");
@@ -3722,10 +3666,10 @@ public class FitFile {
                 lapNo++;
             }
 
-            RecordMesgAddOnRecords newExtraRecord = new RecordMesgAddOnRecords();
+            RecordExtraRecord newExtraRecord = new RecordExtraRecord();
             newExtraRecord.setTimer(timerCounter);
             newExtraRecord.setLapNo(lapNo);
-            recordMesgAddOnRecords.add(newExtraRecord);
+            recordExtraRecords.add(newExtraRecord);
 
             recordIx++;
             lastRecordTime = record.getFieldLongValue(REC_TIME);
@@ -3761,10 +3705,10 @@ public class FitFile {
         }
 
         printAndAppendUpdateLogLn("Results");
-        printAndAppendUpdateLogLn(" Records: " + recordMesg.size() + " extraRecords: " + recordMesgAddOnRecords.size());
+        printAndAppendUpdateLogLn(" Records: " + recordMesg.size() + " extraRecords: " + recordExtraRecords.size());
         printAndAppendUpdateLogLn(" TotalTimerTime: " + PehoUtils.sec2minSecLong(totalTimerTime)
              + " last timer value: "
-             + PehoUtils.sec2minSecLong(recordMesgAddOnRecords.get(recordMesgAddOnRecords.size()-1).getTimer())
+             + PehoUtils.sec2minSecLong(recordExtraRecords.get(recordExtraRecords.size()-1).getTimer())
              + " sumLapTime: " + PehoUtils.sec2minSecLong(sumLapTime)
              + " sumLapExtraTime: " + PehoUtils.sec2minSecLong(sumLapExtraTime)
             );
@@ -3790,12 +3734,12 @@ public class FitFile {
             return false;
         }
 
-        if ((recordMesgAddOnRecords == null || recordMesgAddOnRecords.isEmpty()) && recordMesg != null && !recordMesg.isEmpty()) {
+        if ((recordExtraRecords == null || recordExtraRecords.isEmpty()) && recordMesg != null && !recordMesg.isEmpty()) {
             appendTempUpdateLogLn("Lap check: timer list missing, rebuilding with createTimerList().");
             createTimerList();
         }
 
-        if (recordMesgAddOnRecords == null || recordMesgAddOnRecords.isEmpty()) {
+        if (recordExtraRecords == null || recordExtraRecords.isEmpty()) {
             appendTempUpdateLogLn("Lap check failed: timer list missing (run createTimerList()).");
             System.out.println(getTempUpdateLog());
             appendUpdateLog(getTempUpdateLog());
@@ -3931,12 +3875,12 @@ public class FitFile {
             return false;
         }
 
-        if ((recordMesgAddOnRecords == null || recordMesgAddOnRecords.isEmpty()) && recordMesg != null && !recordMesg.isEmpty()) {
+        if ((recordExtraRecords == null || recordExtraRecords.isEmpty()) && recordMesg != null && !recordMesg.isEmpty()) {
             appendTempUpdateLogLn("Lap fix: timer list missing, rebuilding with createTimerList().");
             createTimerList();
         }
 
-        if (recordMesgAddOnRecords == null || recordMesgAddOnRecords.isEmpty()) {
+        if (recordExtraRecords == null || recordExtraRecords.isEmpty()) {
             appendTempUpdateLogLn("Lap fix failed: timer list missing (run createTimerList()).");
             System.out.println(getTempUpdateLog());
             appendUpdateLog(getTempUpdateLog());
@@ -4167,7 +4111,7 @@ public class FitFile {
 
                 gapCounter += 1;
 
-                GapMesg newGap = new GapMesg();
+                GapRecord newGap = new GapRecord();
                 newGap.no = gapCounter;
                 newGap.timeStart = lastRecordTime;
                 newGap.timeStop = record.getFieldLongValue(REC_TIME);
@@ -4223,7 +4167,7 @@ public class FitFile {
         //System.out.print(" Event:" + record.getEvent());
         //System.out.print(" No:" + record.getEvent().getValue());
 
-        for (GapMesg record : gapRecords) {
+        for (GapRecord record : gapRecords) {
             if (record.distGap >= minDistToShow) {
                 System.out.print("   Gap (" + record.no + ")");
                 System.out.print(String.format(" %1$dsec %2$.0fm ele%3$.1fm", record.timeGap, record.distGap, record.altGap));
@@ -4238,8 +4182,8 @@ public class FitFile {
                 }
 
                 Long timerValue = null;
-                if (record.getIxStart() >= 0 && record.getIxStart() < recordMesgAddOnRecords.size()) {
-                    timerValue = recordMesgAddOnRecords.get(record.getIxStart()).getTimer();
+                if (record.getIxStart() >= 0 && record.getIxStart() < recordExtraRecords.size()) {
+                    timerValue = recordExtraRecords.get(record.getIxStart()).getTimer();
                 }
                 System.out.print(" @time:" + (timerValue == null ? "-" : PehoUtils.sec2minSecShort(timerValue)));
                 System.out.print(String.format(" @dist:%1$.0fm", record.getDistStart()));
@@ -4357,7 +4301,7 @@ public class FitFile {
                 Float altStart = recordMesg.get(ixRecordStart).getFieldFloatValue(REC_EALT);
                 Float altStop = recordMesg.get(ixRecordStop).getFieldFloatValue(REC_EALT);
 
-                PauseMesg newPause = new PauseMesg();
+                PauseRecord newPause = new PauseRecord();
                 newPause.setNo(pauseCounter);
                 newPause.setTimeStart(startPauseTime);
                 newPause.setTimeStop(timeStop);
@@ -4470,7 +4414,7 @@ public class FitFile {
             Double powDelta = 0d;
             Double altDelta = 0d;
 
-        for (GapMesg record : gapRecords) {
+        for (GapRecord record : gapRecords) {
             numberOfNewSeconds = record.getTimeGap().intValue();
             //System.out.println("numberOfNewSeconds: "+numberOfNewSeconds);
 
@@ -5232,7 +5176,7 @@ public class FitFile {
         // Collecting existing record data
         // --------------------------------
 
-        GapMesg gapToChange = gapRecords.get(gapNo-1);
+        GapRecord gapToChange = gapRecords.get(gapNo-1);
 
         Mesg startGapRecord = recordMesg.get(gapToChange.ixStart);
         Long startTime = startGapRecord.getFieldLongValue(REC_TIME);
@@ -5460,7 +5404,7 @@ public class FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void deletePause(int pauseNoToDelete) {
         int pauseIx = pauseNoToDelete - 1;
-        PauseMesg pauseToDelete = getPauseList().get(pauseIx);
+        PauseRecord pauseToDelete = getPauseList().get(pauseIx);
         Long timeStart = pauseToDelete.getTimeStart();
         Long timeStop = pauseToDelete.getTimeStop();
 
@@ -8113,14 +8057,14 @@ public class FitFile {
                 if (record.getFieldIntegerValue(REC_POW) != null) {
                     System.out.print(" Pow: " + record.getFieldIntegerValue(REC_POW));
                 }
-                // if (secExtraRecords.get(i).C2DateTime != null) {
-                //     System.out.print(" C2time: " + secExtraRecords.get(i).C2DateTime);
+                // if (recordExtraRecords.get(i).C2DateTime != null) {
+                //     System.out.print(" C2time: " + recordExtraRecords.get(i).C2DateTime);
                 // }
                 if (record.getFieldIntegerValue(REC_LAT) != null && record.getFieldIntegerValue(REC_LON) != null) {
                     System.out.print(" Position: (" + record.getFieldIntegerValue(REC_LAT) + ", " + record.getFieldIntegerValue(REC_LON) + ")");
                 }
-                // if (secExtraRecords.get(i).lapNo != 0) {
-                //     System.out.print(" LapNo: " + secExtraRecords.get(i).lapNo);
+                // if (recordExtraRecords.get(i).lapNo != 0) {
+                //     System.out.print(" LapNo: " + recordExtraRecords.get(i).lapNo);
                 // }
                 System.out.print(" DEV:");
                 for (DeveloperField field : record.getDeveloperFields()) {
@@ -8165,8 +8109,8 @@ public class FitFile {
                 appendIfNotNull(sb, " Pow:", rec.getFieldIntegerValue(REC_POW));
 
                 // Extra data (your custom structure)
-                if (secExtraRecords.get(i).getC2DateTime() != null) {
-                    sb.append(" C2time:").append(secExtraRecords.get(i).getC2DateTime());
+                if (recordExtraRecords.get(i).getC2DateTime() != null) {
+                    sb.append(" C2time:").append(recordExtraRecords.get(i).getC2DateTime());
                 }
 
                 // Position (lat/lon)

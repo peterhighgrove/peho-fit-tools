@@ -19,7 +19,7 @@ public class LapNewCommand implements Command {
 
     @Override
     public void run(Scanner sc, FitFile watchFitFile) {
-        if (watchFitFile.getRecordMesgAddOnRecords() == null || watchFitFile.getRecordMesgAddOnRecords().isEmpty()) {
+        if (watchFitFile.getRecordExtraList() == null || watchFitFile.getRecordExtraList().isEmpty()) {
             watchFitFile.createTimerList();
         }
 

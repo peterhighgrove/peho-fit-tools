@@ -72,7 +72,7 @@ public class FitFileCreatePauseListTest {
 
         assertEquals(1, fitFile.getPauseList().size());
 
-        FitFile.PauseMesg pause = fitFile.getPauseList().get(0);
+        FitFile.PauseRecord pause = fitFile.getPauseList().get(0);
         assertEquals(0f, pause.getDistPause(), 0.001f);
         assertEquals(0f, pause.getAltPause(), 0.001f);
     }
@@ -257,8 +257,8 @@ public class FitFileCreatePauseListTest {
         sessionMesg.setFieldValue(FitFile.SES_MTIMER, 27f);
         fitFile.getSessionMesg().add(sessionMesg);
 
-        fitFile.getRecordMesgAddOnRecords().add(fitFile.new RecordMesgAddOnRecords(0L));
-        fitFile.getRecordMesgAddOnRecords().add(fitFile.new RecordMesgAddOnRecords(30L));
+        fitFile.getRecordExtraList().add(fitFile.new RecordExtraRecord(0L));
+        fitFile.getRecordExtraList().add(fitFile.new RecordExtraRecord(30L));
 
         assertTrue(fitFile.checkLapTotalsAndEnhancedAvgSpeed());
     }
@@ -297,8 +297,8 @@ public class FitFileCreatePauseListTest {
         sessionMesg.setFieldValue(FitFile.SES_MTIMER, 27f);
         fitFile.getSessionMesg().add(sessionMesg);
 
-        fitFile.getRecordMesgAddOnRecords().add(fitFile.new RecordMesgAddOnRecords(0L));
-        fitFile.getRecordMesgAddOnRecords().add(fitFile.new RecordMesgAddOnRecords(30L));
+        fitFile.getRecordExtraList().add(fitFile.new RecordExtraRecord(0L));
+        fitFile.getRecordExtraList().add(fitFile.new RecordExtraRecord(30L));
 
         assertTrue(!fitFile.checkLapTotalsAndEnhancedAvgSpeed());
     }
@@ -337,8 +337,8 @@ public class FitFileCreatePauseListTest {
         sessionMesg.setFieldValue(FitFile.SES_MTIMER, 27f);
         fitFile.getSessionMesg().add(sessionMesg);
 
-        fitFile.getRecordMesgAddOnRecords().add(fitFile.new RecordMesgAddOnRecords(0L));
-        fitFile.getRecordMesgAddOnRecords().add(fitFile.new RecordMesgAddOnRecords(30L));
+        fitFile.getRecordExtraList().add(fitFile.new RecordExtraRecord(0L));
+        fitFile.getRecordExtraList().add(fitFile.new RecordExtraRecord(30L));
 
         assertTrue(fitFile.fixLapTotalsAndEnhancedAvgSpeed());
         assertEquals(12f, fitFile.getLapMesg().get(0).getFieldFloatValue(FitFile.LAP_TIMER), 0.001f);
@@ -385,8 +385,8 @@ public class FitFileCreatePauseListTest {
         sessionMesg.setFieldValue(FitFile.SES_MTIMER, 27f);
         fitFile.getSessionMesg().add(sessionMesg);
 
-        fitFile.getRecordMesgAddOnRecords().add(fitFile.new RecordMesgAddOnRecords(0L));
-        fitFile.getRecordMesgAddOnRecords().add(fitFile.new RecordMesgAddOnRecords(30L));
+        fitFile.getRecordExtraList().add(fitFile.new RecordExtraRecord(0L));
+        fitFile.getRecordExtraList().add(fitFile.new RecordExtraRecord(30L));
 
         assertTrue(fitFile.fixLapTotalsAndEnhancedAvgSpeed());
         assertEquals(12f, fitFile.getLapMesg().get(0).getFieldFloatValue(FitFile.LAP_TIMER), 0.001f);
