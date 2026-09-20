@@ -549,6 +549,8 @@ Fix for no timer event end of records. New boolean flag logic and more loggging 
 Replaced initLapExtra with fillLapExtra in fit-wkt
 --> git sync
 
+--> v3.23 Build
+--> git sync
 
 
 
