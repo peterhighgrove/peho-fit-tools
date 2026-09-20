@@ -974,6 +974,9 @@ public class FitFile {
                     newLapExtra = new LapExtraMesg();
                     lapExtraRecords.add(newLapExtra);
 
+                    newLapExtra.setSpeedLapSum(0f);
+                    newLapExtra.setCadLapSum(0f);
+
                     newLapExtra.setLapNo(lapNo);
                     newLapExtra.setRecordIxStart(recordIx);
 

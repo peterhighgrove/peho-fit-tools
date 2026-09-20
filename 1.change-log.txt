@@ -552,7 +552,8 @@ Replaced initLapExtra with fillLapExtra in fit-wkt
 --> v3.23 Build
 --> git sync
 
-
+Fix with initiating cadLapSum and speedLapSum for ellipt and treadmill
+--> git sync
 
 ***********
 **** BUGGAR
