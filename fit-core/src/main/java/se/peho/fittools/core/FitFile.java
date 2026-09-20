@@ -3441,18 +3441,21 @@ public class FitFile {
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     public void createTimerList() {
         Long timerCounter = -1l;
+        int recordIx = 0;
         Long recordTimerDelta = 0l;
         Long lastRecordTime = recordMesg.get(0).getFieldLongValue(REC_TIME) - 1;
+        Long currentTimeStamp = 0L;
 
-        int eventTimerIx = 1; // Skip first START event, ix = 0
+        int timerEventIx = 0;
+        Boolean isStartEventAtStart = false;
+        Boolean isStopEventAtEnd = false;
         Boolean inPause = false;
         Boolean increaseTimer = true;
-        Boolean isEventTImerTime = false;
+        Long nextTimerEventTimestamp = 0L;
+        Boolean isTimerEventsAtAll = false;
+        Boolean recordTimestampIsSameAsEvent = false;
 
-        int recordIx = 0;
-        Long currentTimeStamp = 0L;
         int pauseCounter = 0;
-        Long nextEventTimerTime = 0L;
         int lapIx = 0;
         int lapNo = 1;
         // nextLapStartTime from lapMesg start time field
@@ -3472,90 +3475,171 @@ public class FitFile {
 
         printAndAppendUpdateLogLn("Create Timer List");
         printAndAppendUpdateLogLn("-----------------");
+
+        // check if there are any timer events at all
+        if (eventTimerMesg.size() > 0) {
+            isTimerEventsAtAll = true;
+        } else {
+            printAndAppendUpdateLogLn(" ==> WARNING: No timer events found!");
+            printAndAppendUpdateLogLn(" ---> No search for pauses");
+            isTimerEventsAtAll = false;
+        }
+
+        if (isTimerEventsAtAll) {
+            Mesg firstTimerEventMesg = eventTimerMesg.get(0);
+            nextTimerEventTimestamp = firstTimerEventMesg.getFieldLongValue(EVE_TIME);
+            currentTimeStamp = recordMesg.get(0).getFieldLongValue(REC_TIME);
+
+            // check if first timer event is a START event
+            Short firstTimerEvent = firstTimerEventMesg.getFieldShortValue(EVE_TYPE);
+            if (firstTimerEvent.equals(EventType.START.getValue())) {
+                isStartEventAtStart = true;
+                isTimerEventsAtAll = true;
+            } else {
+                printAndAppendUpdateLogLn(" ==> WARNING: First timer event is not a START event!" 
+                    + " First event: " 
+                    + Event.getByValue(firstTimerEventMesg.getFieldShortValue(EVE_EVENT))
+                    + ", type: " 
+                    + EventType.getByValue(firstTimerEventMesg.getFieldShortValue(EVE_TYPE))
+                );
+                printAndAppendUpdateLogLn(" ---> No search for pauses");
+                printAndAppendUpdateLogLn("");
+                isStartEventAtStart = false;
+                isTimerEventsAtAll = false;
+            }
+
+            // check if last timer event is a STOP event
+            Short lastTimerEvent = eventTimerMesg.get(eventTimerMesg.size() - 1).getFieldShortValue(EVE_TYPE);
+            if (lastTimerEvent.equals(EventType.STOP_ALL.getValue())) {
+                isStopEventAtEnd = true;
+            } else {
+                printAndAppendUpdateLogLn(" ==> WARNING: Last timer event is not a STOP event!" 
+                    + " Last event: " 
+                    + Event.getByValue(eventTimerMesg.get(eventTimerMesg.size() - 1).getFieldShortValue(EVE_EVENT))
+                    + ", type: " 
+                    + EventType.getByValue(eventTimerMesg.get(eventTimerMesg.size() - 1).getFieldShortValue(EVE_TYPE))
+                );
+                printAndAppendUpdateLogLn(" ---> Search for pauses will continue anyway");
+                printAndAppendUpdateLogLn("");
+                isStopEventAtEnd = false;
+            }
+
+            if (isStartEventAtStart) {
+                printAndAppendUpdateLogLn(""
+                    + " ACTIVITY Start:"
+                    + " ---> Start EVENT" 
+                    //+ " tTimer: " + PehoUtils.sec2minSecLong(timerCounter)
+                    + " ix: " + timerEventIx 
+                    + " time: " + new Tstr(nextTimerEventTimestamp,diffMinutesLocalUTC).get()
+                    + " lapNo: " + lapNo
+                    + " Record ix: " + recordIx
+                    + " time: " + new Tstr(currentTimeStamp,diffMinutesLocalUTC).get()
+                );
+                timerEventIx = 1; // Skip first START event, ix = 0
+            }
+        }
+
         for (Mesg record : recordMesg) {
 
             currentTimeStamp = record.getFieldLongValue(REC_TIME);
-            nextEventTimerTime = eventTimerMesg.get(eventTimerIx).getFieldLongValue(EVE_TIME);
+
             increaseTimer = true;
 
-            if (eventTimerMesg.size() > 0 ) { // Not empty eventTimerMesg list
+            if (isTimerEventsAtAll) { // Not empty eventTimerMesg list
 
-                if (eventTimerMesg.size() > 2 ) { // More than First START and last STOP
+                if (timerEventIx < eventTimerMesg.size()) { // Check if there is a next timer event
+
+                    Mesg nextTimerEventMesg = eventTimerMesg.get(timerEventIx);
+                    nextTimerEventTimestamp = nextTimerEventMesg.getFieldLongValue(EVE_TIME);
+                // }
+
+                // if (eventTimerMesg.size() > 2 ) { // More than First START and last STOP
                         
-                    if (eventTimerIx < eventTimerMesg.size() && currentTimeStamp >= nextEventTimerTime) {
+                    if (currentTimeStamp >= nextTimerEventTimestamp) {
                         // Record time is the same or more than NEXT Timer Event mesg
                         // ------------------------------------------------------------
 
-                        isEventTImerTime = true;
+                        recordTimestampIsSameAsEvent = true;
                                 // System.out.println(" ==> EVENT TIMER MESG Ix:" + eventTimerIx + " @"
                                 //     + EventType.getByValue(eventTimerMesg.get(eventTimerIx).getFieldShortValue(EVE_TYPE)) + " @time: "
                                 //     + FitDateTime.toString(record.getFieldLongValue(EVE_TIME),diffMinutesLocalUTC));
 
-                        if (eventTimerMesg.get(eventTimerIx).getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
+                        if (nextTimerEventMesg.getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
                             // STOP_ALL event encountered
-                            if (inPause) {
-                                // If already inPause - warning
-                                printAndAppendUpdateLogLn("" 
-                                    + " ==> WARNING - STOP EVENT AGAIN when already in pause, w/o Starting first"
-                                    + " pause no: " + pauseCounter
-                                    + " time: " + new Tstr(nextEventTimerTime,diffMinutesLocalUTC).get()
-                                    + " lapNo: " + lapNo
-                                    + " event ix: " + eventTimerIx 
-                                );
-                            } else {
-                                // START of pause
-                                pauseCounter++;
-                                inPause = true;
-                                increaseTimer = true;
-                                printAndAppendUpdateLogLn(""
-                                    + " Record ix: " + recordIx
-                                    + " time: " + new Tstr(currentTimeStamp,diffMinutesLocalUTC).get()
-                                    + " START pause no: " + pauseCounter
-                                    + " ---> Stop  EVENT"
-                                    //+ " tTimer: " + PehoUtils.sec2minSecLong(timerCounter)
-                                    + " ix: " + eventTimerIx 
-                                    + " time: " + new Tstr(nextEventTimerTime,diffMinutesLocalUTC).get()
-                                    + " lapNo: " + lapNo
-                                );
+
+                            if (timerEventIx < (eventTimerMesg.size() - 1)) {
+                                // if not last timer event
+                                
+                                if (inPause) {
+                                    // If already inPause - warning
+                                    printAndAppendUpdateLogLn("" 
+                                        + " ==> WARNING - STOP EVENT AGAIN when already in pause, w/o Starting first"
+                                        + " pause no: " + pauseCounter
+                                        + " time: " + new Tstr(nextTimerEventTimestamp,diffMinutesLocalUTC).get()
+                                        + " lapNo: " + lapNo
+                                        + " event ix: " + timerEventIx 
+                                    );
+                                } else {
+                                    // START of pause
+                                    pauseCounter++;
+                                    inPause = true;
+                                    increaseTimer = true;
+                                    printAndAppendUpdateLogLn(""
+                                        + " PAUSE START no: " + pauseCounter
+                                        + " ---> Stop  EVENT"
+                                        //+ " tTimer: " + PehoUtils.sec2minSecLong(timerCounter)
+                                        + " ix: " + timerEventIx 
+                                        + " time: " + new Tstr(nextTimerEventTimestamp,diffMinutesLocalUTC).get()
+                                        + " lapNo: " + lapNo
+                                        + " tTimer: " + PehoUtils.sec2minSecLong(timerCounter)
+                                        + " Record ix: " + recordIx
+                                        + " time: " + new Tstr(currentTimeStamp,diffMinutesLocalUTC).get()
+                                    );
+                                }
                             }
                         }
                         
-                        if (eventTimerMesg.get(eventTimerIx).getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
-                            // If not inPause - warning
+                        if (nextTimerEventMesg.getFieldValue(EVE_TYPE).equals(EventType.START.getValue())) {
+
                             if (!inPause) {
+                                // If not inPause - warning
                                 printAndAppendUpdateLogLn("" 
                                     + " ==> WARNING - START EVENT AGAIN when not in pause, w/o Stopping first"
-                                    + " time: " + new Tstr(nextEventTimerTime,diffMinutesLocalUTC).get()
+                                    + " time: " + new Tstr(nextTimerEventTimestamp,diffMinutesLocalUTC).get()
                                     + " tTimer: " + PehoUtils.sec2minSecLong(timerCounter)
                                     + " lapNo: " + lapNo
-                                    + " event ix: " + eventTimerIx 
+                                    + " event ix: " + timerEventIx 
                                 );
                             } else {
 
                                 inPause = false;
                                 increaseTimer = false;
                                 printAndAppendUpdateLogLn(""
-                                    + " Record ix: " + recordIx
-                                    + " time: " + new Tstr(currentTimeStamp,diffMinutesLocalUTC).get()
-                                    + " END   pause no: " + pauseCounter
+                                    + " PAUSE END   no: " + pauseCounter
                                     + " ---> Start EVENT" 
                                     //+ " tTimer: " + PehoUtils.sec2minSecLong(timerCounter)
-                                    + " ix: " + eventTimerIx 
-                                    + " time: " + new Tstr(nextEventTimerTime,diffMinutesLocalUTC).get()
+                                    + " ix: " + timerEventIx 
+                                    + " time: " + new Tstr(nextTimerEventTimestamp,diffMinutesLocalUTC).get()
                                     + " lapNo: " + lapNo
+                                    + " tTimer: " + PehoUtils.sec2minSecLong(timerCounter)
+                                    + " Record ix: " + recordIx
+                                    + " time: " + new Tstr(currentTimeStamp,diffMinutesLocalUTC).get()
                                 );
                             }
                         } 
                         
-                        eventTimerIx += 1;
+                        timerEventIx += 1;
                     }
                 }
 
                 // If record not the same as event timer
-                if (!isEventTImerTime && inPause) {
+                if (!recordTimestampIsSameAsEvent && inPause) {
                     printAndAppendUpdateLogLn(" ==> WARNING - Records in pause"
-                        + " EVENT ix: " + eventTimerIx 
-                        + " time: " + new Tstr(nextEventTimerTime,diffMinutesLocalUTC).get());
+                        + " RECORD ix: " + recordIx
+                        + " currentTime: " + new Tstr(currentTimeStamp,diffMinutesLocalUTC).get()
+                        + " NEXT EVENT ix: " + timerEventIx 
+                        + " time: " + new Tstr(nextTimerEventTimestamp,diffMinutesLocalUTC).get()
+                    );
                     increaseTimer = false;
                 }
 
@@ -3569,80 +3653,110 @@ public class FitFile {
                         + FitDateTime.toString(record.getFieldLongValue(REC_TIME),diffMinutesLocalUTC)); */
                 }
 
-                //--------------
-                // IF LAP START
-                if (currentTimeStamp != null && nextLapStartTime != null && currentTimeStamp.equals(nextLapStartTime)) {
-
-                    // Get current LAP time for the new lap
-                    currentLapTime = getLapMesg().get(lapIx).getFieldFloatValue(LAP_TIMER);
-                    if (currentLapTime == null) {
-                        currentLapTime = 0f;
-                    }
-                    sumLapTime += currentLapTime;
-
-                    // Get current EXTRA LAP time for the new lap
-                    // currentLapExtraTime = getLapExtraRecords().get(lapIx).getTTimerLap();
-                    // if (currentLapExtraTime == null) {
-                    //     currentLapExtraTime = 0f;
-                    // }
-                    // sumLapExtraTime += currentLapExtraTime;
-
-                    System.out.println(" NEW LAP"
-                        + " lapNo: " + lapNo
-                        + " lapStartTime: " + new Tstr(nextLapStartTime,diffMinutesLocalUTC).get()
-                        + " currentRecordTime: " + new Tstr(currentTimeStamp,diffMinutesLocalUTC).get()
-                        + " timerCounter: " + PehoUtils.sec2minSecLong(timerCounter)
-                        + " Record ix: " + recordIx 
-                    );
-                    System.out.println(" ----"
-                        + " lap time: " + PehoUtils.sec2minSecLong(timerCounter)
-                        // + " lap extra time: " + PehoUtils.sec2minSecLong(currentLapExtraTime)
-                    );
-
-                    // Save LAP END to table
-                    if (lapNo < getNumberOfLaps()) {
-                        currentLapTimeEnd = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
-                        nextLapStartTime = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME);
-                    } else {
-                        currentLapTimeEnd = timeLastRecord;
-                    }
-                }
-
-                // Find out if next record is first record in next Lap
-                if ((recordIx + 1 >= recordMesg.size()) || 
-                        (recordMesg.get(recordIx + 1).getFieldLongValue(REC_TIME) > currentLapTimeEnd)) {
-                    nextRecordLastInLap = true;
-                } else {
-                    nextRecordLastInLap = false;
-                }
-
-                // if (recordIx < 15 || recordIx > 150 && recordIx < 250 || recordIx > (recordMesg.size()-10)) {
-                //     System.out.println(""
-                //         + " Record ix: " + recordIx 
-                //         + " currentRecordTime: " + new Tstr(currentTimeStamp,diffMinutesLocalUTC).get()
-                //         + " timerCounter: " + PehoUtils.sec2minSecLong(timerCounter)
-                //         + " lapNo: " + lapNo
-                //     );
-                // }
-
-                // --------------
-                // IF LAP END
-                //if (currentTimeStamp != null && currentLapTimeEnd != null && currentTimeStamp.equal(currentLapTimeEnd)) {
-                if (currentTimeStamp != null && currentLapTimeEnd != null && nextRecordLastInLap) {
-                    lapIx++;
-                    lapNo++;
-                }
-
-                RecordMesgAddOnRecords newExtraRecord = new RecordMesgAddOnRecords();
-                newExtraRecord.setTimer(timerCounter);
-                newExtraRecord.setLapNo(lapNo);
-                recordMesgAddOnRecords.add(newExtraRecord);
-
             }
+
+            //--------------
+            // IF LAP START
+            if (currentTimeStamp != null && nextLapStartTime != null && currentTimeStamp.equals(nextLapStartTime)) {
+
+                // Get current LAP time for the new lap
+                currentLapTime = getLapMesg().get(lapIx).getFieldFloatValue(LAP_TIMER);
+                if (currentLapTime == null) {
+                    currentLapTime = 0f;
+                }
+                sumLapTime += currentLapTime;
+
+                // Get current EXTRA LAP time for the new lap
+                // currentLapExtraTime = getLapExtraRecords().get(lapIx).getTTimerLap();
+                // if (currentLapExtraTime == null) {
+                //     currentLapExtraTime = 0f;
+                // }
+                // sumLapExtraTime += currentLapExtraTime;
+
+                printAndAppendUpdateLogLn(" LAP START"
+                    + " no: " + lapNo
+                    + " time: " + new Tstr(nextLapStartTime,diffMinutesLocalUTC).get()
+                    + " tTimer: " + PehoUtils.sec2minSecLong(timerCounter)
+                    + " Record time: " + new Tstr(currentTimeStamp,diffMinutesLocalUTC).get()
+                    + " ix: " + recordIx 
+                );
+                // System.out.println(" ----"
+                //     + " lap time: " + PehoUtils.sec2minSecLong(timerCounter)
+                //     + " lap extra time: " + PehoUtils.sec2minSecLong(currentLapExtraTime)
+                // );
+
+                // Save LAP END to table
+                if (lapNo < getNumberOfLaps()) {
+                    currentLapTimeEnd = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME) - 1;
+                    nextLapStartTime = lapMesg.get(lapIx + 1).getFieldLongValue(LAP_STIME);
+                } else {
+                    currentLapTimeEnd = timeLastRecord;
+                }
+            }
+
+            // Find out if next record is first record in next Lap
+            if ((recordIx + 1 >= recordMesg.size()) || 
+                    (recordMesg.get(recordIx + 1).getFieldLongValue(REC_TIME) > currentLapTimeEnd)) {
+                nextRecordLastInLap = true;
+            } else {
+                nextRecordLastInLap = false;
+            }
+
+            // if (recordIx < 15 || recordIx > 150 && recordIx < 250 || recordIx > (recordMesg.size()-10)) {
+            //     System.out.println(""
+            //         + " Record ix: " + recordIx 
+            //         + " currentRecordTime: " + new Tstr(currentTimeStamp,diffMinutesLocalUTC).get()
+            //         + " timerCounter: " + PehoUtils.sec2minSecLong(timerCounter)
+            //         + " lapNo: " + lapNo
+            //     );
+            // }
+
+            // --------------
+            // IF LAP END
+            //if (currentTimeStamp != null && currentLapTimeEnd != null && currentTimeStamp.equal(currentLapTimeEnd)) {
+            if (currentTimeStamp != null && currentLapTimeEnd != null && nextRecordLastInLap) {
+                lapIx++;
+                lapNo++;
+            }
+
+            RecordMesgAddOnRecords newExtraRecord = new RecordMesgAddOnRecords();
+            newExtraRecord.setTimer(timerCounter);
+            newExtraRecord.setLapNo(lapNo);
+            recordMesgAddOnRecords.add(newExtraRecord);
 
             recordIx++;
             lastRecordTime = record.getFieldLongValue(REC_TIME);
         }
+
+        if (isStopEventAtEnd) {
+            printAndAppendUpdateLogLn(""
+                + " ACTIVITY Stop:"
+                + " ---> Stop EVENT" 
+                //+ " tTimer: " + PehoUtils.sec2minSecLong(timerCounter)
+                + " ix: " + (timerEventIx - 1) 
+                + " time: " + new Tstr(nextTimerEventTimestamp,diffMinutesLocalUTC).get()
+                + " lapNo: " + (lapNo - 1)
+                + " tTimer: " + PehoUtils.sec2minSecLong(timerCounter)
+                + " Record ix: " + (recordIx - 1)
+                + " time: " + new Tstr(currentTimeStamp,diffMinutesLocalUTC).get()
+            );
+        } else {
+            printAndAppendUpdateLogLn(""
+                + " ACTIVITY Stop:"
+                + " ---> LAST RECORD" 
+                + " lapNo: " + lapNo
+                + " tTimer: " + PehoUtils.sec2minSecLong(timerCounter)
+                + " Record ix: " + recordIx
+                + " time: " + new Tstr(currentTimeStamp,diffMinutesLocalUTC).get()
+            );
+            printAndAppendUpdateLogLn(" ==> WARNING: Last timer event is not a STOP event!" 
+                + " Last event: " 
+                + Event.getByValue(eventTimerMesg.get(eventTimerMesg.size() - 1).getFieldShortValue(EVE_EVENT))
+                + ", type: " 
+                + EventType.getByValue(eventTimerMesg.get(eventTimerMesg.size() - 1).getFieldShortValue(EVE_TYPE))
+            );
+        }
+
         printAndAppendUpdateLogLn("Results");
         printAndAppendUpdateLogLn(" Records: " + recordMesg.size() + " extraRecords: " + recordMesgAddOnRecords.size());
         printAndAppendUpdateLogLn(" TotalTimerTime: " + PehoUtils.sec2minSecLong(totalTimerTime)

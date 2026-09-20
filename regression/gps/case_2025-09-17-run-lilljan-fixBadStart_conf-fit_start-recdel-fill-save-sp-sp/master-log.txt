@@ -1,9 +1,20 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 2626, Time between: 2025-09-17-17-06-21 -- 2025-09-17-17-51-03
 ======== Non-course file detected. All commands will be available.
-Create timer list done w results
-======== Records: 2626 extraRecords: 2626
-======== TotalTimerTime: 43:41 last timer value: 43:42
+Create Timer List
+-----------------
+ Record ix: 122 time: 17:08:23 START pause no: 1 ---> Stop  EVENT ix: 1 time: 17:08:23 lapNo: 1
+ Record ix: 123 time: 17:08:39 END   pause no: 1 ---> Start EVENT ix: 2 time: 17:08:39 lapNo: 1
+ Record ix: 2267 time: 17:44:23 START pause no: 2 ---> Stop  EVENT ix: 3 time: 17:44:23 lapNo: 18
+ Record ix: 2268 time: 17:44:29 END   pause no: 2 ---> Start EVENT ix: 4 time: 17:44:29 lapNo: 18
+ Record ix: 2517 time: 17:48:38 START pause no: 3 ---> Stop  EVENT ix: 5 time: 17:48:38 lapNo: 19
+ Record ix: 2518 time: 17:49:16 END   pause no: 3 ---> Start EVENT ix: 6 time: 17:49:16 lapNo: 19
+ Record ix: 2625 time: 17:51:03 START pause no: 4 ---> Stop  EVENT ix: 7 time: 17:51:03 lapNo: 19
+Results
+ Records: 2626 extraRecords: 2626
+ TotalTimerTime: 43:41 last timer value: 43:42 sumLapTime: 43:41 sumLapExtraTime: 0:00
+Create Pause List
+-----------------
 fillLapExtraRecords starting: numberOfLaps: 19, numberOfRecords: 2626, nextLapStartTime: 1127055981
 fillLapExtraRecords starting: numberOfLaps: 19, numberOfRecords: 2626, nextLapStartTime: 1127055981
 -- New START coordinates:59.34934, 18.09934
@@ -52,9 +63,20 @@ Lap time/stime:2025-09-17-15-06-20 / 2025-09-17-15-06-20
 Ses time/stime:2025-09-17-15-06-20 / 2025-09-17-15-06-20
 Act time UTC:2025-09-17-15-06-21
 Act time Loc:2025-09-17-17-06-20
-Create timer list done w results
-======== Records: 2627 extraRecords: 2627
-======== TotalTimerTime: 43:42 last timer value: 43:43
+Create Timer List
+-----------------
+ Record ix: 123 time: 17:08:23 START pause no: 1 ---> Stop  EVENT ix: 1 time: 17:08:23 lapNo: 1
+ Record ix: 124 time: 17:08:39 END   pause no: 1 ---> Start EVENT ix: 2 time: 17:08:39 lapNo: 1
+ Record ix: 2268 time: 17:44:23 START pause no: 2 ---> Stop  EVENT ix: 3 time: 17:44:23 lapNo: 18
+ Record ix: 2269 time: 17:44:29 END   pause no: 2 ---> Start EVENT ix: 4 time: 17:44:29 lapNo: 18
+ Record ix: 2518 time: 17:48:38 START pause no: 3 ---> Stop  EVENT ix: 5 time: 17:48:38 lapNo: 19
+ Record ix: 2519 time: 17:49:16 END   pause no: 3 ---> Start EVENT ix: 6 time: 17:49:16 lapNo: 19
+ Record ix: 2626 time: 17:51:03 START pause no: 4 ---> Stop  EVENT ix: 7 time: 17:51:03 lapNo: 19
+Results
+ Records: 2627 extraRecords: 2627
+ TotalTimerTime: 43:42 last timer value: 43:43 sumLapTime: 43:42 sumLapExtraTime: 0:00
+Create Pause List
+-----------------
 addDist: Updated 2602 records starting from distance 156.19m index 25 by adding distance -54.098457m.
 addDist: Updating LAP Ix: 0 DIST from 1060.41 to 1006.3116m, speed: 5:03min/km
 addDist: Updating SPLIT no 1 w start dist 0.0 DIST from 459.65 to 405.55154m, speed: 5:00min/km type=RWD_RUN(17)
@@ -93,15 +115,46 @@ Deleting records to create a GAP
 ===> AllMesgIx to delete from: 127 and number of records: 25
 ===> Deleting records to create gap of 27 sec, from 1 sec into the activity
 ===> Deleting records from 2025-09-17-15-06-21 to 2025-09-17-15-06-45
-Create timer list done w results
-======== Records: 2603 extraRecords: 2603
-======== TotalTimerTime: 43:42 last timer value: 43:43
+Create Timer List
+-----------------
+ Record ix: 99 time: 17:08:23 START pause no: 1 ---> Stop  EVENT ix: 1 time: 17:08:23 lapNo: 1
+ Record ix: 100 time: 17:08:39 END   pause no: 1 ---> Start EVENT ix: 2 time: 17:08:39 lapNo: 1
+ Record ix: 2244 time: 17:44:23 START pause no: 2 ---> Stop  EVENT ix: 3 time: 17:44:23 lapNo: 18
+ Record ix: 2245 time: 17:44:29 END   pause no: 2 ---> Start EVENT ix: 4 time: 17:44:29 lapNo: 18
+ Record ix: 2494 time: 17:48:38 START pause no: 3 ---> Stop  EVENT ix: 5 time: 17:48:38 lapNo: 19
+ Record ix: 2495 time: 17:49:16 END   pause no: 3 ---> Start EVENT ix: 6 time: 17:49:16 lapNo: 19
+ Record ix: 2602 time: 17:51:03 START pause no: 4 ---> Stop  EVENT ix: 7 time: 17:51:03 lapNo: 19
+Results
+ Records: 2603 extraRecords: 2603
+ TotalTimerTime: 43:42 last timer value: 43:43 sumLapTime: 43:42 sumLapExtraTime: 0:00
+Create Pause List
+-----------------
 Filling gaps with 1sec records
 -- GapNo: 1, dist: 102.09m, time: 25sec, @Dist: 0.0-102.09m, time: 2025-09-17-17-06-20
-Create timer list done w results
-======== Records: 2627 extraRecords: 2627
-======== TotalTimerTime: 43:42 last timer value: 43:43
-Create timer list done w results
-======== Records: 2627 extraRecords: 2627
-======== TotalTimerTime: 43:42 last timer value: 43:43
+Create Timer List
+-----------------
+ Record ix: 123 time: 17:08:23 START pause no: 1 ---> Stop  EVENT ix: 1 time: 17:08:23 lapNo: 1
+ Record ix: 124 time: 17:08:39 END   pause no: 1 ---> Start EVENT ix: 2 time: 17:08:39 lapNo: 1
+ Record ix: 2268 time: 17:44:23 START pause no: 2 ---> Stop  EVENT ix: 3 time: 17:44:23 lapNo: 18
+ Record ix: 2269 time: 17:44:29 END   pause no: 2 ---> Start EVENT ix: 4 time: 17:44:29 lapNo: 18
+ Record ix: 2518 time: 17:48:38 START pause no: 3 ---> Stop  EVENT ix: 5 time: 17:48:38 lapNo: 19
+ Record ix: 2519 time: 17:49:16 END   pause no: 3 ---> Start EVENT ix: 6 time: 17:49:16 lapNo: 19
+ Record ix: 2626 time: 17:51:03 START pause no: 4 ---> Stop  EVENT ix: 7 time: 17:51:03 lapNo: 19
+Results
+ Records: 2627 extraRecords: 2627
+ TotalTimerTime: 43:42 last timer value: 43:43 sumLapTime: 43:42 sumLapExtraTime: 0:00
+Create Pause List
+-----------------
+Create Timer List
+-----------------
+ Record ix: 123 time: 17:08:23 START pause no: 1 ---> Stop  EVENT ix: 1 time: 17:08:23 lapNo: 1
+ Record ix: 124 time: 17:08:39 END   pause no: 1 ---> Start EVENT ix: 2 time: 17:08:39 lapNo: 1
+ Record ix: 2268 time: 17:44:23 START pause no: 2 ---> Stop  EVENT ix: 3 time: 17:44:23 lapNo: 18
+ Record ix: 2269 time: 17:44:29 END   pause no: 2 ---> Start EVENT ix: 4 time: 17:44:29 lapNo: 18
+ Record ix: 2518 time: 17:48:38 START pause no: 3 ---> Stop  EVENT ix: 5 time: 17:48:38 lapNo: 19
+ Record ix: 2519 time: 17:49:16 END   pause no: 3 ---> Start EVENT ix: 6 time: 17:49:16 lapNo: 19
+ Record ix: 2626 time: 17:51:03 START pause no: 4 ---> Stop  EVENT ix: 7 time: 17:51:03 lapNo: 19
+Results
+ Records: 2627 extraRecords: 2627
+ TotalTimerTime: 43:42 last timer value: 43:43 sumLapTime: 43:42 sumLapExtraTime: 0:00
 fillLapExtraRecords starting: numberOfLaps: 19, numberOfRecords: 2627, nextLapStartTime: 1127056520

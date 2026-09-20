@@ -15,9 +15,11 @@ Lap no: 1 timestamp -> null => 00:00:00
 Event no: 1, event by text: TIMER, type in text: START, timestamp -> null => 00:00:00
 Event no: 2, event by text: TIMER, type in text: STOP_DISABLE_ALL, timestamp -> null => 00:06:09
 Normalized timestamps: lapStartTimes=1, lapTimestamps=1, eventTimestamps=2
-Create timer list done w results
-======== Records: 370 extraRecords: 370
-======== TotalTimerTime: 0:00 last timer value: 6:09
+Create Timer List
+-----------------
+Results
+ Records: 370 extraRecords: 370
+ TotalTimerTime: 0:00 last timer value: 6:09 sumLapTime: 40:05 sumLapExtraTime: 0:00
 --------------------------
 CHECK LAP TOTALS AND SPEED
 --------------------------
@@ -41,9 +43,13 @@ CHECK LAP TOTALS AND SPEED
 Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
 Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
 Lap totals check: OK | lapTimerSum=369.0s, timerListTotal=369s | lapDistSum=7706.29m, lastRecordDist=7706.29m | lapMovingSum=369.0s, sessionMoving=369.0s | lapElapsedSum=369.0s, sessionElapsed=369.0s
-Create timer list done w results
-======== Records: 370 extraRecords: 370
-======== TotalTimerTime: 0:00 last timer value: 6:09
+Create Timer List
+-----------------
+Results
+ Records: 370 extraRecords: 370
+ TotalTimerTime: 0:00 last timer value: 6:09 sumLapTime: 6:09 sumLapExtraTime: 0:00
+Create Pause List
+-----------------
 fillLapExtraRecords starting: numberOfLaps: 1, numberOfRecords: 370, nextLapStartTime: 0
 fillLapExtraRecords starting: numberOfLaps: 1, numberOfRecords: 370, nextLapStartTime: 0
 --------------------------------
@@ -483,9 +489,11 @@ Updated REC_TIME on 369 record(s). Total records: 370
 Distance source used: gpsSegments=369, fallbackRecDistSegments=0, missingDistanceSegments=0
 Distance check: checkedSegments=369, mismatches(>5m)=0, maxDiff=0.59m
 Computed path distance=7685.5m, total time=46:07
-Create timer list done w results
-======== Records: 370 extraRecords: 370
-======== TotalTimerTime: 0:00 last timer value: 46:07
+Create Timer List
+-----------------
+Results
+ Records: 370 extraRecords: 370
+ TotalTimerTime: 0:00 last timer value: 46:07 sumLapTime: 6:09 sumLapExtraTime: 0:00
 ---------------------------------
 LAP/EVENT TIMESTAMP NORMALIZATION
 ---------------------------------
@@ -585,15 +593,21 @@ CPoint no: 34 -> closest record no: 370 (gps gap: 0.0m)
 -- Updated timestamps: 33
 -- Updated distances: 0
 -- Skipped course points: 0
-Create timer list done w results
-======== Records: 370 extraRecords: 370
-======== TotalTimerTime: 0:00 last timer value: 46:07
+Create Timer List
+-----------------
+Results
+ Records: 370 extraRecords: 370
+ TotalTimerTime: 0:00 last timer value: 46:07 sumLapTime: 46:07 sumLapExtraTime: 0:00
 CHECK/FIX RECORD TIMES FROM MENU
 --------------------------------
 Completed REC_TIME check/fix. Updated 0 null value(s). Duplicates removed=0, out-of-order points detected=0.
-Create timer list done w results
-======== Records: 370 extraRecords: 370
-======== TotalTimerTime: 0:00 last timer value: 46:07
+Create Timer List
+-----------------
+Results
+ Records: 370 extraRecords: 370
+ TotalTimerTime: 0:00 last timer value: 46:07 sumLapTime: 46:07 sumLapExtraTime: 0:00
+Create Pause List
+-----------------
 COURSE POINT - CHANGE TYPE
 --------------------------------
 Changed CPoint no: 8
@@ -1275,7 +1289,9 @@ COURSE - CHANGE NAME
 --------------------------------
 Changed COURSE messages: 1
 -- Name changed from 'Porsnäs 7.7km' to 'Porsnäs 7.6km'
-Create timer list done w results
-======== Records: 370 extraRecords: 370
-======== TotalTimerTime: 0:00 last timer value: 46:07
+Create Timer List
+-----------------
+Results
+ Records: 370 extraRecords: 370
+ TotalTimerTime: 0:00 last timer value: 46:07 sumLapTime: 46:07 sumLapExtraTime: 0:00
 fillLapExtraRecords starting: numberOfLaps: 1, numberOfRecords: 370, nextLapStartTime: 1153612800

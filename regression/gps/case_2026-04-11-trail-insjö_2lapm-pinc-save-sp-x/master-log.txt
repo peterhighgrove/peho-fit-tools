@@ -1,9 +1,26 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 2439, Time between: 2026-04-11-14-12-34 -- 2026-04-11-14-58-04
 ======== Non-course file detected. All commands will be available.
-Create timer list done w results
-======== Records: 2439 extraRecords: 2439
-======== TotalTimerTime: 40:31 last timer value: 40:32
+Create Timer List
+-----------------
+ Record ix: 508 time: 14:21:02 START pause no: 1 ---> Stop  EVENT ix: 1 time: 14:21:02 lapNo: 2
+ Record ix: 509 time: 14:21:42 END   pause no: 1 ---> Start EVENT ix: 2 time: 14:21:42 lapNo: 2
+ Record ix: 866 time: 14:27:39 START pause no: 2 ---> Stop  EVENT ix: 3 time: 14:27:39 lapNo: 2
+ Record ix: 867 time: 14:30:03 END   pause no: 2 ---> Start EVENT ix: 4 time: 14:30:03 lapNo: 2
+ Record ix: 917 time: 14:30:53 START pause no: 3 ---> Stop  EVENT ix: 5 time: 14:30:53 lapNo: 2
+ Record ix: 918 time: 14:31:14 END   pause no: 3 ---> Start EVENT ix: 6 time: 14:31:14 lapNo: 2
+ Record ix: 1011 time: 14:32:47 START pause no: 4 ---> Stop  EVENT ix: 7 time: 14:32:47 lapNo: 2
+ Record ix: 1012 time: 14:32:53 END   pause no: 4 ---> Start EVENT ix: 8 time: 14:32:53 lapNo: 2
+ Record ix: 1133 time: 14:34:54 START pause no: 5 ---> Stop  EVENT ix: 9 time: 14:34:54 lapNo: 3
+ Record ix: 1134 time: 14:35:55 END   pause no: 5 ---> Start EVENT ix: 10 time: 14:35:55 lapNo: 3
+ Record ix: 1381 time: 14:40:02 START pause no: 6 ---> Stop  EVENT ix: 11 time: 14:40:02 lapNo: 3
+ Record ix: 1382 time: 14:40:28 END   pause no: 6 ---> Start EVENT ix: 12 time: 14:40:28 lapNo: 3
+ Record ix: 2438 time: 14:58:04 START pause no: 7 ---> Stop  EVENT ix: 13 time: 14:58:04 lapNo: 6
+Results
+ Records: 2439 extraRecords: 2439
+ TotalTimerTime: 40:31 last timer value: 40:32 sumLapTime: 40:31 sumLapExtraTime: 0:00
+Create Pause List
+-----------------
 fillLapExtraRecords starting: numberOfLaps: 6, numberOfRecords: 2439, nextLapStartTime: 1144843954
 fillLapExtraRecords starting: numberOfLaps: 6, numberOfRecords: 2439, nextLapStartTime: 1144843954
 fillLapExtraRecords starting: numberOfLaps: 6, numberOfRecords: 2439, nextLapStartTime: 1144843954
@@ -29,9 +46,26 @@ lapMerge: adjusted eTimer=1867.517
 -- No SPL_TYPE changes, SPLIT_SUMMARY unchanged.
 Merged laps: 1 to 3
 -- New lap 1 time: 26:09min, dist: 3000 m
-Create timer list done w results
-======== Records: 2439 extraRecords: 2439
-======== TotalTimerTime: 40:31 last timer value: 40:32
+Create Timer List
+-----------------
+ Record ix: 508 time: 14:21:02 START pause no: 1 ---> Stop  EVENT ix: 1 time: 14:21:02 lapNo: 1
+ Record ix: 509 time: 14:21:42 END   pause no: 1 ---> Start EVENT ix: 2 time: 14:21:42 lapNo: 1
+ Record ix: 866 time: 14:27:39 START pause no: 2 ---> Stop  EVENT ix: 3 time: 14:27:39 lapNo: 1
+ Record ix: 867 time: 14:30:03 END   pause no: 2 ---> Start EVENT ix: 4 time: 14:30:03 lapNo: 1
+ Record ix: 917 time: 14:30:53 START pause no: 3 ---> Stop  EVENT ix: 5 time: 14:30:53 lapNo: 1
+ Record ix: 918 time: 14:31:14 END   pause no: 3 ---> Start EVENT ix: 6 time: 14:31:14 lapNo: 1
+ Record ix: 1011 time: 14:32:47 START pause no: 4 ---> Stop  EVENT ix: 7 time: 14:32:47 lapNo: 1
+ Record ix: 1012 time: 14:32:53 END   pause no: 4 ---> Start EVENT ix: 8 time: 14:32:53 lapNo: 1
+ Record ix: 1133 time: 14:34:54 START pause no: 5 ---> Stop  EVENT ix: 9 time: 14:34:54 lapNo: 1
+ Record ix: 1134 time: 14:35:55 END   pause no: 5 ---> Start EVENT ix: 10 time: 14:35:55 lapNo: 1
+ Record ix: 1381 time: 14:40:02 START pause no: 6 ---> Stop  EVENT ix: 11 time: 14:40:02 lapNo: 1
+ Record ix: 1382 time: 14:40:28 END   pause no: 6 ---> Start EVENT ix: 12 time: 14:40:28 lapNo: 1
+ Record ix: 2438 time: 14:58:04 START pause no: 7 ---> Stop  EVENT ix: 13 time: 14:58:04 lapNo: 4
+Results
+ Records: 2439 extraRecords: 2439
+ TotalTimerTime: 40:31 last timer value: 40:32 sumLapTime: 40:31 sumLapExtraTime: 0:00
+Create Pause List
+-----------------
 fillLapExtraRecords starting: numberOfLaps: 4, numberOfRecords: 2439, nextLapStartTime: 1144843954
 fillLapExtraRecords starting: numberOfLaps: 4, numberOfRecords: 2439, nextLapStartTime: 1144843954
 
@@ -56,9 +90,26 @@ lapMerge: adjusted eTimer=861.993
 -- No SPL_TYPE changes, SPLIT_SUMMARY unchanged.
 Merged laps: 2 to 4
 -- New lap 2 time: 14:23min, dist: 2191 m
-Create timer list done w results
-======== Records: 2439 extraRecords: 2439
-======== TotalTimerTime: 40:31 last timer value: 40:32
+Create Timer List
+-----------------
+ Record ix: 508 time: 14:21:02 START pause no: 1 ---> Stop  EVENT ix: 1 time: 14:21:02 lapNo: 1
+ Record ix: 509 time: 14:21:42 END   pause no: 1 ---> Start EVENT ix: 2 time: 14:21:42 lapNo: 1
+ Record ix: 866 time: 14:27:39 START pause no: 2 ---> Stop  EVENT ix: 3 time: 14:27:39 lapNo: 1
+ Record ix: 867 time: 14:30:03 END   pause no: 2 ---> Start EVENT ix: 4 time: 14:30:03 lapNo: 1
+ Record ix: 917 time: 14:30:53 START pause no: 3 ---> Stop  EVENT ix: 5 time: 14:30:53 lapNo: 1
+ Record ix: 918 time: 14:31:14 END   pause no: 3 ---> Start EVENT ix: 6 time: 14:31:14 lapNo: 1
+ Record ix: 1011 time: 14:32:47 START pause no: 4 ---> Stop  EVENT ix: 7 time: 14:32:47 lapNo: 1
+ Record ix: 1012 time: 14:32:53 END   pause no: 4 ---> Start EVENT ix: 8 time: 14:32:53 lapNo: 1
+ Record ix: 1133 time: 14:34:54 START pause no: 5 ---> Stop  EVENT ix: 9 time: 14:34:54 lapNo: 1
+ Record ix: 1134 time: 14:35:55 END   pause no: 5 ---> Start EVENT ix: 10 time: 14:35:55 lapNo: 1
+ Record ix: 1381 time: 14:40:02 START pause no: 6 ---> Stop  EVENT ix: 11 time: 14:40:02 lapNo: 1
+ Record ix: 1382 time: 14:40:28 END   pause no: 6 ---> Start EVENT ix: 12 time: 14:40:28 lapNo: 1
+ Record ix: 2438 time: 14:58:04 START pause no: 7 ---> Stop  EVENT ix: 13 time: 14:58:04 lapNo: 2
+Results
+ Records: 2439 extraRecords: 2439
+ TotalTimerTime: 40:31 last timer value: 40:32 sumLapTime: 40:31 sumLapExtraTime: 0:00
+Create Pause List
+-----------------
 fillLapExtraRecords starting: numberOfLaps: 2, numberOfRecords: 2439, nextLapStartTime: 1144843954
 addDist: Updated 1427 records starting from distance 1912.32m index 942 by adding distance -124.88989m.
 addDist: Updating LAP Ix: 0 DIST from 3000.21 to 2875.32m, speed: 9:06min/km
@@ -89,10 +140,42 @@ Increased pause no: 4
 -- Pause increased with 70sec to 1:16min
 Dist:1912.32-1787.43=-124.88989
 Increasing SESSION_SPEED from 2.0845473m/s / 8:00min/km to 2.146362m/s / 7:46min/km
-Create timer list done w results
-======== Records: 2369 extraRecords: 2369
-======== TotalTimerTime: 39:21 last timer value: 39:22
-Create timer list done w results
-======== Records: 2369 extraRecords: 2369
-======== TotalTimerTime: 39:21 last timer value: 39:22
+Create Timer List
+-----------------
+ Record ix: 508 time: 14:21:02 START pause no: 1 ---> Stop  EVENT ix: 1 time: 14:21:02 lapNo: 1
+ Record ix: 509 time: 14:21:42 END   pause no: 1 ---> Start EVENT ix: 2 time: 14:21:42 lapNo: 1
+ Record ix: 866 time: 14:27:39 START pause no: 2 ---> Stop  EVENT ix: 3 time: 14:27:39 lapNo: 1
+ Record ix: 867 time: 14:30:03 END   pause no: 2 ---> Start EVENT ix: 4 time: 14:30:03 lapNo: 1
+ Record ix: 917 time: 14:30:53 START pause no: 3 ---> Stop  EVENT ix: 5 time: 14:30:53 lapNo: 1
+ Record ix: 918 time: 14:31:14 END   pause no: 3 ---> Start EVENT ix: 6 time: 14:31:14 lapNo: 1
+ Record ix: 941 time: 14:31:37 START pause no: 4 ---> Stop  EVENT ix: 7 time: 14:31:37 lapNo: 1
+ Record ix: 942 time: 14:32:53 END   pause no: 4 ---> Start EVENT ix: 8 time: 14:32:53 lapNo: 1
+ Record ix: 1063 time: 14:34:54 START pause no: 5 ---> Stop  EVENT ix: 9 time: 14:34:54 lapNo: 1
+ Record ix: 1064 time: 14:35:55 END   pause no: 5 ---> Start EVENT ix: 10 time: 14:35:55 lapNo: 1
+ Record ix: 1311 time: 14:40:02 START pause no: 6 ---> Stop  EVENT ix: 11 time: 14:40:02 lapNo: 1
+ Record ix: 1312 time: 14:40:28 END   pause no: 6 ---> Start EVENT ix: 12 time: 14:40:28 lapNo: 1
+ Record ix: 2368 time: 14:58:04 START pause no: 7 ---> Stop  EVENT ix: 13 time: 14:58:04 lapNo: 2
+Results
+ Records: 2369 extraRecords: 2369
+ TotalTimerTime: 39:21 last timer value: 39:22 sumLapTime: 39:21 sumLapExtraTime: 0:00
+Create Pause List
+-----------------
+Create Timer List
+-----------------
+ Record ix: 508 time: 14:21:02 START pause no: 1 ---> Stop  EVENT ix: 1 time: 14:21:02 lapNo: 1
+ Record ix: 509 time: 14:21:42 END   pause no: 1 ---> Start EVENT ix: 2 time: 14:21:42 lapNo: 1
+ Record ix: 866 time: 14:27:39 START pause no: 2 ---> Stop  EVENT ix: 3 time: 14:27:39 lapNo: 1
+ Record ix: 867 time: 14:30:03 END   pause no: 2 ---> Start EVENT ix: 4 time: 14:30:03 lapNo: 1
+ Record ix: 917 time: 14:30:53 START pause no: 3 ---> Stop  EVENT ix: 5 time: 14:30:53 lapNo: 1
+ Record ix: 918 time: 14:31:14 END   pause no: 3 ---> Start EVENT ix: 6 time: 14:31:14 lapNo: 1
+ Record ix: 941 time: 14:31:37 START pause no: 4 ---> Stop  EVENT ix: 7 time: 14:31:37 lapNo: 1
+ Record ix: 942 time: 14:32:53 END   pause no: 4 ---> Start EVENT ix: 8 time: 14:32:53 lapNo: 1
+ Record ix: 1063 time: 14:34:54 START pause no: 5 ---> Stop  EVENT ix: 9 time: 14:34:54 lapNo: 1
+ Record ix: 1064 time: 14:35:55 END   pause no: 5 ---> Start EVENT ix: 10 time: 14:35:55 lapNo: 1
+ Record ix: 1311 time: 14:40:02 START pause no: 6 ---> Stop  EVENT ix: 11 time: 14:40:02 lapNo: 1
+ Record ix: 1312 time: 14:40:28 END   pause no: 6 ---> Start EVENT ix: 12 time: 14:40:28 lapNo: 1
+ Record ix: 2368 time: 14:58:04 START pause no: 7 ---> Stop  EVENT ix: 13 time: 14:58:04 lapNo: 2
+Results
+ Records: 2369 extraRecords: 2369
+ TotalTimerTime: 39:21 last timer value: 39:22 sumLapTime: 39:21 sumLapExtraTime: 0:00
 fillLapExtraRecords starting: numberOfLaps: 2, numberOfRecords: 2369, nextLapStartTime: 1144844074

@@ -526,7 +526,22 @@ LapFix.SplitMatch splitToSplit = new LapFix(fitFile).analyzeSplitMatchForSingleL
 
 Added lapNo to LapExtra AND C2DateTime to RecordMesgAddOnRecords
 Changed RecordExtraMesg to RecordMesgAddOnRecords for INDOOR files
+Before both speed/enh speed in laps and session, now depending on lap in source file
+
 --> git sync
+
+--> v3.21 Build
+
+--> regr-gps,
+ changes both speed/enh speed in laps and session, OK
+ New logging in create timerlist
+
+--> regr-gps.sh --version 3.21 --bless 
+Fix for no timer event end of records. New boolean flag logic and more loggging in create timer list
+--> git sync
+
+
+
 
 
 
@@ -568,6 +583,13 @@ logging in method
             + ", adjusted secondLapTTimer=" + secondLap.getFieldFloatValue(FitFile.LAP_TIMER));
 
         setFloatIfNotNull(splitMesg, FitFile.SPL_CAD, lapMesg.getFieldShortValue(FitFile.LAP_CAD) * 256/2f);
+
+
+Event.getByValue(mesg.getFieldShortValue(EVE_EVENT)) + 
+EventType.getByValue(mesg.getFieldShortValue(EVE_TYPE)) + 
+if (mesg.getNum() == MesgNum.EVENT) {
+    if (mesg.getFieldLongValue(EVE_TIME).equals(timeStart)) {
+        if (mesg.getFieldValue(EVE_TYPE).equals(EventType.STOP_ALL.getValue())) {
 
 *********
 **** DONE

@@ -8,4 +8,6 @@ java -jar ../dev/jars/fit-fix-3.10.jar //looks for aaa. file
 ./collect-jars.sh 3.10
 
 ./regr-gps.sh --version 2.11
-../dev/peho-fit-tools/regr-gps.sh --version 3.17
+./regr-wkt.sh --version 2.11
+../dev/peho-fit-tools/regr-gps.sh --version 3.21
+xed .... &

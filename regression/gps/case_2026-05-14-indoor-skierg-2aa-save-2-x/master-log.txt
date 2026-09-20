@@ -1,9 +1,13 @@
 FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 129, Time between: 2026-05-14-10-15-23 -- 2026-05-14-10-17-31
 ======== Non-course file detected. All commands will be available.
-Create timer list done w results
-======== Records: 129 extraRecords: 129
-======== TotalTimerTime: 2:08 last timer value: 2:08
+Create Timer List
+-----------------
+Results
+ Records: 129 extraRecords: 129
+ TotalTimerTime: 2:08 last timer value: 2:08 sumLapTime: 2:08 sumLapExtraTime: 0:00
+Create Pause List
+-----------------
 fillLapExtraRecords starting: numberOfLaps: 1, numberOfRecords: 129, nextLapStartTime: 1147680923
 fillLapExtraRecords starting: numberOfLaps: 1, numberOfRecords: 129, nextLapStartTime: 1147680923
 Adding activity from another file
@@ -25,9 +29,16 @@ TotalTimerTime:6:55
 TotalDistance:1265.0
 TotalElapsedTimer first file:2:08
 TotalElapsedTimer second file:4:46
-Create timer list done w results
-======== Records: 416 extraRecords: 416
-======== TotalTimerTime: 6:55 last timer value: 6:54
+Create Timer List
+-----------------
+ Record ix: 128 time: 10:17:31 START pause no: 1 ---> Stop  EVENT ix: 1 time: 10:17:31 lapNo: 1
+ Record ix: 129 time: 10:18:40 END   pause no: 1 ---> Start EVENT ix: 2 time: 10:18:40 lapNo: 2
+ Record ix: 415 time: 10:23:26 START pause no: 2 ---> Stop  EVENT ix: 3 time: 10:23:26 lapNo: 6
+Results
+ Records: 416 extraRecords: 416
+ TotalTimerTime: 6:55 last timer value: 6:54 sumLapTime: 6:55 sumLapExtraTime: 0:00
+Create Pause List
+-----------------
 Adding activity from another file
 Selected segment in second file: ix 99 to 6443 (6345 messages)
 Adjusted TIME_IN_ZONE reference_index by +6 for 27 message(s).
@@ -48,10 +59,26 @@ TotalTimerTime:57:53
 TotalDistance:11386.0
 TotalElapsedTimer first file:8:03
 TotalElapsedTimer second file:50:58
-Create timer list done w results
-======== Records: 3474 extraRecords: 3474
-======== TotalTimerTime: 57:53 last timer value: 57:51
-Create timer list done w results
-======== Records: 3474 extraRecords: 3474
-======== TotalTimerTime: 57:53 last timer value: 57:51
+Create Timer List
+-----------------
+ Record ix: 128 time: 10:17:31 START pause no: 1 ---> Stop  EVENT ix: 1 time: 10:17:31 lapNo: 1
+ Record ix: 129 time: 10:18:40 END   pause no: 1 ---> Start EVENT ix: 2 time: 10:18:40 lapNo: 2
+ Record ix: 415 time: 10:23:26 START pause no: 2 ---> Stop  EVENT ix: 3 time: 10:23:26 lapNo: 6
+ Record ix: 416 time: 10:24:20 END   pause no: 2 ---> Start EVENT ix: 4 time: 10:24:20 lapNo: 7
+ Record ix: 3473 time: 11:15:17 START pause no: 3 ---> Stop  EVENT ix: 5 time: 11:15:17 lapNo: 33
+Results
+ Records: 3474 extraRecords: 3474
+ TotalTimerTime: 57:53 last timer value: 57:51 sumLapTime: 57:53 sumLapExtraTime: 0:00
+Create Pause List
+-----------------
+Create Timer List
+-----------------
+ Record ix: 128 time: 10:17:31 START pause no: 1 ---> Stop  EVENT ix: 1 time: 10:17:31 lapNo: 1
+ Record ix: 129 time: 10:18:40 END   pause no: 1 ---> Start EVENT ix: 2 time: 10:18:40 lapNo: 2
+ Record ix: 415 time: 10:23:26 START pause no: 2 ---> Stop  EVENT ix: 3 time: 10:23:26 lapNo: 6
+ Record ix: 416 time: 10:24:20 END   pause no: 2 ---> Start EVENT ix: 4 time: 10:24:20 lapNo: 7
+ Record ix: 3473 time: 11:15:17 START pause no: 3 ---> Stop  EVENT ix: 5 time: 11:15:17 lapNo: 33
+Results
+ Records: 3474 extraRecords: 3474
+ TotalTimerTime: 57:53 last timer value: 57:51 sumLapTime: 57:53 sumLapExtraTime: 0:00
 fillLapExtraRecords starting: numberOfLaps: 33, numberOfRecords: 129, nextLapStartTime: 1147681823

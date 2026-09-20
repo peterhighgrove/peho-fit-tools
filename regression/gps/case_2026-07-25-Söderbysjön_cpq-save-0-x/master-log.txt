@@ -156,9 +156,11 @@ Completed REC_TIME startup check/fix. Filled 141 null REC_TIME value(s). Duplica
 LAP/EVENT TIMESTAMP NORMALIZATION
 ---------------------------------
 Normalized timestamps: lapStartTimes=0, lapTimestamps=0, eventTimestamps=0
-Create timer list done w results
-======== Records: 561 extraRecords: 561
-======== TotalTimerTime: 0:00 last timer value: 85:10
+Create Timer List
+-----------------
+Results
+ Records: 561 extraRecords: 561
+ TotalTimerTime: 0:00 last timer value: 85:10 sumLapTime: 85:10 sumLapExtraTime: 0:00
 --------------------------
 CHECK LAP TOTALS AND SPEED
 --------------------------
@@ -181,9 +183,13 @@ CHECK LAP TOTALS AND SPEED
 Session mesg missing, so can't read session moving timer. Using totalTimerFromList.
 Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
 Lap totals check: OK | lapTimerSum=5110.0s, timerListTotal=5110s | lapDistSum=13225.77m, lastRecordDist=13225.77m | lapMovingSum=5110.0s, sessionMoving=5110.0s | lapElapsedSum=5110.0s, sessionElapsed=5110.0s
-Create timer list done w results
-======== Records: 561 extraRecords: 561
-======== TotalTimerTime: 0:00 last timer value: 85:10
+Create Timer List
+-----------------
+Results
+ Records: 561 extraRecords: 561
+ TotalTimerTime: 0:00 last timer value: 85:10 sumLapTime: 85:10 sumLapExtraTime: 0:00
+Create Pause List
+-----------------
 fillLapExtraRecords starting: numberOfLaps: 1, numberOfRecords: 561, nextLapStartTime: 1153526723
 fillLapExtraRecords starting: numberOfLaps: 1, numberOfRecords: 561, nextLapStartTime: 1153526723
 COURSE POINT - CHANGE TYPE GENERIC LOOP
@@ -220,9 +226,11 @@ Updated REC_TIME on 560 record(s). Total records: 561
 Distance source used: gpsSegments=560, fallbackRecDistSegments=0, missingDistanceSegments=0
 Distance check: checkedSegments=560, mismatches(>5m)=0, maxDiff=0.30m
 Computed path distance=13192.4m, total time=85:45
-Create timer list done w results
-======== Records: 561 extraRecords: 561
-======== TotalTimerTime: 0:00 last timer value: 85:45
+Create Timer List
+-----------------
+Results
+ Records: 561 extraRecords: 561
+ TotalTimerTime: 0:00 last timer value: 85:45 sumLapTime: 85:10 sumLapExtraTime: 0:00
 ---------------------------------
 LAP/EVENT TIMESTAMP NORMALIZATION
 ---------------------------------
@@ -370,15 +378,21 @@ CPoint no: 58 -> closest record no: 561 (gps gap: 0.0m)
 -- Updated timestamps: 57
 -- Updated distances: 0
 -- Skipped course points: 0
-Create timer list done w results
-======== Records: 561 extraRecords: 561
-======== TotalTimerTime: 0:00 last timer value: 85:45
+Create Timer List
+-----------------
+Results
+ Records: 561 extraRecords: 561
+ TotalTimerTime: 0:00 last timer value: 85:45 sumLapTime: 85:45 sumLapExtraTime: 0:00
 CHECK/FIX RECORD TIMES FROM MENU
 --------------------------------
 Completed REC_TIME check/fix. Updated 0 null value(s). Duplicates removed=0, out-of-order points detected=0.
-Create timer list done w results
-======== Records: 561 extraRecords: 561
-======== TotalTimerTime: 0:00 last timer value: 85:45
+Create Timer List
+-----------------
+Results
+ Records: 561 extraRecords: 561
+ TotalTimerTime: 0:00 last timer value: 85:45 sumLapTime: 85:45 sumLapExtraTime: 0:00
+Create Pause List
+-----------------
 COURSE POINT - ABBREVIATE NAMES
 --------------------------------
 CPoint no: 25 -> sharp right => »
@@ -1271,7 +1285,9 @@ Session mesg missing, so can't read session moving timer. Using totalTimerFromLi
 Session mesg missing, so can't read session elapsed timer. Using totalTimerFromList.
 Lap totals check: OK | lapTimerSum=5145.0s, timerListTotal=5145s | lapDistSum=13225.77m, lastRecordDist=13225.77m | lapMovingSum=5145.0s, sessionMoving=5145.0s | lapElapsedSum=5145.0s, sessionElapsed=5145.0s
 Lap totals and enhanced average speed are correct.
-Create timer list done w results
-======== Records: 561 extraRecords: 561
-======== TotalTimerTime: 0:00 last timer value: 85:45
+Create Timer List
+-----------------
+Results
+ Records: 561 extraRecords: 561
+ TotalTimerTime: 0:00 last timer value: 85:45 sumLapTime: 85:45 sumLapExtraTime: 0:00
 fillLapExtraRecords starting: numberOfLaps: 1, numberOfRecords: 561, nextLapStartTime: 1153526723
