@@ -562,6 +562,13 @@ Regr wkt/gps pass
 
 LapExtraMesg->LapExtraRecord, RecordAddOnMesg->RecordExtraRecord, PauseMesg->PauseRecord, GapMesg->GapRecords
 Deleted secExtraRecords and old RecordExtraMesg
+--> git sync
+
+--> v3.25 Build
+--> git sync
+
+Regr wkt/gps pass
+
 
 ***********
 **** BUGGAR

@@ -7,8 +7,8 @@ $ pwd
 ./regr-wkt.sh --version 3.22
 
 cd Downloads/
-../dev/peho-fit-tools/regr-gps.sh --version 3.22
-../dev/peho-fit-tools/regr-wkt.sh --version 3.22
+../dev/peho-fit-tools/regr-gps.sh --version 3.25
+../dev/peho-fit-tools/regr-wkt.sh --version 3.25
 
 java -jar ../dev/jars/fit-ren-3.06.jar zip . aaa
 java -jar ../dev/jars/fit-fix-3.10.jar //looks for aaa. file
