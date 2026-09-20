@@ -1,13 +1,16 @@
 $ pwd
 /home/hoglund
-$ cd Downloads/
+
+./collect-jars.sh 3.22
+
+./regr-gps.sh --version 3.22
+./regr-wkt.sh --version 3.22
+
+cd Downloads/
+../dev/peho-fit-tools/regr-gps.sh --version 3.22
+../dev/peho-fit-tools/regr-wkt.sh --version 3.22
 
 java -jar ../dev/jars/fit-ren-3.06.jar zip . aaa
 java -jar ../dev/jars/fit-fix-3.10.jar //looks for aaa. file
 
-./collect-jars.sh 3.10
-
-./regr-gps.sh --version 2.11
-./regr-wkt.sh --version 2.11
-../dev/peho-fit-tools/regr-gps.sh --version 3.21
 xed .... &

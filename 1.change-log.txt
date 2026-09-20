@@ -540,7 +540,8 @@ Before both speed/enh speed in laps and session, now depending on lap in source 
 Fix for no timer event end of records. New boolean flag logic and more loggging in create timer list
 --> git sync
 
-
+--> v3.22 Build
+--> git sync
 
 
 
