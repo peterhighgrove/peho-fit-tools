@@ -1386,34 +1386,34 @@ public class FitFile {
         }
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    public void initLapExtraRecords() {
+    // public void initLapExtraRecords() {
 
-        Integer hrStart = 0;
-        Integer hrEnd = 0;
-        Integer hrMin = 9999;
-        Long timeEnd = null;
-        int lapNo = 0;
-        int recordIxStart = 0;
-        int recordIxEnd = 0;
-        Float stepLen = null;
-        Float level = 0f;
-        Float avgStrokeLen = 0f;
-        Float maxStrokeLen = 0f;
-        Float avgDragFactor = 0f;
-        Float maxDragFactor = 0f;
+    //     Integer hrStart = 0;
+    //     Integer hrEnd = 0;
+    //     Integer hrMin = 9999;
+    //     Long timeEnd = null;
+    //     int lapNo = 0;
+    //     int recordIxStart = 0;
+    //     int recordIxEnd = 0;
+    //     Float stepLen = null;
+    //     Float level = 0f;
+    //     Float avgStrokeLen = 0f;
+    //     Float maxStrokeLen = 0f;
+    //     Float avgDragFactor = 0f;
+    //     Float maxDragFactor = 0f;
 
-        System.out.println("----- INIT LapExtra Records for ALL MESG -----");
-        for (Mesg record : lapMesg) {
-            LapExtraMesg newLapExtra = new LapExtraMesg(hrStart, hrEnd, hrMin, null, null, timeEnd, lapNo, 
-                recordIxStart, recordIxEnd, stepLen, 
-                level, avgStrokeLen, maxStrokeLen, avgDragFactor, maxDragFactor,
-                null, null, null, null, null
-                );
-            newLapExtra.setSpeedLapSum(0f);
-            newLapExtra.setCadLapSum(0f);
-            lapExtraRecords.add(newLapExtra);
-        }
-    }
+    //     System.out.println("----- INIT LapExtra Records for ALL MESG -----");
+    //     for (Mesg record : lapMesg) {
+    //         LapExtraMesg newLapExtra = new LapExtraMesg(hrStart, hrEnd, hrMin, null, null, timeEnd, lapNo, 
+    //             recordIxStart, recordIxEnd, stepLen, 
+    //             level, avgStrokeLen, maxStrokeLen, avgDragFactor, maxDragFactor,
+    //             null, null, null, null, null
+    //             );
+    //         newLapExtra.setSpeedLapSum(0f);
+    //         newLapExtra.setCadLapSum(0f);
+    //         lapExtraRecords.add(newLapExtra);
+    //     }
+    // }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     class RecordExtraMesg {
         private int lapNo;
@@ -5554,27 +5554,7 @@ public class FitFile {
         getPauseFix().pauseShorten(pauseNo, newPauseTime);
     }
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-/*     public void initLapExtraRecords() {
-
-        int hrStart = 0;
-        int hrEnd = 0;
-        int hrMin = 9999;
-        DateTime timeEnd = null;
-        int lapNo = 0;
-        int recordIxStart = 0;
-        int recordIxEnd = 0;
-        Float stepLen = null;
-        Float level = 0f;
-        Float avgStrokeLen = 0f;
-        Float maxStrokeLen = 0f;
-        Float avgDragFactor = 0f;
-        Float maxDragFactor = 0f;
-
-        for (LapMesg record : lapRecords) {
-            lapExtraRecords.add(new LapExtraMesg(hrStart, hrEnd, hrMin, timeEnd, recordIxStart, recordIxEnd, lapNo, stepLen, level, avgStrokeLen, maxStrokeLen, avgDragFactor, maxDragFactor));
-        }
-    }
- */    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 /*     public void wktAddSteps(String wktSteps, String wktName) {
 
         System.out.println("---------> WKT COMMAND MADE!");

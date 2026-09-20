@@ -86,7 +86,7 @@ public class Main {
                     System.out.println("======== HAS MANUAL FILE ==========");
                     TextLapFile manualLapsFile = new TextLapFile ();
 
-                    watchFitFile.initLapExtraRecords();
+                    watchFitFile.fillLapExtraRecords();
                     manualLapsFile.parseTextLapFile(conf.getExtraFilename());
                     watchFitFile.fixEmptyBeginningElliptical();
 
@@ -117,7 +117,7 @@ public class Main {
 
                 hasC2Fit = watchFitFile.hasC2FitFile(conf.getExtraFilename());
                 if (hasC2Fit) {
-                    watchFitFile.initLapExtraRecords();
+                    watchFitFile.fillLapExtraRecords();
 
                     System.out.println("======== HAS C2 FITFILE ==========");
 
@@ -147,7 +147,7 @@ public class Main {
                     //watchFitFile.addDeveloperfieldsSkiErg();;
 
                 } else {
-                    watchFitFile.initLapExtraRecords();
+                    watchFitFile.fillLapExtraRecords();
 
                     System.out.println("======== NO C2 FITFILE FOUND, USE DEV DATA ONLY ==========");
                     System.out.println("======== NEED C2 FITFILE UNTIL THIS METHOD IS FIXED watchFitFile.mergeCiqAndFitData() ==========");
@@ -182,7 +182,7 @@ public class Main {
                     System.out.println("======== HAS MANUAL FILE ==========");
                     TextLapFile manualLapsFile = new TextLapFile ();
 
-                    watchFitFile.initLapExtraRecords();
+                    watchFitFile.fillLapExtraRecords();
                     manualLapsFile.parseTextLapFile(conf.getExtraFilename());
                     watchFitFile.fixEmptyBeginningTreadmill();
 
