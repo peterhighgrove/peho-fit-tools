@@ -543,7 +543,8 @@ Fix for no timer event end of records. New boolean flag logic and more loggging 
 --> v3.22 Build
 --> git sync
 
-
+--> regr-gps.sh --version 3.22 --bless
+--> git sync
 
 
 ***********

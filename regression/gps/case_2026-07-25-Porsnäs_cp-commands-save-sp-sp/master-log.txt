@@ -17,6 +17,13 @@ Event no: 2, event by text: TIMER, type in text: STOP_DISABLE_ALL, timestamp -> 
 Normalized timestamps: lapStartTimes=1, lapTimestamps=1, eventTimestamps=2
 Create Timer List
 -----------------
+ ==> WARNING: Last timer event is not a STOP event! Last event: TIMER, type: STOP_DISABLE_ALL
+ ---> Search for pauses will continue anyway
+
+ ACTIVITY Start: ---> Start EVENT ix: 0 time: 00:00:00 lapNo: 1 Record ix: 0 time: 00:00:00
+ LAP START no: 1 time: 00:00:00 tTimer: 0:00 Record time: 00:00:00 ix: 0
+ ACTIVITY Stop: ---> LAST RECORD lapNo: 2 tTimer: 6:09 Record ix: 370 time: 00:06:09
+ ==> WARNING: Last timer event is not a STOP event! Last event: TIMER, type: STOP_DISABLE_ALL
 Results
  Records: 370 extraRecords: 370
  TotalTimerTime: 0:00 last timer value: 6:09 sumLapTime: 40:05 sumLapExtraTime: 0:00
@@ -45,6 +52,13 @@ Session mesg missing, so can't read session elapsed timer. Using totalTimerFromL
 Lap totals check: OK | lapTimerSum=369.0s, timerListTotal=369s | lapDistSum=7706.29m, lastRecordDist=7706.29m | lapMovingSum=369.0s, sessionMoving=369.0s | lapElapsedSum=369.0s, sessionElapsed=369.0s
 Create Timer List
 -----------------
+ ==> WARNING: Last timer event is not a STOP event! Last event: TIMER, type: STOP_DISABLE_ALL
+ ---> Search for pauses will continue anyway
+
+ ACTIVITY Start: ---> Start EVENT ix: 0 time: 00:00:00 lapNo: 1 Record ix: 0 time: 00:00:00
+ LAP START no: 1 time: 00:00:00 tTimer: 0:00 Record time: 00:00:00 ix: 0
+ ACTIVITY Stop: ---> LAST RECORD lapNo: 2 tTimer: 6:09 Record ix: 370 time: 00:06:09
+ ==> WARNING: Last timer event is not a STOP event! Last event: TIMER, type: STOP_DISABLE_ALL
 Results
  Records: 370 extraRecords: 370
  TotalTimerTime: 0:00 last timer value: 6:09 sumLapTime: 6:09 sumLapExtraTime: 0:00
@@ -491,6 +505,13 @@ Distance check: checkedSegments=369, mismatches(>5m)=0, maxDiff=0.59m
 Computed path distance=7685.5m, total time=46:07
 Create Timer List
 -----------------
+ ==> WARNING: Last timer event is not a STOP event! Last event: TIMER, type: STOP_DISABLE_ALL
+ ---> Search for pauses will continue anyway
+
+ ACTIVITY Start: ---> Start EVENT ix: 0 time: 00:00:00 lapNo: 1 Record ix: 0 time: 00:00:00
+ LAP START no: 1 time: 00:00:00 tTimer: 0:00 Record time: 00:00:00 ix: 0
+ ACTIVITY Stop: ---> LAST RECORD lapNo: 326 tTimer: 46:07 Record ix: 370 time: 00:46:07
+ ==> WARNING: Last timer event is not a STOP event! Last event: TIMER, type: STOP_DISABLE_ALL
 Results
  Records: 370 extraRecords: 370
  TotalTimerTime: 0:00 last timer value: 46:07 sumLapTime: 6:09 sumLapExtraTime: 0:00
@@ -595,6 +616,13 @@ CPoint no: 34 -> closest record no: 370 (gps gap: 0.0m)
 -- Skipped course points: 0
 Create Timer List
 -----------------
+ ==> WARNING: Last timer event is not a STOP event! Last event: TIMER, type: STOP_DISABLE_ALL
+ ---> Search for pauses will continue anyway
+
+ ACTIVITY Start: ---> Start EVENT ix: 0 time: 00:00:00 lapNo: 1 Record ix: 0 time: 00:00:00
+ LAP START no: 1 time: 00:00:00 tTimer: 0:00 Record time: 00:00:00 ix: 0
+ ACTIVITY Stop: ---> LAST RECORD lapNo: 326 tTimer: 46:07 Record ix: 370 time: 00:46:07
+ ==> WARNING: Last timer event is not a STOP event! Last event: TIMER, type: STOP_DISABLE_ALL
 Results
  Records: 370 extraRecords: 370
  TotalTimerTime: 0:00 last timer value: 46:07 sumLapTime: 46:07 sumLapExtraTime: 0:00
@@ -603,6 +631,13 @@ CHECK/FIX RECORD TIMES FROM MENU
 Completed REC_TIME check/fix. Updated 0 null value(s). Duplicates removed=0, out-of-order points detected=0.
 Create Timer List
 -----------------
+ ==> WARNING: Last timer event is not a STOP event! Last event: TIMER, type: STOP_DISABLE_ALL
+ ---> Search for pauses will continue anyway
+
+ ACTIVITY Start: ---> Start EVENT ix: 0 time: 00:00:00 lapNo: 1 Record ix: 0 time: 00:00:00
+ LAP START no: 1 time: 00:00:00 tTimer: 0:00 Record time: 00:00:00 ix: 0
+ ACTIVITY Stop: ---> LAST RECORD lapNo: 326 tTimer: 46:07 Record ix: 370 time: 00:46:07
+ ==> WARNING: Last timer event is not a STOP event! Last event: TIMER, type: STOP_DISABLE_ALL
 Results
  Records: 370 extraRecords: 370
  TotalTimerTime: 0:00 last timer value: 46:07 sumLapTime: 46:07 sumLapExtraTime: 0:00
@@ -1291,6 +1326,13 @@ Changed COURSE messages: 1
 -- Name changed from 'Porsnäs 7.7km' to 'Porsnäs 7.6km'
 Create Timer List
 -----------------
+ ==> WARNING: Last timer event is not a STOP event! Last event: TIMER, type: STOP_DISABLE_ALL
+ ---> Search for pauses will continue anyway
+
+ ACTIVITY Start: ---> Start EVENT ix: 0 time: 00:00:00 lapNo: 1 Record ix: 0 time: 00:00:00
+ LAP START no: 1 time: 00:00:00 tTimer: 0:00 Record time: 00:00:00 ix: 0
+ ACTIVITY Stop: ---> LAST RECORD lapNo: 326 tTimer: 46:07 Record ix: 370 time: 00:46:07
+ ==> WARNING: Last timer event is not a STOP event! Last event: TIMER, type: STOP_DISABLE_ALL
 Results
  Records: 370 extraRecords: 370
  TotalTimerTime: 0:00 last timer value: 46:07 sumLapTime: 46:07 sumLapExtraTime: 0:00

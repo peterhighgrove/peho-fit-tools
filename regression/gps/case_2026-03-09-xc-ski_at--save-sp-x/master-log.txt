@@ -2,10 +2,76 @@ FIT SDK profile version: 21.205 Release (21205)
 FIT file successfully read. Total records: 7544, Time between: 2026-03-09-06-16-18 -- 2026-03-09-09-40-48
 ======== Non-course file detected. All commands will be available.
 Create Timer List
-==> WARNING - START when not in pause, START event w/o Stopping first @22 @time: 2026-03-09-08-50-54
-Create timer list done w results
-======== Records: 7544 extraRecords: 7544
-======== TotalTimerTime: 125:44 last timer value: 131:19
+-----------------
+ ==> WARNING: Last timer event is not a STOP event! Last event: TIMER, type: START
+ ---> Search for pauses will continue anyway
+
+ ACTIVITY Start: ---> Start EVENT ix: 0 time: 06:16:18 lapNo: 1 Record ix: 0 time: 06:16:18
+ LAP START no: 1 time: 06:16:18 tTimer: 0:00 Record time: 06:16:18 ix: 0
+ LAP START no: 2 time: 06:19:53 tTimer: 3:35 Record time: 06:19:53 ix: 215
+ PAUSE START no: 1 ---> Stop  EVENT ix: 1 time: 06:20:07 lapNo: 2 tTimer: 3:48 Record ix: 229 time: 06:20:07
+ PAUSE END   no: 1 ---> Start EVENT ix: 2 time: 06:22:58 lapNo: 2 tTimer: 3:49 Record ix: 230 time: 06:22:58
+ LAP START no: 3 time: 06:27:37 tTimer: 8:28 Record time: 06:27:37 ix: 509
+ LAP START no: 4 time: 06:35:58 tTimer: 16:49 Record time: 06:35:58 ix: 1010
+ PAUSE START no: 2 ---> Stop  EVENT ix: 3 time: 06:36:08 lapNo: 4 tTimer: 16:58 Record ix: 1020 time: 06:36:08
+ PAUSE END   no: 2 ---> Start EVENT ix: 4 time: 06:37:03 lapNo: 4 tTimer: 16:59 Record ix: 1021 time: 06:37:03
+ LAP START no: 5 time: 06:42:00 tTimer: 21:56 Record time: 06:42:00 ix: 1318
+ LAP START no: 6 time: 06:49:04 tTimer: 29:00 Record time: 06:49:04 ix: 1742
+ PAUSE START no: 3 ---> Stop  EVENT ix: 5 time: 06:51:11 lapNo: 6 tTimer: 31:06 Record ix: 1869 time: 06:51:11
+ PAUSE END   no: 3 ---> Start EVENT ix: 6 time: 06:51:59 lapNo: 6 tTimer: 31:07 Record ix: 1870 time: 06:51:59
+ PAUSE START no: 4 ---> Stop  EVENT ix: 7 time: 06:52:48 lapNo: 6 tTimer: 31:55 Record ix: 1919 time: 06:52:48
+ PAUSE END   no: 4 ---> Start EVENT ix: 8 time: 06:56:32 lapNo: 6 tTimer: 31:56 Record ix: 1920 time: 06:56:32
+ LAP START no: 7 time: 06:56:44 tTimer: 32:08 Record time: 06:56:44 ix: 1932
+ LAP START no: 8 time: 07:02:25 tTimer: 37:49 Record time: 07:02:25 ix: 2273
+ LAP START no: 9 time: 07:13:13 tTimer: 48:37 Record time: 07:13:13 ix: 2921
+ PAUSE START no: 5 ---> Stop  EVENT ix: 9 time: 07:18:26 lapNo: 9 tTimer: 53:49 Record ix: 3234 time: 07:18:26
+ PAUSE END   no: 5 ---> Start EVENT ix: 10 time: 07:21:34 lapNo: 9 tTimer: 53:50 Record ix: 3235 time: 07:21:34
+ LAP START no: 10 time: 07:23:10 tTimer: 55:26 Record time: 07:23:10 ix: 3331
+ PAUSE START no: 6 ---> Stop  EVENT ix: 11 time: 07:26:32 lapNo: 10 tTimer: 58:47 Record ix: 3533 time: 07:26:32
+ PAUSE END   no: 6 ---> Start EVENT ix: 12 time: 08:01:37 lapNo: 10 tTimer: 58:48 Record ix: 3534 time: 08:01:37
+ LAP START no: 11 time: 08:03:16 tTimer: 60:27 Record time: 08:03:16 ix: 3633
+ PAUSE START no: 7 ---> Stop  EVENT ix: 13 time: 08:08:36 lapNo: 11 tTimer: 65:46 Record ix: 3953 time: 08:08:36
+ PAUSE END   no: 7 ---> Start EVENT ix: 14 time: 08:09:22 lapNo: 11 tTimer: 65:47 Record ix: 3954 time: 08:09:22
+ LAP START no: 12 time: 08:09:57 tTimer: 66:22 Record time: 08:09:57 ix: 3989
+ LAP START no: 13 time: 08:13:54 tTimer: 70:19 Record time: 08:13:54 ix: 4226
+ PAUSE START no: 8 ---> Stop  EVENT ix: 15 time: 08:15:05 lapNo: 13 tTimer: 71:29 Record ix: 4297 time: 08:15:05
+ PAUSE END   no: 8 ---> Start EVENT ix: 16 time: 08:17:52 lapNo: 13 tTimer: 71:30 Record ix: 4298 time: 08:17:52
+ LAP START no: 14 time: 08:21:28 tTimer: 75:06 Record time: 08:21:28 ix: 4514
+ PAUSE START no: 9 ---> Stop  EVENT ix: 17 time: 08:24:18 lapNo: 14 tTimer: 77:55 Record ix: 4684 time: 08:24:18
+ PAUSE END   no: 9 ---> Start EVENT ix: 18 time: 08:25:16 lapNo: 14 tTimer: 77:56 Record ix: 4685 time: 08:25:16
+ LAP START no: 15 time: 08:27:19 tTimer: 79:59 Record time: 08:27:19 ix: 4808
+ LAP START no: 16 time: 08:35:46 tTimer: 88:26 Record time: 08:35:46 ix: 5315
+ LAP START no: 17 time: 08:39:11 tTimer: 91:51 Record time: 08:39:11 ix: 5520
+ LAP START no: 18 time: 08:44:06 tTimer: 96:46 Record time: 08:44:06 ix: 5815
+ PAUSE START no: 10 ---> Stop  EVENT ix: 19 time: 08:45:01 lapNo: 18 tTimer: 97:40 Record ix: 5870 time: 08:45:01
+ ==> WARNING - STOP EVENT AGAIN when already in pause, w/o Starting first pause no: 10 time: 08:48:58 lapNo: 19 event ix: 20
+ LAP START no: 19 time: 08:50:52 tTimer: 103:32 Record time: 08:50:52 ix: 5871
+ PAUSE END   no: 10 ---> Start EVENT ix: 21 time: 08:50:52 lapNo: 19 tTimer: 103:32 Record ix: 5872 time: 08:50:53
+ ==> WARNING - START EVENT AGAIN when not in pause, w/o Stopping first time: 08:50:52 tTimer: 103:32 lapNo: 19 event ix: 22
+ LAP START no: 20 time: 08:54:29 tTimer: 107:08 Record time: 08:54:29 ix: 6088
+ PAUSE START no: 11 ---> Stop  EVENT ix: 23 time: 08:58:56 lapNo: 20 tTimer: 111:34 Record ix: 6355 time: 08:58:56
+ PAUSE END   no: 11 ---> Start EVENT ix: 24 time: 09:01:29 lapNo: 20 tTimer: 111:35 Record ix: 6356 time: 09:01:29
+ PAUSE START no: 12 ---> Stop  EVENT ix: 25 time: 09:03:55 lapNo: 20 tTimer: 114:00 Record ix: 6502 time: 09:03:55
+ PAUSE END   no: 12 ---> Start EVENT ix: 26 time: 09:04:22 lapNo: 20 tTimer: 114:01 Record ix: 6503 time: 09:04:22
+ LAP START no: 21 time: 09:05:03 tTimer: 114:42 Record time: 09:05:03 ix: 6544
+ PAUSE START no: 13 ---> Stop  EVENT ix: 27 time: 09:08:34 lapNo: 21 tTimer: 118:12 Record ix: 6755 time: 09:08:34
+ PAUSE END   no: 13 ---> Start EVENT ix: 28 time: 09:25:41 lapNo: 21 tTimer: 118:13 Record ix: 6756 time: 09:25:41
+ LAP START no: 22 time: 09:27:24 tTimer: 119:56 Record time: 09:27:24 ix: 6859
+ LAP START no: 23 time: 09:29:08 tTimer: 121:40 Record time: 09:29:08 ix: 6963
+ LAP START no: 24 time: 09:31:27 tTimer: 123:59 Record time: 09:31:27 ix: 7102
+ PAUSE START no: 14 ---> Stop  EVENT ix: 29 time: 09:33:23 lapNo: 24 tTimer: 125:54 Record ix: 7218 time: 09:33:23
+ PAUSE END   no: 14 ---> Start EVENT ix: 30 time: 09:35:24 lapNo: 24 tTimer: 125:55 Record ix: 7219 time: 09:35:24
+ LAP START no: 25 time: 09:36:07 tTimer: 126:38 Record time: 09:36:07 ix: 7262
+ LAP START no: 26 time: 09:38:31 tTimer: 129:02 Record time: 09:38:31 ix: 7406
+ LAP START no: 27 time: 09:40:46 tTimer: 131:17 Record time: 09:40:46 ix: 7541
+ ACTIVITY Stop: ---> LAST RECORD lapNo: 28 tTimer: 131:19 Record ix: 7544 time: 09:40:48
+ ==> WARNING: Last timer event is not a STOP event! Last event: TIMER, type: START
+Results
+ Records: 7544 extraRecords: 7544
+ TotalTimerTime: 125:44 last timer value: 131:19 sumLapTime: 125:44 sumLapExtraTime: 0:00
+Create Pause List
+-----------------
+ ==> WARNING - START Event w/o Stopping first (inCreatePause) @2026-03-09-08-50-52
 fillLapExtraRecords starting: numberOfLaps: 27, numberOfRecords: 7544, nextLapStartTime: 1141983618
 fillLapExtraRecords starting: numberOfLaps: 27, numberOfRecords: 7544, nextLapStartTime: 1141983618
 --------------------------------------------------
@@ -30,8 +96,71 @@ Changing ACTIVITY LOCAL time to DateTime string:
 Changing Activity Local Time: 2026-03-09-09-40-18 to 2026-03-09-10-40-18
 --------------------------------------------------
 Create Timer List
-==> WARNING - START when not in pause, START event w/o Stopping first @22 @time: 2026-03-09-13-14-54
-Create timer list done w results
-======== Records: 7544 extraRecords: 7544
-======== TotalTimerTime: 125:44 last timer value: 131:19
+-----------------
+ ==> WARNING: Last timer event is not a STOP event! Last event: TIMER, type: START
+ ---> Search for pauses will continue anyway
+
+ ACTIVITY Start: ---> Start EVENT ix: 0 time: 10:40:18 lapNo: 1 Record ix: 0 time: 10:40:18
+ LAP START no: 1 time: 10:40:18 tTimer: 0:00 Record time: 10:40:18 ix: 0
+ LAP START no: 2 time: 10:43:53 tTimer: 3:35 Record time: 10:43:53 ix: 215
+ PAUSE START no: 1 ---> Stop  EVENT ix: 1 time: 10:44:07 lapNo: 2 tTimer: 3:48 Record ix: 229 time: 10:44:07
+ PAUSE END   no: 1 ---> Start EVENT ix: 2 time: 10:46:58 lapNo: 2 tTimer: 3:49 Record ix: 230 time: 10:46:58
+ LAP START no: 3 time: 10:51:37 tTimer: 8:28 Record time: 10:51:37 ix: 509
+ LAP START no: 4 time: 10:59:58 tTimer: 16:49 Record time: 10:59:58 ix: 1010
+ PAUSE START no: 2 ---> Stop  EVENT ix: 3 time: 11:00:08 lapNo: 4 tTimer: 16:58 Record ix: 1020 time: 11:00:08
+ PAUSE END   no: 2 ---> Start EVENT ix: 4 time: 11:01:03 lapNo: 4 tTimer: 16:59 Record ix: 1021 time: 11:01:03
+ LAP START no: 5 time: 11:06:00 tTimer: 21:56 Record time: 11:06:00 ix: 1318
+ LAP START no: 6 time: 11:13:04 tTimer: 29:00 Record time: 11:13:04 ix: 1742
+ PAUSE START no: 3 ---> Stop  EVENT ix: 5 time: 11:15:11 lapNo: 6 tTimer: 31:06 Record ix: 1869 time: 11:15:11
+ PAUSE END   no: 3 ---> Start EVENT ix: 6 time: 11:15:59 lapNo: 6 tTimer: 31:07 Record ix: 1870 time: 11:15:59
+ PAUSE START no: 4 ---> Stop  EVENT ix: 7 time: 11:16:48 lapNo: 6 tTimer: 31:55 Record ix: 1919 time: 11:16:48
+ PAUSE END   no: 4 ---> Start EVENT ix: 8 time: 11:20:32 lapNo: 6 tTimer: 31:56 Record ix: 1920 time: 11:20:32
+ LAP START no: 7 time: 11:20:44 tTimer: 32:08 Record time: 11:20:44 ix: 1932
+ LAP START no: 8 time: 11:26:25 tTimer: 37:49 Record time: 11:26:25 ix: 2273
+ LAP START no: 9 time: 11:37:13 tTimer: 48:37 Record time: 11:37:13 ix: 2921
+ PAUSE START no: 5 ---> Stop  EVENT ix: 9 time: 11:42:26 lapNo: 9 tTimer: 53:49 Record ix: 3234 time: 11:42:26
+ PAUSE END   no: 5 ---> Start EVENT ix: 10 time: 11:45:34 lapNo: 9 tTimer: 53:50 Record ix: 3235 time: 11:45:34
+ LAP START no: 10 time: 11:47:10 tTimer: 55:26 Record time: 11:47:10 ix: 3331
+ PAUSE START no: 6 ---> Stop  EVENT ix: 11 time: 11:50:32 lapNo: 10 tTimer: 58:47 Record ix: 3533 time: 11:50:32
+ PAUSE END   no: 6 ---> Start EVENT ix: 12 time: 12:25:37 lapNo: 10 tTimer: 58:48 Record ix: 3534 time: 12:25:37
+ LAP START no: 11 time: 12:27:16 tTimer: 60:27 Record time: 12:27:16 ix: 3633
+ PAUSE START no: 7 ---> Stop  EVENT ix: 13 time: 12:32:36 lapNo: 11 tTimer: 65:46 Record ix: 3953 time: 12:32:36
+ PAUSE END   no: 7 ---> Start EVENT ix: 14 time: 12:33:22 lapNo: 11 tTimer: 65:47 Record ix: 3954 time: 12:33:22
+ LAP START no: 12 time: 12:33:57 tTimer: 66:22 Record time: 12:33:57 ix: 3989
+ LAP START no: 13 time: 12:37:54 tTimer: 70:19 Record time: 12:37:54 ix: 4226
+ PAUSE START no: 8 ---> Stop  EVENT ix: 15 time: 12:39:05 lapNo: 13 tTimer: 71:29 Record ix: 4297 time: 12:39:05
+ PAUSE END   no: 8 ---> Start EVENT ix: 16 time: 12:41:52 lapNo: 13 tTimer: 71:30 Record ix: 4298 time: 12:41:52
+ LAP START no: 14 time: 12:45:28 tTimer: 75:06 Record time: 12:45:28 ix: 4514
+ PAUSE START no: 9 ---> Stop  EVENT ix: 17 time: 12:48:18 lapNo: 14 tTimer: 77:55 Record ix: 4684 time: 12:48:18
+ PAUSE END   no: 9 ---> Start EVENT ix: 18 time: 12:49:16 lapNo: 14 tTimer: 77:56 Record ix: 4685 time: 12:49:16
+ LAP START no: 15 time: 12:51:19 tTimer: 79:59 Record time: 12:51:19 ix: 4808
+ LAP START no: 16 time: 12:59:46 tTimer: 88:26 Record time: 12:59:46 ix: 5315
+ LAP START no: 17 time: 13:03:11 tTimer: 91:51 Record time: 13:03:11 ix: 5520
+ LAP START no: 18 time: 13:08:06 tTimer: 96:46 Record time: 13:08:06 ix: 5815
+ PAUSE START no: 10 ---> Stop  EVENT ix: 19 time: 13:09:01 lapNo: 18 tTimer: 97:40 Record ix: 5870 time: 13:09:01
+ ==> WARNING - STOP EVENT AGAIN when already in pause, w/o Starting first pause no: 10 time: 13:12:58 lapNo: 19 event ix: 20
+ LAP START no: 19 time: 13:14:52 tTimer: 103:32 Record time: 13:14:52 ix: 5871
+ PAUSE END   no: 10 ---> Start EVENT ix: 21 time: 13:14:52 lapNo: 19 tTimer: 103:32 Record ix: 5872 time: 13:14:53
+ ==> WARNING - START EVENT AGAIN when not in pause, w/o Stopping first time: 13:14:52 tTimer: 103:32 lapNo: 19 event ix: 22
+ LAP START no: 20 time: 13:18:29 tTimer: 107:08 Record time: 13:18:29 ix: 6088
+ PAUSE START no: 11 ---> Stop  EVENT ix: 23 time: 13:22:56 lapNo: 20 tTimer: 111:34 Record ix: 6355 time: 13:22:56
+ PAUSE END   no: 11 ---> Start EVENT ix: 24 time: 13:25:29 lapNo: 20 tTimer: 111:35 Record ix: 6356 time: 13:25:29
+ PAUSE START no: 12 ---> Stop  EVENT ix: 25 time: 13:27:55 lapNo: 20 tTimer: 114:00 Record ix: 6502 time: 13:27:55
+ PAUSE END   no: 12 ---> Start EVENT ix: 26 time: 13:28:22 lapNo: 20 tTimer: 114:01 Record ix: 6503 time: 13:28:22
+ LAP START no: 21 time: 13:29:03 tTimer: 114:42 Record time: 13:29:03 ix: 6544
+ PAUSE START no: 13 ---> Stop  EVENT ix: 27 time: 13:32:34 lapNo: 21 tTimer: 118:12 Record ix: 6755 time: 13:32:34
+ PAUSE END   no: 13 ---> Start EVENT ix: 28 time: 13:49:41 lapNo: 21 tTimer: 118:13 Record ix: 6756 time: 13:49:41
+ LAP START no: 22 time: 13:51:24 tTimer: 119:56 Record time: 13:51:24 ix: 6859
+ LAP START no: 23 time: 13:53:08 tTimer: 121:40 Record time: 13:53:08 ix: 6963
+ LAP START no: 24 time: 13:55:27 tTimer: 123:59 Record time: 13:55:27 ix: 7102
+ PAUSE START no: 14 ---> Stop  EVENT ix: 29 time: 13:57:23 lapNo: 24 tTimer: 125:54 Record ix: 7218 time: 13:57:23
+ PAUSE END   no: 14 ---> Start EVENT ix: 30 time: 13:59:24 lapNo: 24 tTimer: 125:55 Record ix: 7219 time: 13:59:24
+ LAP START no: 25 time: 14:00:07 tTimer: 126:38 Record time: 14:00:07 ix: 7262
+ LAP START no: 26 time: 14:02:31 tTimer: 129:02 Record time: 14:02:31 ix: 7406
+ LAP START no: 27 time: 14:04:46 tTimer: 131:17 Record time: 14:04:46 ix: 7541
+ ACTIVITY Stop: ---> LAST RECORD lapNo: 28 tTimer: 131:19 Record ix: 7544 time: 14:04:48
+ ==> WARNING: Last timer event is not a STOP event! Last event: TIMER, type: START
+Results
+ Records: 7544 extraRecords: 7544
+ TotalTimerTime: 125:44 last timer value: 131:19 sumLapTime: 125:44 sumLapExtraTime: 0:00
 fillLapExtraRecords starting: numberOfLaps: 27, numberOfRecords: 7544, nextLapStartTime: 1141983738

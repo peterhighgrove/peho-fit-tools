@@ -3,9 +3,21 @@ FIT file successfully read. Total records: 1453, Time between: 2026-05-27-18-44-
 ======== Non-course file detected. All commands will be available.
 Create Timer List
 -----------------
- Record ix: 1445 time: 19:08:53 START pause no: 1 ---> Stop  EVENT ix: 1 time: 19:08:53 lapNo: 10
- Record ix: 1446 time: 19:09:27 END   pause no: 1 ---> Start EVENT ix: 2 time: 19:09:27 lapNo: 10
- Record ix: 1452 time: 19:09:33 START pause no: 2 ---> Stop  EVENT ix: 3 time: 19:09:33 lapNo: 11
+ ACTIVITY Start: ---> Start EVENT ix: 0 time: 18:44:48 lapNo: 1 Record ix: 0 time: 18:44:48
+ LAP START no: 1 time: 18:44:48 tTimer: 0:00 Record time: 18:44:48 ix: 0
+ LAP START no: 2 time: 18:54:48 tTimer: 10:00 Record time: 18:54:48 ix: 600
+ LAP START no: 3 time: 18:57:48 tTimer: 13:00 Record time: 18:57:48 ix: 780
+ LAP START no: 4 time: 18:58:48 tTimer: 14:00 Record time: 18:58:48 ix: 840
+ LAP START no: 5 time: 19:00:48 tTimer: 16:00 Record time: 19:00:48 ix: 960
+ LAP START no: 6 time: 19:01:48 tTimer: 17:00 Record time: 19:01:48 ix: 1020
+ LAP START no: 7 time: 19:02:48 tTimer: 18:00 Record time: 19:02:48 ix: 1080
+ LAP START no: 8 time: 19:04:48 tTimer: 20:00 Record time: 19:04:48 ix: 1200
+ LAP START no: 9 time: 19:07:48 tTimer: 23:00 Record time: 19:07:48 ix: 1380
+ LAP START no: 10 time: 19:08:48 tTimer: 24:00 Record time: 19:08:48 ix: 1440
+ PAUSE START no: 1 ---> Stop  EVENT ix: 1 time: 19:08:53 lapNo: 10 tTimer: 24:04 Record ix: 1445 time: 19:08:53
+ PAUSE END   no: 1 ---> Start EVENT ix: 2 time: 19:09:27 lapNo: 10 tTimer: 24:05 Record ix: 1446 time: 19:09:27
+ LAP START no: 11 time: 19:09:30 tTimer: 24:08 Record time: 19:09:30 ix: 1449
+ ACTIVITY Stop: ---> Stop EVENT ix: 3 time: 19:09:33 lapNo: 11 tTimer: 24:11 Record ix: 1452 time: 19:09:33
 Results
  Records: 1453 extraRecords: 1453
  TotalTimerTime: 24:11 last timer value: 24:11 sumLapTime: 24:11 sumLapExtraTime: 0:00
@@ -34,9 +46,21 @@ Lap11 HRst85>max86-1->min85 end86 0:02min 0spm 2147483647:2147483647min/500m 0W 
 avgCad: 45spm, avgPace: 3:13min/500m, avgPow: 57W, sumDist: 0.8km
 Create Timer List
 -----------------
- Record ix: 1445 time: 19:08:53 START pause no: 1 ---> Stop  EVENT ix: 1 time: 19:08:53 lapNo: 10
- Record ix: 1446 time: 19:09:27 END   pause no: 1 ---> Start EVENT ix: 2 time: 19:09:27 lapNo: 10
- Record ix: 1452 time: 19:09:33 START pause no: 2 ---> Stop  EVENT ix: 3 time: 19:09:33 lapNo: 11
+ ACTIVITY Start: ---> Start EVENT ix: 0 time: 18:44:48 lapNo: 1 Record ix: 0 time: 18:44:48
+ LAP START no: 1 time: 18:44:48 tTimer: 0:00 Record time: 18:44:48 ix: 0
+ LAP START no: 2 time: 18:54:48 tTimer: 10:00 Record time: 18:54:48 ix: 600
+ LAP START no: 3 time: 18:57:48 tTimer: 13:00 Record time: 18:57:48 ix: 780
+ LAP START no: 4 time: 18:58:48 tTimer: 14:00 Record time: 18:58:48 ix: 840
+ LAP START no: 5 time: 19:00:48 tTimer: 16:00 Record time: 19:00:48 ix: 960
+ LAP START no: 6 time: 19:01:48 tTimer: 17:00 Record time: 19:01:48 ix: 1020
+ LAP START no: 7 time: 19:02:48 tTimer: 18:00 Record time: 19:02:48 ix: 1080
+ LAP START no: 8 time: 19:04:48 tTimer: 20:00 Record time: 19:04:48 ix: 1200
+ LAP START no: 9 time: 19:07:48 tTimer: 23:00 Record time: 19:07:48 ix: 1380
+ LAP START no: 10 time: 19:08:48 tTimer: 24:00 Record time: 19:08:48 ix: 1440
+ PAUSE START no: 1 ---> Stop  EVENT ix: 1 time: 19:08:53 lapNo: 10 tTimer: 24:04 Record ix: 1445 time: 19:08:53
+ PAUSE END   no: 1 ---> Start EVENT ix: 2 time: 19:09:27 lapNo: 10 tTimer: 24:05 Record ix: 1446 time: 19:09:27
+ LAP START no: 11 time: 19:09:30 tTimer: 24:08 Record time: 19:09:30 ix: 1449
+ ACTIVITY Stop: ---> Stop EVENT ix: 3 time: 19:09:33 lapNo: 11 tTimer: 24:11 Record ix: 1452 time: 19:09:33
 Results
  Records: 1453 extraRecords: 1453
  TotalTimerTime: 24:11 last timer value: 24:11 sumLapTime: 24:11 sumLapExtraTime: 0:00

@@ -3,9 +3,24 @@ FIT file successfully read. Total records: 2732, Time between: 2026-08-11-16-39-
 ======== Non-course file detected. All commands will be available.
 Create Timer List
 -----------------
- Record ix: 2613 time: 17:23:18 START pause no: 1 ---> Stop  EVENT ix: 1 time: 17:23:18 lapNo: 14
- Record ix: 2614 time: 17:23:40 END   pause no: 1 ---> Start EVENT ix: 2 time: 17:23:40 lapNo: 14
- Record ix: 2731 time: 17:25:37 START pause no: 2 ---> Stop  EVENT ix: 3 time: 17:25:37 lapNo: 14
+ ACTIVITY Start: ---> Start EVENT ix: 0 time: 16:39:45 lapNo: 1 Record ix: 0 time: 16:39:45
+ LAP START no: 1 time: 16:39:45 tTimer: 0:00 Record time: 16:39:45 ix: 0
+ LAP START no: 2 time: 16:49:52 tTimer: 10:07 Record time: 16:49:52 ix: 607
+ LAP START no: 3 time: 16:50:52 tTimer: 11:07 Record time: 16:50:52 ix: 667
+ LAP START no: 4 time: 16:54:54 tTimer: 15:09 Record time: 16:54:54 ix: 909
+ LAP START no: 5 time: 16:55:32 tTimer: 15:47 Record time: 16:55:32 ix: 947
+ LAP START no: 6 time: 16:56:41 tTimer: 16:56 Record time: 16:56:41 ix: 1016
+ LAP START no: 7 time: 16:58:12 tTimer: 18:27 Record time: 16:58:12 ix: 1107
+ LAP START no: 8 time: 17:02:24 tTimer: 22:39 Record time: 17:02:24 ix: 1359
+ LAP START no: 9 time: 17:03:35 tTimer: 23:50 Record time: 17:03:35 ix: 1430
+ LAP START no: 10 time: 17:10:00 tTimer: 30:15 Record time: 17:10:00 ix: 1815
+ LAP START no: 11 time: 17:10:03 tTimer: 30:18 Record time: 17:10:03 ix: 1818
+ LAP START no: 12 time: 17:10:05 tTimer: 30:20 Record time: 17:10:05 ix: 1820
+ LAP START no: 13 time: 17:15:58 tTimer: 36:13 Record time: 17:15:58 ix: 2173
+ LAP START no: 14 time: 17:17:35 tTimer: 37:50 Record time: 17:17:35 ix: 2270
+ PAUSE START no: 1 ---> Stop  EVENT ix: 1 time: 17:23:18 lapNo: 14 tTimer: 43:32 Record ix: 2613 time: 17:23:18
+ PAUSE END   no: 1 ---> Start EVENT ix: 2 time: 17:23:40 lapNo: 14 tTimer: 43:33 Record ix: 2614 time: 17:23:40
+ ACTIVITY Stop: ---> Stop EVENT ix: 3 time: 17:25:37 lapNo: 14 tTimer: 45:30 Record ix: 2731 time: 17:25:37
 Results
  Records: 2732 extraRecords: 2732
  TotalTimerTime: 45:33 last timer value: 45:30 sumLapTime: 45:33 sumLapExtraTime: 0:00
@@ -38,9 +53,22 @@ Merged laps: 10 to 12
 -- New lap 10 time: 5:58min, dist: 996 m
 Create Timer List
 -----------------
- Record ix: 2613 time: 17:23:18 START pause no: 1 ---> Stop  EVENT ix: 1 time: 17:23:18 lapNo: 12
- Record ix: 2614 time: 17:23:40 END   pause no: 1 ---> Start EVENT ix: 2 time: 17:23:40 lapNo: 12
- Record ix: 2731 time: 17:25:37 START pause no: 2 ---> Stop  EVENT ix: 3 time: 17:25:37 lapNo: 12
+ ACTIVITY Start: ---> Start EVENT ix: 0 time: 16:39:45 lapNo: 1 Record ix: 0 time: 16:39:45
+ LAP START no: 1 time: 16:39:45 tTimer: 0:00 Record time: 16:39:45 ix: 0
+ LAP START no: 2 time: 16:49:52 tTimer: 10:07 Record time: 16:49:52 ix: 607
+ LAP START no: 3 time: 16:50:52 tTimer: 11:07 Record time: 16:50:52 ix: 667
+ LAP START no: 4 time: 16:54:54 tTimer: 15:09 Record time: 16:54:54 ix: 909
+ LAP START no: 5 time: 16:55:32 tTimer: 15:47 Record time: 16:55:32 ix: 947
+ LAP START no: 6 time: 16:56:41 tTimer: 16:56 Record time: 16:56:41 ix: 1016
+ LAP START no: 7 time: 16:58:12 tTimer: 18:27 Record time: 16:58:12 ix: 1107
+ LAP START no: 8 time: 17:02:24 tTimer: 22:39 Record time: 17:02:24 ix: 1359
+ LAP START no: 9 time: 17:03:35 tTimer: 23:50 Record time: 17:03:35 ix: 1430
+ LAP START no: 10 time: 17:10:00 tTimer: 30:15 Record time: 17:10:00 ix: 1815
+ LAP START no: 11 time: 17:15:58 tTimer: 36:13 Record time: 17:15:58 ix: 2173
+ LAP START no: 12 time: 17:17:35 tTimer: 37:50 Record time: 17:17:35 ix: 2270
+ PAUSE START no: 1 ---> Stop  EVENT ix: 1 time: 17:23:18 lapNo: 12 tTimer: 43:32 Record ix: 2613 time: 17:23:18
+ PAUSE END   no: 1 ---> Start EVENT ix: 2 time: 17:23:40 lapNo: 12 tTimer: 43:33 Record ix: 2614 time: 17:23:40
+ ACTIVITY Stop: ---> Stop EVENT ix: 3 time: 17:25:37 lapNo: 12 tTimer: 45:30 Record ix: 2731 time: 17:25:37
 Results
  Records: 2732 extraRecords: 2732
  TotalTimerTime: 45:33 last timer value: 45:30 sumLapTime: 45:33 sumLapExtraTime: 0:00
@@ -72,9 +100,23 @@ Split lap 9 at totalTimer=28:40 (recordIx=1720)
 -- Lap 9 new timer: 4:50min, new lap 10 timer: 1:35min
 Create Timer List
 -----------------
- Record ix: 2613 time: 17:23:18 START pause no: 1 ---> Stop  EVENT ix: 1 time: 17:23:18 lapNo: 13
- Record ix: 2614 time: 17:23:40 END   pause no: 1 ---> Start EVENT ix: 2 time: 17:23:40 lapNo: 13
- Record ix: 2731 time: 17:25:37 START pause no: 2 ---> Stop  EVENT ix: 3 time: 17:25:37 lapNo: 13
+ ACTIVITY Start: ---> Start EVENT ix: 0 time: 16:39:45 lapNo: 1 Record ix: 0 time: 16:39:45
+ LAP START no: 1 time: 16:39:45 tTimer: 0:00 Record time: 16:39:45 ix: 0
+ LAP START no: 2 time: 16:49:52 tTimer: 10:07 Record time: 16:49:52 ix: 607
+ LAP START no: 3 time: 16:50:52 tTimer: 11:07 Record time: 16:50:52 ix: 667
+ LAP START no: 4 time: 16:54:54 tTimer: 15:09 Record time: 16:54:54 ix: 909
+ LAP START no: 5 time: 16:55:32 tTimer: 15:47 Record time: 16:55:32 ix: 947
+ LAP START no: 6 time: 16:56:41 tTimer: 16:56 Record time: 16:56:41 ix: 1016
+ LAP START no: 7 time: 16:58:12 tTimer: 18:27 Record time: 16:58:12 ix: 1107
+ LAP START no: 8 time: 17:02:24 tTimer: 22:39 Record time: 17:02:24 ix: 1359
+ LAP START no: 9 time: 17:03:35 tTimer: 23:50 Record time: 17:03:35 ix: 1430
+ LAP START no: 10 time: 17:08:25 tTimer: 28:40 Record time: 17:08:25 ix: 1720
+ LAP START no: 11 time: 17:10:00 tTimer: 30:15 Record time: 17:10:00 ix: 1815
+ LAP START no: 12 time: 17:15:58 tTimer: 36:13 Record time: 17:15:58 ix: 2173
+ LAP START no: 13 time: 17:17:35 tTimer: 37:50 Record time: 17:17:35 ix: 2270
+ PAUSE START no: 1 ---> Stop  EVENT ix: 1 time: 17:23:18 lapNo: 13 tTimer: 43:32 Record ix: 2613 time: 17:23:18
+ PAUSE END   no: 1 ---> Start EVENT ix: 2 time: 17:23:40 lapNo: 13 tTimer: 43:33 Record ix: 2614 time: 17:23:40
+ ACTIVITY Stop: ---> Stop EVENT ix: 3 time: 17:25:37 lapNo: 13 tTimer: 45:30 Record ix: 2731 time: 17:25:37
 Results
  Records: 2732 extraRecords: 2732
  TotalTimerTime: 45:33 last timer value: 45:30 sumLapTime: 45:33 sumLapExtraTime: 0:00
@@ -95,9 +137,23 @@ Updated SPL_TYPE for 2 split messages.
 Updated split types counts: warmup=0, cooldown=0, active=1, rest=0, recovery=1
 Create Timer List
 -----------------
- Record ix: 2613 time: 17:23:18 START pause no: 1 ---> Stop  EVENT ix: 1 time: 17:23:18 lapNo: 13
- Record ix: 2614 time: 17:23:40 END   pause no: 1 ---> Start EVENT ix: 2 time: 17:23:40 lapNo: 13
- Record ix: 2731 time: 17:25:37 START pause no: 2 ---> Stop  EVENT ix: 3 time: 17:25:37 lapNo: 13
+ ACTIVITY Start: ---> Start EVENT ix: 0 time: 16:39:45 lapNo: 1 Record ix: 0 time: 16:39:45
+ LAP START no: 1 time: 16:39:45 tTimer: 0:00 Record time: 16:39:45 ix: 0
+ LAP START no: 2 time: 16:49:52 tTimer: 10:07 Record time: 16:49:52 ix: 607
+ LAP START no: 3 time: 16:50:52 tTimer: 11:07 Record time: 16:50:52 ix: 667
+ LAP START no: 4 time: 16:54:54 tTimer: 15:09 Record time: 16:54:54 ix: 909
+ LAP START no: 5 time: 16:55:32 tTimer: 15:47 Record time: 16:55:32 ix: 947
+ LAP START no: 6 time: 16:56:41 tTimer: 16:56 Record time: 16:56:41 ix: 1016
+ LAP START no: 7 time: 16:58:12 tTimer: 18:27 Record time: 16:58:12 ix: 1107
+ LAP START no: 8 time: 17:02:24 tTimer: 22:39 Record time: 17:02:24 ix: 1359
+ LAP START no: 9 time: 17:03:35 tTimer: 23:50 Record time: 17:03:35 ix: 1430
+ LAP START no: 10 time: 17:08:25 tTimer: 28:40 Record time: 17:08:25 ix: 1720
+ LAP START no: 11 time: 17:10:00 tTimer: 30:15 Record time: 17:10:00 ix: 1815
+ LAP START no: 12 time: 17:15:58 tTimer: 36:13 Record time: 17:15:58 ix: 2173
+ LAP START no: 13 time: 17:17:35 tTimer: 37:50 Record time: 17:17:35 ix: 2270
+ PAUSE START no: 1 ---> Stop  EVENT ix: 1 time: 17:23:18 lapNo: 13 tTimer: 43:32 Record ix: 2613 time: 17:23:18
+ PAUSE END   no: 1 ---> Start EVENT ix: 2 time: 17:23:40 lapNo: 13 tTimer: 43:33 Record ix: 2614 time: 17:23:40
+ ACTIVITY Stop: ---> Stop EVENT ix: 3 time: 17:25:37 lapNo: 13 tTimer: 45:30 Record ix: 2731 time: 17:25:37
 Results
  Records: 2732 extraRecords: 2732
  TotalTimerTime: 45:33 last timer value: 45:30 sumLapTime: 45:33 sumLapExtraTime: 0:00
